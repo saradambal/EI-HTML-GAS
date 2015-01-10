@@ -1,0 +1,435 @@
+<!--*********************************************GLOBAL DECLARATION*******************************************-->
+<!--**********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//****************************************STAFF EXPENSE DETAIL ENTRY******************************************//
+//DONE BY:LALITHA
+//VER 1.0-SD:09/06/2014 ED:13/06/2014,TRACKER NO:488,Updated commit funct,Changed failure funct,Changed btn name(submit to save)
+//VER 0.09-SD:06/06/2014 ED:06/06/2014,Changed jquery link ,Updated parse float for amount fields,Added preloader for already exit funct of cpf number
+//VER 0.08-SD:08/04/2014 ED:09/04/2014,added preloader in beginning form loading,put parse int for checking condition,removed class name for comments,before return functn closed stmt,rs,conn,changed while comments empty means set null
+//VER 0.07-SD:07/03/2014 ED:07/03/2014,removed repeated queries
+//VER 0.06-SD:03/02/2014 ED:15/02/2014,implemented eilib for err msg,eilib special charater for comments,nd h3 tag,checked whether the data are inserted or not nd update the error msg for not-saved record
+//VER 0.05-SD:13/01/2014 ED:13/01/2014,changed validation
+//VER 0.04-SD:28/12/2013 ED:02/01/2014,removed utilities,updated title tag,connection,identifier,userstamp,removed doget function
+//VER 0.03-SD:25/10/2013 ED:27/11/2013,changed validation,updated onfailure function
+//VER 0.02-SD:12/10/2013 ED:12/11/2013,changed radio button for same domain name,checked unique cpf no,changed validation of cpf amount
+//VER 0.01-INITIAL VERSION, SD:02/09/2013 ED:01/10/2013,TRACKER NO:488
+//************************************************************************************************************//
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!--SCRIPT TAG START-->
+<script>
+//FAILURE FUNCTION START
+function STDTL_INPUT_onFailure(STDTL_INPUT_error) {
+$(".preloader").hide();
+if(STDTL_INPUT_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+STDTL_INPUT_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#STDTL_INPUT_form_employeename').replaceWith('<center><label class="dberrormsg">'+STDTL_INPUT_error+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL ENTRY",msgcontent:STDTL_INPUT_error.message}});
+}
+}
+//FAILURE FUNCTION END
+var ErrorControl={'cpferror':null};
+//DOCUMENT READY FUNCTION
+$(document).ready(function(){
+var STDTL_INPUT_empsingle_id;
+$(".preloader").show();
+google.script.run.withSuccessHandler(STDTL_INPUT_getempname_errresult).withFailureHandler(STDTL_INPUT_onFailure).STDTL_INPUT_getempname_err();
+var STDTL_INPUT_expensearr_employeename=[];
+var STDTL_INPUT_errorMsg_array=[];
+//SUCCESS FUNCTION FOR GET STAFF EMPLOYEE NAME,ERROR MESSAGE
+function STDTL_INPUT_getempname_errresult(STDTL_INPUT_getempname_errresult_response)
+{
+$(".preloader").hide();
+$('#STDTL_INPUT_form_employeename').show();
+STDTL_INPUT_expensearr_employeename=STDTL_INPUT_getempname_errresult_response.STDTL_INPUT_employeenameid;
+STDTL_INPUT_errorMsg_array=STDTL_INPUT_getempname_errresult_response.STDTL_INPUT_errormsg;
+if(STDTL_INPUT_expensearr_employeename.length==0)
+{
+$('#STDTL_INPUT_form_employeename').hide();
+$('#STDTL_INPUT_form_employeename').replaceWith('<p><label class="errormsg">'+STDTL_INPUT_errorMsg_array[4]+'</label></p>')
+}
+else
+{
+STDTL_INPUT_errorMsg_array=STDTL_INPUT_getempname_errresult_response.STDTL_INPUT_errormsg;
+var STDTL_INPUT_namearray=[];
+for(var k=0;k<STDTL_INPUT_expensearr_employeename.length;k++)
+{
+STDTL_INPUT_namearray.push(STDTL_INPUT_expensearr_employeename[k].STDTL_INPUT_names_concat);
+}
+STDTL_INPUT_namearray=unique(STDTL_INPUT_namearray);
+var STDTL_INPUT_expensearray_employeename='<option value="">SELECT</option>';
+for (var i = 0;i< STDTL_INPUT_namearray.length; i++) 
+{
+var STDTL_INPUT_employeenameconcat=STDTL_INPUT_namearray[i].split("_");
+STDTL_INPUT_expensearray_employeename += '<option value="' + STDTL_INPUT_expensearr_employeename[i].STDTL_INPUT_names_id + '">' + STDTL_INPUT_employeenameconcat[0]+" "+STDTL_INPUT_employeenameconcat[1]+ '</option>';
+}
+}
+$('#STDTL_INPUT_lb_employeename').html(STDTL_INPUT_expensearray_employeename).show();
+}
+//FUNCTION FOR UNIQUE NAME AND ID
+function unique(a) {
+var result = [];
+$.each(a, function(i, e) {
+if ($.inArray(e, result) == -1) result.push(e);
+});
+return result;
+}
+//JQUERY LIB VALIDATION START
+$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+$(".amountonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+$(".alphanumeric").doValidation({rule:'alphanumeric',prop:{realpart:9}});
+//JQUERY LIB VALIDATION END
+//GET EMPLOYEE ID FOR THE SELECTED EMPLOYEE NAME
+$('#STDTL_INPUT_lb_employeename').change(function()
+{
+var STDTL_INPUT_name=$('#STDTL_INPUT_lb_employeename').find('option:selected').text();
+$("#STDTL_INPUT_lbl_cpfamount").hide();
+$("#STDTL_INPUT_tb_cpfamount").hide();
+$('#STDTL_INPUT_lbl_validamount').hide();
+$('#STDTL_INPUT_lbl_validnumber').hide();
+$("#STDTL_INPUT_lbl_cpfamount").hide();
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid')
+$("#STDTL_INPUT_tb_cpfnumber").removeClass('invalid')
+$("#STDTL_INPUT_tb_cpfnumber").val('');
+$("#STDTL_INPUT_tb_cpfamount").val('');
+$("#STDTL_INPUT_tb_levyamount").val('');
+$("#STDTL_INPUT_tb_salaryamount").val('');
+$("#STDTL_INPUT_ta_comments").val('');
+$('#STDTL_INPUT_tble_employid tr').remove();
+$("#STDTL_INPUT_btn_save").attr("disabled","disabled");
+var STDTL_INPUT_lb_employeename=$('#STDTL_INPUT_lb_employeename').val();
+if(STDTL_INPUT_lb_employeename!='SELECT')
+{
+$(".preloader").show();
+$('#STDTL_INPUT_tble_employid tr').remove();
+var STDTL_INPUT_eid=[];
+for(var k=0;k<STDTL_INPUT_expensearr_employeename.length;k++)
+{
+var final=STDTL_INPUT_expensearr_employeename[k].STDTL_INPUT_names_concat.split('_');
+var first=final[0]+' '+final[1];
+if(first==STDTL_INPUT_name)
+{
+STDTL_INPUT_eid.push(STDTL_INPUT_expensearr_employeename[k].STDTL_INPUT_names_id);
+}
+}
+STDTL_INPUT_eid=unique(STDTL_INPUT_eid);
+if(STDTL_INPUT_eid.length!=1){
+$(".preloader").hide();
+$('#STDTL_INPUT_tble_employid').show();
+var STDTL_INPUT_radio_value='';
+for (var i = 0; i < STDTL_INPUT_eid.length; i++) {
+var STDTL_INPUT_final=STDTL_INPUT_name+' '+STDTL_INPUT_eid[i]
+STDTL_INPUT_radio_value = '<tr id="employid"><label></label><td><input type="radio" name="STDTL_INPUT_radioemployid" id='+STDTL_INPUT_eid[i]+' value='+STDTL_INPUT_eid[i]+' class="STDTL_INPUT_class_employid" /></td><td>' + STDTL_INPUT_final + '</td></tr>';
+$('#STDTL_INPUT_tble_employid').append(STDTL_INPUT_radio_value);
+$('#STDTL_INPUT_div_employid').show();
+}
+}
+else
+{
+$(".preloader").hide();
+$('#STDTL_INPUT_hidden_employid').val(STDTL_INPUT_eid[0]);
+$('#STDTL_INPUT_div_employid').hide();
+$('#STDTL_INPUT_tble_employid').hide();
+$('#STDTL_INPUT_tble_employid tr').remove();
+}
+}
+});
+//CHANGE FUNCTION FOR CPF NUMBER
+$("#STDTL_INPUT_tb_cpfnumber").change(function(){
+$("#STDTL_INPUT_btn_save").attr("disabled","disabled");
+var STDTL_INPUT_cpfnumber=$(this).val();
+var STDTL_INPUT_CpfNo=$("#STDTL_INPUT_tb_cpfnumber").val();
+if(STDTL_INPUT_CpfNo=='')
+{
+$("#STDTL_INPUT_lbl_cpfamount").hide();
+$("#STDTL_INPUT_tb_cpfamount").hide();
+$('#STDTL_INPUT_lbl_validamount').hide();
+}
+else
+{
+$("#STDTL_INPUT_lbl_cpfamount").show();
+$("#STDTL_INPUT_tb_cpfamount").show();
+}
+});
+//EMPLOYEE SAVE BUTTON VALIDATION
+$("#STDTL_INPUT_tb_cpfnumber").blur(function(){
+var STDTL_INPUT_Empname=$("#STDTL_INPUT_lb_employeename").val();
+var STDTL_INPUT_CpfNo=$("#STDTL_INPUT_tb_cpfnumber").val();
+var STDTL_INPUT_Salamt=$("#STDTL_INPUT_tb_salaryamount").val();
+$("#STDTL_INPUT_btn_save").attr("disabled","disabled");
+$('#STDTL_INPUT_lbl_validamount').hide();
+if(STDTL_INPUT_CpfNo.length==9)
+{
+$('#STDTL_INPUT_lbl_validamount').hide();
+google.script.run.withSuccessHandler(STDTL_INPUT_already_result).withFailureHandler(STDTL_INPUT_onFailure).STDTL_INPUT_already(STDTL_INPUT_Empname,STDTL_INPUT_CpfNo);
+$(".preloader").show();
+$('#STDTL_INPUT_lbl_validnumber').hide();
+}
+else 
+{
+if(STDTL_INPUT_CpfNo.length>0)
+{
+$("#STDTL_INPUT_lbl_cpfamount").hide();
+$("#STDTL_INPUT_tb_cpfamount").hide();
+ErrorControl.cpferror='InValid';
+$('#STDTL_INPUT_lbl_validnumber').text(STDTL_INPUT_errorMsg_array[0]).show();
+$(this).addClass('invalid');
+$('#STDTL_INPUT_lbl_validamount').hide();
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid');
+}
+else
+{
+ErrorControl.cpferror='Valid';
+if(STDTL_INPUT_Empname!='' && STDTL_INPUT_Salamt!='' && (parseFloat($('#STDTL_INPUT_tb_salaryamount').val())!=0))
+$("#STDTL_INPUT_btn_save").removeAttr("disabled");
+else
+$("#STDTL_INPUT_btn_save").attr("disabled","disabled");
+$('#STDTL_INPUT_lbl_validnumber').hide();
+$(this).removeClass('invalid');
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid');
+$('#STDTL_INPUT_lbl_validamount').hide();
+}
+}
+});
+//SUCCESS FUNCTION FOR DUPLICATE CPF NUMBER
+function STDTL_INPUT_already_result(response)
+{
+$(".preloader").hide();
+var STDTL_INPUT_Empname=$("#STDTL_INPUT_lb_employeename").val();
+var STDTL_INPUT_Salamt=$("#STDTL_INPUT_tb_salaryamount").val();
+var STDTL_INPUT_Cpfamt=$("#STDTL_INPUT_tb_cpfamount").val();
+if(response==0)
+{
+$('#STDTL_INPUT_lbl_validnumber').hide();
+$("#STDTL_INPUT_tb_cpfnumber").removeClass('invalid');
+$("#STDTL_INPUT_lbl_cpfamount").show();
+$("#STDTL_INPUT_tb_cpfamount").show();
+$('#STDTL_INPUT_lbl_validamount').text(STDTL_INPUT_errorMsg_array[3]).show();
+if(STDTL_INPUT_Cpfamt=='')
+{
+ErrorControl.cpferror='Valid';
+$("#STDTL_INPUT_tb_cpfamount").addClass('invalid');
+}
+else
+{
+if(STDTL_INPUT_Empname!='' && STDTL_INPUT_Salamt!='' && (parseFloat($('#STDTL_INPUT_tb_salaryamount').val())!=0))
+$("#STDTL_INPUT_btn_save").removeAttr("disabled");
+ErrorControl.cpferror='Valid';
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid');
+$('#STDTL_INPUT_lbl_validamount').hide();
+$('#STDTL_INPUT_lbl_validnumber').hide();
+}
+}
+else if(response!=0)
+{
+$(".preloader").hide(); 
+ErrorControl.cpferror='InValid';
+$("#STDTL_INPUT_tb_cpfnumber").addClass('invalid');
+$('#STDTL_INPUT_lbl_validnumber').text(STDTL_INPUT_errorMsg_array[2]).show();
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid');
+$('#STDTL_INPUT_lbl_validamount').hide();
+}
+}
+//SAVE BUTTON VALIDATION
+$(document).on('change','input:not(#STDTL_INPUT_tb_cpfnumber),select', function() 
+{
+var STDTL_INPUT_radioemployid_val=$("input:radio[name=STDTL_INPUT_radioemployid]").is(":checked");
+var STDTL_INPUT_currentid=$(this).attr('id');
+var STDTL_INPUT_Empname=$("#STDTL_INPUT_lb_employeename").val();
+var STDTL_INPUT_Salamt=$("#STDTL_INPUT_tb_salaryamount").val();
+var STDTL_INPUT_CpfNo=$("#STDTL_INPUT_tb_cpfnumber").val();
+var STDTL_INPUT_Cpfamt=$("#STDTL_INPUT_tb_cpfamount").val();
+$("input:radio[name=STDTL_INPUT_radioemployid]").is(":checked")
+if((STDTL_INPUT_Empname!=''&& STDTL_INPUT_Salamt!='' && (parseFloat($('#STDTL_INPUT_tb_salaryamount').val())!=0))&&(STDTL_INPUT_CpfNo==''))
+{
+$('#STDTL_INPUT_lbl_validamount').hide();
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid');
+if($('.STDTL_INPUT_class_employid').length>0)
+{
+if(STDTL_INPUT_radioemployid_val)
+{
+$("#STDTL_INPUT_btn_save").removeAttr("disabled");
+}
+}
+else
+{
+$("#STDTL_INPUT_btn_save").removeAttr("disabled");
+$('#STDTL_INPUT_lbl_validnumber').hide();
+}
+}
+else if((STDTL_INPUT_Empname!='' && STDTL_INPUT_Salamt!='' && (parseFloat($('#STDTL_INPUT_tb_salaryamount').val())!=0)) && (STDTL_INPUT_CpfNo.length==9))
+{
+if(ErrorControl.cpferror=='Valid'&& STDTL_INPUT_Cpfamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0) && (parseFloat($('#STDTL_INPUT_tb_cpfamount').val())!=0))
+{
+if($('.STDTL_INPUT_class_employid').length>0)
+{
+if(STDTL_INPUT_radioemployid_val)
+{
+$("#STDTL_INPUT_btn_save").removeAttr("disabled");
+}
+else
+{
+$("#STDTL_INPUT_btn_save").removeAttr("disabled");
+}
+}
+else
+{
+$("#STDTL_INPUT_btn_save").removeAttr("disabled");
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid');
+$('#STDTL_INPUT_lbl_validamount').hide();
+}
+}
+else
+{
+$("#STDTL_INPUT_tb_cpfamount").addClass('invalid');
+$('#STDTL_INPUT_lbl_validamount').show();
+$("#STDTL_INPUT_btn_save").attr("disabled","disabled");
+}
+}
+else if((STDTL_INPUT_Empname!='' && STDTL_INPUT_Salamt!='' && (parseFloat($('#STDTL_INPUT_tb_salaryamount').val())!=0)) && (STDTL_INPUT_CpfNo.length!=9))
+{
+if(STDTL_INPUT_CpfNo.length>0)
+{
+$("#STDTL_INPUT_btn_save").attr("disabled","disabled");
+}
+else if(STDTL_INPUT_CpfNo.length==0 && STDTL_INPUT_radioemployid_val!=false)
+{
+$("#STDTL_INPUT_btn_save").removeAttr("disabled");
+}
+}
+else
+{
+$("#STDTL_INPUT_btn_save").attr("disabled","disabled");
+}
+if(STDTL_INPUT_Cpfamt!='' && (parseFloat($('#STDTL_INPUT_tb_cpfamount').val())!=0) && STDTL_INPUT_CpfNo.length==9) 
+{
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid');
+$('#STDTL_INPUT_lbl_validamount').hide();
+}
+});
+//CLICK EVENT FOR SAVE BUTTON
+$("#STDTL_INPUT_btn_save").click(function(){ 
+$(".preloader").show(); 
+var STDTL_INPUT_employeenameid=$('#STDTL_INPUT_lb_employeename').val();
+google.script.run.withSuccessHandler(STDTL_INPUT_save_result).withFailureHandler(STDTL_INPUT_onFailure).STDTL_INPUT_save(document.getElementById('STDTL_INPUT_form_employeename'));
+});
+//SUCCESS FUNCTION FOR SAVE
+function STDTL_INPUT_save_result(STDTL_INPUT_response)
+{
+$(".preloader").hide();
+if((STDTL_INPUT_response!=false)&&(STDTL_INPUT_response!=undefined))
+{
+var STDTL_INPUT_employeename=$('#STDTL_INPUT_lb_employeename').val();
+//MESSAGE BOX FOR SAVE SUCCESS
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL ENTRY",msgcontent:STDTL_INPUT_errorMsg_array[1]}}); 
+google.script.run.withSuccessHandler(STDTL_INPUT_getempname_errresult).withFailureHandler(STDTL_INPUT_onFailure).STDTL_INPUT_getempname_err();
+$('#STDTL_INPUT_tble_employid').hide();
+$('#STDTL_INPUT_div_employid').hide();
+STDTL_INPUT_employeedetailrset();
+}
+else
+{
+//MESSAGE BOX FOR NOT SAVED SUCCESS
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:STDTL_INPUT_errorMsg_array[5]}}); 
+}
+}
+//CLICK EVENT FUCNTION FOR RESET
+$('#STDTL_INPUT_btn_reset').click(function()
+{
+STDTL_INPUT_employeedetailrset()
+});
+//CLEAR ALL FIELDS
+function STDTL_INPUT_employeedetailrset()
+{
+$("#STDTL_INPUT_form_employeename")[0].reset();
+$('#STDTL_INPUT_lbl_validamount').hide();
+$('#STDTL_INPUT_lbl_validnumber').hide();
+$('#STDTL_INPUT_tble_employid').hide();
+$("#STDTL_INPUT_lbl_cpfamount").hide();
+$("#STDTL_INPUT_tb_cpfamount").hide();
+$("#STDTL_INPUT_tb_cpfamount").removeClass('invalid')
+$("#STDTL_INPUT_tb_cpfnumber").removeClass('invalid')
+$("#STDTL_INPUT_btn_save").attr("disabled", "disabled");
+$('input:radio[name=STDTL_INPUT_radioemployid]').attr('checked',false);
+}
+});
+</script>
+<!--SCRIPT TAG END-->
+</head>
+<!--HEAD TAG END-->
+<!--BODY TAG START-->
+<body>
+<div class="wrapper">
+<div class="preloader MaskPanel"><div class="preloader statusarea"><div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+<div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>STAFF EXPENSE DETAIL ENTRY</h3><p></div></div>
+<form class="content" name="STDTL_INPUT_form_employeename" id="STDTL_INPUT_form_employeename" hidden>
+<table border=0>
+<tr><p><td>EMPLOYEE NAME<em>*</em></td></p>
+<td>
+<select name="STDTL_INPUT_lb_employeename" id="STDTL_INPUT_lb_employeename">
+<option value="" >SELECT</option>
+</select></td></tr>
+<td><input type="text" name="STDTL_INPUT_hidden_employid" id="STDTL_INPUT_hidden_employid" hidden></td>
+<tr>
+<div id="STDTL_INPUT_div_employid">
+<td><table id="STDTL_INPUT_tble_employid"></table></td></div>
+</tr>
+<tr>
+<td>
+<label name="STDTL_INPUT_lbl_cpfnumber" id="STDTL_INPUT_lbl_cpfnumber">CPF NUMBER</label></td> 
+<td><input type="text" name="STDTL_INPUT_tb_cpfnumber" id="STDTL_INPUT_tb_cpfnumber" maxlength='9' class="alphanumeric" style="width:120px"></td>
+<td><div><label id="STDTL_INPUT_lbl_validnumber" name="STDTL_INPUT_lbl_validnumber" class="errormsg"></label></div></td>
+</tr>
+<tr>
+<td>
+<label name="STDTL_INPUT_lbl_cpfamount" id="STDTL_INPUT_lbl_cpfamount" hidden>CPF AMOUNT</label></td> 
+<td><input type="text" name="STDTL_INPUT_tb_cpfamount" id="STDTL_INPUT_tb_cpfamount" class="amountonly" style="width:60px" hidden></td>
+<td><div><label id="STDTL_INPUT_lbl_validamount" name="STDTL_INPUT_lbl_validamount" class="errormsg"></label></div></td>
+</tr>
+<tr>
+<td>
+<label name="STDTL_INPUT_lbl_levyamount" id="STDTL_INPUT_lbl_levyamount">LEVY AMOUNT</label></td> 
+<td><input type="text" name="STDTL_INPUT_tb_levyamount" id="STDTL_INPUT_tb_levyamount" class="amountonly" style="width:60px"></td>
+</tr>
+<tr>
+<td>
+<label name="STDTL_INPUT_lbl_salaryamount" id="STDTL_INPUT_lbl_salaryamount">SALARY AMOUNT<em>*</em></label></td> 
+<td><input type="text" name="STDTL_INPUT_tb_salaryamount" id="STDTL_INPUT_tb_salaryamount" class="amountonly" style="width:60px"></td>
+</tr>
+<tr>
+<td>
+<label name="STDTL_INPUT_lbl_comments" id="STDTL_INPUT_lbl_comments">COMMENTS</label></td> 
+<td><textarea name="STDTL_INPUT_ta_comments" id="STDTL_INPUT_ta_comments"></textarea></td>
+</tr>
+<tr>
+<td align="right"><input type="button" class="btn" name="STDTL_INPUT_btn_save" id="STDTL_INPUT_btn_save" disabled="" value="SAVE"></td>
+<td align="left"><input type="button" class="btn" name="STDTL_INPUT_btn_reset" id="STDTL_INPUT_btn_reset" value="RESET"></td>
+</tr>
+</table>
+<input type=hidden id="STDTL_INPUT_hidden_chkvalid">
+</form>
+</div>
+</body>
+<!--BODY TAG END-->
+</html>
+<!--HTML TAG END-->

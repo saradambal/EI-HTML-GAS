@@ -1,0 +1,807 @@
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//*************************************************EXISTING UNIT***********************************************//
+<!--DONE BY:SARADAMBAL
+VER 1.2 -SD:12/06/2014 ED:12/06/2014,TRACKER NO:244,updated failure function,implemented doorcode & login validation,checked tickler after removed trigger for login details
+VER 1.1 -SD:06/06/2014 ED:06/06/2014,TRACKER NO:244,updated new link 
+VER 1.0 -SD:09/04/2014 ED:09/04/2014,TRACKER NO:244,implemented class for stampdutydate
+VER 0.09-SD:15/02/2014 ED:03/03/2014,TRACKER NO:244,updated sp for returning flag and updated erormsg for not updating data,checked sp after changing the uldid instead of userstamp
+VER 0.08-SD:08/02/2014 ED:11/02/2014,TRACKER NO:244,included non-active unit form,implemented eilib for errormsg and eilib(remove special character) for general fields
+VER 0.07-SD:21/01/2014 ED:22/01/2014,TRACKER NO:244,cleared issue for stamp and room type saving as undefined,changed acc no as number only
+VER 0.06-SD:28/12/2013 ED:03/12/2013,TRACKER NO:244,removed utilities function,implement connection open & close function for eilib function,changed alignment for form title,changed textarea for bank address,implemented validation for amt while updation,cleared issue-issued occured becoz calling two gs function at a time,updated reset function for bank address 
+VER 0.05-SD:30/11/2013 ED:30/11/2013,TRACKER NO:244,changed prefix name for UEXST_getroomstamp_err into UEXST_getroomstamp_err,implemented utilities function 
+VER 0.04-SD:13/11/2013 ED:23/11/2013,TRACKER NO:244,changed sp name,updated rdonly class name for css color,changed access card as integer,removed title when tb is disabled.removed rdonly class when tb is enabled,implemented eilib function for roomtype,stamptype & accesscard alreadyexists,implemented dynamic width setting for tb,implemented update validation for disable update btn when form having old values
+VER 0.03-SD:08/10/2013 ED:08/10/2013,TRACKER NO:244,updated head tag links & implement return function
+VER 0.02-SD:01/10/2013 ED:05/10/2013,TRACKER NO:244,updated eilib connection,message box,preloader,removed scriplet,convert blur function,change reset coding,change alignment
+VER 0.01-INITIAL VERSION,TRACKER NO:244,SD:24/08/2013,ED:04/09/2013-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!--COMMON JQUERY LINKS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT CUSTOMIZED JQUERY LIB-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<script>
+/*------------------------------------------------FAILURE FUNCTION ----------------------------------------------------*/
+function UEXST_onFailure(UEXST_error) {
+$(".preloader").hide();
+if(UEXST_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+UEXST_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#UEXST_form_existingUnit').replaceWith('<center><label class="dberrormsg">'+UEXST_error+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_error.message}});
+}}
+$(document).ready(function(){
+var UEXST_room_arr=[];
+var UEXST_errorMsg_array=[];
+var UEXST_stamp=[];
+var UEXST_unitno_arr=[];
+var UEXST_unitno='SELECT';
+var UEXST_flag_access=1;
+var UEXST_flag_unit=1;
+var UEXST_flag_room='true'; 
+var UEXST_flag_stamp='true'; 
+var UEXST_deposit='';
+var UEXST_nonactive_arr=[];
+var UEXST_flg_Login=1;
+var UEXST_flg_Doorcode=1;
+/*---------------------------------------------- FUNCTION FOR LOAD STAMP,ROOM TYPE PLUS ERROR MSG--------------------------------------------------------*/
+$(".preloader").show();
+google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_getroomstamp_err(UEXST_unitno,'UEXST_flag_unitno_errormsg');
+/*----------------------------------------------SUCCESS FUNCTION FOR LOAD STAMP,ROOM TYPE PLUS ERROR MSG--------------------------------------------------------*/
+function UEXST_result(UEXST_response_arr){
+$(".preloader").hide();
+var UEXST_response=UEXST_response_arr[0];
+var UEXST_unitno=UEXST_response.UEXST_unitno_flag;
+if(UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_unitno_errormsg'){
+UEXST_errorMsg_array=UEXST_response.UEXST_errarray;
+UEXST_unitno_arr=UEXST_response.UEXST_unitno;
+UEXST_nonactive_arr=UEXST_response.UEXST_nonactive;
+}
+else{
+UEXST_room_arr=UEXST_response.UEXST_roomtype;
+UEXST_stamp=UEXST_response.UEXST_stamp;
+if((UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_roomstamp')||(UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_deposit_roomstamp')||(UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_roomtype')){
+if(UEXST_room_arr.length==0){
+$('#UEXST_lb_oldroomtype').replaceWith('<input type="text" name="UEXST_tb_newroomtype" id="UEXST_tb_newroomtype" maxlength=30 class="UEXST_class_validupdate autosize"/>');
+$('#UEXST_btn_addroomtype').hide();
+$('#UEXST_btn_removeroomtype').hide();
+$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+}
+else{
+var UEXST_roomoptions ='<option>SELECT</option>';
+for (var i = 0; i < UEXST_room_arr.length; i++) 
+{
+UEXST_roomoptions += '<option value="' + UEXST_room_arr[i]  + '">' + UEXST_room_arr[i] + '</option>';
+}
+/*-----------------------------------------REPLACE TB INTO LB FOR ROOMTYPE & STAMPTYPE ---------------------------------*/
+$('#UEXST_btn_addroomtype').show();
+$('#UEXST_tb_newroomtype').replaceWith('<select id="UEXST_lb_oldroomtype" name="UEXST_lb_oldroomtype" maxlength="30" class="UEXST_class_validupdate"><option>SELECT</option></select>');
+$('#UEXST_btn_removeroomtype').replaceWith('<input type="button" name="UEXST_btn_addroomtype" value="ADD" id="UEXST_btn_addroomtype" class="btn UEXST_class_validupdate"/>');
+$('#UEXST_lb_oldroomtype').html(UEXST_roomoptions).show();
+}}
+if((UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_roomstamp')||(UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_deposit_roomstamp')||(UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_stamptype')){
+if(UEXST_stamp.length==0){
+$('#UEXST_lb_oldstamptype').replaceWith('<input type="text" style="width:110px" name="UEXST_tb_newstamptype" id="UEXST_tb_newstamptype" maxlength=12 class="UEXST_class_validupdate autosize" />');
+$('#UEXST_btn_addstamptype').hide();
+$('#UEXST_btn_removestamptype').hide();
+$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+}
+else{
+var UEXST_stampoptions ='<option>SELECT</option>';
+for (var i = 0; i < UEXST_stamp.length; i++) 
+{
+UEXST_stampoptions += '<option value="' + UEXST_stamp[i]  + '">' + UEXST_stamp[i] + '</option>';
+}
+if(UEXST_unit_source=='UEXST_radio_nonactiveunit'){
+$("#UEXST_tble_resetupdatebtn").show();
+}
+$('#UEXST_btn_addstamptype').show();
+$('#UEXST_tb_newstamptype').replaceWith('<select id="UEXST_lb_oldstamptype" name="UEXST_lb_oldstamptype" class="UEXST_class_validupdate"><option>SELECT</option></select>');
+$('#UEXST_btn_removestamptype').replaceWith('<input type="button" name="UEXST_btn_addstamptype" value="ADD" id="UEXST_btn_addstamptype"/ class="btn UEXST_class_validupdate">');
+$('#UEXST_lb_oldstamptype').html(UEXST_stampoptions).show();
+}}
+/*-----------------------------------------SUCCESS FUNCTION FOR OTHER DETAILS-----------------------------------------*/
+if(UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_deposit_roomstamp'){
+var UEXST_response_deposit=UEXST_response_arr[1];
+$("#UEXST_tble_resetupdatebtn").show();
+if(UEXST_response_deposit==''){
+$("#UEXST_tb_unitdeposite").prop("readonly", false);
+$("#UEXST_div_others").show();
+}
+else{
+$("#UEXST_div_others").show();
+UEXST_deposit=UEXST_response_deposit;
+$("#UEXST_tb_unitdeposite").val(UEXST_response_deposit);
+$("#UEXST_tb_unitdeposite").prop("readonly", true);
+$("#UEXST_tb_unitdeposite").prop("title",'');
+$("#UEXST_tb_unitdeposite").addClass('rdonly');
+$('#UEXST_tb_unitdeposite').attr("size",UEXST_deposit.length);
+}}
+$(".preloader").hide();}
+$(".UEXST_class_numsonly").prop("title",UEXST_errorMsg_array[0])
+$('#UEXST_lb_unitnumber').val(UEXST_unitno)
+$('#UEXST_form_existingUnit').show();}
+var UEXST_max = 250;
+/*--------------------------------------------KEYPRESS EVENT OF BANK ADDRESSS--------------------------------------*/
+$('#UEXST_tb_bankaddrs').keypress(function(e) {
+if (e.which < 0x20) {
+return;   
+}
+if (this.value.length == UEXST_max) {
+e.preventDefault();
+} else if (this.value.length > UEXST_max) {
+this.value = this.value.substring(0, UEXST_max);
+}});
+/*---------------------------------------VALIDATION FOR NUMBERS AND AMOUNT VALUES------------------------------------------*/
+$("#UEXST_tb_stampamount").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+$(".numonly").doValidation({rule:'numbersonly',prop:{leadzero:true}});
+/*-------------------------------------------DATE FUNCTION FOR STAMPDUTYDATE------------------------------------------*/
+$("#UEXST_db_stampdutydate").datepicker({dateFormat:"dd-mm-yy",changeYear: true,changeMonth: true});
+$("#UEXST_tb_accesscard,#UEXST_tb_unitdeposite").doValidation({rule:'numbersonly',prop:{leadzero:false}});
+/*-----------------------------------------------REPLACE NEW ROOM TYPE--------------------------------------------------------------*/
+$(document).on('click','#UEXST_btn_addroomtype,#UEXST_btn_removeroomtype',function(){ 
+var UEXST_unitno=$('#UEXST_lb_unitnumber').val();
+$('#UEXST_div_errroom').text('');
+if($(this).attr('id')=="UEXST_btn_addroomtype"){
+UEXST_flag_room='false';
+$('#UEXST_lb_oldroomtype').replaceWith('<input type="text" name="UEXST_tb_newroomtype" id="UEXST_tb_newroomtype" maxlength=30 class="UEXST_class_validupdate autosize"/>');
+$(this).replaceWith('<input type="button" name="UEXST_btn_removeroomtype"  value="CLEAR" id="UEXST_btn_removeroomtype" class="btn UEXST_class_validupdate" />');
+$('.autosize').doValidation({rule:'general',prop:{autosize:true}});
+} 
+if($(this).attr('id')=='UEXST_btn_removeroomtype'){ 
+UEXST_flag_room='true';
+if((($("#UEXST_tb_unitdeposite").val()=='')||($("#UEXST_tb_unitdeposite").val()==UEXST_deposit))&&($("#UEXST_tb_accesscard").val()=='')&&($("#UEXST_db_stampdutydate").val()=='')&&($("#UEXST_tb_stampamount").val()=='')&&($("#UEXST_ta_comments").val()==''))
+UEXST_flag_unit=0;
+google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_getroomstamp_err(UEXST_unitno,'UEXST_flag_roomtype');
+$(".preloader").show();
+$('#UEXST_tb_newroomtype').replaceWith('<select id="UEXST_lb_oldroomtype" name="UEXST_lb_oldroomtype" class="UEXST_class_validupdate"><option>SELECT</option></select>');
+$(this).replaceWith('<input type="button" name="UEXST_btn_addroomtype" value="ADD" id="UEXST_btn_addroomtype" class="btn UEXST_class_validupdate"/>');
+}
+if((UEXST_flag_unit==1)&&(UEXST_flag_access==1)&&(UEXST_flag_room=='true')&&(UEXST_flag_stamp=='true')&&(UEXST_flg_Doorcode==1)&&(UEXST_flg_Login==1))
+$("#UEXST_btn_update").removeAttr("disabled");
+else
+$("#UEXST_btn_update").attr("disabled", "disabled");});
+/*------------------------------------------------CHANGE EVENT FUNCTION FOR ROOM TYPE-------------------------------------------*/
+$(document).on("blur",'#UEXST_tb_newroomtype',function(){ 
+var UEXST_newroom=$(this).val();
+var UEXST_source=  $(this).attr('id');
+if(UEXST_newroom.length==0){
+UEXST_flag_room='false';
+if((UEXST_room_arr.length==0)&&(UEXST_newroom.length==0))
+UEXST_flag_room='true';
+$('#UEXST_div_errroom').text('');
+$("#UEXST_tb_newroomtype").removeClass('invalid');
+}
+else if(UEXST_newroom.length>0){
+$(".preloader").show(); 
+google.script.run.withSuccessHandler(UEXST_roomresult).withFailureHandler(UEXST_onFailure).UEXST_alreadyexists(UEXST_newroom,UEXST_source);
+}
+});
+/*-----------------------------------------------REPLACE NEW STAMP TYPE---------------------------------------------------------------*/
+$(document).on('click','#UEXST_btn_addstamptype,#UEXST_btn_removestamptype',function(){ 
+var UEXST_unitno=$('#UEXST_lb_unitnumber').val();
+$('#UEXST_div_errstamp').text('');
+if($(this).attr('id')=="UEXST_btn_addstamptype"){
+UEXST_flag_stamp='false';
+$('#UEXST_lb_oldstamptype').replaceWith('<input type="text" style="width:110px" name="UEXST_tb_newstamptype" id="UEXST_tb_newstamptype" maxlength=12 class="UEXST_class_validupdate autosize" />');
+$(this).replaceWith('<input type="button" name="UEXST_btn_removestamptype"  value="CLEAR" id="UEXST_btn_removestamptype" class="btn UEXST_class_validupdate"/>');
+$('.autosize').doValidation({rule:'general',prop:{autosize:true}});
+}
+if($(this).attr('id')=='UEXST_btn_removestamptype'){  
+UEXST_flag_stamp='true';
+if((UEXST_unit_source=='UEXST_radio_activeunit')&&(($("#UEXST_tb_unitdeposite").val()=='')||($("#UEXST_tb_unitdeposite").val()==UEXST_deposit))&&($("#UEXST_tb_accesscard").val()=='')&&($("#UEXST_db_stampdutydate").val()=='')&&($("#UEXST_tb_stampamount").val()=='')&&($("#UEXST_ta_comments").val()==''))
+UEXST_flag_unit=0;
+google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_getroomstamp_err(UEXST_unitno,'UEXST_flag_stamptype');
+$(".preloader").show();
+$('#UEXST_tb_newstamptype').replaceWith('<select id="UEXST_lb_oldstamptype" name="UEXST_lb_oldstamptype"class="UEXST_class_validupdate" ><option>SELECT</option></select>');
+$(this).replaceWith('<input type="button" name="UEXST_btn_addstamptype" value="ADD" id="UEXST_btn_addstamptype" class="btn UEXST_class_validupdate">');
+}
+if((UEXST_flag_unit==1)&&(UEXST_flag_access==1)&&(UEXST_flag_room=='true')&&(UEXST_flag_stamp=='true')&&(UEXST_flg_Doorcode==1)&&(UEXST_flg_Login==1))
+$("#UEXST_btn_update").removeAttr("disabled");
+else
+$("#UEXST_btn_update").attr("disabled", "disabled");
+});
+/*------------------------------------------------CHANGE EVENT FUNCTION FOR STAMP TYPE-------------------------------------------*/
+$(document).on("blur",'#UEXST_tb_newstamptype',function(){ 
+var UEXST_newstamp=$(this).val();
+var UEXST_source=  $(this).attr('id');
+if(UEXST_newstamp.length==0){
+UEXST_flag_stamp='false';
+if((UEXST_stamp.length==0)&&(UEXST_newstamp.length==0))
+UEXST_flag_stamp='true';
+$('#UEXST_div_errstamp').text('');
+$("#UEXST_tb_newstamptype").removeClass('invalid');
+}
+else if(UEXST_newstamp.length>0){
+$(".preloader").show(); 
+google.script.run.withSuccessHandler(UEXST_stampresult).withFailureHandler(UEXST_onFailure).UEXST_alreadyexists(UEXST_newstamp,UEXST_source);
+}});
+/*------------------------------------------SUCCESS FUNCTION FOR ROOM TYPE ALREADY EXISTS--------------------------------*/ 
+function UEXST_roomresult(UEXST_msgroom) {
+$(".preloader").hide(); 
+if(UEXST_msgroom==true){
+$('#UEXST_div_errroom').text(UEXST_errorMsg_array[5]);
+$("#UEXST_tb_newroomtype").addClass('invalid');
+$("#UEXST_btn_update").attr("disabled", "disabled");
+UEXST_flag_room='false';
+} 
+else if(UEXST_msgroom==false){
+UEXST_flag_room='true';
+$('#UEXST_div_errroom').text('');
+$("#UEXST_tb_newroomtype").removeClass('invalid');
+}
+if((UEXST_flag_unit==1)&&(UEXST_flag_access==1)&&(UEXST_flag_room=='true')&&(UEXST_flag_stamp=='true')&&(UEXST_flg_Doorcode==1)&&(UEXST_flg_Login==1))
+$("#UEXST_btn_update").removeAttr("disabled");
+}
+/*------------------------------------------SUCCESS FUNCTION FOR STAMP TYPE ALREADY EXISTS--------------------------------*/ 
+function UEXST_stampresult(UEXST_msgstamp) {
+$(".preloader").hide(); 
+if(UEXST_msgstamp==true)
+{
+UEXST_flag_stamp='false';
+$('#UEXST_div_errstamp').text(UEXST_errorMsg_array[6]);
+$("#UEXST_tb_newstamptype").addClass('invalid');
+$("#UEXST_btn_update").attr("disabled", "disabled");
+} 
+else if(UEXST_msgstamp==false)
+{
+UEXST_flag_stamp='true';
+$('#UEXST_div_errstamp').text('');
+$("#UEXST_tb_newstamptype").removeClass('invalid');
+}
+if((UEXST_flag_unit==1)&&(UEXST_flag_access==1)&&(UEXST_flag_room=='true')&&(UEXST_flag_stamp=='true')&&(UEXST_flg_Doorcode==1)&&(UEXST_flg_Login==1))
+$("#UEXST_btn_update").removeAttr("disabled");
+}
+/*----------------------------------------------------CHANGE EVENT FUNCTION FOR UNIT NUMBER-----------------------------------------------*/
+$(document).on('change','#UEXST_lb_unitnumber',function(){ 
+$('#UEXST_form_existingUnit').find('input:text').val('');
+$('#UEXST_form_existingUnit').find('input:text').prop("readonly", false);
+$('#UEXST_form_existingUnit').find('input:text').removeClass('rdonly');
+$('#UEXST_tb_accesscard,#UEXST_tb_unitdeposite,#UEXST_tb_branchcode,#UEXST_tb_newroomtype').val('');
+$('#UNIT_tb_doorcode,#UEXST_tb_unitdeposite,#UEXST_tb_branchcode,#UEXST_tb_bankcode,#UEXST_tb_accesscard,#UEXST_tb_stampamount,#UEXST_tb_webpass').addClass('UEXST_class_numsonly');
+$('#UEXST_ta_comments').val('');
+if($('#UEXST_lb_unitnumber').val()!='SELECT'){
+UEXST_flag_room='true'; 
+UEXST_flag_stamp='true';
+$("#UEXST_div_form").show();
+$("#UEXST_div_doorloginpwsd").hide();
+$("#UEXST_tble_resetupdatebtn").hide();
+$('#UEXST_radio_doorloginpswd').attr('checked', false);
+$("#UEXST_div_acctdetails").hide();
+$('#UEXST_radio_acctdetails').attr('checked', false);
+$("#UEXST_div_others").hide();
+$('#UEXST_radio_others').attr('checked', false);
+$("#UEXST_div_errmsg").text('');
+$("#UEXST_div_errmsgacct").text('');
+$('#UEXST_div_errasscard').text(" ");
+$("#UEXST_btn_update").attr("disabled", "disabled");
+$("#UEXST_tb_accesscard").removeClass('invalid');
+$(".UEXST_td_webotheraccount").hide();
+$(".UEXST_class_nonstampdetail").hide();
+if(UEXST_unit_source=='UEXST_radio_activeunit'){
+$(".UEXST_td_webotheraccount").show();
+$(".UEXST_class_nonstampdetail").show();
+}
+else if(UEXST_unit_source=='UEXST_radio_nonactiveunit'){
+$('#UEXST_div_errstamp').text('');
+$("#UEXST_tb_newstamptype").removeClass('invalid');
+$(".UEXST_td_webotheraccount").hide();
+$(".UEXST_class_nonstampdetail").hide();
+$(".preloader").show(); 
+google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_login_acct_others($("#UEXST_lb_unitnumber").val(),'UEXST_radio_others');
+}}
+else{
+$("#UEXST_div_form").hide();
+}});
+/*---------------------------------------------CHANGE EVENT FUNCTION FOR RADIO BUTTON-------------------------------------------*/
+$(document).on('click','.UEXST_class_loginacctothers',function(){
+UEXST_flg_Doorcode=1;UEXST_flg_Login=1;
+$("#UEXST_tble_resetupdatebtn").hide();
+UEXST_flag_access=1;
+UEXST_flag_unit=1;
+UEXST_flag_room='true'; 
+UEXST_flag_stamp='true'; 
+var UEXST_source=  $(this).attr('id');
+$('#UEXST_form_existingUnit').find('input:text,textarea').val('');
+$('#UEXST_form_existingUnit').find('input:text,textarea').prop("readonly", false);
+$('#UEXST_form_existingUnit').find('input:text,textarea').removeClass('rdonly');
+$('#UNIT_tb_doorcode,#UNIT_tb_weblogin,#UEXST_tb_webpass').addClass('UEXST_class_numsonly');
+$('#UEXST_lb_oldroomtype').val('SELECT');
+$('#UEXST_lb_oldstamptype').val('SELECT');
+$("#UEXST_tb_bankaddrs").removeAttr("readonly");
+$('#UEXST_div_errasscard').text(" ");
+$('#UEXST_div_errroom').text('');
+$('#UEXST_div_errstamp').text('');
+$("#UEXST_div_errmsg").text('');
+$('#UEXST_lbl_doorcode,#UEXST_lbl_weblogin').text('');
+$("#UNIT_tb_doorcode").removeClass('invalid');
+$("#UNIT_tb_weblogin").removeClass('invalid');
+$("#UEXST_tb_accesscard").removeClass('invalid');
+$("#UEXST_tb_newroomtype").removeClass('invalid');
+$("#UEXST_tb_newstamptype").removeClass('invalid');
+$("#UEXST_btn_update").attr("disabled", "disabled");
+var UEXST_unitnumber=$("#UEXST_lb_unitnumber").val();
+/*-------------------------------------------CLICK EVENT FUNCTION FOR LOGIN DETAILS-----------------------------------*/
+if(UEXST_source=='UEXST_radio_doorloginpswd'){
+$(".preloader").show();
+$("#UEXST_div_acctdetails").hide();
+$("#UEXST_div_others").hide();
+$("#UEXST_div_errmsg").text('');
+$("#UEXST_div_errmsgacct").text('');
+google.script.run.withSuccessHandler(UEXST_loginSuccess).withFailureHandler(UEXST_onFailure).UEXST_login_acct_others(UEXST_unitnumber,UEXST_source);
+}
+/*-------------------------------------------CLICK EVENT FUNCTION FOR ACCOUNT DETAILS-----------------------------------*/
+else if(UEXST_source=='UEXST_radio_acctdetails'){
+$(".preloader").show();
+$("#UEXST_div_errmsg").text('');
+$("#UEXST_div_others").hide();
+$("#UEXST_div_doorloginpwsd").hide();
+$("#UEXST_div_errmsgacct").text('');
+google.script.run.withSuccessHandler(UEXST_acctSuccess).withFailureHandler(UEXST_onFailure).UEXST_login_acct_others(UEXST_unitnumber,UEXST_source);
+}
+/*-------------------------------------------CLICK EVENT FUNCTION FOR OTHERS DETAILS-----------------------------------*/
+else if(UEXST_source=='UEXST_radio_others'){
+$(".preloader").show();
+google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_login_acct_others(UEXST_unitnumber,UEXST_source);
+var UEXST_unitno=$('#UEXST_lb_unitnumber').val();
+$("#UEXST_div_acctdetails").hide();
+$("#UEXST_div_doorloginpwsd").hide();
+$("#UEXST_div_errmsgacct").text('');
+$("#UEXST_div_errmsg").text('');
+$('#UEXST_div_errroom').text('');
+$('#UEXST_div_errstamp').text('');
+}});
+/*-------------------------------------------SUCCESS FUNCTION FOR LOGIN DETAILS-----------------------------------*/
+var UEXST_door='';
+var UEXST_login='';
+var UEXST_pass='';
+function UEXST_loginSuccess(UEXST_response){
+$(".preloader").hide();
+$("#UEXST_tble_resetupdatebtn").show();
+UEXST_door=UEXST_response.UEXST_dcode;
+UEXST_login=UEXST_response.UEXST_weblogin;
+UEXST_pass=UEXST_response.UEXST_webpass;
+if(UEXST_response==''){
+$("#UEXST_div_doorloginpwsd").show();
+}
+else{
+if((UEXST_door!=null)&&(UEXST_login!=null)&&(UEXST_pass!=null)){
+$("#UEXST_div_errmsg").text(UEXST_errorMsg_array[4]);
+$("#UEXST_tble_resetupdatebtn").hide();
+}
+else if((UEXST_door==null)||(UEXST_login==null)||(UEXST_pass==null)){
+$("#UEXST_div_doorloginpwsd").show();
+$("#UEXST_div_errmsg").text('');
+if(UEXST_door!=null){
+$("#UNIT_tb_doorcode").prop("readonly", true);
+$("#UNIT_tb_doorcode").removeClass('UEXST_class_numsonly');
+$("#UNIT_tb_doorcode").val(UEXST_door);
+$("#UNIT_tb_doorcode").addClass('rdonly');
+$('#UNIT_tb_doorcode').attr("size",UEXST_door.length);
+}
+if(UEXST_login!=null){
+$("#UNIT_tb_weblogin").prop("readonly", true);
+$("#UNIT_tb_weblogin").val(UEXST_login);
+$("#UNIT_tb_weblogin").addClass('rdonly');
+$('#UNIT_tb_weblogin').attr("size",UEXST_login.length);
+}
+if(UEXST_pass!=null){
+$("#UEXST_tb_webpass").prop("readonly", true);
+$("#UEXST_tb_webpass").removeClass('UEXST_class_numsonly');
+$("#UEXST_tb_webpass").val(UEXST_pass);
+$("#UEXST_tb_webpass").addClass('rdonly');
+}}}}
+/*-------------------------------------------SUCCESS FUNCTION FOR ACCOUNT DETAILS-----------------------------------*/
+var UEXST_acctno='';
+var UEXST_acctname='';
+var UEXST_bankcode='';
+var UEXST_branchcode='';
+var UEXST_bankaddr='';
+function UEXST_acctSuccess(UEXST_response){
+$(".preloader").hide();
+$("#UEXST_tble_resetupdatebtn").show();
+UEXST_acctno=UEXST_response.UEXST_acctnum;
+UEXST_acctname=UEXST_response.UEXST_acctname;
+UEXST_bankcode=UEXST_response.UEXST_bankcode;
+UEXST_branchcode=UEXST_response.UEXST_branchcode;
+UEXST_bankaddr=UEXST_response.UEXST_bankaddress;
+if(UEXST_response==''){
+$("#UEXST_div_acctdetails").show();
+}
+else{
+if((UEXST_acctno!=null)&&(UEXST_acctname!=null)&&(UEXST_bankcode!=null)&&(UEXST_branchcode!=null)&&(UEXST_bankaddr!=null))
+{
+$("#UEXST_div_errmsgacct").text(UEXST_errorMsg_array[4]);
+$("#UEXST_tble_resetupdatebtn").hide();
+}
+else if((UEXST_acctno==null)||(UEXST_acctname==null)||(UEXST_bankcode==null)||(UEXST_branchcode==null)||(UEXST_bankaddr==null)){
+$("#UEXST_div_acctdetails").show();
+$("#UEXST_div_errmsgacct").text('');
+if(UEXST_acctno!=null)
+{
+$("#UEXST_tb_accntnumber").prop("readonly", true);
+$("#UEXST_tb_accntnumber").val(UEXST_acctno);
+$("#UEXST_tb_accntnumber").addClass('rdonly');
+$('#UEXST_tb_accntnumber').attr("size",UEXST_acctno.length);
+}
+if(UEXST_acctname!=null)
+{
+$("#UEXST_tb_accntname").prop("readonly", true);
+$("#UEXST_tb_accntname").val(UEXST_acctname);
+$("#UEXST_tb_accntname").addClass('rdonly');
+$('#UEXST_tb_accntname').attr("size",UEXST_acctname.length);
+}
+if(UEXST_bankcode!=null){
+$("#UEXST_tb_bankcode").prop("readonly", true);
+$("#UEXST_tb_bankcode").removeClass('UEXST_class_numsonly');
+$("#UEXST_tb_bankcode").val(UEXST_bankcode);
+$("#UEXST_tb_bankcode").addClass('rdonly');
+}
+if(UEXST_branchcode!=null){
+$("#UEXST_tb_branchcode").prop("readonly", true);
+$("#UEXST_tb_branchcode").removeClass('UEXST_class_numsonly');
+$("#UEXST_tb_branchcode").val(UEXST_branchcode);
+$("#UEXST_tb_branchcode").addClass('rdonly');
+}
+if(UEXST_bankaddr!=null){
+$("#UEXST_tb_bankaddrs").attr("readonly", "readonly");
+$("#UEXST_tb_bankaddrs").val(UEXST_bankaddr);
+$("#UEXST_tb_bankaddrs").addClass('rdonly');
+$('#UEXST_tb_bankaddrs').attr("size",UEXST_bankaddr.length);
+}}}}
+/*-----------------------------------------------CLICK FUNCTION FOR UPDATION-------------------------------------------------*/
+$(document).on('click','#UEXST_btn_update',function(){ 
+$(".preloader").show();
+if($('#UEXST_radio_doorloginpswd').is(':checked')) { 
+$("#UEXST_hidden_flag").val('UEXST_doorlogpwd');
+}
+if($('#UEXST_radio_acctdetails').is(':checked')) { 
+$("#UEXST_hidden_flag").val('UEXST_acctdetails');
+}
+if($('#UEXST_radio_others').is(':checked')) { 
+$("#UEXST_hidden_flag").val('UEXST_others');
+}
+if(UEXST_unit_source=='UEXST_radio_nonactiveunit')
+$("#UEXST_hidden_flag").val('UEXST_others');
+google.script.run.withSuccessHandler(UEXST_updateSuccess).withFailureHandler(UEXST_onFailure).UEXST_updateForm(document.getElementById('UEXST_form_existingUnit'));
+});
+/*----------------------------------------SUCCESS FUNCTION FOR WHICH ARE INSERTING VALUES --------------------------------*/ 
+function UEXST_updateSuccess(UEXST_response){
+$(".preloader").hide();
+if((UEXST_response.UEXST_obj_flag==1)&&(UEXST_response.UEXST_obj_flag_existing==false)){
+var UEXST_errorMsg=UEXST_errorMsg_array[7].replace('[UNIT NO]',UEXST_response.UEXST_obj_no);
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_errorMsg}});
+$(':input','#UEXST_form_existingUnit')
+.not(':button')
+.val('')
+.removeAttr('selected');
+$("#UEXST_div_form").hide();
+$("#UEXST_tble_unitno").hide();
+$('#UEXST_radio_activeunit,#UEXST_radio_nonactiveunit').attr('checked', false);
+}
+else if(UEXST_response.UEXST_obj_flag==0)
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_errorMsg_array[10]}});}
+/*--------------------------------------CHANGE FUNCTION FOR ACCESS CARD FOR ALREADY EXISTS DATA-------------------*/
+$(document).on("blur",'#UEXST_tb_accesscard',function(){ 
+var UEXST_access=$("#UEXST_tb_accesscard").val();
+var UEXST_source='UEXST_tb_accesscard';
+if((parseInt(UEXST_access).toString().length>0)&&(parseInt(UEXST_access).toString().length<4)){
+UEXST_flag_access=0;
+$("#"+UEXST_source).addClass('invalid');
+$('#UEXST_div_errasscard').text(UEXST_errorMsg_array[2]);
+}
+else if(parseInt($('#UEXST_tb_accesscard').val()).toString().length>=4){
+$(".preloader").show();
+google.script.run.withSuccessHandler(UEXST_accessresult).withFailureHandler(UEXST_onFailure).UEXST_alreadyexists(UEXST_access,UEXST_source);
+}
+if((parseInt($('#UEXST_tb_accesscard').val())==0)||($('#UEXST_tb_accesscard').val().length==0)){
+UEXST_flag_access=1;
+$('#UEXST_div_errasscard').text('');
+$("#UEXST_tb_accesscard").removeClass('invalid');
+}});
+/*----------------------------------------FUNCTION FOR ACCESS CARD ALREADY EXISTS--------------------------------*/ 
+function UEXST_accessresult(UEXST_msgAccess) {
+$(".preloader").hide();
+if(UEXST_msgAccess==true){
+UEXST_flag_access=0;
+$("#UEXST_btn_update").attr("disabled", "disabled");
+$('#UEXST_div_errasscard').text(UEXST_errorMsg_array[3]);
+$('#UEXST_tb_accesscard').addClass('invalid');
+} 
+else if(UEXST_msgAccess==false){
+UEXST_flag_access=1;
+$('#UEXST_div_errasscard').text('');
+$("#UEXST_tb_accesscard").removeClass('invalid');
+if((UEXST_flag_unit==1)&&(UEXST_flag_access==1)&&(UEXST_flag_room=='true')&&(UEXST_flag_stamp=='true')&&(UEXST_flg_Doorcode==1)&&(UEXST_flg_Login==1)){
+$("#UEXST_btn_update").removeAttr("disabled");
+}
+$('#UEXST_div_errasscard').text('');
+$('#UEXST_tb_accesscard').removeClass('invalid');
+}}
+/*--------------------------------------FUNCTION TO VALIDATE LOGIN DETAILS-------------------------*/
+function UEXST_func_loginvalidation(){
+if((($('#UNIT_tb_doorcode').val()!='')&&(($('#UNIT_tb_doorcode').val()).trim()!=UEXST_door)&&(parseInt($('#UNIT_tb_doorcode').val())!=0)&&(UEXST_flg_Doorcode==1)&&(UEXST_flg_Login==1))||(($('#UNIT_tb_weblogin').val()!='')&&(($('#UNIT_tb_weblogin').val()).trim()!=UEXST_login)&&(parseInt($('#UNIT_tb_weblogin').val())!=0)&&(UEXST_flg_Doorcode==1)&&(UEXST_flg_Login==1))||(($('#UEXST_tb_webpass').val()!='')&&(($('#UEXST_tb_webpass').val()).trim()!=UEXST_pass)&&(parseInt($('#UEXST_tb_webpass').val())!=0)&&(UEXST_flg_Doorcode==1)&&(UEXST_flg_Login==1)))
+$("#UEXST_btn_update").removeAttr("disabled");
+else
+$("#UEXST_btn_update").attr("disabled", "disabled");
+}
+/*-------------------------------------- CHANGE EVENT FOR ENABLING UPDATE BUTTON UNTIL MANDATORY VALUES ARE GIVEN----------------------*/
+$(document).on('change blur','.UEXST_class_validupdate',function(){
+if($('#UEXST_radio_doorloginpswd').is(':checked')){ 
+UEXST_func_loginvalidation();
+}
+if($('#UEXST_radio_acctdetails').is(':checked')){
+if((($('#UEXST_tb_accntnumber').val()!='')&&($('#UEXST_tb_accntnumber').val()!=UEXST_acctno)&&(parseInt($('#UEXST_tb_accntnumber').val())!=0))||(($('#UEXST_tb_accntname').val()!='')&&($('#UEXST_tb_accntname').val()!=UEXST_acctname)&&(parseInt($('#UEXST_tb_accntname').val())!=0))||(($('#UEXST_tb_bankcode').val()!='')&&($('#UEXST_tb_bankcode').val()!=UEXST_bankcode)&&(parseInt($('#UEXST_tb_bankcode').val())!=0))||(($('#UEXST_tb_branchcode').val()!='')&&($('#UEXST_tb_branchcode').val()!=UEXST_branchcode)&&(parseInt($('#UEXST_tb_branchcode').val())!=0))||(($('#UEXST_tb_bankaddrs').val()!='')&&($('#UEXST_tb_bankaddrs').val()!=UEXST_bankaddr))){
+$("#UEXST_btn_update").removeAttr("disabled");
+}
+else{
+$("#UEXST_btn_update").attr("disabled", "disabled");}
+}
+if((UEXST_unit_source=='UEXST_radio_nonactiveunit')||($('#UEXST_radio_others').is(':checked'))){
+if($('#UEXST_radio_others').is(':checked')){
+if((($('#UEXST_tb_unitdeposite').val()!='')&&(parseInt($('#UEXST_tb_unitdeposite').val())!='')&&($('#UEXST_tb_unitdeposite').val()!=UEXST_deposit))||($('#UEXST_db_stampdutydate').val()!='')||(($('#UEXST_tb_stampamount').val()!='')&&(parseInt($('#UEXST_tb_stampamount').val())!=0))||($('#UEXST_ta_comments').val()!='')||(($('#UEXST_tb_accesscard').val().length>=4)&&(parseInt($('#UEXST_tb_accesscard').val())!=0))||(($('#UEXST_lb_oldstamptype').val()!='SELECT')&&($('#UEXST_lb_oldstamptype').val()!=undefined))||(($('#UEXST_lb_oldroomtype').val()!='SELECT')&&($('#UEXST_lb_oldroomtype').val()!=undefined))||(($('#UEXST_tb_newroomtype').val()!='')&&($('#UEXST_tb_newroomtype').val()!=undefined))||(($('#UEXST_tb_newstamptype').val()!='')&&($('#UEXST_tb_newstamptype').val()!=undefined))){
+UEXST_flag_unit=1;
+}
+else{
+UEXST_flag_unit=0;
+}}
+if(UEXST_unit_source=='UEXST_radio_nonactiveunit'){
+UEXST_flag_room='true';UEXST_flag_access=1;
+if(($('#UEXST_db_stampdutydate').val()!='')||(($('#UEXST_tb_stampamount').val()!='')&&(parseInt($('#UEXST_tb_stampamount').val())!=0))||($('#UEXST_ta_comments').val()!='')||(($('#UEXST_lb_oldstamptype').val()!='SELECT')&&($('#UEXST_lb_oldstamptype').val()!=undefined))||(($('#UEXST_tb_newstamptype').val()!='')&&($('#UEXST_tb_newstamptype').val()!=undefined)))
+UEXST_flag_unit=1;
+else
+UEXST_flag_unit=0;
+}
+if((UEXST_flag_unit==1)&&(UEXST_flag_access==1)&&(UEXST_flag_room=='true')&&(UEXST_flag_stamp=='true')){
+$("#UEXST_btn_update").removeAttr("disabled");
+}
+else{
+$("#UEXST_btn_update").attr("disabled", "disabled");
+}
+}
+});
+/*-----------------------------------------CHECK DOORCODE--------------------------------------------------*/
+$(document).on("change blur",'#UNIT_tb_doorcode',function(){
+$('#UEXST_lbl_doorcode').text('');
+$(this).removeClass('invalid');
+UEXST_flg_Doorcode=1;
+if(($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length<6)){
+$(this).addClass('invalid');
+UEXST_flg_Doorcode=0;
+$('#UEXST_lbl_doorcode').text(UEXST_errorMsg_array[14]);
+}
+else if(($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length>=6)){
+UEXST_func_doorcode_login($(this).val(),$(this).attr('id'));
+}});
+/*-----------------------------------------CHECK WEBLOGIN--------------------------------------------------*/
+$(document).on("change blur",'#UNIT_tb_weblogin',function(){
+$('#UEXST_lbl_weblogin').text('');
+$(this).removeClass('invalid');
+UEXST_flg_Login=1;
+if(($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length<5)){
+$(this).addClass('invalid');
+UEXST_flg_Login=0;
+$('#UEXST_lbl_weblogin').text(UEXST_errorMsg_array[13]);
+}
+else if(($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length>=5)){
+UEXST_func_doorcode_login($(this).val(),$(this).attr('id'));
+}});
+function UEXST_func_doorcode_login(UCRE_value,UCRE_attrid){
+$(".preloader").show();
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+google.script.run.withSuccessHandler(UEXST_SuccessLoginDoor).withFailureHandler(UCRE_onFailure).UEXST_alreadyexists(UCRE_value,UCRE_attrid);
+}
+/*--------------------------------------------SUCCESS FUNCTION FOR DOORCODE AND WEBLOGIN----------------------*/
+function UEXST_SuccessLoginDoor(UEXST_response_Login){
+$(".preloader").hide();
+if(UEXST_response_Login[0]==0){
+if(UEXST_response_Login[1]=='UNIT_tb_doorcode'){
+UEXST_flg_Doorcode=0;
+$('#UEXST_lbl_doorcode').text(UEXST_errorMsg_array[12]);
+}
+else if(UEXST_response_Login[1]=='UNIT_tb_weblogin'){
+UEXST_flg_Login=0;
+$('#UEXST_lbl_weblogin').text(UEXST_errorMsg_array[11]);
+}
+$("#"+UEXST_response_Login[1]).addClass('invalid');
+}
+else{
+if(UEXST_response_Login[1]=='UNIT_tb_doorcode'){
+UEXST_flg_Doorcode=1;
+$('#UEXST_lbl_doorcode').text('');
+}
+else if(UEXST_response_Login[1]=='UNIT_tb_weblogin'){
+$('#UEXST_lbl_weblogin').text('');
+UEXST_flg_Login=1;
+}
+$("#"+UEXST_response_Login[1]).removeClass('invalid');
+}
+UEXST_func_loginvalidation();
+}
+/*------------------------------------------------CLICK FUNCTION FOR RESET-------------------------------------------------------*/
+$("#UEXST_btn_reset").click(function(){
+$("#UEXST_btn_update").attr("disabled", "disabled");
+$(':input[type=text]:not([readonly])','#UEXST_form_existingUnit').val('').not(':button');
+UEXST_resetfrm();
+$("#UEXST_lb_oldroomtype").val('SELECT');
+$("#UEXST_lb_oldstamptype").val('SELECT');
+$("#UEXST_ta_comments").val('');
+if(UEXST_bankaddr==null){
+$("#UEXST_tb_bankaddrs").val('');
+}
+UEXST_flag_unit=0;
+UEXST_flag_room='true'; 
+UEXST_flag_stamp='true'; 
+});
+/*------------------------------------------------COMMON FUCNTION FOR CLEARING ALL VALUES--------------------------------------*/
+function UEXST_resetfrm(){
+$("#UEXST_btn_update").attr("disabled", "disabled");
+$('#UEXST_div_errasscard').text("");
+$("#UEXST_tb_accesscard,#UEXST_tb_newstamptype,#UEXST_tb_newroomtype,#UNIT_tb_weblogin,#UNIT_tb_doorcode").removeClass('invalid');
+$('#UEXST_div_errroom').text('');
+$('#UEXST_div_errstamp').text('');
+$('#UEXST_lbl_doorcode,#UEXST_lbl_weblogin').text('');
+/*-----------------------------------------REPLACE OLDROOMTYPE & OLDSTAMPTYPE WHEN RESET BUTTON CLICKED---------------------------------*/
+if((($('#UEXST_lb_oldroomtype').val()==undefined)&&($('#UEXST_btn_removeroomtype').val()=='CLEAR'))||(($('#UEXST_btn_removestamptype').val()=='CLEAR')&&($('#UEXST_lb_oldstamptype').val()==undefined))){
+$(".preloader").show();
+var UEXST_unitno=$('#UEXST_lb_unitnumber').val();
+google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_getroomstamp_err(UEXST_unitno,'UEXST_flag_roomstamp');
+}
+$('#UEXST_ta_comments,#UEXST_tb_bankaddrs').prop("rows",2).prop("cols",20);
+$(':input[type=text]:not([readonly])','#UEXST_form_existingUnit').prop("size","20");
+}
+var UEXST_unit_source= '';
+/*---------------------------------------------------FUNCTION FOR ACTIVE UNIT-------------------------------------*/
+$(document).on('click','.UEXST_class_unit',function(){
+$("#UEXST_tble_unitno").empty();
+UEXST_flg_Doorcode=1;UEXST_flg_Login=1;
+UEXST_unit_source=  $(this).attr('id');
+$("#UEXST_div_form").hide();
+if(UEXST_unit_source=='UEXST_radio_activeunit'){
+var UEXST_unitnum_errmsg=UEXST_errorMsg_array[8];
+var UEXST_unitnum_arr=UEXST_unitno_arr;
+}
+else if(UEXST_unit_source=='UEXST_radio_nonactiveunit'){
+var UEXST_unitnum_arr=UEXST_nonactive_arr;
+var UEXST_unitnum_errmsg=UEXST_errorMsg_array[9];
+}
+var UEXST_load_unitno ='<option>SELECT</option>';
+for (var i = 0; i < UEXST_unitnum_arr.length; i++) {
+UEXST_load_unitno += '<option value="' + UEXST_unitnum_arr[i]  + '">' + UEXST_unitnum_arr[i] + '</option>';
+}
+$('<tr><td><label>UNIT NO<em>*</em></label></td><td><select id="UEXST_lb_unitnumber" name="UEXST_lb_unitnumber" >'+UEXST_load_unitno+'</select></td><td><label id="URT_SRC_lbl_recordversion" class="srctitle" hidden>RECORD VERSION<em>*</em></label></td><td><select name="URT_SRC_lb_recordversion" id="URT_SRC_lb_recordversion" hidden></select></td></tr>').appendTo($("#UEXST_tble_unitno"));
+if(UEXST_unitnum_arr.length==0){
+$("#UEXST_tble_unitno").hide();
+$('#UEXST_lbl_errmsgunitno').text(UEXST_unitnum_errmsg)
+}
+else{
+$("#UEXST_tble_unitno").show();
+$('#UEXST_lbl_errmsgunitno').text('');
+}});
+});
+</script>
+</head>
+<!--SCRIPT TAG END-->
+<!--BODY TAG START-->
+<body>
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>EXISTING UNIT</h3><p></div></div>
+<form class="content" name="UEXST_form_existingUnit" id="UEXST_form_existingUnit" hidden>
+<table>
+<tr><td>SELECT ACTIVE/NON ACTIVE UNIT</td></tr>
+<tr><td><input type="radio" id="UEXST_radio_activeunit" name="UEXST_radio_unit" value="UEXST_value_activeunit" class="UEXST_class_unit"><label>ACTIVE UNIT</label></td></tr>
+<tr><td><input type="radio" id="UEXST_radio_nonactiveunit" name="UEXST_radio_unit" value="UEXST_value_nonactiveunit" class="UEXST_class_unit"><label>NON ACTIVE UNIT</label></td></tr>
+<tr><td><label id="UEXST_lbl_errmsgunitno" class="errormsg"></label></td></tr>
+</table>
+<table id="UEXST_tble_unitno" hidden></table>
+<div id="UEXST_div_form" hidden>
+<table id="UEXST_tble_activeunit_form">
+<tr><td class="UEXST_td_webotheraccount"><label>SELECT A OPTION</label></td><td><input type="hidden" id="UEXST_hidden_flag" name="UEXST_hidden_flag"></td></tr>
+<tr>
+<td class="UEXST_td_webotheraccount"><input type="radio" name="UEXST_radio_loginacctothers" id="UEXST_radio_doorloginpswd" value="UEXST_doorloginpswd" class="UEXST_class_loginacctothers">DOORCODE LOGIN PASSWORD</td>
+</tr>
+<tr><td><div id="UEXST_div_errmsg" class="srctitle"></div></td></tr>
+<tr><td><div id="UEXST_div_doorloginpwsd" >
+<table>
+<tr>
+<td style="width:180px"><label>DOOR CODE</label></td><td><input type="text" name="UEXST_tb_doorcode" id="UNIT_tb_doorcode" class="UEXST_class_validupdate numonly UEXST_class_numsonly" style="width:75px"  maxlength=10/></td><td><label id="UEXST_lbl_doorcode" class="errormsg"></label></td>
+</tr>
+<tr >
+<td><label>WEB LOGIN</label></td><td ><input type="text" name="UEXST_tb_weblogin" id="UNIT_tb_weblogin" class="UEXST_class_validupdate autosize" style="width:90px" maxlength=13/></td><td><label id="UEXST_lbl_weblogin" class="errormsg"></label></td>
+</tr>
+<tr >
+<td><label>WEB PASSWORD</label></td><td><input type="text" name="UEXST_tb_webpass" id="UEXST_tb_webpass" class="UEXST_class_validupdate numonly UEXST_class_numsonly" style="width:45px" maxlength=6/></td>
+</tr>
+</table>
+</div></td></tr>
+<tr>
+<td class="UEXST_td_webotheraccount"><input type="radio" name="UEXST_radio_loginacctothers" id="UEXST_radio_others" value="UEXST_others" class="UEXST_class_loginacctothers"/>OTHERS</td> 
+</tr>
+<tr><td><div id="UEXST_div_others" >
+<table>
+<tr class="UEXST_class_nonstampdetail">
+<td style="width:180px"><label>UNIT DEPOSIT</label></td><td style="width:280px"><input type="text" name="UEXST_tb_unitdeposite" id="UEXST_tb_unitdeposite" maxlength="5" style="width:50px" class="UEXST_class_validupdate numonly UEXST_class_numsonly"/></td>
+</tr>
+<tr class="UEXST_class_nonstampdetail">
+<td><label>ACCESS CARD</label></td><td><input type="text" name="UEXST_tb_accesscard" id="UEXST_tb_accesscard" class="UEXST_class_validupdate UEXST_class_numsonly" style="width:60px" maxlength="7"/></td>
+<td></td><td><div id="UEXST_div_errasscard" class="errormsg"></div></td>
+</tr>
+<tr class="UEXST_class_nonstampdetail">
+<td><label>ROOM TYPE</label></td>
+<td><select id="UEXST_lb_oldroomtype" name="UEXST_lb_oldroomtype" class="UEXST_class_validupdate" maxlength="30"><option>SELECT</option>
+</select></td>   
+<td><input type="button" name="UEXST_btn_addroomtype" class="btn UEXST_class_validupdate" value="ADD" id="UEXST_btn_addroomtype"/><td>
+<td ><div id="UEXST_div_errroom" name="UEXST_div_errroom" class="errormsg"></div></td>
+</tr>
+<tr>
+<td><label>STAMP DUTY DATE</label></td><td> <input type="text" name="UEXST_db_stampdutydate" class="UEXST_class_validupdate datenonmandtry" id="UEXST_db_stampdutydate" style="width:75px"/></td>
+</tr>
+<tr >
+<td ><label>STAMP DUTY TYPE</label></td>
+<td><select id='UEXST_lb_oldstamptype' name="UEXST_lb_oldstamptype" class="UEXST_class_validupdate"><option>SELECT</option>
+</select></td> 
+<td><input type="button" name="UEXST_btn_addstamptype" class="btn UEXST_class_validupdate" value="ADD" id="UEXST_btn_addstamptype"/><td>
+<td><div id="UEXST_div_errstamp" name="UEXST_div_errstamp" class="errormsg"></div></td>
+</tr>
+<tr>
+<td><label>STAMP DUTY AMOUNT</label></td><td> <input type="text" class="UEXST_class_validupdate UEXST_class_numsonly" name="UEXST_tb_stampamount" style="width:55px" id="UEXST_tb_stampamount"/></td>
+</tr>
+<tr>
+<td ><label>COMMENTS</label></td><td><textarea name="UEXST_ta_comments" id="UEXST_ta_comments" class="UEXST_class_validupdate"></textarea>   
+</td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+<tr>  
+<td class="UEXST_td_webotheraccount"><input type="radio" name="UEXST_radio_loginacctothers" id="UEXST_radio_acctdetails" value="UEXST_acctdetails" class="UEXST_class_loginacctothers"/>ACCOUNT DETAILS</td>
+</tr>
+<tr><td><div id="UEXST_div_errmsgacct" class="srctitle"></div></td></tr>
+<tr>
+<td>
+<div id="UEXST_div_acctdetails">
+<table>
+<tr>   
+<td style="width:180px"><label>ACCOUNT NUMBER</label></td><td><input type="text" name="UEXST_tb_accntnumber" id="UEXST_tb_accntnumber" class="UEXST_class_validupdate numonly UEXST_class_numsonly" size="10" maxlength=15/></td>
+</tr>
+<tr> 
+<td ><label>ACCOUNT NAME</label></td><td><input type="text" name="UEXST_tb_accntname" id="UEXST_tb_accntname" class="UEXST_class_validupdate autosize" maxlength="25"/></td>
+</tr>
+<tr>
+<td><label>BANK CODE</label></td><td><input type="text" name="UEXST_tb_bankcode" id="UEXST_tb_bankcode" class="UEXST_class_validupdate numonly UEXST_class_numsonly" style="width:40px" maxlength=5/></td> 
+</tr>
+<tr>
+<td><label>BRANCH CODE</label></td><td> <input type="text" name="UEXST_tb_branchcode" id="UEXST_tb_branchcode" class="UEXST_class_validupdate numonly UEXST_class_numsonly" style="width:40px" maxlength=5/></td>
+</tr>
+<tr>
+<td><label>BANK ADDRESS</label></td><td><textarea name="UEXST_tb_bankaddrs" id="UEXST_tb_bankaddrs" class="UEXST_class_validupdate autosize" ></textarea></td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+<table id="UEXST_tble_upd_stampdetails"></table>
+<table id="UEXST_tble_resetupdatebtn" hidden>
+<tr>
+<td style="width:180px" align="right"><input type="button" class="btn" value="UPDATE" name="UEXST_btn_update" id="UEXST_btn_update" disabled /></td><td align="left"><input  type="button" class="btn" name="UEXST_btn_reset" value="RESET" id="UEXST_btn_reset"/></td>
+</tr>
+</table>
+</div>
+</form>
+</div>
+</body>
+</html>

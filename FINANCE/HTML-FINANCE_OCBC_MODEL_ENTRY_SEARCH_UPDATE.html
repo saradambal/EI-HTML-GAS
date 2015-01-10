@@ -1,0 +1,294 @@
+<!--**********************************************MODEL SEARCH/UPDATE******************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//ver 1.00- SD:28/06/2014 ED:28/06/2014,TRACKER NO:678 cleared conn issue.
+//VER 0.09- SD:19/06/2014 ED:19/06/2014,TRACKER NO:678 Added conn failure message.
+//VER 0.08- SD:09/06/2014 ED:09/06/2014,TRACKER NO:678,Added commit() command after Updating record.
+//VER 0.07- SD:06/06/2014 ED:06/06/2014,TRACKER NO:678,changed preloader and jquery,css links.
+//VER 0.06- SD:08/03/2014 ED:08/03/2014,TRACKER NO:678 changed uld id and repeated queries put in eilib.
+//VER 0.05- SD:03/01/2014 ED:03/01/2014,TRACKER NO:680 gave error msg for nodata available table.
+//VER 0.04- SD:16/12/2013 ED:16/12/2013,TRACKER NO:680 set maxlength and auto grow for model textbox in ver 0.04
+//VER 0.03- SD:03/12/2013 ED:03/12/2013,TRACKER NO:171Added Return function script in ver0.03
+//VER 0.02- SD:30/11/2013 ED:30/11/2013,TRACKER NO:171-changed html file name and gs file name in ver0.02
+//VER 0.01-INITIAL VERSION-SD:14/09/2013 ED:17/09/2013,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+$(document).ready(function() {
+$('#MODEL_SRC_errormessageform').hide();
+$('#MODEL_SRC_form_mainform').hide();
+$(document).on('click','#MODEL_SRC_tbl_htmltable tr td input[type="radio"]',function() {
+$('#MODEL_SRC_tbl_htmltable tr').removeClass('higlightrow');
+$(this).closest('tr').addClass('higlightrow');
+})
+$(".preloader").show();
+$('#MODEL_SRC_btn_modelnamesearch').hide();
+var errormsg=[];
+$(".autosize").doValidation({rule:'general',prop:{whitespace:true,autosize:true}});
+$('#MODEL_SRC_div_htmltable').hide();
+$('#MODEL_SRC_tble_maintable').hide();
+$('#MODEL_SRC_errormsg').hide();
+google.script.run.withFailureHandler(MODEL_SRC_error_message).withSuccessHandler(MODEL_SRC_getCommonvalues_result).MODEL_SRC_commonvalues();
+function MODEL_SRC_getCommonvalues_result(MODEL_SRC_result)
+{
+var modelname=[];
+errormsg=MODEL_SRC_result.error;
+modelname=MODEL_SRC_result.model;
+if(modelname!="")
+{
+var MODEL_SRC_modelvalue='<option>SELECT</option>';
+for(var i=0;i<modelname.length;i++)
+{
+MODEL_SRC_modelvalue += '<option value="' + modelname[i].modelname + '">' + modelname[i].modelname+ '</option>';
+}
+$('#MODEL_SRC_lb_modelname').html(MODEL_SRC_modelvalue);
+$('#MODEL_SRC_lb_modelname').show();
+$('#MODEL_SRC_lbl_modelname').show();
+$('#MODEL_SRC_btn_modelnamesearch').show();
+$('#MODEL_SRC_errormessageform').hide();
+$('#MODEL_SRC_form_mainform').show();
+}
+else
+{
+$('#MODEL_SRC_errormessageform').show();
+var modelnameerrormsg='<p><label class="errormsg">NO DATA AVAILABLE IN MODEL DETAILS TABLE</label></p>';
+$('#MODEL_SRC_errormessagetable').append(modelnameerrormsg);
+$('#MODEL_SRC_form_mainform').hide();
+}
+$(".preloader").hide();
+}
+$('#MODEL_SRC_lb_modelname').change(function(){
+var modelname=$('#MODEL_SRC_lb_modelname').val()
+$('#MODEL_SRC_div_htmltable').hide();
+$('#MODEL_SRC_tbl_htmltable').hide();
+$('#MODEL_SRC_lbl_error').hide();
+if(modelname!="SELECT")
+{
+$("#MODEL_SRC_btn_modelnamesearch").removeAttr("disabled");
+}
+else
+{
+$("#MODEL_SRC_btn_modelnamesearch").attr("disabled", "disabled");
+}
+});
+$('.modelnamecheck').blur(function(){
+$("#MODEL_SRC_btn_modelnamesave").attr("disabled", "disabled");
+$('#MODEL_SRC_errormsg').hide();
+var modelname=$('#MODEL_SRC_tb_modelname').val();
+if(modelname!="")
+{
+google.script.run.withFailureHandler(MODEL_SRC_error_message).withSuccessHandler(CERM_SRC_getexistingmodel_result).MODEL_SRC_existingmodels(modelname);
+}
+});
+function CERM_SRC_getexistingmodel_result(res)
+{
+if(res==0)
+{
+$('#MODEL_SRC_errormsg').hide();
+$("#MODEL_SRC_btn_modelnamesave").removeAttr("disabled");
+}
+else
+{
+$('#MODEL_SRC_errormsg').show();
+$("#MODEL_SRC_btn_modelnamesave").attr("disabled", "disabled");
+}
+}
+$('#MODEL_SRC_btn_modelnamesearch').click(function(){
+$(".preloader").show();
+google.script.run.withFailureHandler(MODEL_SRC_error_message).withSuccessHandler(MODEL_SRC_Conformation).MODEL_SRC_processFormSubmit(document.getElementById('MODEL_SRC_form_mainform'))
+});
+function MODEL_SRC_Conformation(result)
+{
+$('#MODEL_SRC_tbl_htmltable tr').remove();
+$('#MODEL_SRC_tble_maintable').hide();
+var id=result.id;
+var modelname=result.modelname;
+var obsolute=result.obsolute;
+var userstamp=result.user;
+var timestamp=result.time;
+var value=''
+var value1='<thead class="srcresult"><tr><th></th><th>MODELNAME</th><th>OBSOLETE</th><th>USERSTAMP</th><th>TIMESTAMP</th></tr></thead>';
+$('#MODEL_SRC_tbl_htmltable').append(value1).show();
+value='<tbody><tr><td><input id = "radiobuttons" type="radio" name="radiobuttons" value= '+id+' class="modelupdateformrecords"></td><td>'+modelname+'</td><td>'+obsolute+'</td><td>'+userstamp+'</td><td>'+timestamp+'</td></tr>'
+$('#MODEL_SRC_tbl_htmltable').append(value);
+$('#MODEL_SRC_div_htmltable').show();
+$('#MODEL_SRC_tbl_htmltable').show();
+$('#MODEL_SRC_lbl_error').text("DETAILS OF SELECTED MODEL NAME: "+modelname).show();
+$("#MODEL_SRC_btn_modelnamesearch").attr("disabled", "disabled");
+$(".preloader").hide();
+}
+$(document).on('change','.modelupdateformrecords',function(){
+$('#MODEL_SRC_tble_maintable').show();
+$("#MODEL_SRC_btn_modelnamesave").attr("disabled", "disabled");
+var MODEL_SRC_id=$("input[name=radiobuttons]:checked").val();
+$('#MODEL_SRC_tb_tempmodelname').val(MODEL_SRC_id);
+var rowid=1;
+$('#MODEL_SRC_tbl_htmltable tr:eq('+rowid+')').each(function () {
+      var $tds = $(this).find('td'),
+          modelname = $tds.eq(1).text(),
+          obsolute=$tds.eq(2).text();
+          if(obsolute=='X'){$('#obsolute').prop('checked',true);}
+          $('#MODEL_SRC_tb_modelname').attr("size",(modelname).length);
+          $('#MODEL_SRC_tb_modelname').val(modelname);
+          });
+});
+$('#MODEL_SRC_btn_modelnamesave').click(function(){
+$(".preloader").show();
+var modelname=$('#MODEL_SRC_tb_modelname').val();
+var id=$('#MODEL_SRC_tb_tempmodelname').val();
+var obsolute=$('#obsolute').is(":checked");
+google.script.run.withFailureHandler(MODEL_SRC_error_message).withSuccessHandler(MODEL_SRC_updationresult).MODEL_SRC_modelupdation(modelname,id,obsolute);
+});
+$('#MODEL_SRC_btn_modelnamedelete').click(function(){
+$(".preloader").show();
+var id=$('#MODEL_SRC_tb_tempmodelname').val();
+var obsolete=$('#obsolute').is(":checked");
+google.script.run.withFailureHandler(MODEL_SRC_error_message).withSuccessHandler(MODEL_SRC_deletionresult).MODEL_SRC_modeldeletion(id,obsolete);
+});
+$(document).on('click','.modelvalidate',function(){
+if($('#obsolute').is(":checked")==true || $('#obsolute').is(":checked")==false)
+{
+$("#MODEL_SRC_btn_modelnamesave").removeAttr("disabled");
+}
+});
+function MODEL_SRC_updationresult(res)
+{
+$('#MODEL_SRC_div_htmltable').hide();
+$('#MODEL_SRC_tbl_htmltable').hide();
+$('#MODEL_SRC_tble_maintable').hide();
+$('#MODEL_SRC_lbl_error').hide();
+var modelname=[];
+modelname=res
+var MODEL_SRC_modelvalue='<option>SELECT</option>';
+for(var i=0;i<modelname.length;i++)
+{
+MODEL_SRC_modelvalue += '<option value="' + modelname[i].modelname + '">' + modelname[i].modelname + '</option>';
+}
+$('#MODEL_SRC_lb_modelname').html(MODEL_SRC_modelvalue);
+$('#MODEL_SRC_lb_modelname').show();
+$(".preloader").hide();
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:errormsg[0]}});
+}
+function MODEL_SRC_deletionresult(res)
+{
+$('#MODEL_SRC_div_htmltable').hide();
+$('#MODEL_SRC_tbl_htmltable').hide();
+$('#MODEL_SRC_tble_maintable').hide();
+$('#MODEL_SRC_lbl_error').hide();
+var modelname=[];
+modelname=res[0];
+var flag=res[1];
+if(modelname!="")
+{
+var MODEL_SRC_modelvalue='<option>SELECT</option>';
+for(var i=0;i<modelname.length;i++)
+{
+MODEL_SRC_modelvalue += '<option value="' + modelname[i].modelname + '">' + modelname[i].modelname + '</option>';
+}
+$('#MODEL_SRC_lb_modelname').html(MODEL_SRC_modelvalue);
+$('#MODEL_SRC_lb_modelname').show();
+}
+else
+{
+$('#MODEL_SRC_errormessageform').show();
+var modelnameerrormsg='<p><label class="errormsg">NO DATA AVAILABLE IN MODEL DETAILS TABLE</label></p>';
+$('#MODEL_SRC_errormessagetable').append(modelnameerrormsg);
+$('#MODEL_SRC_form_mainform').hide();
+}
+if(flag==1)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:errormsg[1]}});
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:"SELECTED MODELNAME USED IN BANK TRANSFER TABLE,SO CAN'T BE DELETED AND UPDATED X IN OBSOLETE"}});
+}
+$(".preloader").hide();
+}
+function MODEL_SRC_error_message(MODEL_SRC_err)
+{
+if(MODEL_SRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+MODEL_SRC_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#MODEL_SRC_form_mainform').replaceWith('<center><label class="dberrormsg">'+MODEL_SRC_err+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:MODEL_SRC_err}});
+}
+$(".preloader").hide();
+}
+});
+</script>
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>MODEL SEARCH/UPDATE
+</h3>
+<p>
+</div>
+</div>
+<form id='MODEL_SRC_errormessageform'>
+<table id='MODEL_SRC_errormessagetable'>
+</table>
+</form>
+<form class="content" id="MODEL_SRC_form_mainform">
+<table id="FIN_OCBC_MODEL_SRC_tble_maintable">
+<tr>
+<td><label id='MODEL_SRC_lbl_modelname'hidden>MODEL NAME<em>*</em></label></td>
+<td><select id='MODEL_SRC_lb_modelname' name="MODEL_SRC_lb_modelname" hidden>
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<input type="button" hidden  id="MODEL_SRC_btn_modelnamesearch" class="btn" value="SEARCH" disabled  /> 
+</td></tr>
+</table>
+<table id="MODEL_SRC_tble_header" ><tr><label align='bottom' name='error' id='MODEL_SRC_lbl_error' class="srctitle" visible="false" ></label></tr></table>
+<div id ="MODEL_SRC_div_htmltable" style="width:600px;">
+<table id="MODEL_SRC_tbl_htmltable" border="1"  cellspacing="0" class="srcresult" >  
+</table>
+</div>
+<table id="MODEL_SRC_tble_maintable">
+<tr></tr>
+<tr>
+<td><label class="srctitle">MODEL NAME UPDATION </label></td>
+</tr>
+<tr>
+<td><label>MODEL NAME<em>*</em></label></td>
+<td><input  type="text" name="MODEL_SRC_tb_modelname" id="MODEL_SRC_tb_modelname" class="autosize modelnamecheck" maxlength="50"/></td>
+<td><input type="checkbox" name="checkbox1" id="obsolute" value="obsolute" class="modelvalidate"/>OBSOLETE
+<td><label id="MODEL_SRC_errormsg" class='errormsg'>MODEL NAME ALREADY EXIST</label></td><td><input  type="text" name="MODEL_SRC_tb_tempmodelname" id="MODEL_SRC_tb_tempmodelname"  hidden/></td>
+</tr>
+<tr>
+<td>
+<input type="button"  id="MODEL_SRC_btn_modelnamesave" class="btn" value="UPDATE" disabled /><input type="button"  id="MODEL_SRC_btn_modelnamedelete" class="btn" value="DELETE" /></td>
+</tr>
+</table>
+</form>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//*******************************************CONFIGURATION SEARCH/UPDATE/DELETE*********************************************//
+<!--DONE BY:SARADAMBAL,SAFI,PUNI
+//VER 1.6-SD:04/07/2014 ED:05/07/2014 TRACKER NO:689:given err message if cal name is wrong n fake folder /file is given without updation in db n give acess and added cond. do not chk own acs level for calender by PUNI
+//VER 1.5-SD:24/06/2014 ED:26/06/2014 TRACKER NO:689:REMOVED ALERT IN HTML
+//VER 1.4-SD:21/06/2014 ED21/06/2014:TRACKER NO:689:UPDATED THE DRIVE LINK 
+//VER 1.3-SD:09/06/2014 ED:12/06/2014,TRACKER NO:689,implemented script for commit and failure function BY SARADHA ,IMPLEMENTED DOCS SHARING,CALENDER SHARING,SITE WEHN UPDATE MADE.ADDED UNIT MONTH
+VER 1.2-SD:07/06/2014 ED:07/06/2014,TRACKER NO:689,updated new drive link
+VER 1.1-SD:28/05/2014 ED:28/05/2014,TRACKER NO:689,implemented dd amt as 3 digit,customer sd enter only 1 to 48 
+VER 1.0-SD:06/03/2014 ED:07/03/2014,TRACKER NO:689,implemented arr concept for already exist data and reduced coding using twodimension array,checked transaction sp for config and also trigger
+VER 0.09-SD:12/02/2014 ED:15/02/2014,TRACKER NO:689,implemented eilb for errormsg and for special character,implemented delete btn validation for data if there is any transaction for all table,implemented script for deletion sp,implemented one function to get table id for deletion
+VER 0.08-SD:13/01/2013 ED:20/01/2014,TRACKER NO:689,remove uppercase for folder ids,include uppercase for some other data,corrected return function,create tb for data using jquery instead of html,changed h3 tag  
+VER 0.07-SD:02/12/2013 ED:07/01/2014,TRACKER NO:689,included sub type for deposit deduction,include textbox for dd amt,done amt validation while save btn validation,included report configuration data
+VER 0.06-SD:28/12/2013 ED:28/12/2013,changed form alignment tag & userstamp syntax,changed file name
+VER 0.05-SD:10/12/2013 ED:10/12/2013,updated failure function
+VER 0.04-SD:06/11/2013 ED:14/11/2013,updated flex table width & highlight row for flex table,removed profile name for not having type,updated primary id instead of using data,updated delete btn confirmation msg,included erm,banktt & check module,updated tickler table for deletion
+VER 0.03-SD:08/10/2013 ED:08/10/2013,updated head tag links & implement return function
+VER 0.02-SD:03/10/2013 ED:03/10/2013,updated eilib connection,message box,preloader,removed scriplet,convert blur function for all change function
+VER 0.01-INITIAL VERSION,TRACKER NO:271,START DATE:31/07/2013,END DATE:22/08/2013-HEADER FIXATION,SCROLL PANEL NOT ADDED IN SEARCH FORM -->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<script>
+/*----------------------------------------------- FAILURE FUNTION----------------------------------*/
+
+$(document).ready(function(){ 
+var CONFSCR_UPD_DEL_data='';
+var CONFSCR_UPD_DEL_datadd='';
+var CONFSCR_UPD_DEL_subdata='';
+var CONFSCR_UPD_DEL_datanew='';
+var CONFSCR_UPD_DEL_dataddnew='';
+var CONFSCR_UPD_DEL_subdatanew='';
+var CONFSCR_UPD_DEL_initialflag='true';
+var CONFSRC_UPD_glb_dataarr=[];
+var CONFSCR_UPD_DEL_module_arr=[];
+var CONFSCR_UPD_DEL_errmsg_arr=[];
+/*------------------------------------highlight selected row start--------------------------------*/
+$(document).on('click','#CONFSRC_UPD_DEL_tble_Data tr td input[type="radio"]',function(){
+$('#CONFSRC_UPD_DEL_tble_Data tr').removeClass('higlightrow');
+$(this).closest('tr').addClass('higlightrow');
+});
+/*----------------------------------------CALLING FUNCTION FOR PUSH ERROR MESSAGE AND LOAD MODULE---------------------------------*/
+$(".preloader").show();
+google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_success_module_err).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_module_errormsg();
+/*----------------------------------------SUCCESS FUNCTION FOR LOADING MODULE AND ERROR MSG--------------------------------------*/
+function CONFSRC_UPD_DEL_success_module_err(CONFSCR_UPD_DEL_response){
+$(".preloader").hide();
+CONFSCR_UPD_DEL_module_arr=CONFSCR_UPD_DEL_response.CONFSRC_UPD_DEL_module;
+CONFSCR_UPD_DEL_errmsg_arr=CONFSCR_UPD_DEL_response.CONFSRC_UPD_DEL_errormsg;
+var CONFSCR_UPD_DEL_options ='<option>SELECT</option>';
+for (var i = 0; i < CONFSCR_UPD_DEL_module_arr.length; i++) 
+{
+CONFSCR_UPD_DEL_options += '<option value="' + CONFSCR_UPD_DEL_module_arr[i].CONFSRC_UPD_DEL_module_id + '">' + CONFSCR_UPD_DEL_module_arr[i].CONFSRC_UPD_DEL_module_data + '</option>';
+}
+$('#CONFSRC_UPD_DEL_lb_Profile').html(CONFSCR_UPD_DEL_options);
+$('#CONFSRC_UPD_DEL_form_SearchUpdate').show();
+}
+/*-----------------------------------------AUTOSIZE FOR UPDATE DATA------------------------------------------------------*/
+$('#CONFSRC_UPD_DEL_tb_UpdSubtype').doValidation({rule:'general',prop:{autosize:true}});
+/*----------------------------------------CHANGE EVENT FUCNTION FOR MODULE-------------------------------------------------------*/
+$('#CONFSRC_UPD_DEL_lb_Profile').change(function(){
+var CONFSRC_UPD_DEL_profileName = $(this).val();
+$('#CONFSRC_UPD_DEL_lbl_Type').hide();
+$('#CONFSRC_UPD_DEL_lb_Type').hide();
+$('#CONFSRC_UPD_DEL_tble_SrchUpd').hide();
+$('#CONFSRC_UPD_DEL_tble_Data').hide();
+$('#CONFSRC_UPD_DEL_div_Update').hide();
+$('#CONFSRC_UPD_DEL_div_Update').hide();
+$('#CONFSRC_UPD_DEL_lbl_errType').hide();
+$('#CONFSRC_UPD_DEL_lbl_errNoType').hide();
+$('#CONFSRC_UPD_DEL_lbl_errprofile').hide();
+$("#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_UpdSubtype").removeClass('invalid');
+$('#CONFSRC_UPD_DEL_div_UpdData,#CONFSRC_UPD_DEL_div_UpdSubtype').text('');
+if(CONFSRC_UPD_DEL_profileName!='SELECT')
+{$(".preloader").show(); 
+google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_successType).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_selectModule(CONFSRC_UPD_DEL_profileName);
+$('#CONFSRC_UPD_DEL_lbl_errprofile').replaceWith('<label id="CONFSRC_UPD_DEL_lbl_Type" name="CONFSRC_UPD_DEL_lbl_Type" hidden >TYPE<em style="color:red">*</em></label>');
+}});
+/*------------------------------------SUCCESS FUNCTION FOR SELCTING TYPE----------------------------------------------------------*/ 
+function CONFSRC_UPD_DEL_successType(response){
+$(".preloader").hide(); 
+var CONFSRC_UPD_DEL_types_array= [];
+CONFSRC_UPD_DEL_types_array=response;
+if(CONFSRC_UPD_DEL_types_array.length!=0){
+var options ='<option>SELECT</option>'
+for (var i = 0; i < CONFSRC_UPD_DEL_types_array.length; i++) {
+options += '<option value="' + CONFSRC_UPD_DEL_types_array[i].CONFSRC_UPD_DEL_type_object_id + '">' + CONFSRC_UPD_DEL_types_array[i].CONFSRC_UPD_DEL_type_object_data + '</option>';
+}
+$('#CONFSRC_UPD_DEL_lb_Type').html(options);
+$('#CONFSRC_UPD_DEL_lbl_Type').show();
+$('#CONFSRC_UPD_DEL_lb_Type').show();
+}
+/*-------------------------------------------------ERROR MESSAGE FOR HAVING NO TYPE FOR SELECTED MODULE-----------------------------------*/
+else{
+var CONFSRC_UPD_DEL_profileName=$('#CONFSRC_UPD_DEL_lb_Profile').find('option:selected').text();
+var CONFSRC_UPD_DEL_errTypeno=CONFSCR_UPD_DEL_errmsg_arr[6];
+var CONFSRC_UPD_DEL_errmsgno =CONFSRC_UPD_DEL_errTypeno.replace('[MODULE NAME]',CONFSRC_UPD_DEL_profileName);
+$('#CONFSRC_UPD_DEL_lb_Type').hide();
+$('#CONFSRC_UPD_DEL_lbl_Type').show();
+$('#CONFSRC_UPD_DEL_lbl_Type').replaceWith('<label style="width=300" id="CONFSRC_UPD_DEL_lbl_errprofile" name="CONFSRC_UPD_DEL_lbl_errprofile" class="errormsg">'+CONFSRC_UPD_DEL_errmsgno+'</label>');
+}}
+/*---------------------------------CHANGE EVENT FUCNTION FOR TYPE-----------------------------------------------------------------*/
+$(document).on('change','#CONFSRC_UPD_DEL_lb_Type',function(){
+var CONFSRC_UPD_DEL_lb_Profile=$("#CONFSRC_UPD_DEL_lb_Profile").val();
+var CONFSRC_UPD_DEL_lb_Type = $('#CONFSRC_UPD_DEL_lb_Type').find('option:selected').text();
+$('#CONFSRC_UPD_DEL_tble_Data').hide();
+$('#CONFSRC_UPD_DEL_tble_SrchUpd').hide();
+$('#CONFSRC_UPD_DEL_div_Update').hide();
+$('#CONFSRC_UPD_DEL_lbl_errType').hide();
+$('#CONFSRC_UPD_DEL_lbl_errNoType').hide();
+$("#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_UpdSubtype").removeClass('invalid');
+$('#CONFSRC_UPD_DEL_div_UpdData,#CONFSRC_UPD_DEL_div_UpdSubtype').text('');
+if($('#CONFSRC_UPD_DEL_lb_Type').val()!='SELECT'){
+$(".preloader").show(); 
+var CONFSRC_UPD_DEL_parentFunction="gs";
+google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_successSearch).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_selectData(CONFSRC_UPD_DEL_lb_Profile,CONFSRC_UPD_DEL_lb_Type,CONFSRC_UPD_DEL_parentFunction);
+}});
+/*---------------------------------------SUCCESS FUNCTION FOR SELECTING TYPE FOR DD--------------------------------------------------*/
+function CONFSRC_UPD_DEL_success_subtype(CONFSRC_UPD_DEL_response_subtypeonse){
+$(".preloader").hide(); 
+var CONFSRC_UPD_DEL_dd_opt ='<option>SELECT</option>';
+for (var i = 0; i < CONFSRC_UPD_DEL_response_subtypeonse.length; i++) {
+CONFSRC_UPD_DEL_dd_opt += '<option value="' + CONFSRC_UPD_DEL_response_subtypeonse[i]+ '">' + CONFSRC_UPD_DEL_response_subtypeonse[i]+ '</option>';
+}
+$('#CONFSRC_UPD_DEL_lb_subtype').html(CONFSRC_UPD_DEL_dd_opt);
+}
+/*-------------------------------------------SUCCESS FUNCTION FOR SELECTING DATA--------------------------------------------------*/
+function CONFSRC_UPD_DEL_successSearch(CONFSRC_UPD_DEL_response){
+var CONFSRC_UPD_DEL_lb_Type = $('#CONFSRC_UPD_DEL_lb_Type').find('option:selected').text();
+var CONFSRC_UPD_DEL_data_array= [];
+CONFSRC_UPD_DEL_data_array=CONFSRC_UPD_DEL_response[0];
+if(CONFSRC_UPD_DEL_response[1]=='CONFSRC_UPD_DEL_notupdate'){
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
+}
+else if(CONFSRC_UPD_DEL_response[1]==0){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[0]}});
+}
+else{
+/*-------------------------------------------------ERROR MESSAGE FOR NO DATA-----------------------------------------------------*/
+if(CONFSRC_UPD_DEL_data_array.length==1){
+var CONFSRC_UPD_DEL_errTypeno=CONFSCR_UPD_DEL_errmsg_arr[3];
+var CONFSRC_UPD_DEL_errmsgno =CONFSRC_UPD_DEL_errTypeno.replace('[TYPE]',CONFSRC_UPD_DEL_lb_Type);
+$('#CONFSRC_UPD_DEL_lbl_errNoType').show();
+$('#CONFSRC_UPD_DEL_lbl_errNoType').text(CONFSRC_UPD_DEL_errmsgno);
+}
+else{
+if(CONFSRC_UPD_DEL_data_array.length > 10){ 
+var px = '520px'
+}
+else
+{ 
+var x = CONFSRC_UPD_DEL_data_array.length*45;
+if(x <=100){
+var px = '100px'}
+else{
+var px = x+"px" }
+}
+if(CONFSRC_UPD_DEL_data_array.length == 1) {var px ="50px"}
+$('#CONFSRC_UPD_DEL_div_Data').css('height',px)
+$('#CONFSRC_UPD_DEL_tble_Data').hide();
+$('#CONFSRC_UPD_DEL_tble_Data').empty();
+var tr='';
+if($('#CONFSRC_UPD_DEL_lb_Type').val()==42)
+tr +='<th style="width:20px"></th><th style="width:150px">SUB TYPE</th><th style="width:100px">DATA</th><th style="width:190px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th>';
+else
+tr +='<th style="width:20px"></th><th style="width:250px">DATA</th><th style="width:190px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th>';
+$('#CONFSRC_UPD_DEL_tble_Data').append(tr);
+for (var i = 0; i < CONFSRC_UPD_DEL_data_array.length; i++) {
+if(i!=CONFSRC_UPD_DEL_data_array.length-1){
+if($('#CONFSRC_UPD_DEL_lb_Type').val()==42){
+var tr = '<tr id="'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_id+'"><td><input type="radio" class="CONFSRC_UPD_DEL_class_data delete" name="CONFSRC_UPD_DEL_radio_data" id='+i+' value="'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_id+'"></td><td>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_subdata +'</td><td>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_data +'</td><td>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_userstamp+'</td><td>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_timestamp+'</td><td hidden>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_flag+'</td></tr>';
+}
+else{
+var tr = '<tr id="'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_id+'"><td><input type="radio" class="CONFSRC_UPD_DEL_class_data delete" name="CONFSRC_UPD_DEL_radio_data" id='+i+' value="'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_id+'"></td><td>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_data +'</td><td>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_userstamp+'</td><td>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_timestamp+'</td><td hidden>'+CONFSRC_UPD_DEL_data_array[i].CONFSRC_UPD_DEL_flag+'</td></tr>';
+}
+$('#CONFSRC_UPD_DEL_tble_Data').append(tr);}
+else
+{
+var functionname=CONFSRC_UPD_DEL_data_array[i];
+/*-------------------------------------------------ERROR MESSAGE FOR UPDATE------------------------------------------------------*/
+if(functionname=="CONFSRC_UPD_DEL_update"){
+var CONFSRC_UPD_DEL_updMsg=CONFSCR_UPD_DEL_errmsg_arr[2].replace('[MODULE NAME]',$('#CONFSRC_UPD_DEL_lb_Profile').find('option:selected').text());;
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_updMsg}});
+$('#CONFSRC_UPD_DEL_tble_SrchUpd').hide();
+$('#CONFSRC_UPD_DEL_div_Update').hide();
+}
+/*-------------------------------------------------ERROR MESSAGE FOR DATA WHICH TO BE DELETED---------------------------------*/
+if(functionname=='CONFSRC_UPD_DEL_parentFunction_delete'){
+var CONFSRC_UPD_DEL_delMsg=CONFSCR_UPD_DEL_errmsg_arr[4].replace('[MODULE NAME]',$('#CONFSRC_UPD_DEL_lb_Profile').find('option:selected').text());;
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_delMsg}});
+}}}
+/*-------------------------------------------------ERROR MESSAGE FOR HAVING DATA--------------------------------------------------*/
+var CONFSRC_UPD_DEL_errType=CONFSCR_UPD_DEL_errmsg_arr[1];
+var CONFSRC_UPD_DEL_errmsg =CONFSRC_UPD_DEL_errType.replace('[TYPE]',CONFSRC_UPD_DEL_lb_Type);
+$('#CONFSRC_UPD_DEL_lbl_errType').show();
+$('#CONFSRC_UPD_DEL_lbl_errType').text(CONFSRC_UPD_DEL_errmsg);
+$('#CONFSRC_UPD_DEL_tble_Data').show();
+}
+}$(".preloader").hide();}
+/*------------------------------------------CLICK FUNCTION FOR RADIO BUTTON-------------------------------------------------------*/
+$(document).on('click','.CONFSRC_UPD_DEL_class_data',function(){
+$(".preloader").show();
+var CONFSRC_UPD_DEL_data=$("input[type='radio'][name='CONFSRC_UPD_DEL_radio_data']:checked").val();
+$("#CONFSRC_UPD_DEL_btn_Delete").hide();
+if($("input[type='radio'][name='CONFSRC_UPD_DEL_radio_data']:checked").val()!=''){
+google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_successchecktrans).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_checktransaction($("#CONFSRC_UPD_DEL_lb_Profile").val(),CONFSRC_UPD_DEL_data);
+}
+$("#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_SubdataUpd").removeClass('invalid');
+$("#CONFSRC_UPD_DEL_div_UpdData,#CONFSRC_UPD_DEL_div_SubdataUpd").text('');
+if((CONFSRC_UPD_DEL_data!='')&&(CONFSRC_UPD_DEL_data!=undefined))
+{
+$('#CONFSRC_UPD_DEL_tble_SrchUpd').show();
+$("#CONFSRC_UPD_DEL_btn_Search").removeAttr("disabled");
+$("#CONFSRC_UPD_DEL_btn_Delete").removeAttr("disabled");
+$('#CONFSRC_UPD_DEL_div_Update').hide();
+}
+else
+{
+$('#CONFSRC_UPD_DEL_tble_SrchUpd').hide();
+}
+CONFSRC_UPD_DEL_srch_del();
+});
+/*------------------------------------SUCCESS FUNCTION FOR CHECK TRANSACTION-----------------------------------------*/
+function CONFSRC_UPD_DEL_successchecktrans(CONFSRC_UPD_DEL_response){
+$(".preloader").hide();
+if(CONFSRC_UPD_DEL_response==0){
+$("#CONFSRC_UPD_DEL_btn_Delete").hide();
+$('#CONFSRC_UPD_DEL_div_Update').hide();
+}
+else{
+$("#CONFSRC_UPD_DEL_btn_Delete").show();
+$("#CONFSRC_UPD_DEL_btn_Search").removeAttr("disabled");
+$("#CONFSRC_UPD_DEL_btn_Delete").removeAttr("disabled");
+$('#CONFSRC_UPD_DEL_div_Update').hide();
+}
+$('#CONFSRC_UPD_DEL_tble_SrchUpd').show();
+}
+/*-----------------------------------------COMMON FUNCTION FETCHING FLEX TABLE ROW VALUES-----------------*/
+function CONFSRC_UPD_DEL_srch_del(){
+
+$("#CONFSRC_UPD_DEL_div_updata").html('')
+$('<input type="text" id="CONFSRC_UPD_DEL_tb_UpdData" name="CONFSRC_UPD_DEL_tb_UpdData" maxlength=200>').appendTo($("#CONFSRC_UPD_DEL_div_updata"));
+if(($("#CONFSRC_UPD_DEL_lb_Type").val()==11)||($("#CONFSRC_UPD_DEL_lb_Type").val()==12)||($("#CONFSRC_UPD_DEL_lb_Type").val()==5)||($("#CONFSRC_UPD_DEL_lb_Type").val()==6)||($("#CONFSRC_UPD_DEL_lb_Type").val()==47)||($("#CONFSRC_UPD_DEL_lb_Type").val()==7)||($("#CONFSRC_UPD_DEL_lb_Type").val()==29)||($("#CONFSRC_UPD_DEL_lb_Type").val()==49)||($("#CONFSRC_UPD_DEL_lb_Type").val()==45)||($("#CONFSRC_UPD_DEL_lb_Type").val()==46)||($("#CONFSRC_UPD_DEL_lb_Type").val()==44)||($("#CONFSRC_UPD_DEL_lb_Type").val()==48)||($("#CONFSRC_UPD_DEL_lb_Type").val()==30)||($("#CONFSRC_UPD_DEL_lb_Type").val()==123)||($("#CONFSRC_UPD_DEL_lb_Type").val()==68)||($("#CONFSRC_UPD_DEL_lb_Type").val()==75)||($("#CONFSRC_UPD_DEL_lb_Type").val()==39)){
+$("#CONFSRC_UPD_DEL_tb_UpdData").doValidation({rule:'general',prop:{uppercase:false,autosize:true}});}
+else if(($('#CONFSRC_UPD_DEL_lb_Type').val()!=42)&&($('#CONFSRC_UPD_DEL_lb_Type').val()!=76)&&($('#CONFSRC_UPD_DEL_lb_Type').val()!=77)){
+$("#CONFSRC_UPD_DEL_tb_UpdData").doValidation({rule:'general',prop:{uppercase:true,autosize:true}});}
+else if(($('#CONFSRC_UPD_DEL_lb_Type').val()==76)||($('#CONFSRC_UPD_DEL_lb_Type').val()==77)){
+$("#CONFSRC_UPD_DEL_tb_UpdData").doValidation({rule:'numbersonly',prop:{realpart:2,leadzero:false}});
+}
+$(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
+var CONFSRC_UPD_DEL_data=$("input[type='radio'][name='CONFSRC_UPD_DEL_radio_data']:checked").val();
+var CONFSRC_UPD_DEL_dataId = $('input:radio[name=CONFSRC_UPD_DEL_radio_data]:checked').attr('id');
+$('#CONFSRC_UPD_DEL_tble_Data tr:eq('+CONFSRC_UPD_DEL_dataId+')').each(function () {
+var $tds = $(this).find('td');
+if($('#CONFSRC_UPD_DEL_lb_Type').val()==42){
+$('#CONFSRC_UPD_DEL_tb_UpdSubtype').attr("size",($tds.eq(1).text()).length+3);
+$('#CONFSRC_UPD_DEL_tb_UpdSubtype').val($tds.eq(1).text());
+CONFSCR_UPD_DEL_subdata=$tds.eq(1).text();
+$('#CONFSRC_UPD_DEL_tb_UpdDatadd').attr("size",($tds.eq(2).text()).length+3);
+$('#CONFSRC_UPD_DEL_tb_UpdDatadd').val($tds.eq(2).text());
+CONFSCR_UPD_DEL_datadd=$tds.eq(2).text();}
+else{
+$('#CONFSRC_UPD_DEL_tb_UpdData').attr("size",($tds.eq(1).text()).length+3);
+$('#CONFSRC_UPD_DEL_tb_UpdData').val($tds.eq(1).text());
+CONFSCR_UPD_DEL_data=$tds.eq(1).text();}
+var CONFSRC_UPD_DEL_lb_Type = $('#CONFSRC_UPD_DEL_lb_Type').find('option:selected').text();
+$('#CONFSRC_UPD_DEL_tb_Type').attr("size",(CONFSRC_UPD_DEL_lb_Type).length+5);
+$('#CONFSRC_UPD_DEL_tb_Type').val(CONFSRC_UPD_DEL_lb_Type);
+});}
+/*--------------------------------------CLICK EVENT FUCNTION FOR BUTTON SEARCH-----------------------------------------------------*/
+$(document).on('click','#CONFSRC_UPD_DEL_btn_Search',function(){
+$(".preloader").show();
+var CONFSRC_UPD_DEL_lb_Profile=$("#CONFSRC_UPD_DEL_lb_Profile").val();
+var CONFSRC_UPD_DEL_lb_Type = $('#CONFSRC_UPD_DEL_lb_Type"').find('option:selected').text();
+var CONFSRC_UPD_DEL_flagData='CONFSRC_UPD_DEL_checkData';
+var  CONFSRC_UPD_DEL_tb_dataId= $('input:radio[name=CONFSRC_UPD_DEL_radio_data]:checked').val();
+google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_successData).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_updateData($("#CONFSRC_UPD_DEL_lb_Profile").val(),$("#CONFSRC_UPD_DEL_tb_UpdData").val(),CONFSCR_UPD_DEL_subdata,CONFSRC_UPD_DEL_tb_dataId,CONFSRC_UPD_DEL_lb_Type,CONFSRC_UPD_DEL_flagData,$('#CONFSRC_UPD_DEL_lb_Type"').val());
+});
+/*--------------------------------------BLUR EVENT FUCNTION FOR TEXT UPDATE DATA-------------------------------------------------*/
+$(document).on('blur change','#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_UpdDatadd',function(){
+if($('#CONFSRC_UPD_DEL_lb_Type').val()==42)
+var CONFSRC_UPD_DEL_tb_UpdData = $("#CONFSRC_UPD_DEL_tb_UpdDatadd").val().trim();
+else
+var CONFSRC_UPD_DEL_tb_UpdData = $("#CONFSRC_UPD_DEL_tb_UpdData").val().trim();
+if($('#CONFSRC_UPD_DEL_tb_UpdSubtype').val()==CONFSCR_UPD_DEL_subdata)
+CONFSCR_UPD_DEL_initialflag='true';
+if((CONFSRC_UPD_DEL_tb_UpdData=='')||((CONFSRC_UPD_DEL_tb_UpdData==CONFSCR_UPD_DEL_data) && ($('#CONFSRC_UPD_DEL_lb_Type').val()!=42))||((parseFloat(CONFSRC_UPD_DEL_tb_UpdData)==parseFloat(CONFSCR_UPD_DEL_datadd)) && ($('#CONFSRC_UPD_DEL_lb_Type').val()==42) && ($('#CONFSRC_UPD_DEL_tb_UpdSubtype').val()==CONFSCR_UPD_DEL_subdata))){
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
+$("#CONFSRC_UPD_DEL_tb_UpdData").removeClass('invalid');
+$('#CONFSRC_UPD_DEL_div_UpdData').text('')
+}
+else if((CONFSCR_UPD_DEL_initialflag=='true') && ($('#CONFSRC_UPD_DEL_lb_Type').val()==42) && (CONFSRC_UPD_DEL_tb_UpdData!=''))
+$("#CONFSRC_UPD_DEL_btn_Update").removeAttr("disabled");
+if((CONFSRC_UPD_DEL_tb_UpdData!='')&&(CONFSRC_UPD_DEL_tb_UpdData!=CONFSCR_UPD_DEL_data)&&($('#CONFSRC_UPD_DEL_lb_Type').val()!=42)){
+var CONFSRC_UPD_DELflag_dataexistis=1;
+for(var i=0;i<CONFSRC_UPD_glb_dataarr.length;i++){
+if(($("#CONFSRC_UPD_DEL_tb_UpdData").val()).toString()==(CONFSRC_UPD_glb_dataarr[i]).toString()){
+CONFSRC_UPD_DELflag_dataexistis=0;
+break;
+}}
+if(CONFSRC_UPD_DELflag_dataexistis==1){
+$("#CONFSRC_UPD_DEL_tb_UpdData").removeClass('invalid');
+$('#CONFSRC_UPD_DEL_div_UpdData').text('');
+$("#CONFSRC_UPD_DEL_btn_Update").removeAttr("disabled");
+}
+else if(CONFSRC_UPD_DELflag_dataexistis==0){
+$("#CONFSRC_UPD_DEL_tb_UpdData").addClass('invalid');
+var CONFSRC_UPD_DEL_errmsgno =CONFSCR_UPD_DEL_errmsg_arr[7].replace('[TYPE]',$('#CONFSRC_UPD_DEL_lb_Type').find('option:selected').text());
+$('#CONFSRC_UPD_DEL_div_UpdData').text(CONFSRC_UPD_DEL_errmsgno);
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
+}}
+if((($('#CONFSRC_UPD_DEL_lb_Type').val()==76)||($('#CONFSRC_UPD_DEL_lb_Type').val()==77))&&($("#CONFSRC_UPD_DEL_tb_UpdData").val()!='')){
+if (CONFSRC_UPD_DEL_tb_UpdData >48 ||CONFSRC_UPD_DEL_tb_UpdData==0) {
+$("#CONFSRC_UPD_DEL_tb_UpdData").addClass('invalid');  
+$('#CONFSRC_UPD_DEL_div_UpdData').text(CONFSCR_UPD_DEL_errmsg_arr[10]);
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
+}
+else{
+$("#CONFSRC_UPD_DEL_btn_Update").removeAttr("disabled");
+$("#CONFSRC_UPD_DEL_tb_UpdData").removeClass('invalid');  
+$('#CONFSRC_UPD_DEL_div_UpdData').text('');
+}
+}
+});
+/*--------------------------------------BLUR EVENT FUCNTION FOR TEXT UPDATE SUBTYPE-------------------------------------------------*/
+$(document).on('blur','#CONFSRC_UPD_DEL_tb_UpdSubtype',function(){
+var  CONFSRC_UPD_DEL_tb_dataId= $('input:radio[name=CONFSRC_UPD_DEL_radio_data]:checked').val();
+if(($('#CONFSRC_UPD_DEL_tb_UpdSubtype').val()=='')||(($('#CONFSRC_UPD_DEL_tb_UpdSubtype').val()).trim()==CONFSCR_UPD_DEL_subdata)){
+$("#CONFSRC_UPD_DEL_tb_UpdSubtype").removeClass('invalid');
+$('#CONFSRC_UPD_DEL_div_UpdSubtype').text('')
+}
+else{
+var CONFSRC_UPD_DELflag_dataexistis=1;
+for(var i=0;i<CONFSRC_UPD_glb_dataarr.length;i++){
+if(($("#CONFSRC_UPD_DEL_tb_UpdSubtype").val()).trim()==CONFSRC_UPD_glb_dataarr[i]){
+CONFSRC_UPD_DELflag_dataexistis=0;
+break;
+}}
+if(CONFSRC_UPD_DELflag_dataexistis==0){
+CONFSCR_UPD_DEL_initialflag='false'
+$("#CONFSRC_UPD_DEL_tb_UpdSubtype").addClass('invalid');
+var CONFSRC_UPD_DEL_errmsg =CONFSCR_UPD_DEL_errmsg_arr[9].replace('[TYPE]',$('#CONFSRC_UPD_DEL_lb_Type').find('option:selected').text());
+$('#CONFSRC_UPD_DEL_div_UpdSubtype').text(CONFSRC_UPD_DEL_errmsg);
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
+}
+else if(CONFSRC_UPD_DELflag_dataexistis==1){
+CONFSCR_UPD_DEL_initialflag='true'
+$("#CONFSRC_UPD_DEL_tb_UpdSubtype").removeClass('invalid');
+$('#CONFSRC_UPD_DEL_div_UpdSubtype').text('');
+if(((CONFSRC_UPD_DELflag_dataexistis==1)&&($("#CONFSRC_UPD_DEL_tb_UpdDatadd").val()==''))||(parseInt($('#CONFSRC_UPD_DEL_tb_UpdDatadd').val())==0)){
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");}
+else{
+$("#CONFSRC_UPD_DEL_btn_Update").removeAttr("disabled");
+}}
+}
+if((($('#CONFSRC_UPD_DEL_tb_UpdSubtype').val()==CONFSCR_UPD_DEL_subdata)&&($('#CONFSRC_UPD_DEL_tb_UpdDatadd').val()==CONFSCR_UPD_DEL_datadd))||($('#CONFSRC_UPD_DEL_tb_UpdDatadd').val()=='')||($('#CONFSRC_UPD_DEL_tb_UpdSubtype').val()=='')){
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
+}
+else if(($('#CONFSRC_UPD_DEL_tb_UpdSubtype').val()==CONFSCR_UPD_DEL_subdata)&&($('#CONFSRC_UPD_DEL_tb_UpdDatadd').val()!=CONFSCR_UPD_DEL_datadd))
+$("#CONFSRC_UPD_DEL_btn_Update").removeAttr("disabled");});
+/*----------------------------------------SUCCESS FUNCTION FOR ALREADY EXIST DATA---------------------------------------------------------------*/
+function CONFSRC_UPD_DEL_successData(CONFSRC_UPD_DEL_response){
+$(".preloader").hide();
+CONFSRC_UPD_DEL_srch_del();
+CONFSRC_UPD_glb_dataarr=CONFSRC_UPD_DEL_response;
+$('#CONFSRC_UPD_DEL_div_Update').show();
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
+if($('#CONFSRC_UPD_DEL_lb_Type').val()==42){
+$("#CONFSRC_UPD_DEL_tr_UpdSubtype").show();
+$("#CONFSRC_UPD_DEL_tb_UpdData").hide();
+$("#CONFSRC_UPD_DEL_tb_UpdDatadd").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}}).show();
+}
+else{
+$("#CONFSRC_UPD_DEL_tb_UpdData").html('')
+$("#CONFSRC_UPD_DEL_tr_UpdSubtype").hide();
+$("#CONFSRC_UPD_DEL_tb_UpdDatadd").hide();
+}}
+/*-----------------------------------------CLICK EVENT FUCNTION FOR UPDATE---------------------------------------------------------*/
+$(document).on('click','#CONFSRC_UPD_DEL_btn_Update',function(){
+$(".preloader").show(); 
+var CONFSRC_UPD_DEL_tb_dataId = $('input:radio[name=CONFSRC_UPD_DEL_radio_data]:checked').val();
+var CONFSRC_UPD_DEL_lb_Profile=$("#CONFSRC_UPD_DEL_lb_Profile").val();
+var CONFSRC_UPD_DEL_lb_Type = $('#CONFSRC_UPD_DEL_lb_Type"').find('option:selected').text();
+var CONFSRC_UPD_DEL_tb_UpdData = $("#CONFSRC_UPD_DEL_tb_UpdData").val();
+var CONFSRC_UPD_DEL_flagData='CONFSRC_UPD_DEL_updateData';
+if($('#CONFSRC_UPD_DEL_lb_Type').val()==42){
+var CONFSRC_UPD_DEL_tb_UpdSubtype= $("#CONFSRC_UPD_DEL_tb_UpdSubtype").val();
+var CONFSRC_UPD_DEL_tb_UpdData = $("#CONFSRC_UPD_DEL_tb_UpdDatadd").val();
+}
+else
+var CONFSRC_UPD_DEL_tb_UpdSubtype= null;
+google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_successSearch).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_updateData(CONFSRC_UPD_DEL_lb_Profile,CONFSRC_UPD_DEL_tb_UpdData,CONFSRC_UPD_DEL_tb_UpdSubtype,CONFSRC_UPD_DEL_tb_dataId,CONFSRC_UPD_DEL_lb_Type,CONFSRC_UPD_DEL_flagData,$('#CONFSRC_UPD_DEL_lb_Type"').val(),CONFSCR_UPD_DEL_data);
+});
+/*----------------------------------CLICK EVENT FUCNTION FOR DELETE---------------------------------------------------------------------*/
+$(document).on('click','.messageconfirm',function(){
+$(".preloader").show(); 
+var CONFSRC_UPD_DEL_lb_Type = $('#CONFSRC_UPD_DEL_lb_Type"').find('option:selected').text();
+var CONFSRC_UPD_DEL_lb_Profile=$("#CONFSRC_UPD_DEL_lb_Profile").val();
+var CONFSRC_UPD_DEL_tb_dataId = $('input:radio[name=CONFSRC_UPD_DEL_radio_data]:checked').val();
+var CONFSRC_UPD_DEL_dataattr = $('input:radio[name=CONFSRC_UPD_DEL_radio_data]:checked').attr('id');
+google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_successSearch).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_deleteData(CONFSRC_UPD_DEL_lb_Profile,CONFSRC_UPD_DEL_lb_Type,CONFSRC_UPD_DEL_tb_dataId,$('#CONFSRC_UPD_DEL_tb_UpdData"').val(),$('#CONFSRC_UPD_DEL_tb_UpdSubtype"').val());
+$('#CONFSRC_UPD_DEL_tble_SrchUpd').hide();
+$('#CONFSRC_UPD_DEL_div_Update').hide();
+});
+//CALL CONFIRM MESSAGE
+$('#CONFSRC_UPD_DEL_btn_Delete').click(function(){
+$(document ).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[8],confirmation:true}});
+});
+/*------------------------------------------CLICK EVENT FUCNTION FOR RESET________________________________________________________*/
+$('#CONFSRC_UPD_DEL_btn_Reset').click(function(){
+$('#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_UpdSubtype,#CONFSRC_UPD_DEL_tb_UpdDatadd').val('');
+$("#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_UpdSubtype").removeClass('invalid');
+$('#CONFSRC_UPD_DEL_div_UpdData,#CONFSRC_UPD_DEL_div_UpdSubtype').text('');
+$('#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_UpdSubtype').prop("size","20");
+$("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
+});
+function CONFSRC_UPD_DEL_onFailure(CONFSRC_UPD_DEL_err){
+$(".preloader").hide();
+if(CONFSRC_UPD_DEL_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+CONFSRC_UPD_DEL_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#CONFSRC_UPD_DEL_form_SearchUpdate').replaceWith('<center><label class="dberrormsg">'+CONFSRC_UPD_DEL_err+'</label></center>');
+}
+else if((CONFSRC_UPD_DEL_err=='ReferenceError: "Calendar" is not defined.')||(CONFSRC_UPD_DEL_err=='ScriptError: Access Not Configured. Please use Google Developers Console to activate the API for your project.')){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[11]}});
+}
+else if(CONFSRC_UPD_DEL_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.'){
+
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[12]}});
+}
+else if((CONFSRC_UPD_DEL_err=='ScriptError: Forbidden')||(CONFSRC_UPD_DEL_err=='ScriptError: You do not have permission to perform that action.')){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[14]}});
+
+}
+else if((CONFSRC_UPD_DEL_err=='ScriptError: Not Found')||(CONFSRC_UPD_DEL_err=='Not Found')||(CONFSRC_UPD_DEL_err=='TypeError: Cannot call method "getId" of undefined.')){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[13]}});
+}
+else{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_err.message}});
+}
+}
+
+});//END DOCUMENT READY FUNCTION
+</script>
+</head>
+<body>
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+<div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>CONFIGURATION SEARCH/UPDATE/DELETE</h3><p></div></div>
+<form class="content" name="CONFSRC_UPD_DEL_form_SearchUpdate" id="CONFSRC_UPD_DEL_form_SearchUpdate" hidden>
+<div name="CONFSRC_UPD_DEL_div_ProfileType" id="CONFSRC_UPD_DEL_div_ProfileType">
+<table style="width:700" id="CONFSRC_UPD_DEL_tble_profiletype">
+<tr>
+<td style="width:200px"><label name="CONFSRC_UPD_DEL_lblProfile" id="CONFSRC_UPD_DEL_lblProfile" >MODULE NAME<em >*</em></label></td>
+<td ><select name="CONFSRC_UPD_DEL_lb_Profile" id="CONFSRC_UPD_DEL_lb_Profile" >
+<option>SELECT</option>
+</select></td>
+</tr>
+<tr>
+<td><label name="CONFSRC_UPD_DEL_lbl_Type" id="CONFSRC_UPD_DEL_lbl_Type" hidden>TYPE<em >*</em></label></td>
+<td><select name="CONFSRC_UPD_DEL_lb_Type" id="CONFSRC_UPD_DEL_lb_Type"  hidden><option>SELECT</option>
+</select></td>
+</tr>
+</table>
+</div>
+<div id="CONFSRC_UPD_DEL_lbl_errType" name="CONFSRC_UPD_DEL_lbl_errType" class="srctitle" ></div>
+<div id="CONFSRC_UPD_DEL_lbl_errNoType" name="CONFSRC_UPD_DEL_lbl_errNoType" class="errormsg"></div>
+<div id ="CONFSRC_UPD_DEL_div_Data" style="width:875px;overflow:auto;">
+<table class="srcresult" style="width:850px" id="CONFSRC_UPD_DEL_tble_Data" name="CONFSRC_UPD_DEL_tble_Data" hidden>
+</table></div>
+<table id="CONFSRC_UPD_DEL_tble_SrchUpd" name="CONFSRC_UPD_DEL_tble_SrchUpd" hidden><tr>
+<td><input type="button" class="btn" name="CONFSRC_UPD_DEL_btn_Search" id="CONFSRC_UPD_DEL_btn_Search"  disabled="" value="SEARCH" ></td>
+<td><input type="button" class="btn" name="CONFSRC_UPD_DEL_btn_Delete" id="CONFSRC_UPD_DEL_btn_Delete"  disabled="" value="DELETE"></td>
+</tr></table>
+<div id="CONFSRC_UPD_DEL_div_Update" name="CONFSRC_UPD_DEL_div_Update" hidden>
+<table>
+<tr>
+<td><label id="CONFSRC_UPD_DEL_lbl_TypeUpd" name="CONFSRC_UPD_DEL_lbl_TypeUpd">TYPE<em >*</em></label></td>
+<td><input type="text" id="CONFSRC_UPD_DEL_tb_Type" name="CONFSRC_UPD_DEL_tb_Type" class="rdonly" readonly></td>
+</tr>
+<tr id="CONFSRC_UPD_DEL_tr_UpdSubtype"><td>
+<label id="CONFSRC_UPD_DEL_lbl_SubdataUpd" name="CONFSRC_UPD_DEL_lbl_SubdataUpd">SUB TYPE<em >*</em></label></td>
+<td><input type="text"id="CONFSRC_UPD_DEL_tb_UpdSubtype" name="CONFSRC_UPD_DEL_tb_UpdSubtype"  maxlength=200></td>
+<td><div id="CONFSRC_UPD_DEL_div_UpdSubtype" class="errormsg"></div></td></tr>
+<tr>
+<td><label id="CONFSRC_UPD_DEL_lblDataUpd" name="CONFSRC_UPD_DEL_lblDataUpd">DATA<em >*</em></label></td>
+<td >
+<div id="CONFSRC_UPD_DEL_div_updata"></div>
+<div><input type="text" id="CONFSRC_UPD_DEL_tb_UpdDatadd" name="CONFSRC_UPD_DEL_tb_UpdDatadd" style="width:60px" hidden></div></td>
+<td><div id="CONFSRC_UPD_DEL_div_UpdData" class="errormsg"></div></td>
+</tr>
+<tr>
+<td align="right"><input type="button" class="btn" name="CONFSRC_UPD_DEL_btn_Update" id="CONFSRC_UPD_DEL_btn_Update" disabled="" value="UPDATE" ></td>
+<td align="left"><input type="button" class="btn" name="CONFSRC_UPD_DEL_btn_Reset" id="CONFSRC_UPD_DEL_btn_Reset" value="RESET" ></td>
+</tr>
+</table>
+</div>
+</form>
+</div>
+</body>
+</html>

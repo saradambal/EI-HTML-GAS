@@ -1,0 +1,1027 @@
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//*********************************************UNIT SEARCH/UPDATE*********************************************//
+<!--DONE BY:SARADAMBAL
+VER 0.09-TRACKER NO:723,SD:12/06/2014 ED:11/07/2014,implemented script for commit and failure function,implement script in refresh func ,implemented check transaction sp for dp
+VER 0.08-TRACKER NO:723,SD:07/06/2014,SD:07/06/2014,updated new drive link
+VER 0.07-TRACKER NO:723,SD:23/04/2014,ED:26/04/2014,add class for datepicker,put dp validation for unit min(sd-1 month) and max(sysdate+2 year)
+VER 0.06-TRACKER NO:723,SD:27/03/2014,ED:27/03/2014,closed head tag
+VER 0.05-TRACKER NO:723,SD:06/02/2014,ED:10/03/2014,cleared issue,implemented eilib for general fields to remove special character and eilib for error msg,included another flex table for search by unit,put disable for access card if card is empty,removed repeated script,implemented uldid instead of using userstamp,add lb for active,inventory and lost and add cb for inventory,implemented flag for success msg
+VER 0.04-SD:28/12/2013,ED:30/12/2013,TRACKER NO:692,cleared issue for showing two error msg,implemented h3 tag for title,corrected errormsg,restrict repeated roomtype,stamptype for single unit,put disable for access card if card is empty,updated sp for returning flag and updated erormsg for not updating data
+VER 0.03-SD:28/12/2013,ED:30/12/2013,changed form alignment tag,removed utilities syntax,implemented conn for eilib function
+VER 0.02-INITIAL VERSION,TRACKER NO:245,SD:10/12/2013,ED:11/12/2013,updated sp for Access-stamp-detail form,view for active customer
+VER 0.01-INITIAL VERSION,TRACKER6 NO:245,SD:12/08/2013,ED:03/09/2013-->
+<html>
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<script>
+/*-------------------------------------FUNCTION FOR CHANGE DATE FORMAT---------------------------*/
+function USRC_FormTableDateFormat(USRC_inputdate){
+var USRC_string  = USRC_inputdate.split("-");
+return USRC_string[2]+'-'+ USRC_string[1]+'-'+USRC_string[0];
+}
+var ErrorControl ={AmountCompare:'InValid'}
+$(document).ready(function() {
+/*--------------------------------------FAILURE FUNCTION-----------------------------------------*/
+function USRC_onFailure(USRC_error) {
+if(USRC_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+USRC_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#CEXTN_form').replaceWith('<center><label class="dberrormsg">'+USRC_error+'</label></center>');
+}
+else
+{
+if(USRC_error=='TypeError: Cannot call method "getEvents" of undefined.'||USRC_error=='TypeError: Cannot call method "createEvent" of undefined.')
+{
+USRC_error=USRC_errormsg_arr[52];
+}
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_error}});
+}
+$(".preloader").hide();
+}
+/*------------------------------------highlight selected row start--------------------------------*/
+$(document).on('click','#USRC_tble_flexdata tr td input[type="radio"]',function(){
+$('#USRC_tble_flexdata tr').removeClass('higlightrow');
+$(this).closest('tr').addClass('higlightrow');
+});
+var USRC_flag_updbtn=0;
+var USRC_flag_stamptype=0;
+var USRC_flag_roomtype=0;
+var USRC_flag_access=0;
+var USRC_flag_enddate=0;
+var USRC_flag_unitno=0;
+var USRC_flag_searchbtn=0;
+var USRC_accesscard_no='';
+var USRC_obj_rowvalue='';
+var USRC_unit_optionvalues_roomtype=[];
+var USRC_errormsg_arr =[];
+var USRC_unitoption_arr =[];
+var USRC_unitoptions_id_arr=[];
+var USRC_glb_unitno_arr=[];
+var USRC_obsolete_upd='';
+var USRC_accesscard_transaction=false;
+var USRC_select_options_card ='<option>SELECT</option>';
+google.script.run.withSuccessHandler(USRC_success).withFailureHandler(USRC_onFailure).USRC_errormsg_data_unitno();
+/*----------------------------------------SUCCESS FUNCTION FOR ERRORMSG------------------------------------------*/
+function USRC_success(USRC_response){
+USRC_errormsg_arr=USRC_response.USRC_errormsg;
+USRC_unitoption_arr=USRC_response.USRC_unitoption;
+USRC_glb_unitno_arr=USRC_response.USRC_obj_unitno;
+if(USRC_unitoption_arr.length==0)
+$('#USRC_form_unit_searchnupdate').replaceWith('<p><label class="errormsg"> '+USRC_errormsg_arr[35]+'</label></p>')
+else{
+var USRC_select_options ='<option>SELECT</option>';
+for (var i = 0; i < USRC_unitoption_arr.length; i++)
+{
+if((USRC_unitoption_arr[i].USRC_unitoption_id==10)||(USRC_unitoption_arr[i].USRC_unitoption_id==11)||(USRC_unitoption_arr[i].USRC_unitoption_id==12))
+USRC_select_options_card += '<option value="' + USRC_unitoption_arr[i].USRC_unitoption_id + '">'+ USRC_unitoption_arr[i].USRC_unitoption_data+' </option>';
+else
+USRC_select_options += '<option value="' + USRC_unitoption_arr[i].USRC_unitoption_id + '">'+ USRC_unitoption_arr[i].USRC_unitoption_data+' </option>';
+} 
+$('#USRC_lb_selectoption_unit').html(USRC_select_options);
+$('#USRC_form_unit_searchnupdate').show();
+}}
+var USRC_unitno_flag = 'unittrue';
+var USRC_cardnumber_flag = 'accesstrue';
+/*------------------------------CHANGE FUNCTION SEARCH BY ALL TYPES--------------------------------------------*/
+$('#USRC_lb_selectoption_unit').change(function(){
+var USRC_unit_optionfetch =$(this).val();
+$('#USRC_tble_searchbyoptions').empty();
+$('#USRC_tble_inventory').empty();
+$("#USRC_tble_typeofcard").empty();
+$('#USRC_div_flex_searchbtn').hide();
+$('#USRC_div_updateform').hide();
+$('#USRC_div_msg,#USRC_errmsg_roominventory').text('');
+if(USRC_unit_optionfetch!='SELECT')
+{
+$(".preloader").show();
+if((USRC_unit_optionfetch==5)||(USRC_unit_optionfetch==8))//ROOM TYPE,STAMP TYPE
+{google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_flex(document.getElementById('USRC_form_unit_searchnupdate'))
+}
+else
+{google.script.run.withSuccessHandler(USRC_success_load_searchby_lb).withFailureHandler(USRC_onFailure).USRC_func_load_searchby_option(USRC_unit_optionfetch,'USRC_parentfunc_load','USRC_not_load_lb')
+}}
+});
+/*------------------------------SUCCESS FUNCTION FOR ALL SEARCH BY SEARCH---------------------------------------*/
+function USRC_success_load_searchby_lb(USRC_response_load_searchby){
+$(".preloader").hide();
+$('#USRC_tble_searchbyoptions').empty();
+var USRC_unit_optionfetch =USRC_response_load_searchby.USRC_flag;
+var USRC_unit_optionvalues=USRC_response_load_searchby.USRC_loaddata_searchby;
+if(USRC_unit_optionfetch==9)
+USRC_unit_optionvalues_roomtype=USRC_unit_optionvalues;
+var USRC_td='';
+USRC_td +='<tr><td style="width:180px"><label id="USRC_lbl_srctitle_srchoptions" class="srctitle">'+$('#USRC_lb_selectoption_unit').find('option:selected').text()+'</label></td></tr>';
+if((USRC_unit_optionfetch==2)||(USRC_unit_optionfetch==4)||(USRC_unit_optionfetch==3)||(USRC_unit_optionfetch==6))
+{
+if(USRC_unit_optionfetch==2)//END DATE
+{
+USRC_td +='<tr><td><label>FROM AMOUNT</label></td><td><input type ="text" name="USRC_tb_dutyamt_fromamt" id="USRC_tb_dutyamt_fromamt" style="width:65px" class="USRC_class_amtvalidstamp"></td></tr><tr><td><label>TO AMOUNT</label></td><td><input type ="text" name ="USRC_tb_dutyamt_toamt" id ="USRC_tb_dutyamt_toamt" style="width:65px" class="USRC_class_amtvalidstamp"></td><td><label id="USRC_lbl_errmsg_date" class="errormsg"></label></td></tr>';
+}
+else if(USRC_unit_optionfetch==4)//PAYMENT
+{
+USRC_td +='<tr><td><label>FROM AMOUNT</label></td><td><input type ="text" name="USRC_tb_payment_fromamt" id ="USRC_tb_payment_fromamt"  maxlength="4" class="USRC_class_title_nums USRC_class_amtvalidpayment" style="width:40px"></td></tr><tr><td><label>TO AMOUNT</label></td><td><input  type ="text" name ="USRC_tb_payment_toamt" id ="USRC_tb_payment_toamt" class="USRC_class_title_nums USRC_class_amtvalidpayment" maxlength="4"  style="width:40px"></td><td><label id="USRC_lbl_errmsg_paymentdate" class="errormsg"></label></td></tr>';
+}
+else if((USRC_unit_optionfetch==3)||(USRC_unit_optionfetch==6))//END DATE,START DATE
+{
+USRC_td +='<tr><td><label>FROM DATE</label></td><td><input type="text" name="USRC_db_frmdate" class="USRC_class_datesearch datemandtry" id="USRC_db_frmdate" style="width:75px"/></td></tr><tr><td><label>TO DATE</label></td><td><input type="text" name="USRC_db_todate"  id="USRC_db_todate" class="USRC_class_datesearch datemandtry" style="width:75px"/></td></tr>';
+}
+USRC_td +='<tr><td></td><td><input type="button" value="SEARCH" class="btn" id="USRC_btn_search" name="USRC_btn_search" disabled></td></tr>'
+}
+else if((USRC_unit_optionfetch==1)||(USRC_unit_optionfetch==5)||(USRC_unit_optionfetch==9)||(USRC_unit_optionfetch==8)||(USRC_unit_optionfetch==7))
+{
+if(USRC_unit_optionvalues.length==0){
+if((USRC_unit_optionfetch==1)||(USRC_unit_optionfetch==7)){//INVENTROY CARD
+var USRC_errmsg_roominventory=USRC_errormsg_arr[43]
+}
+else if(USRC_unit_optionfetch==9)//ROOM TYPE WITH UNIT
+{
+var USRC_errmsg_roominventory=USRC_errormsg_arr[46]
+}
+USRC_td='<label id="USRC_lbl_errmsg_roominventory" class="errormsg">'+USRC_errmsg_roominventory+'</label>';
+}
+else
+{
+var USRC_unit_options='<option>SELECT</option>';
+for(var i = 0; i < USRC_unit_optionvalues.length; i++)
+{
+USRC_unit_options += '<option value="' + USRC_unit_optionvalues[i] + '">' + USRC_unit_optionvalues[i] + '</option>';
+}
+if((USRC_unit_optionfetch==1)||(USRC_unit_optionfetch==7))//INVENTORY CARD, UNIT
+{
+USRC_td +='<tr><td><label>UNIT NUMBER</label></td>';
+}
+else if(USRC_unit_optionfetch==9)//ROOM TYPE WITH UNIT
+{
+USRC_td +='<tr><td><label>ROOM TYPE</label></td>';
+}
+USRC_td +='<td><select id="USRC_lb_all_searchby" name="USRC_lb_all_searchby" class="USRC_class_all_searchby">'+USRC_unit_options+'</select></td></tr><tr><td></td></tr>';
+}}
+$(USRC_td).appendTo($("#USRC_tble_searchbyoptions"));
+$(document).doValidation({rule:'fromto',prop:{elem1:'USRC_db_frmdate',elem2:'USRC_db_todate'}});
+$("#USRC_tb_dutyamt_fromamt").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+$("#USRC_tb_dutyamt_toamt").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+$("#USRC_tb_payment_fromamt").doValidation({rule:'numbersonly',prop:{realpart:4}});
+$("#USRC_tb_payment_toamt").doValidation({rule:'numbersonly',prop:{realpart:4}});
+$(".USRC_class_title_nums").prop("title",USRC_errormsg_arr[1]);
+$("#USRC_db_frmdate,#USRC_db_todate").datepicker("option", { maxDate: '+2Y'});
+}
+/*-------------------------------------VALIDATION FOR STAMP DUTY AMOUNT ------------------------------------------*/
+$(document).on('change blur','.USRC_class_amtvalidstamp',function(){
+var USRC_tb_dutyamt_fromamt=$('#USRC_tb_dutyamt_fromamt').val();
+var USRC_tb_dutyamt_toamt=$('#USRC_tb_dutyamt_toamt').val();
+if((parseInt(USRC_tb_dutyamt_fromamt) <= parseInt(USRC_tb_dutyamt_toamt) )&& (USRC_tb_dutyamt_fromamt!=''))
+ErrorControl.AmountCompare="Valid";
+else
+ErrorControl.AmountCompare="InValid";
+if((ErrorControl.AmountCompare=="InValid")||(USRC_tb_dutyamt_fromamt==0)||(USRC_tb_dutyamt_toamt==0))
+$('#USRC_btn_search').attr("disabled", "disabled")
+else
+$('#USRC_btn_search').removeAttr("disabled")
+if(USRC_tb_dutyamt_fromamt!='' && USRC_tb_dutyamt_toamt!='' && ErrorControl.AmountCompare=="InValid")
+$("#USRC_lbl_errmsg_date").text(USRC_errormsg_arr[31]);
+else
+$("#USRC_lbl_errmsg_date").text('');});
+/*-------------------------------------VALIDATION FOR PAYMENT AMOUNT ------------------------------------------*/
+$(document).on('change blur','.USRC_class_amtvalidpayment',function(){
+var USRC_tb_payment_fromamt=$('#USRC_tb_payment_fromamt').val();
+var USRC_tb_payment_toamt=$('#USRC_tb_payment_toamt').val();
+if(USRC_tb_payment_fromamt <= USRC_tb_payment_toamt && USRC_tb_payment_fromamt!='')
+ErrorControl.AmountCompare="Valid";
+else 
+ErrorControl.AmountCompare="InValid";
+if((ErrorControl.AmountCompare=="InValid")||(USRC_tb_payment_fromamt==0)||(USRC_tb_payment_toamt==0))
+$('#USRC_btn_search').attr("disabled", "disabled")
+else
+$('#USRC_btn_search').removeAttr("disabled")
+if(USRC_tb_payment_fromamt!='' && USRC_tb_payment_toamt!='' && ErrorControl.AmountCompare=="InValid")
+$("#USRC_lbl_errmsg_paymentdate").text(USRC_errormsg_arr[31]);
+else
+$("#USRC_lbl_errmsg_paymentdate").text('');});
+/*------------------------------------CHANGE EVENT FOR SEARCH BY LISTBOX---------------------------------*/
+$(document).on('change','#USRC_lb_all_searchby',function(){
+$("#USRC_tble_inventory").empty();$("#USRC_tble_typeofcard").empty();
+$('#USRC_div_flex_searchbtn').hide();
+$('#USRC_div_updateform').hide();
+$('#USRC_div_msg').text('');
+$('#USRC_lbl_errmsg_cardno').text('')
+var USRC_unit_optionfetch =$('#USRC_lb_selectoption_unit').val();
+if($('#USRC_lb_all_searchby').val()!='SELECT'){
+if(USRC_unit_optionfetch==1)//INVENTORY CARD
+{
+$('<tr><td style="width:180px">TYPE OF CARD</td><td><select id="USRC_lb_typeofcard" name="USRC_lb_typeofcard" class="USRC_class_typeofcard">'+USRC_select_options_card+'</select></td><td><label id="USRC_lbl_errmsg_cardno" class="errormsg"></label></td></tr>').appendTo('#USRC_tble_typeofcard')
+}
+else
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_flex(document.getElementById('USRC_form_unit_searchnupdate'))
+}}});
+/*------------------------------------CHANGE EVENT FOR SEARCH BY CARD---------------------------------*/
+$(document).on('change','#USRC_lb_typeofcard',function(){
+$("#USRC_tble_inventory").empty();
+$('#USRC_div_flex_searchbtn').hide();
+$('#USRC_div_updateform').hide();
+$('#USRC_div_msg').text('');
+$('#USRC_lbl_errmsg_cardno').text('')
+if($('#USRC_lb_typeofcard').val()!='SELECT'){
+$(".preloader").show();
+google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists($('#USRC_lb_all_searchby').val(),$('#USRC_lb_typeofcard').val(),'USRC_flag_check_cardunitno','')
+}});
+/*--------------------------------------------------------CHANGE EVENT FOR SEARCH BY LISTBOX---------------------------------*/
+$(document).on('change','#USRC_lb_inventory_cardno',function(){
+if($('#USRC_lb_inventory_cardno').val()!='SELECT'){
+$(".preloader").show();
+google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_flex(document.getElementById('USRC_form_unit_searchnupdate'))
+}});
+/*--------------------------------------------CHANGE FUNCTION FOR FORM VALIDATION FOR SEARCH BUTTON---------------------------------------*/
+$(document).on('change blur','.USRC_class_datesearch',function(){
+if(($('#USRC_db_frmdate').val()=='')||($('#USRC_db_todate').val()==''))
+{
+$('#USRC_btn_search').attr("disabled", "disabled")
+}
+else{
+$('#USRC_btn_search').removeAttr("disabled");
+}
+});
+/*-------------------------------CLICK FUNCTION FOR DATE,AMOUNT SEARCH BUTTON----------------------------*/
+$(document).on('click','#USRC_btn_search',function(){
+$(".preloader").show();
+google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_flex(document.getElementById('USRC_form_unit_searchnupdate'))
+});
+/*--------------------------------------CHANGE EVENT FOR SEARCH BY OPTION TABLE-----------------------*/
+$(document).on('change','#USRC_tble_inventory,#USRC_tble_searchbyoptions',function(){
+$('#USRC_div_updateform').hide();
+$('#USRC_div_flex_searchbtn').hide();
+$('#USRC_div_msg').text('');
+$('#USRC_btn_searchflex').attr("disabled", "disabled")
+});
+/*----------------------------------SUCCESS FUNCTION FOR FLEX TABLE---------------------------*/
+function USRC_success_flex(USRC_response_flex){
+$(".preloader").hide();
+if(((USRC_response_flex.USRC_parentfunc_obj!=true)&&(USRC_response_flex.USRC_parentfunc_obj!=0))||((USRC_response_flex.USRC_parentfunc_obj=='')&&(USRC_response_flex.USRC_parentfunc_obj!=0))){
+$('#USRC_div_updateform').hide();
+$("#USRC_btn_search").attr("disabled","disabled");
+$('#USRC_tble_searchbtn').hide();
+$('#USRC_tble_flexdata_stamp').hide();
+$('#USRC_div_flex_searchbtn').show();
+$('#USRC_tble_flexdata').hide();
+$('#USRC_tble_flexdata','#USRC_tble_flexdata_stamp').empty();
+$('#USRC_div_flexdata_stamp').css('height',0)
+$('#USRC_div_msg').text('');
+var USRC_flex_arr=[];
+var USRC_flex_flag=USRC_response_flex.USRC_flag;
+USRC_flex_arr=USRC_response_flex.USRC_flex_values;
+var USRC_load_flag_lb=USRC_response_flex.USRC_loadlb_obj;
+if(USRC_load_flag_lb==undefined){
+if(USRC_flex_arr!='')
+{
+if(USRC_flex_arr.length > 10){ var px = '500px'}
+else
+{ 
+var x = USRC_flex_arr.length*50+50;
+if(x <=100){var px = '155px'}
+else{
+var px = x+"px" }
+}
+if(USRC_flex_arr.length == 1) {var px ="120px"}
+$('#USRC_div_flexdata_result').css('height',px)
+if(USRC_flex_flag==6){//START DATE
+var USRC_sd_msg_rep=USRC_errormsg_arr[18].replace('[START DATE]',$('#USRC_db_frmdate').val());
+var USRC_sd_msg=USRC_sd_msg_rep.replace('[END DATE ]',$('#USRC_db_todate').val());
+}
+else if(USRC_flex_flag==3){//END DATE
+var USRC_sd_msg_rep=USRC_errormsg_arr[20].replace('[START DATE]',$('#USRC_db_frmdate').val());
+var USRC_sd_msg=USRC_sd_msg_rep.replace('[END DATE]',$('#USRC_db_todate').val());
+}
+else if(USRC_flex_flag==4){//PAYMENT
+var USRC_sd_msg_rep=USRC_errormsg_arr[24].replace('[RNT FRM AMT]',$('#USRC_tb_payment_fromamt').val());
+var USRC_sd_msg=USRC_sd_msg_rep.replace('[RNT TO AMT]',$('#USRC_tb_payment_toamt').val());
+}
+else if(USRC_flex_flag==2){//STAMP DUTY AMT
+var USRC_sd_msg_rep=USRC_errormsg_arr[25].replace('[STM FRM AMT]',$('#USRC_tb_dutyamt_fromamt').val());
+var USRC_sd_msg=USRC_sd_msg_rep.replace('[STM TO AMT]',$('#USRC_tb_dutyamt_toamt').val());
+}
+else if(USRC_flex_flag==9)//ROOM TYPE WITH UNIT
+{var USRC_sd_msg=USRC_errormsg_arr[23].replace('[ROOM TYPE]',$('#USRC_lb_all_searchby').val());
+}
+else if(USRC_flex_flag==8)//STAMP TYPE 
+{var USRC_sd_msg=USRC_errormsg_arr[40];
+}
+else if(USRC_flex_flag==1)// CARD NUMBER
+{
+if($('#USRC_lb_typeofcard').val()==10)
+var USRC_sd_msg=USRC_errormsg_arr[49].replace('[CARD]',$('#USRC_lb_inventory_cardno').val());
+if($('#USRC_lb_typeofcard').val()==11)
+var USRC_sd_msg=USRC_errormsg_arr[50].replace('[CARD]',$('#USRC_lb_inventory_cardno').val());
+if($('#USRC_lb_typeofcard').val()==12)
+var USRC_sd_msg=USRC_errormsg_arr[22].replace('[CARD]',$('#USRC_lb_inventory_cardno').val());
+}
+else if(USRC_flex_flag==7)//UNIT
+{var USRC_sd_msg=USRC_errormsg_arr[17].replace('[UNIT NO]',$('#USRC_lb_all_searchby').val());
+}
+else if(USRC_flex_flag==5)//ROOM TYPE
+{var USRC_sd_msg=USRC_errormsg_arr[39];
+}
+$('#USRC_div_msg').addClass('srctitle');
+$('#USRC_div_msg').removeClass('errormsg');
+$('#USRC_div_msg').text(USRC_sd_msg);
+var USRC_tr ='';
+var USRC_tr_common_stamp ='<th style="width:50px">ACCESS CARD</th><th style="width:50px">ACCESS ACTIVE</th><th style="width:50px">ACCESS INVENTORY</th><th style="width:50px">ACCESS LOST</th><th style="width:160px">ROOM TYPE</th><th style="width:75px">STAMP DUTY DATE</th><th style="width:140px">STAMP DUTY TYPE</th><th style="width:50px">STAMP DUTY AMOUNT</th><th style="width:500px">COMMENTS</th><th style="width:170px">USERSTAMP</th><th style="width:140px">TIMESTAMP</th></tr>' ; 
+if(USRC_flex_flag==8)//STAMP TYPE
+{$('#USRC_tble_flexdata').attr('width',700);
+$('#USRC_div_flexdata_result').width(720);
+USRC_tr +='<tr><th style="width:20px"></th><th style="width:110px">STAMP DUTY TYPE</th><th style="width:250px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>';
+$('#USRC_lbl_msg').text($('#USRC_lb_all_searchby').val())
+}
+else if(USRC_flex_flag==5)//ROOM TYPE
+{$('#USRC_tble_flexdata').attr('width',675);
+$('#USRC_div_flexdata_result').width(690);
+USRC_tr += '<tr><th style="width:20px"></th><th style="width:200px">ROOM TYPE</th><th style="width:250px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>';
+}
+else if((USRC_flex_flag==7)||(USRC_flex_flag==6)||(USRC_flex_flag==3)||(USRC_flex_flag==4))//UNIT,START DATE, END DATE,PAYMENT
+{$('#USRC_tble_flexdata').attr('width',2800);
+$('#USRC_div_flexdata_result').width(2825);
+USRC_tr += '<tr><th style="width:20px"></th><th style="width:40px">UNIT NUMBER</th><th style="width:75px">START DATE</th><th style="width:75px">END DATE</th><th style="width:20px">OBSOLETE</th><th style="width:20px">EI/NON_EI</th><th style="width:40px">UNIT RENTAL</th><th style="width:50px">UNIT DEPOSIT</th><th style="width:140px">ACCOUNT NUMBER</th><th style="width:200px">ACCOUNT NAME</th><th style="width:40px">BANK CODE</th><th style="width:40px">BRANCH CODE</th><th style="width:350px">BANK ADDRESS</th><th style="width:500px">COMMENTS</th><th style="width:180px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>';  
+}
+else if((USRC_flex_flag==2)||(USRC_flex_flag==1)||(USRC_flex_flag==9))//STAMP DUTY AMT,INVENTORY CARD,ROOM TYPE WITH UNIT
+{
+$('#USRC_tble_flexdata').attr('width',1800);
+$('#USRC_div_flexdata_result').width(1830);
+USRC_tr +='<tr><th style="width:20px"></th><th style="width:40px">UNIT NUMBER</th>'+USRC_tr_common_stamp;
+}
+for(var j=0;j<USRC_flex_arr.length;j++)
+{
+if((USRC_flex_flag!=7)||((USRC_flex_flag==7)&&(j==0)))
+USRC_tr +='<tr><td><input type="radio" value="'+USRC_flex_arr[j][0]+'" class="USRC_class_flex" name="USRC_radio_flex" id = '+(j+1)+'></td>';
+else
+USRC_tr +='<tr><td></td>'
+for (var i = 1; i < USRC_flex_arr[j].length; i++) 
+{
+var USRC_null=USRC_flex_arr[j][i];
+if(USRC_null==null)
+USRC_tr += '<td></td>';
+else
+USRC_tr += '<td>' + USRC_null + '</td>';
+}
+USRC_tr +='</tr>';
+}
+$('#USRC_tble_flexdata').html(USRC_tr).show();
+var USRC_stamp_unitdetails=USRC_response_flex.USRC_obj_stamp_rowarray_val[0];
+var k=0;var q=75;
+if(USRC_stamp_unitdetails!=''){
+var USRC_tr_stampunit='<tr>'+USRC_tr_common_stamp;
+for(var u=0;u<USRC_response_flex.USRC_obj_stamp_rowarray_val[1];u++){
+USRC_tr_stampunit +='<tr>'
+for(var s=k;s<k+11;s++){
+if(USRC_stamp_unitdetails[s]==null)
+USRC_tr_stampunit +='<td></td>'
+else
+USRC_tr_stampunit +='<td>'+USRC_stamp_unitdetails[s]+'</td>'}
+k=k+11;
+q=q+25;
+USRC_tr_stampunit +='</tr>'
+}
+$('#USRC_tble_flexdata_stamp').html(USRC_tr_stampunit).show();
+$('#USRC_div_flexdata_stamp').css('height',q)
+}}
+else
+{
+if((USRC_flex_flag==6)||(USRC_flex_flag==3)){//START DATE,END DATE
+var USRC_sd_msg_errrep=USRC_errormsg_arr[19].replace('[START DATE]',$('#USRC_db_frmdate').val());
+var USRC_sd_errmsg=USRC_sd_msg_errrep.replace('[END DATE ]',$('#USRC_db_todate').val());
+}
+else if((USRC_flex_flag==4)||(USRC_flex_flag==2)){
+if(USRC_flex_flag==4){//PAYMENT
+var USRC_fromamt_errmsg=$('#USRC_tb_payment_fromamt').val();
+var USRC_toamt_errmsg=$('#USRC_tb_payment_toamt').val();
+}
+else if(USRC_flex_flag==2){//STAMPY DUTY AMT
+var USRC_fromamt_errmsg=$('#USRC_tb_dutyamt_fromamt').val();
+var USRC_toamt_errmsg=$('#USRC_tb_dutyamt_toamt').val();
+}
+var USRC_sd_errmsg=USRC_errormsg_arr[26].replace('[FRM AMT]',USRC_fromamt_errmsg);
+var USRC_sd_errmsg=USRC_sd_errmsg.replace('[TO AMT]',USRC_toamt_errmsg);
+}
+else if(USRC_flex_flag==1)//INVENTORY CARD
+{var USRC_sd_errmsg=USRC_errormsg_arr[33].replace('[CARD NO]',$('#USRC_lb_inventory_cardno').val());
+}
+else if(USRC_flex_flag==7)//UNIT
+{var USRC_sd_errmsg=USRC_errormsg_arr[21].replace('[UNIT NO]',$('#USRC_lb_all_searchby').val());
+}
+else if(USRC_flex_flag==9)//ROOM TYPE WITH UNIT
+{var USRC_sd_errmsg=USRC_errormsg_arr[32].replace('[ROOM TYPE]',$('#USRC_lb_all_searchby').val());
+}
+else if(USRC_flex_flag==5)//ROOM TYPE
+{var USRC_sd_errmsg=USRC_errormsg_arr[46];
+}
+else if(USRC_flex_flag==8)//STAMP TYPE
+{var USRC_sd_errmsg=USRC_errormsg_arr[47];
+}
+$('#USRC_div_msg').removeClass('srctitle');
+$('#USRC_div_msg').addClass('errormsg');
+$('#USRC_div_msg').text(USRC_sd_errmsg);
+}}
+else{
+$('#USRC_div_flex_searchbtn').hide();
+var USRC_unit_optionvalues=[];
+USRC_unit_optionvalues=USRC_response_flex.USRC_loaddata_searchby;
+if($('#USRC_lb_selectoption_unit').val()==7)
+USRC_glb_unitno_arr=USRC_unit_optionvalues;
+if(USRC_unit_optionvalues!='')
+{
+var USRC_unit_options='<option>SELECT</option>';
+for(var i = 0; i < USRC_unit_optionvalues.length; i++)
+{
+USRC_unit_options += '<option value="' + USRC_unit_optionvalues[i] + '">' + USRC_unit_optionvalues[i] + '</option>';
+}
+if($('#USRC_lb_selectoption_unit').val()==1){//INVENTORY CARD
+$('#USRC_lb_inventory_cardno').html(USRC_unit_options)
+$('#USRC_lb_inventory_cardno').val('SELECT');
+$('#USRC_lbl_errmsg_cardno').text('')}
+else{
+$('#USRC_lb_all_searchby').html(USRC_unit_options)
+$('#USRC_lb_all_searchby').val('SELECT');}
+}
+else{
+if($('#USRC_lb_selectoption_unit').val()==1){//INVENTORY CARD
+$('#USRC_lb_all_searchby').val('SELECT');}
+$("#USRC_tble_inventory").empty();
+$("#USRC_tble_typeofcard").empty();
+}}
+var USRC_parentfunc =USRC_response_flex.USRC_parentfunc_obj;
+if(USRC_parentfunc=='USRC_parent_updation')
+{
+if(USRC_flex_flag==5)//ROOM TYPE
+var USRC_replace_errmsg=USRC_errormsg_arr[44];
+else if(USRC_flex_flag==8)//STAMP TYPE
+var USRC_replace_errmsg=USRC_errormsg_arr[45];
+else
+var USRC_replace_errmsg=USRC_errormsg_arr[38].replace('[UNITNO]',USRC_obj_rowvalue.USRC_tr_first);
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_replace_errmsg}});
+}}
+else{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_errormsg_arr[48]}});}}
+/*---------------------------------CLICK FUNCTION FOR RADIO BUTTON-----------------------*/
+$(document).on('click','.USRC_class_flex',function()
+{$('#USRC_div_updateform').hide();
+if($("input[type='radio'][name='USRC_radio_flex']:checked").val()!=''){
+$('#USRC_tble_searchbtn').show();
+$('#USRC_btn_searchflex').removeAttr("disabled");
+}
+else
+{$('#USRC_btn_searchflex').attr("disabled", "disabled")
+}
+});
+/*---------------------------CLICK FUNCTION FOR SEARCH BUTTON FOR SHOWING UPDATE FORM------------------*/
+$(document).on('click','#USRC_btn_searchflex',function(){
+$('#USRC_div_updateform').show();
+USRC_flag_updbtn=0;
+USRC_flag_enddate=1;
+USRC_flag_roomtype=1;
+$('#USRC_btn_search').attr("disabled", "disabled")
+$('#USRC_btn_update').attr("disabled", "disabled")
+$('#USRC_tble_update_reset').hide();
+$('#USRC_tble_update').empty();
+var USRC_dataid = $('input:radio[name=USRC_radio_flex]:checked').val();
+var USRC_id_attr = $('input:radio[name=USRC_radio_flex]:checked').attr('id');
+$('#USRC_tble_flexdata tr:eq('+USRC_id_attr+')').each(function () {
+var $tds = $(this).find('td');
+USRC_obj_rowvalue={"USRC_tr_first":$tds.eq(1).text(),"USRC_tr_second":$tds.eq(2).text(),"USRC_tr_third":$tds.eq(3).text(),"USRC_tr_four":$tds.eq(4).text(),"USRC_tr_five":$tds.eq(5).text(),"USRC_tr_six":$tds.eq(6).text(),"USRC_tr_seven":$tds.eq(7).text(),"USRC_tr_eight":$tds.eq(8).text(),"USRC_tr_nine":$tds.eq(9).text(),"USRC_tr_ten":$tds.eq(10).text(),"USRC_tr_eleven":$tds.eq(11).text(),"USRC_tr_twelve":$tds.eq(12).text(),"USRC_tr_thirteen":$tds.eq(13).text()}
+var USRC_upd_tr='';
+var USRC_lb_selectoption_unit=$('#USRC_lb_selectoption_unit').val();
+var USRC_unitid=$tds.eq(0).text();
+if((USRC_lb_selectoption_unit==3)||(USRC_lb_selectoption_unit==4)||(USRC_lb_selectoption_unit==6)||(USRC_lb_selectoption_unit==7))
+{USRC_upd_tr +='<table><tr><td style="width:160px"><label>UNIT NUMBER</label><em>*</em></td><td style="width:240px"><input style="width:40px" id="USRC_tb_unitno" value="'+$tds.eq(1).text()+'" name="USRC_tb_unitno" type="USRC_tb_unitno" maxlength=4  style="width:40" class="USRC_class_title_nums USRC_class_updvalidation numonlyzero"></td><td><label id="USRC_lbl_alreadyexists" class="errormsg"></label></td></tr><tr><td><label>START DATE</label><em>*</em></td><td><input value="'+$tds.eq(2).text()+'" type="text" name="USRC_db_startdate_update" id="USRC_db_startdate_update" style="width:75px" class="USRC_class_updvalidation datemandtry"/></td></tr><tr><td>END DATE<em>*</em></td><td><input value="'+$tds.eq(3).text()+'" type="text" name="USRC_db_enddate_update" id="USRC_db_enddate_update" style="width:75px" class="USRC_class_updvalidation datemandtry"/><input id ="USRC_cb_obsolete" type="checkbox" name="USRC_cb_obsolete" class="USRC_class_obsolete USRC_class_updvalidation" disabled><label id="USRC_lbl_obsolete">OBSOLETE</label></td><td><label id="USRC_lbl_obsolete_errmsg" class="errormsg"></label></td></tr><tr><td><label>UNIT RENTAL</label><em>*</em></td><td><input value="'+$tds.eq(6).text()+'" id= "USRC_tb_unitreltal" type = "text" name="USRC_tb_unitreltal" maxlength=4 style="width:40px" class="numonly USRC_class_title_nums USRC_class_updvalidation"></td></tr><tr><td><label>UNIT DEPOSIT</label></td><td><input value="'+$tds.eq(7).text()+'" id="USRC_tb_unitdeposit" type="text" name = "USRC_tb_unitdeposit" maxlength=5 style="width:45px" class="numonly USRC_class_title_nums USRC_class_updvalidation"></td></tr><tr><td><label>ACCOUNT NUMBER</label></td><td><input value="'+$tds.eq(8).text()+'" id ="USRC_tb_accnoid" type="USRC_tb_accnoid" name="USRC_tb_accnoid" class ="numonlyzero USRC_class_updvalidation USRC_class_title_nums" maxlength=15 style="width:130px"></td></tr><tr><td><label>ACCOUNT NAME</label></td><td><input id="USRC_tb_accname" type="text" name="USRC_tb_accname" value="'+$tds.eq(9).text()+'" maxlength=25 class="general USRC_class_updvalidation"></td></tr><tr><td><label>BANK CODE</label></td><td> <input id = "USRC_tb_bankcodeid" type="text" name="USRC_tb_bankcodeid"  maxlength=5 value="'+$tds.eq(10).text()+'" style="width:45px" class="numonlyzero USRC_class_title_nums USRC_class_updvalidation" ></td></tr><tr><td><label>BRANCH CODE</label></td><td> <input id ="USRC_tb_branchcode" type="text" name="USRC_tb_branchcode" value="'+$tds.eq(11).text()+'" maxlength=5 style="width:45px" class="numonlyzero USRC_class_title_nums USRC_class_updvalidation"></td></tr></table><table><tr><td><label>BANK ADDRESS</label></td><td><textarea id="USRC_tb_bankaddr" name="USRC_tb_bankaddr" class="USRC_class_updvalidation general" >'+$tds.eq(12).text()+'</textarea></td></tr><tr><td style="width:160px"><label>COMMENTS</label></td><td><textarea id="USRC_ta_comments" name="USRC_ta_comments USRC_class_ta_cmts" class="USRC_class_updvalidation">'+$tds.eq(13).text()+'</textarea></td></tr><tr><td>EI/NON_EI</td><td><input id ="USRC_cb_nonei" type="checkbox" name="USRC_cb_nonei" class="USRC_class_updvalidation"></td></tr></table>';
+$(USRC_upd_tr).appendTo($("#USRC_tble_update"));
+$("#USRC_db_startdate_update").datepicker({dateFormat: "dd-mm-yy",changeYear:true,changeMonth:true,maxDate:'+2Y' });
+$("#USRC_db_enddate_update").datepicker({dateFormat: "dd-mm-yy" ,changeYear:true,changeMonth:true,maxDate:'+2Y' });
+if($tds.eq(8).text()!='')
+$('#USRC_tb_accnoid').attr("size",$tds.eq(8).text().length+1);
+if($tds.eq(9).text()!='')
+$('#USRC_tb_accname').attr("size",$tds.eq(9).text().length+3);
+if($tds.eq(12).text()!='')
+$('#USRC_tb_bankaddr').attr("size",$tds.eq(12).text().length+2);
+USRC_flag_roomtype=1;USRC_flag_access=1;
+$(".preloader").show();//CHECKING UNIT NO IF TRANSACTION IS THERE
+google.script.run.withSuccessHandler(USRC_success_unitno_trans).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists($('#USRC_tb_unitno').val(),'','USRC_flag_transac_check_unitno','');
+USRC_flag_unitno=1;
+if($tds.eq(5).text()=='X')
+$('#USRC_cb_nonei').prop('checked',true);
+var USRC_obsolete=$tds.eq(4).text();
+var USRC_startdate_val=$tds.eq(2).text();
+if($tds.eq(4).text()=='X')
+$('#USRC_cb_obsolete').prop('checked',true);
+else if($tds.eq(4).text()==''){
+$("#USRC_cb_obsolete").hide();//SET MAX DATE FOR SDATE
+$("#USRC_lbl_obsolete").hide();
+}//SET MIN DATE FOR EDATE
+var USRC_startdate = new Date( Date.parse( USRC_FormTableDateFormat(USRC_startdate_val)) ); 
+USRC_startdate.setDate( USRC_startdate.getDate());    
+var USRC_newsDate = USRC_startdate.toDateString(); 
+USRC_newsDate = new Date( Date.parse( USRC_newsDate ) ); 
+if(USRC_startdate.getMonth()==0)
+var USRC_month = 11
+else
+var USRC_month = (USRC_startdate.getMonth() - 1) % 12;
+if(USRC_startdate.getMonth()==0)
+var USRC_startdate_year=USRC_startdate.getFullYear()-1;
+else 
+var USRC_startdate_year=USRC_startdate.getFullYear();
+var USRC_arr={0:[31,31],1:[31,28],2:[28,31],3:[31,30],4:[30,31],5:[31,30],6:[30,31],7:[31,31],8:[31,30],9:[30,31],10:[31,30],11:[30,31]};
+var USRC_date=USRC_startdate.getDate();
+if(USRC_date!='Invalid Date'){
+var USRC_year=USRC_startdate.getFullYear();
+var USRC_leapyear=USRC_year%4;
+if(USRC_leapyear==0){
+USRC_arr[2][0]=29;
+USRC_arr[1][1]=29;
+}
+if(USRC_arr[USRC_month][0]==USRC_startdate.getDate())
+var USRC_date=USRC_arr[USRC_month][1];
+}
+var USRC_enddate_unit =  new Date(USRC_startdate_year,USRC_month,USRC_date);
+$('#USRC_db_startdate_update').datepicker("option","minDate",USRC_enddate_unit);
+var  USRC_enddate_change = new Date(Date.parse(USRC_FormTableDateFormat(USRC_startdate_val)));
+USRC_enddate_change.setDate( USRC_enddate_change.getDate()+1);    
+if((USRC_obsolete=='X')&&(new Date(Date.parse(new Date()))<USRC_enddate_change)){
+$('#USRC_cb_obsolete').removeAttr("disabled");
+var USRC_obsolete_upd='X';
+}
+else if((USRC_obsolete=='X')&&(new Date( Date.parse(new Date()))>USRC_enddate_change)){
+$('#USRC_cb_obsolete').attr("disabled","disabled")
+var USRC_obsolete_upd='X';
+}}
+else if(USRC_lb_selectoption_unit==5)//ROOM TYPE
+{USRC_upd_tr +='<tr><td style="width:160px"><label>ROOM TYPE</label></td><td style="width:350px"><input id ="USRC_tb_sep_roomtype" value="'+$tds.eq(1).text()+'" type="text" name="USRC_tb_sep_roomtype" maxlength=30 class="general USRC_class_sep_type USRC_class_updvalidation"></td><td><label id="USRC_lbl_roomstamp_errmsg" class="errormsg"></label></td></tr>';
+$(USRC_upd_tr).appendTo($("#USRC_tble_update"));
+}
+else if(USRC_lb_selectoption_unit==8)//STAMP TYPE
+{USRC_upd_tr +='<tr><td style="width:160px">STAMPDUTY TYPE</td><td style="width:200px"><input id ="USRC_tb_sep_stamptype" type="text" value="'+$tds.eq(1).text()+'" name="USRC_tb_sep_stamptype" style="width:110px" class="alphaonly USRC_class_title_alpha USRC_class_sep_type USRC_class_updvalidation" maxlength=12></td><td><label id="USRC_lbl_roomstamp_errmsg" class="errormsg"></label></td></tr>';
+$(USRC_upd_tr).appendTo($("#USRC_tble_update"));
+}
+else if((USRC_lb_selectoption_unit==2)||(USRC_lb_selectoption_unit==1)||(USRC_lb_selectoption_unit==9)||(USRC_lb_selectoption_unit==7)){
+USRC_upd_tr +='<table><tr><td style="width:160px"><label>UNIT NUMBER</label><em>*</em></td><td><input value="'+$tds.eq(1).text()+'" style="width:40px" type="text" id="USRC_tb_accunitno" name="USRC_tb_accunitno" class="rdonly USRC_class_updvalidation" readonly></td></tr><tr><td><label>ACCESS CARD</label></td><td><input value="'+$tds.eq(2).text()+'" id ="USRC_tb_access" type="text" name="USRC_tb_access" maxlength=7 style="width:60px" class="numonly USRC_class_title_nums USRC_class_updvalidation"><input type="checkbox" id="USRC_cb_lost" name="USRC_cb_lost" class="USRC_class_updvalidation" hidden><label id="USRC_lbl_lost" hidden>LOST</label><input type="checkbox" id="USRC_cb_inventory" name="USRC_cb_inventory" class="USRC_class_updvalidation" hidden><label id="USRC_lbl_inventory" hidden>INVENTORY</label></td><td><label id="USRC_lbl_alreadyexists" class="errormsg"></label></td></tr><tr><td><label>ROOM TYPE</label></td><td><select id="USRC_lb_roomtype" name="USRC_lb_roomtype" value="'+$tds.eq(6).text()+'" class="USRC_class_updvalidation"><option>SELECT</option></select></td><td><label id="USRC_lbl_alreadyexists_roomtype" class="errormsg"></label></td></tr><tr><td><label>STAMP DUTY DATE</label></td><td><input id = "USRC_db_stampdate" type="text" name="USRC_db_stampdate" style="width:75px" value="'+$tds.eq(7).text()+'" class="USRC_class_updvalidation datenonmandtry"></td></tr><tr><td><label>STAMP DUTY TYPE</label></td><td><select style="width:110px" id="USRC_lb_stamptype" name="USRC_lb_stamptype" value="'+$tds.eq(8).text()+'" class="USRC_class_updvalidation datenonmandtry"><option>SELECT</option></select></td></tr><tr><td><label>STAMP DUTY AMOUNT</label></td><td><input type="text" name="USRC_tb_stampamt" value="'+$tds.eq(9).text()+'" id="USRC_tb_stampamt" maxlength=4 style="width:65px" class ="amtonly USRC_class_title_nums USRC_class_updvalidation"/></td></tr></table><table><tr><td style="width:160px"><label>COMMENTS</label></td><td><textarea id="USRC_ta_accesscomment" name="USRC_ta_accesscomment" class="USRC_class_updvalidation USRC_class_ta_cmts">'+$tds.eq(10).text()+'</textarea></td></tr></table>';
+$(USRC_upd_tr).appendTo($("#USRC_tble_update"));
+$(".preloader").show();
+$("#USRC_div_updateform").hide();
+if(($tds.eq(2).text()=='')||(USRC_lb_selectoption_unit!=1)){
+$('#USRC_lbl_lost').hide();
+$('#USRC_cb_lost').hide();
+$('#USRC_lbl_inventory').hide();
+$('#USRC_cb_inventory').hide();
+}
+if($tds.eq(2).text()==''){
+$('#USRC_tb_access').prop("readonly", true);
+$('#USRC_tb_access').addClass("rdonly")}
+if($tds.eq(4).text()=='X'){
+$('#USRC_cb_inventory').prop('checked',true);
+$('#USRC_cb_lost').prop("checked", false)
+$('#USRC_cb_lost').removeAttr("disabled");
+}
+if($tds.eq(5).text()=='X'){
+$('#USRC_cb_lost').prop('checked',true);
+$('#USRC_cb_inventory').prop("checked", false)
+}
+USRC_flag_unitno=1;USRC_flag_access=1;
+USRC_accesscard_no=$('#USRC_tb_access').val()
+if((($tds.eq(4).text()=='X')&&($tds.eq(2).text()!=''))||(($tds.eq(5).text()=='X')&&($tds.eq(2).text()!=''))){
+$('#USRC_lbl_lost').show();
+$('#USRC_cb_lost').show();
+$('#USRC_lbl_inventory').show();
+$('#USRC_cb_inventory').show();}
+$("#USRC_div_updateform").hide();//LOAD STAMPTYPE,LOAD ROOMTYPE
+google.script.run.withSuccessHandler(USRC_success_stamp_room).withFailureHandler(USRC_onFailure).USRC_roomstamp_unitno($("#USRC_tb_accunitno").val());
+if($tds.eq(6).text()==''){
+$('#USRC_lb_roomtype').val('SELECT');}
+if($tds.eq(8).text()==''){
+$('#USRC_lb_stamptype').val('SELECT');}
+if($tds.eq(7).text()==''){
+$('#USRC_db_stampdate').addClass("rdonly");}
+if($tds.eq(9).text()==''){
+$('#USRC_tb_stampamt').addClass("rdonly");}
+}
+$('#USRC_tble_update_reset').show();
+$("#USRC_div_updateform").show();
+/*------------------------VALIDATION FOR NUMBERS,ALPHABETS & AMOUNT FIELDS---------------------*/
+$(".numonlyzero").doValidation({rule:'numbersonly',prop:{leadzero:true}});
+$(".general").doValidation({rule:'general',prop:{whitespace:true,autosize:true}});
+$(".numonly").doValidation({rule:'numbersonly'});
+$(".alphaonly").doValidation({rule:'alphanumeric'});
+$("#USRC_tb_stampamt").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+$("#USRC_db_stampdate").datepicker({dateFormat: "dd-mm-yy" ,changeYear: true,changeMonth: true });
+$(".USRC_class_title_nums").prop("title",USRC_errormsg_arr[1]);
+$(".USRC_class_title_alpha").prop("title",USRC_errormsg_arr[0]);
+$(".USRC_class_ta_cmts").doValidation({rule:'general',prop:{uppercase:false}});
+function USRC_success_unitno_trans(USRC_response_unitno_trans){
+$(".preloader").hide();
+var  USRC_startdate_change = new Date(Date.parse(USRC_response_unitno_trans.USRC_objarr_custexpense[0]));
+USRC_startdate_change.setDate( USRC_startdate_change.getDate()  ); //+ 1
+var USRC_newDate_start = USRC_startdate_change.toDateString(); 
+USRC_newDate_start = new Date( Date.parse( USRC_newDate_start ) );
+$('#USRC_db_startdate_update').datepicker("option","maxDate",USRC_newDate_start);
+var  USRC_enddate_change = new Date(Date.parse(USRC_response_unitno_trans.USRC_objarr_custexpense[1]));
+USRC_enddate_change.setDate( USRC_enddate_change.getDate()  ); //+ 1
+var USRC_newDate_end = USRC_enddate_change.toDateString(); 
+USRC_newDate_end = new Date( Date.parse( USRC_newDate_end ) );
+$('#USRC_db_enddate_update').datepicker("option","minDate",USRC_newDate_end);
+USRC_glb_unitno_arr=USRC_response_unitno_trans.USRC_obj_loadunitno;
+if(USRC_response_unitno_trans.USRC_truefalse_flag==true){
+$('#USRC_tb_unitno').prop('readonly', true);
+$('#USRC_tb_unitno').addClass('rdonly');}
+//CHECK TRANSACTION FOR SDATE,IF NO TRANS MEANS NOT SET MIN DATE
+}
+/*----------------------------SUCCESS FUNCTION FOR LOAD LISTBOX FOR STAMP & ROOM TYPE------------------------------------------------*/
+function USRC_success_stamp_room(USRC_response_stamp_room){
+var USRC_stamp_options_arr=USRC_response_stamp_room.USRC_stamptype;
+var USRC_room_options_arr=USRC_response_stamp_room.USRC_roomtype;
+var USRC_stamp_options ='<option>SELECT</option>';
+for (var i = 0; i < USRC_stamp_options_arr.length; i++)
+{
+USRC_stamp_options += '<option value="' + USRC_stamp_options_arr[i] + '">'+ USRC_stamp_options_arr[i]+' </option>';
+} 
+if($tds.eq(8).text()!='')
+USRC_stamp_options +='<option value="'+$tds.eq(8).text()+ '">'+ $tds.eq(8).text()+' </option>';
+var USRC_room_options ='<option>SELECT</option>';
+for (var i = 0; i < USRC_room_options_arr.length; i++)
+{
+USRC_room_options += '<option value="' + USRC_room_options_arr[i] + '">'+ USRC_room_options_arr[i]+' </option>';
+} 
+if($tds.eq(6).text()!='')
+USRC_room_options +='<option value="'+$tds.eq(6).text()+ '">'+ $tds.eq(6).text()+' </option>';
+$('#USRC_lb_roomtype').html(USRC_room_options);
+$('#USRC_lb_stamptype').html(USRC_stamp_options);
+if($tds.eq(6).text()!='')
+$('#USRC_lb_roomtype').val($tds.eq(6).text())
+if($tds.eq(8).text()!='')
+$('#USRC_lb_stamptype').val($tds.eq(8).text())
+$("#USRC_div_updateform").show();
+google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists(USRC_obj_rowvalue.USRC_tr_second,'','USRC_transac_check_accesscard','');
+}});
+});
+/*--------------------------------CHANGE FUNCTION FOR END DATE VALIDATION--------------------------*/
+$(document).on('change','#USRC_db_startdate_update',function(){
+var USRC_sdate_onchange=new Date(Date.parse(USRC_FormTableDateFormat($('#USRC_db_startdate_update').val())));
+var USRC_edate_onchange=new Date(Date.parse(USRC_FormTableDateFormat($('#USRC_db_enddate_update').val())));
+USRC_sdate_onchange.setDate( USRC_sdate_onchange.getDate()+1);    
+var USRC_newDate = USRC_sdate_onchange.toDateString(); 
+USRC_newDate = new Date( Date.parse( USRC_newDate ) ); 
+$('#USRC_db_enddate_update').datepicker("option","minDate",USRC_newDate);
+});
+/*--------------------------------CHANGE FUNCTION FOR END DATE VALIDATION--------------------------*/
+$(document).on('change','#USRC_db_enddate_update',function(){
+var USRC_enddate_oldvalue=new Date(Date.parse(USRC_FormTableDateFormat(USRC_obj_rowvalue.USRC_tr_third)));
+var USRC_enddate_onchange=new Date(Date.parse(USRC_FormTableDateFormat($('#USRC_db_enddate_update').val())));
+if((USRC_enddate_onchange>new Date(Date.parse(new Date())))&&(USRC_obj_rowvalue.USRC_tr_four=='X'))
+$('#USRC_cb_obsolete').removeAttr("disabled");
+else if((USRC_enddate_onchange<new Date(Date.parse(new Date())))&&(USRC_obj_rowvalue.USRC_tr_four=='X')){
+$('#USRC_cb_obsolete').attr("disabled","disabled");
+$('#USRC_cb_obsolete').prop("checked",true);
+}});
+/*-----------------------------BLUR FUNCTION FOR ROOM TYPE,STAMP TYPE TEXTBOX-------------------------*/
+$(document).on('blur','.USRC_class_sep_type',function(){
+USRC_flag_updbtn=0
+if($('#USRC_tb_sep_roomtype').val()!=undefined){
+var USRC_roomstamptype_val=$('#USRC_tb_sep_roomtype').val();
+var USRC_parentfunc_already=5
+}
+else if($('#USRC_tb_sep_stamptype').val()!=undefined){
+var USRC_roomstamptype_val=$('#USRC_tb_sep_stamptype').val();
+var USRC_parentfunc_already=8
+}
+if((($('#USRC_tb_sep_stamptype').val()==undefined)&&($('#USRC_tb_sep_roomtype').val()!='')&&(($('#USRC_tb_sep_roomtype').val()).trim()!=USRC_obj_rowvalue.USRC_tr_first))||(($('#USRC_tb_sep_stamptype').val()!='')&&($('#USRC_tb_sep_roomtype').val()==undefined)&&(($('#USRC_tb_sep_stamptype').val()).trim()!=USRC_obj_rowvalue.USRC_tr_first))){
+$(".preloader").show();
+google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists(USRC_roomstamptype_val,'',USRC_parentfunc_already,'');
+}
+if(($('#USRC_tb_sep_roomtype').val()=='')||($('#USRC_tb_sep_stamptype').val()=='')){
+$("#USRC_lbl_roomstamp_errmsg").text('')
+$("input").removeClass('invalid');
+}});
+/*--------------------------------SUCCESS FUNCTION FOR INVENTORY CARDS,ACCESS CARD,UNIT NO,ALREADY EXISTS FOR ROOMTYPE STAMP TYPE-------------------------*/
+function USRC_success_alreadyexists(USRC_response_Cardnumbers){
+$(".preloader").hide();
+var USRC_cardarray_fetch = [] ;
+var USRC_card_unitno_roomstamp=USRC_response_Cardnumbers.USRC_flag_check;
+var USRC_flag_roomstamp=USRC_response_Cardnumbers.USRC_truefalse_flag;
+USRC_cardarray_fetch = USRC_response_Cardnumbers.USRC_loaddata_searchby;
+if(USRC_card_unitno_roomstamp=='USRC_transac_check_accesscard'){
+USRC_accesscard_transaction=USRC_flag_roomstamp;
+if(USRC_accesscard_transaction==false){
+$('#USRC_cb_inventory').removeAttr("disabled");}
+else if((USRC_accesscard_transaction==true)&&(USRC_obj_rowvalue.USRC_tr_five=='X')){
+$('#USRC_cb_lost').attr("disabled", "disabled")
+$('#USRC_cb_inventory').attr("disabled", "disabled")}}
+if(USRC_card_unitno_roomstamp=='USRC_flag_check_cardunitno')
+{$("#USRC_tble_inventory").empty();
+if( USRC_cardarray_fetch.length == 0){
+$('#USRC_lbl_errmsg_cardno').text(USRC_errormsg_arr[34])
+}
+else{
+$('#USRC_lbl_errmsg_cardno').text('')
+var USRC_card_td='';
+var USRC_inventory_options ='<option>SELECT</option>';
+for (var i = 0; i < USRC_cardarray_fetch.length; i++)
+{
+USRC_inventory_options += '<option value="' + USRC_cardarray_fetch[i] + '">' + USRC_cardarray_fetch[i] + '</option>';
+}
+USRC_card_td +='<tr id="USRC_tr_inventory_cardno"><td style="width:180px">CARD NUMBER</td><td><select id="USRC_lb_inventory_cardno" name="USRC_lb_inventory_cardno" class="USRC_class_inventory_cardno">'+USRC_inventory_options+'</select></td></tr>'
+}
+$(USRC_card_td).appendTo($("#USRC_tble_inventory"));
+}
+else
+{if(USRC_flag_roomstamp==false)
+{
+$("input").removeClass('invalid');
+if((USRC_card_unitno_roomstamp==5)||(USRC_card_unitno_roomstamp==8))
+{$("#USRC_lbl_roomstamp_errmsg").text('')
+USRC_flag_updbtn=1;
+}
+else if(USRC_card_unitno_roomstamp=='USRC_flag_check_accesscard'){
+$("#USRC_lbl_alreadyexists").text('')
+$('#USRC_cb_inventory,#USRC_cb_lost').prop('checked',false);
+USRC_flag_updbtn=1;
+if(USRC_obj_rowvalue.USRC_tr_four=='X')
+$('#USRC_cb_inventory').prop('checked',true);
+else if(USRC_obj_rowvalue.USRC_tr_five=='X')
+$('#USRC_cb_lost').prop('checked',true);
+if((USRC_accesscard_transaction==true)&&(USRC_obj_rowvalue.USRC_tr_five=='X'))
+$('#USRC_cb_lost').attr("disabled", "disabled")
+else if((USRC_accesscard_transaction==false)||(USRC_obj_rowvalue.USRC_tr_four=='X')){
+$('#USRC_cb_inventory').removeAttr("disabled")
+$('#USRC_cb_lost').removeAttr("disabled")}
+}
+else if(USRC_card_unitno_roomstamp=='USRC_transac_check_roomtype'){
+$("#USRC_lbl_alreadyexists_roomtype").text('')
+$("#USRC_lb_roomtype").removeClass('invalid');
+USRC_flag_roomtype=1;
+}
+}
+else if(USRC_flag_roomstamp==true){
+if(USRC_card_unitno_roomstamp=='USRC_flag_check_unitno')
+{
+$("#USRC_lbl_alreadyexists").text(USRC_errormsg_arr[8])
+USRC_flag_unitno=0;
+$("#USRC_tb_unitno").addClass('invalid');
+}
+else if(USRC_card_unitno_roomstamp=='USRC_flag_check_accesscard'){
+USRC_flag_access =0;
+$("#USRC_lbl_alreadyexists").text(USRC_errormsg_arr[9])
+$("#USRC_tb_access").addClass('invalid');
+}
+else if(USRC_card_unitno_roomstamp==5){
+USRC_flag_updbtn=0;
+$("#USRC_lbl_roomstamp_errmsg").text(USRC_errormsg_arr[29])
+$("#USRC_tb_sep_roomtype").addClass('invalid');
+}
+else if(USRC_card_unitno_roomstamp==8){
+USRC_flag_updbtn=0;
+$("#USRC_lbl_roomstamp_errmsg").text(USRC_errormsg_arr[37])
+$("#USRC_tb_sep_stamptype").addClass('invalid');
+}
+else if(USRC_card_unitno_roomstamp=='USRC_transac_check_roomtype'){
+$("#USRC_lbl_alreadyexists_roomtype").text(USRC_errormsg_arr[42])
+$("#USRC_lb_roomtype").addClass('invalid');
+USRC_flag_roomtype=0;
+}
+}
+if((USRC_flag_updbtn==1)&&(USRC_flag_roomtype==1)&&(USRC_flag_access==1)&&(USRC_flag_unitno==1)&&(USRC_flag_enddate==1))
+$("#USRC_btn_update").removeAttr("disabled");
+else
+$('#USRC_btn_update').attr("disabled", "disabled")
+}}
+$(document).on('blur','#USRC_tb_bankaddr',function(){
+  return $(this).val().length < 251;
+});
+/*-----------------------------------------------VALIDATION FOR UNIT NO UPDATION---------------------------------------*/
+$(document).on('blur','#USRC_tb_unitno',function(){
+if(($("#USRC_tb_unitno").val()==USRC_obj_rowvalue.USRC_tr_first)||($("#USRC_tb_unitno").val().length==0))
+{$("#USRC_tb_unitno").removeClass('invalid');
+$("#USRC_lbl_alreadyexists").text('')
+}else if(($("#USRC_tb_unitno").val().length<4)&&($("#USRC_tb_unitno").val().length>0))
+{$("#USRC_tb_unitno").addClass('invalid');
+$("#USRC_lbl_alreadyexists").text(USRC_errormsg_arr[6])
+}else if(($("#USRC_tb_unitno").val().length>=4)&&($("#USRC_tb_unitno").val()!=USRC_obj_rowvalue.USRC_tr_first )&&(parseInt($("#USRC_tb_unitno").val())!=0)){
+var USRC_flag_unitnumber=1;
+for(var i=0;i<=USRC_glb_unitno_arr.length;i++){
+if($("#USRC_tb_unitno").val()==USRC_glb_unitno_arr[i])
+{
+var USRC_flag_unitnumber=0;
+break;
+}}
+if(USRC_flag_unitnumber==0){
+$("#USRC_lbl_alreadyexists").text(USRC_errormsg_arr[8])
+USRC_flag_unitno=0;
+$("#USRC_tb_unitno").addClass('invalid');
+}
+else
+{
+USRC_flag_unitno=1;
+$("#USRC_tb_unitno").removeClass('invalid');
+$("#USRC_lbl_alreadyexists").text('')
+}}
+});
+/*----------------------------------------CLICK FUNCTION FOR LOST AND INVENTORY  CHECKBOX-------------------------------*/
+$(document).on('click','#USRC_cb_lost',function(){
+if($('#USRC_cb_lost').is(":checked"))
+$('#USRC_cb_inventory').prop("checked", false)
+else
+$('#USRC_cb_inventory').prop("checked", true)
+});
+$(document).on('click','#USRC_cb_inventory',function(){
+if ($('#USRC_cb_inventory').is(":checked"))
+$('#USRC_cb_lost').prop("checked", false)
+else
+$('#USRC_cb_lost').prop("checked", true)
+});
+/*--------------------------VALIDATION FOR ACCESS CARD UPDATION---------------------------------------*/
+$(document).on('blur','#USRC_tb_access',function(){
+if($("#USRC_tb_access").val()==USRC_obj_rowvalue.USRC_tr_second)
+USRC_flag_access=1;
+if(($("#USRC_tb_access").val().length==0)&&(USRC_accesscard_transaction==true)){
+USRC_flag_access=0;
+$("#USRC_lbl_alreadyexists").text(USRC_errormsg_arr[41])
+$("#USRC_tb_access").addClass('invalid');}
+else if(($("#USRC_tb_access").val().length==0)&&(USRC_accesscard_transaction==false)){
+$("#USRC_lbl_alreadyexists").text('')
+USRC_flag_access=1;USRC_flag_updbtn=1;
+$('#USRC_cb_lost').attr("disabled", "disabled")
+$('#USRC_cb_inventory').attr("disabled", "disabled")
+$('#USRC_cb_inventory').prop("checked", false)
+$('#USRC_cb_lost').prop("checked", false)
+}
+if((($("#USRC_tb_access").val().length==0)&&(USRC_accesscard_transaction==false))||(($("#USRC_tb_access").val()==USRC_obj_rowvalue.USRC_tr_second)&&(USRC_accesscard_transaction!=false))){
+$("#USRC_tb_access").removeClass('invalid');
+$("#USRC_lbl_alreadyexists").text('')}
+else if(($("#USRC_tb_access").val().length<4)&&(USRC_accesscard_transaction==false))
+{$("#USRC_tb_access").addClass('invalid');
+USRC_flag_access=0;
+$("#USRC_lbl_alreadyexists").text(USRC_errormsg_arr[7])
+}
+else if(($("#USRC_tb_access").val().length>=4)&&(USRC_obj_rowvalue.USRC_tr_second!=$("#USRC_tb_access").val())){
+$(".preloader").show();
+USRC_flag_access=1;
+google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists($("#USRC_tb_access").val(),'','USRC_flag_check_accesscard','');
+}});
+/*--------------------------VALIDATION FOR ROOM TYPE UPDATION---------------------------------------*/
+$(document).on('change','#USRC_lb_roomtype',function(){
+if(($("#USRC_lb_roomtype").val()=='SELECT')&&(USRC_obj_rowvalue.USRC_tr_six!='')){
+USRC_flag_roomtype=0;
+$(".preloader").show();
+google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists(USRC_obj_rowvalue.USRC_tr_second,'','USRC_transac_check_roomtype','');
+}else{
+$("#USRC_lbl_alreadyexists_roomtype").text('')
+$("#USRC_lb_roomtype").removeClass('invalid');
+USRC_flag_roomtype=1;}});
+/*--------------------------FUNCTION FOR UPDATION---------------------------------------*/
+$(document).on('click','#USRC_btn_update',function(){
+$(".preloader").show();
+if ($('#USRC_cb_nonei').is(":checked"))
+var USRC_cb_nonei='X'
+else
+var USRC_cb_nonei=''
+if ($('#USRC_cb_obsolete').is(":checked"))
+var USRC_cb_obsolete='X'
+else
+var USRC_cb_obsolete=''
+if ($('#USRC_cb_inventory').is(":checked"))
+var USRC_cb_inventory='X'
+else
+var USRC_cb_inventory=''
+if ($('#USRC_cb_lost').is(":checked"))
+var USRC_cb_lost='X'
+else
+var USRC_cb_lost=''
+var USRC_obj_flex={"USRC_parent_updation":'USRC_parent_updation',"USRC_lb_selectoption_unit":$('#USRC_lb_selectoption_unit').val(),"USRC_tb_dutyamt_fromamt":$('#USRC_tb_dutyamt_fromamt').val(),"USRC_tb_dutyamt_toamt":$('#USRC_tb_dutyamt_toamt').val(),"USRC_tb_payment_fromamt":$('#USRC_tb_payment_fromamt').val(),"USRC_tb_payment_toamt":$('#USRC_tb_payment_toamt').val(),"USRC_db_frmdate":$('#USRC_db_frmdate').val(),"USRC_db_todate":$('#USRC_db_todate').val(),"USRC_lb_all_searchby":$('#USRC_lb_all_searchby').val(),"USRC_lb_inventory_cardno":$('#USRC_lb_inventory_cardno').val()}
+var USRC_obj_formvalues={"USRC_lb_selectoption_unit":$('#USRC_lb_selectoption_unit').val(),"USRC_radio_flex":$('input:radio[name=USRC_radio_flex]:checked').val(),"USRC_db_startdate_update":$('#USRC_db_startdate_update').val(),"USRC_tb_unitno":$('#USRC_tb_unitno').val(),"USRC_db_enddate_update":$('#USRC_db_enddate_update').val(),"USRC_tb_unitdeposit":$('#USRC_tb_unitdeposit').val(),"USRC_hidden_obsolete":USRC_cb_obsolete,"USRC_tb_unitreltal":$('#USRC_tb_unitreltal').val(),"USRC_tb_accnoid":$('#USRC_tb_accnoid').val(),"USRC_tb_accname":$('#USRC_tb_accname').val(),"USRC_tb_bankcodeid":$('#USRC_tb_bankcodeid').val(),"USRC_tb_branchcode":$('#USRC_tb_branchcode').val(),"USRC_cb_nonei":USRC_cb_nonei,"USRC_tb_bankaddr":$('#USRC_tb_bankaddr').val(),"USRC_tb_sep_roomtype":$('#USRC_tb_sep_roomtype').val(),"USRC_tb_sep_stamptype":$('#USRC_tb_sep_stamptype').val(),"USRC_ta_comments":$('#USRC_ta_comments').val(),"USRC_tb_accunitno":$('#USRC_tb_accunitno').val(),"USRC_lb_stamptype":$('#USRC_lb_stamptype').val(),"USRC_lb_roomtype":$('#USRC_lb_roomtype').val(),"USRC_tb_stampamt":$('#USRC_tb_stampamt').val(),"USRC_db_stampdate":$('#USRC_db_stampdate').val(),"USRC_tb_access":$('#USRC_tb_access').val(),"USRC_ta_accesscomment":$('#USRC_ta_accesscomment').val(),"USRC_cb_lost":USRC_cb_lost,"USRC_cb_inventory":USRC_cb_inventory,"USRC_typeofCard":$('#USRC_lb_typeofcard').val()}
+google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_update(USRC_obj_formvalues,USRC_obj_rowvalue,USRC_obj_flex);
+});
+/*--------------------------FUNCTION FOR RESET---------------------------------------*/
+$(document).on('click','#USRC_btn_reset',function(){
+if($('#USRC_lb_selectoption_unit').val()==1)
+$('#USRC_tb_access').val('');
+$('#USRC_lbl_alreadyexists').text('');
+$("#USRC_lbl_alreadyexists_roomtype").text('')
+$("#USRC_lbl_roomstamp_errmsg").text('')
+$("#USRC_lbl_obsolete_errmsg").text('');
+$('input:not(#USRC_lb_selectoption_unit,#USRC_tb_accunitno,#USRC_tb_dutyamt_fromamt,#USRC_tb_dutyamt_toamt,#USRC_lb_inventory_cardno,#USRC_db_frmdate,#USRC_tb_payment_fromamt,#USRC_db_todate,#USRC_tb_payment_toamt,.USRC_class_flex,[readonly],[disabled])')
+.not(':button')
+.val('')
+.removeAttr('checked')
+.removeAttr('selected');
+$('#USRC_lb_stamptype').val('SELECT');
+$('#USRC_lb_roomtype').val('SELECT');
+$('input').removeClass('invalid');
+$("#USRC_db_startdate_update").datepicker({dateFormat: "dd-mm-yy" ,changeYear:true,changeMonth:true,minDate:'-1M',maxDate:'+2Y' });
+$("#USRC_db_enddate_update").datepicker({dateFormat: "dd-mm-yy" ,changeYear:true,changeMonth:true,maxDate:'+2Y' });
+$('#USRC_lb_roomtype').removeClass('invalid');
+$('textarea').val('');//set default size for textarea , we can give id also
+$('#USRC_form_unit_searchnupdate').find('input:text').prop("size","20");
+$('#USRC_btn_update').attr("disabled","disabled")
+$('#USRC_cb_lost').attr("disabled", "disabled")
+});
+/*--------------------------BLUR FUNCTION FOR FORM VALIDATION FOR UPDATE BUTTON---------------------------------------*/
+$(document).on('blur change','.USRC_class_updvalidation',function(){
+if(($('#USRC_lb_selectoption_unit').val()==1)||($('#USRC_lb_selectoption_unit').val()==2)||($('#USRC_lb_selectoption_unit').val()==9)){
+if($("#USRC_tb_access").val().length==0){
+$('#USRC_cb_lost,#USRC_cb_inventory').prop("checked", false)
+}
+if ($('#USRC_cb_lost').is(":checked"))
+var USRC_cb_lost='X'
+else
+var USRC_cb_lost=''
+if ($('#USRC_cb_inventory').is(":checked"))
+var USRC_cb_inventory='X'
+else
+var USRC_cb_inventory=''
+if(USRC_obj_rowvalue.USRC_tr_eight=='')
+USRC_obj_rowvalue.USRC_tr_eight='SELECT'
+if(USRC_obj_rowvalue.USRC_tr_six=='')
+USRC_obj_rowvalue.USRC_tr_six='SELECT'
+if(($("#USRC_lb_roomtype").val()==USRC_obj_rowvalue.USRC_tr_six)&&($("#USRC_lb_stamptype").val()==USRC_obj_rowvalue.USRC_tr_eight)&&($("#USRC_db_stampdate").val()==USRC_obj_rowvalue.USRC_tr_seven)&&($("#USRC_tb_stampamt").val()==USRC_obj_rowvalue.USRC_tr_nine)&&(($("#USRC_ta_accesscomment").val()).trim()==USRC_obj_rowvalue.USRC_tr_ten)&&(USRC_cb_lost==USRC_obj_rowvalue.USRC_tr_five)&&(USRC_cb_inventory==USRC_obj_rowvalue.USRC_tr_four)){
+USRC_flag_updbtn=0;}
+else{
+USRC_flag_updbtn=1;}
+}
+else if(($('#USRC_lb_selectoption_unit').val()==5)||($('#USRC_lb_selectoption_unit').val()==8)){
+USRC_flag_roomtype=1;USRC_flag_access=1;USRC_flag_unitno=1;
+}
+else if(($('#USRC_lb_selectoption_unit').val()==3)||($('#USRC_lb_selectoption_unit').val()==6)||($('#USRC_lb_selectoption_unit').val()==7)||($('#USRC_lb_selectoption_unit').val()==4)){
+if ($('#USRC_cb_nonei').is(":checked"))
+var USRC_cb_nonei='X'
+else
+var USRC_cb_nonei=''
+if ($('#USRC_cb_obsolete').is(":checked")){
+var USRC_cb_obsolete='X'}else{
+var USRC_cb_obsolete=''}
+if((parseInt($('#USRC_tb_unitno').val())==0)||($('#USRC_tb_unitno').val()=='')||($('#USRC_db_startdate_update').val()=='')||($('#USRC_db_enddate_update').val()=='')||(parseInt($('#USRC_tb_unitreltal').val())=='')||($('#USRC_tb_unitreltal').val()=='')||($("#USRC_tb_unitno").val().length<4)||(($('#USRC_tb_unitno').val()==USRC_obj_rowvalue.USRC_tr_first)&&($('#USRC_db_startdate_update').val()==USRC_obj_rowvalue.USRC_tr_second)&&($('#USRC_db_enddate_update').val()==USRC_obj_rowvalue.USRC_tr_third)&&($('#USRC_tb_unitreltal').val()==USRC_obj_rowvalue.USRC_tr_six)&&($('#USRC_tb_unitdeposit').val()==USRC_obj_rowvalue.USRC_tr_seven)&&(USRC_cb_obsolete==USRC_obj_rowvalue.USRC_tr_four)&&($('#USRC_tb_accnoid').val()==USRC_obj_rowvalue.USRC_tr_eight)&&(($('#USRC_tb_accname').val()).trim()==USRC_obj_rowvalue.USRC_tr_nine)&&($('#USRC_tb_bankcodeid').val()==USRC_obj_rowvalue.USRC_tr_ten)&&($('#USRC_tb_branchcode').val()==USRC_obj_rowvalue.USRC_tr_eleven)&&(USRC_cb_nonei==USRC_obj_rowvalue.USRC_tr_five)&&(($('#USRC_tb_bankaddr').val()).trim()==USRC_obj_rowvalue.USRC_tr_twelve)&&(($('#USRC_ta_comments').val()).trim()==USRC_obj_rowvalue.USRC_tr_thirteen))){
+USRC_flag_updbtn=0;
+}
+else
+USRC_flag_updbtn=1;
+}
+if((USRC_flag_updbtn==1)&&(USRC_flag_roomtype==1)&&(USRC_flag_access==1)&&(USRC_flag_unitno==1)&&(USRC_flag_enddate==1))
+$("#USRC_btn_update").removeAttr("disabled");
+else
+$('#USRC_btn_update').attr("disabled", "disabled")
+});
+});
+</script>
+</head>
+<body>
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>UNIT SEARCH/UPDATE</h3>
+<p>
+</div>
+</div>
+<form class = "content" id="USRC_form_unit_searchnupdate" name="USRC_form_unit_searchnupdate" hidden >
+<input type="hidden" id="USRC_hidden_obsolete" name="USRC_hidden_obsolete">
+<table>
+<tr><td style="width:180px"><label>SEARCH BY<em>*</em></label></td><td><select id='USRC_lb_selectoption_unit' name="USRC_lb_selectoption_unit"><option>SELECT</option></select></td></tr>
+</table>
+<table id="USRC_tble_searchbyoptions"></table>
+<table id="USRC_tble_typeofcard"></table>
+<table id="USRC_tble_inventory"></table>
+<div id="USRC_div_flex_searchbtn" hidden>
+<div id="USRC_div_msg" ></div>
+<div id ="USRC_div_flexdata_result" style="height:300px;overflow:auto;">
+<table id="USRC_tble_flexdata"  class="srcresult" >  
+</table>
+</div>
+&nbsp;&nbsp;&nbsp;
+<div id="USRC_div_flexdata_stamp" style="width:1725px;overflow:auto;">
+<table id="USRC_tble_flexdata_stamp"  class="srcresult" style="width:1700px">  
+</table>
+</div>
+<table id="USRC_tble_searchbtn"><tr><td><input type="button" id="USRC_btn_searchflex" name="USRC_btn_searchflex" value="SEARCH" class="btn" disabled></td></tr></table>
+</div>
+<div id="USRC_div_updateform" hidden>
+<table id="USRC_tble_update"></table>
+<table id="USRC_tble_update_reset" hidden>
+<tr><td align="right" style="width:160px"><input type="button" id="USRC_btn_update" name="USRC_btn_update" class="btn" value="UPDATE" disabled></td>
+<td align="left"><input type="button" id="USRC_btn_reset" name="USRC_btn_reset" class="btn" value="RESET"></td></tr>
+<td><input type="hidden" id="USRC_hidden_flexrowval" name="USRC_hidden_flexrowval"></td>
+</table>
+</div>
+</form>
+</div>
+</body>
+</html>

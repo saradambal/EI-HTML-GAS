@@ -1,0 +1,190 @@
+<!--***********************************OPL AND ACTIVE CUSTOMER LIST**********************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.00-SD:07/08/2014 ED:07/08/2014,TRACKER NO 748,changed template monthname and year;
+//VER 0.09-SD:08/07/2014 ED:08/07/2014,TRACKER NO:748,Clered document shared id issue.
+//VER 0.08-SD:28/06/2014 ED:28/06/2014,TRACKER NO:748,cleared active customer list sorted sheet max recver issue.
+//VER 0.07-SD:19/06/2014 ED:19/06/2014,TRACKER NO:788,Implemented conn failure message.
+//VER 0.06-SD:06/06/2014 ED:06/06/2014,TRACKER NO:788,changed preloader and jquery,css links and opl list issue.
+//VER 0.05-SD:05/06/2014 ED:05/06/2014 TRACKER 788 passing empty('') sourcefolderid for moveolfolderid function. 
+//VER 0.04-SD:09/04/2014 ED:11/04/2014 TRACKER 788:
+//1.CHANGED OPL LIST CONDTION NOW OPL LIST CHECKING ACTIVE RECVER AND FUTURE RECVER FOR SELECTED MONTH 
+//2.CHANGED ALL TEMP TABLES DYNAMICALLY.
+//3.Changed Active Customer List SP dynamically.
+//VER 0.03-SD:25/04/2012 ED:26/04/2014 TRACKER 727 :Tested OPL list with migration Records and Did NEW CR in Active Customer List.
+//VER 0.02-SD:01/02/2014  ED:03/02/2014,TRACKER NO:727 Cleared conn issue and Wrote SP for calculating opl list.
+//VER 0.01-INITIAL VERSION, SD:09/08/2013 ED:09/12/2013,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<!--GET VALUES FROM SQL TABLE-->
+<!--GET ERROR MESSAGES FROM ERROR MESSAGE CONFIGURATION TABLE-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+$(document).ready(function() {
+$(".preloader").show();
+$('#FIN_OPL_errormessageform').hide();
+$('#FIN_OPL_outstanding_form').hide();
+google.script.run.withFailureHandler(FIN_OPL_error_message).withSuccessHandler(FIN_OPL_getCommonvalues_result).FIN_OPL_commonvalues();
+function FIN_OPL_getCommonvalues_result(FIN_OPL_result)
+{
+var FIN_OPL_mailarray=[];
+var FIN_OPL_emailerror=FIN_OPL_result[1]
+FIN_OPL_mailarray=FIN_OPL_result[0];
+var FIN_OPL_emailvalue='<option>SELECT</option>';
+for(var i=0;i<FIN_OPL_mailarray.length;i++)
+{
+FIN_OPL_emailvalue += '<option value="' + FIN_OPL_mailarray[i] + '">' + FIN_OPL_mailarray[i] + '</option>';
+}
+$('#FIN_OPL_lb_mailid').html(FIN_OPL_emailvalue)
+if(FIN_OPL_mailarray.length==0)
+{
+$('#FIN_OPL_outstanding_form').hide();
+var emaillisterrormsg='<p><label class="errormsg">'+FIN_OPL_emailerror+'</label></p>';
+$('#FIN_OPL_errormessagetable').append(emaillisterrormsg);
+$('#FIN_OPL_errormessageform').show()
+}
+else
+{
+$('#FIN_OPL_outstanding_form').show();
+$('#FIN_OPL_errormessageform').hide();
+}
+$(".preloader").hide();
+}
+$('#FIN_OPL_outstanding_form').change(function(){
+FIN_OPL_formvalidation()
+});
+function FIN_OPL_formvalidation()
+{
+if($("#FIN_OPL_db_period").val()==""||($('input:radio[name=radio]').is(':checked')==false)||($("#FIN_OPL_lb_mailid").val()=="SELECT"))
+{
+$("#FIN_OPL_btn_save").attr("disabled", "disabled");
+}
+else
+{
+$("#FIN_OPL_btn_save").removeAttr("disabled");
+}
+}
+
+$("#FIN_OPL_db_period").datepicker(
+    {
+      changeMonth: true,
+      changeYear: true,
+      showButtonPanel: true,
+      dateFormat: 'MM-yy',
+      onClose: function(dateText, inst) { 
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));
+        FIN_OPL_formvalidation();
+      }
+    });
+    
+    $('#FIN_OPL_db_period').datepicker("option","maxDate",new Date());
+   $('#FIN_OPL_db_period').datepicker("option","minDate",new Date(2010,00));
+$('#FIN_OPL_btn_save').click(function(){
+$(".preloader").show(); 
+google.script.run.withFailureHandler(FIN_OPL_error_message).withSuccessHandler(FIN_OPL_oplresponse).FIN_OPL_opllist(document.getElementById('FIN_OPL_outstanding_form'));
+});
+$('#FIN_OPL_btn_reset').click(function(){
+oplreset();
+});
+function oplreset()
+{
+ $("#FIN_OPL_radio_outstanding").attr('checked',false);
+ $("#FIN_OPL_radio_active").attr('checked', false);
+ $("#FIN_OPL_lb_mailid")[0].selectedIndex = 0;
+ $('#FIN_OPL_outstanding_form').find('input[type=text]').val('');
+ $("#FIN_OPL_btn_save").attr("disabled", "disabled");
+}
+ function FIN_OPL_oplresponse(response)
+ {
+ $(".preloader").hide(); 
+ oplreset();
+ if(response=='OPL')
+ {
+ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:"EMAIL SENT WITH THE CURRENT OUSTANDING PAYEES LIST"}});
+ }
+ if(response=="ACTIVECCLIST")
+  {
+ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACTIVE CUSTOMER LIST",msgcontent:"EMAIL SENT WITH THE CURRENT ACTIVE CUSTOMER LIST"}});
+ }
+ }
+ function FIN_OPL_error_message(FIN_OPL_err)
+ {
+ if(FIN_OPL_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+  {
+  FIN_OPL_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+  $('#FIN_OPL_outstanding_form').replaceWith('<center><label class="dberrormsg">'+FIN_OPL_err+'</label></center>');
+  }
+  else
+  {
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:FIN_OPL_err}});
+  }
+ $(".preloader").hide(); 
+ }
+ });
+  </script>
+  <script>
+  function FIN_OPL_StopSubmit(){return false;}
+</script>
+<style type="text/css">
+  .ui-datepicker-calendar {
+    display: none;
+  }
+</style>
+<title>OUTSTANDING PAYEES LIST</title>
+<body bgcolor="#E6E6FA" >
+<div class="wrapper">
+<div  class="preloader MaskPanel" id="oplandactivecustomerlist"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>OUTSTANDING PAYEES LIST</h3>
+<p>
+</div>
+</div>
+<form id='FIN_OPL_errormessageform'>
+<table id='FIN_OPL_errormessagetable'>
+</table>
+</form>
+<form method="post" onsubmit="return FIN_OPL_StopSubmit();" class="content" action="" id="FIN_OPL_outstanding_form" name="FIN_OPL_outstanding_form">
+     <table cellspacing="20px"style="width=200px;">
+	 <tr>
+	 <td><label id="body">SELECT THE OPTION</label><em>*</em></td><td>
+	 <table><tr><td><input type="radio" name="radio" id='FIN_OPL_radio_outstanding'  value="option1"><label id="FIN_OPL_lbl_outstanding" >OUTSTANDING PAYEE LIST</label></td></tr>
+	 <tr><td><label> </label></td></tr>
+	 <tr><td><input type="radio"  name="radio" id='FIN_OPL_radio_active' value="option2"><label id="FIN_OPL_lbl_active">ACTIVE CUSTOMER LIST</label></td></tr>
+	 </table>
+	 </tr>
+	 <tr><td><label id="body">FOR PERIOD </label><em>*</em></td><td><input type="text" class="datemandtry" id="FIN_OPL_db_period" name="FIN_OPL_db_period" style="width:105px"></td></tr>
+	 <tr><td><label id="body">EMAIL ID</label><em>*</em></td>
+	 <td><select id="FIN_OPL_lb_mailid"  name="FIN_OPL_lb_mailid">	 </select>
+	 </td>
+	 </tr>
+      </table>
+     <table><td width="50px">
+       <td><input type="submit" class="btn" name="FIN_OPL_btn_save" id="FIN_OPL_btn_save" disabled value="SUBMIT" /></td>
+      <td><input type="button" class="btn" name="FIN_OPL_btn_reset" id="FIN_OPL_btn_reset"  value="RESET" /></td>
+      </table>
+     </form>
+     </body>
+	 </html>

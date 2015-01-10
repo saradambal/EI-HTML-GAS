@@ -1,0 +1,596 @@
+<!--****************************************OCBC*********************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.04- SD:03/09/2014 ED:03/09/2014 TRACKER NO:741,added ref-id sorting in ocbc bank records select query.
+//VER 1.03- SD:22/08/2014 ED:22/08/2014 TRACKER NO:741,Updated new jquery and css links and auto grow script line.
+//VER 1.02- SD:11/07/2014 ED:11/07/2014 TRACKER NO:741,Did multiple customer radio buttons clear after saved record.
+//VER 1.01- SD:08/07/2014 ED:08/07/2014 TRACKER NO:741,changed amount box maximum digits 4 to 5 in obdc direct updation form.
+//VER 1.00- SD:21/06/2014 ED:21/06/2014 TRACKER NO:741,implemented conn failure message.
+//VER 0.09- SD:06/06/2014 ED:06/06/2014 TRACKER NO:741,Changed preloader and jquery and css links.
+//VER 0.08- SD:27/05/2014 ED:27/05/2014 TRACKER NO:741,Changed message box name PAYMENT ENTRY To OCBC .
+//VER 0.07- SD:10/05/2014 ED:16/05/2014 TRACKER NO:741,Payment,Deposit,process fee amt splitted if customer have more then one LP in same month.
+//VER 0.06- SD:18/04/2014 ED:18/04/2014 TRACKER NO:741,changed OCBC table header names and add one col in html table.
+//VER 0.05- SD:26/03/2014 ED:26/03/2014 TRACKER NO:741,Changed OCBC form DP should show upto currentmonth and direct updation DP script changed.
+//VER 0.04- SD:10/03/2014 TRACKER NO:741,changed uld and removed repeated queires and used array cocept.
+//VER 0.03- ED:07/02/2014 TRACKER NO:741,Did all CR in OCBC direct updation form.And Did header Fixation in OCBC direct updation form.
+//VER 0.02- SD:13/12/2013 ED:13/12/2013,TRACKER NO:171Added Return function script in ver0.02
+//VER 0.01-INITIAL VERSION-SD:13/09/2013 ED:14/09/2013,TRACKER NO:171
+//*********************************************************************************************************//
+<!-------------
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+$(document).ready(function() {
+  var unit=[];
+  var payment=[];
+  var errormsg=[];
+  $(".preloader").show();
+  $("#FIN_OCBC_DU_div_htmltable").hide();
+  $("#FIN_OCBC_DU_selectedmonth").datepicker(
+    {
+      changeMonth: true,
+      changeYear: true,
+      showButtonPanel: true,
+      dateFormat: 'MM-yy',
+      onClose: function(dateText, inst) { 
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));
+        $("#FIN_OCBC_DU_savebutton").removeAttr("disabled");
+        $("#FIN_OCBC_DU_div_htmltable").hide();
+         $('#FIN_OCBC_DU_lbl_error').hide();
+      }
+    });
+    $('#FIN_OCBC_DU_selectedmonth').datepicker("option","minDate",new Date(2010,00));
+    $('#FIN_OCBC_DU_selectedmonth').datepicker("option","maxDate",new Date());
+  google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_OCBC_DU_getCommonvalues_result).FIN_OCBC_DU_commonvalues();
+  function FIN_OCBC_DU_getCommonvalues_result(FIN_OCBC_DU_result)
+  {
+    unit=FIN_OCBC_DU_result.unit;
+    payment=FIN_OCBC_DU_result.payment;
+    errormsg=FIN_OCBC_DU_result.error;
+    $('#ocbctable').show();
+    $(".preloader").hide();
+  }
+  //////OCBC_SUBMIT BUTTON VALIDATION FUNCTION//////////////
+  $('#FIN_OCBC_DU_selectedmonth').change(function(){
+    $('#FIN_OCBC_DU_div_htmltable').hide();
+    if($("#FIN_OCBC_DU_selectedmonth").val()=="")
+    {
+      $("#FIN_OCBC_DU_savebutton").attr("disabled", "disabled");
+    }
+    else
+    {
+      $("#FIN_OCBC_DU_savebutton").removeAttr("disabled");
+    }
+  });
+  //////////////CUSTOMER NAME FUNCTION/////////////
+  $(document).on("change",'.FIN_OCBC_DU_unitlistbox', function (){
+    var id=$(this).attr('id');
+    var no=(id.toString()).split('-');
+    $('#FIN_OCBC_DU_lb_customer-'+no[1]).hide();
+    $('#FIN_OCBC_DU_lb_recver-'+no[1]).hide();
+    var unit = $("#"+id).val();
+    if(unit!="SELECT")
+    {
+      $(".preloader").show(); 
+      google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_OCBC_CustomerResponse).FIN_OCBC_Customer(unit,no[1]);
+    }
+    else
+    {
+      $('#FIN_OCBC_DU_lb_customer-'+no[1]).hide();
+      $('#FIN_OCBC_DU_lb_recver-'+no[1]).hide();
+      $('#FIN_OCBC_DU_btn_save-'+no[1]).attr("disabled", "disabled");
+      var tableid='FIN_OCBC_DU_multiplecustomer-'+id+''
+      $('#'+tableid+" tr").remove();
+      $('#FIN_OCBC_DU_custid-'+id).val('');
+      $(".preloader").hide(); 
+    }
+  });
+  /****************************OCBC RECORD SAVE FUNCTION**************************************/
+  $(document).on("click",'.FIN_OCBC_formvalues', function (){
+    $(".preloader").show();
+    var sub_id=$(this).attr('id');
+    var no=(sub_id.toString()).split('-');
+    var unit = $('#FIN_OCBC_DU_lb_unit-'+no[1]).val();
+    var customer = $('#FIN_OCBC_DU_custid-'+no[1]).val();
+    var recver=$('#FIN_OCBC_DU_lb_recver-'+no[1]).val();
+    var payment = $('#FIN_OCBC_DU_lb_payment-'+no[1]).val();
+    var amount = $('#FIN_OCBC_DU_tb_amount-'+no[1]).val();
+    var forperiod = $('#FIN_OCBC_DU_db_forperiod-'+no[1]).val();
+    var comments= $('#FIN_OCBC_DU_ta_comments-'+no[1]).val();
+    var amountflag=$('#FIN_OCBC_payment_highlighted-'+no[1]).is(":checked");
+    if(amountflag==true)
+    {
+      amountflag='X';
+    }
+    else
+    {
+      amountflag='';
+    }
+    google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_OCBC_recordssaveresponse).FIN_OCBC_recordssave(no[1],unit,customer,recver,payment,amount,amountflag,forperiod,comments);
+  });
+  function submitbuttonvalidation(ocbcid)
+  {
+    var unit = $('#FIN_OCBC_DU_lb_unit-'+ocbcid).val();
+    var customer = $('#FIN_OCBC_DU_lb_customer-'+ocbcid).val();
+    var recver=$('#FIN_OCBC_DU_lb_recver-'+ocbcid).val();
+    var payment = $('#FIN_OCBC_DU_lb_payment-'+ocbcid).val();
+    var amount = $('#FIN_OCBC_DU_tb_amount-'+ocbcid).val();
+    var forperiod = $('#FIN_OCBC_DU_db_forperiod-'+ocbcid).val();
+    if((unit!="SELECT")&&(customer!="SELECT")&&(payment!="SELECT")&&(amount!="")&&(forperiod!="")&&(customer!="")&&(unit!="")&&(recver!="SELECT")&&(recver!=""))
+    {
+      $('#FIN_OCBC_DU_btn_save-'+ocbcid).removeAttr("disabled");
+    }
+    else
+    {
+      $('#FIN_OCBC_DU_btn_save-'+ocbcid).attr("disabled", "disabled");
+    }
+  }
+  /**********************OCBC RECORD SUBMIT BUTTON VALIDATION******************************/
+  $(document).on("change",'.OCBC_submitcheck', function (){
+    var sub_id=$(this).attr('id');
+    var no=(sub_id.toString()).split('-');
+    submitbuttonvalidation(no[1]);
+  });
+  //////////////OCBC_RECORDS RESPONSE FUNCTION////////////////
+  function FIN_OCBC_DU_response(response)
+  {
+    var ocbc_array=[];
+    ocbc_array=response;
+    var value=''
+    $('#FIN_OCBC_DU_div_htmltable').hide();
+    $('#FIN_OCBC_DU_div_htmltable').css('height',"10");
+    var FIN_OCBC_DU_unitvalue='<option>SELECT</option>';
+    for(var i=0;i<unit.length;i++)
+    {
+      FIN_OCBC_DU_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+    }
+    var FIN_OCBC_paymentvalue = '<option>PAYMENT</option>';
+    FIN_OCBC_paymentvalue+='<option>SELECT</option>';
+    for(var i=0;i<payment.length;i++)
+    {
+      if(payment[i]=='PAYMENT')continue;
+      FIN_OCBC_paymentvalue += '<option value="' + payment[i] + '">' + payment[i] + '</option>';
+    }
+    var OCBC_tablelength=ocbc_array.length*40;
+    if(OCBC_tablelength>=600)
+    {
+      var px=600;
+    }
+    else
+    {
+      px=ocbc_array.length*40;
+    }
+    $('#FIN_OCBC_DU_div_htmltable').css('height',px);
+    $('#FIN_OCBC_DU_div_htmltable').css('width',"5100px");
+    var value1='<thead><tr class="th_color"><th width="140px" class="hf_th"><div class="th-inner">ACCOUNT NUMBER</div></th><th width="80px" class="hf_th"><div class="th-inner">CURRENCY</div></th><th width="150px" class="hf_th"><div class="th-inner">PREVIOUS BALANCE</div></th><th width="150px" class="hf_th"><div class="th-inner">OPENING BALANCE</div></th><th width="150px"class="hf_th"><div class="th-inner">CLOSING BALANCE</div></th><th width="120px" class="hf_th"><div class="th-inner">LAST BALANCE </div></th><th width="120px" class="hf_th"><div class="th-inner">NO OF CREDITS</div></th><th width="90px" class="hf_th"><div class="th-inner">TRANS DATE</div></th><th width="120px" class="hf_th"><div class="th-inner">NO OF DEBITS</div></th><th width="120px" class="hf_th"><div class="th-inner">OLD BALANCE</div></th><th width="140px" class="hf_th"><div class="th-inner">D. AMOUNT</div></th><th width="80px" class="hf_th"><div class="th-inner">POST DATE</div></th><th width="90px" class="hf_th"><div class="th-inner">VALUE DATE</div></th><th width="120px" class="hf_th"><div class="th-inner">DEBIT AMOUNT</div></th><th width="120px" class="hf_th"><div class="th-inner">CREDIT AMOUNT</div></th><th width="70px" class="hf_th"><div class="th-inner">TRX CODE</div></th><th width="200px" class="hf_th"><div class="th-inner">CLIENT REFERENCE</div></th><th width="350px" class="hf_th"><div class="th-inner">TRANSACTION DESC DETAILS</div></th><th width="200px" class="hf_th"><div class="th-inner">BANK REFERENCE</div></th><th width="150px" class="hf_th"><div class="th-inner">TRX TYPE</div></th><th width="200px" class="hf_th"><div class="th-inner">UNIT</div></th><th width="300px" class="hf_th"><div class="th-inner">CUSTOMER</div></th><th width="200px" class="hf_th"><div class="th-inner">LEASEPERIOD</div></th><th width="100px" class="hf_th"><div class="th-inner">PAYMENT TYPE</div></th><th width="152px" class="hf_th"><div class="th-inner">AMOUNT</div></th><th width="150px" class="hf_th"><div class="th-inner">FOR PERIOD</div></th><th width="300px" class="hf_th"><div class="th-inner">COMMENTS</div></th><th width="120px" class="hf_th"><div class="th-inner">SUBMIT</div></th><th width="120px" class="hf_th"><div class="th-inner">DB SAVED</div></th></tr></thead>'
+    $('#FIN_OCBC_DU_tbl_htmltable').html(value1);
+    var ocbcselectedmonth=$("#FIN_OCBC_DU_selectedmonth").val();
+    if(ocbc_array.length!=0)
+    {
+      var ocbc_id=[];
+      for (var i=0;i<ocbc_array.length;i++) 
+      {
+        var ocbcarray=ocbc_array[i];
+        var ocbc_record_id=ocbcarray.OCBC_ID;
+        ocbc_id.push(ocbc_record_id);
+        if(ocbcarray.DEBITAMOUNT!="" || ocbcarray.DEBITAMOUNT!="0.00")
+        {
+          var autofillamount=ocbcarray.DEBITAMOUNT;
+        }
+        else
+        {
+          autofillamount=ocbcarray.CREDITAMOUNT;
+        }
+        var ocbc_comments=ocbcarray.CLIENTREF+' '+ocbcarray.TRANSDESC+' '+ocbcarray.BANKREF;
+        var ocbc_paiddate=ocbcarray.CLOSEDATE;
+        var ocbc_reference=ocbcarray.UPDATE;
+        var FIN_OCBC_DU_tableheader="DETAILS OF SELECTED MONTH :"+ocbcselectedmonth;
+        if(ocbc_reference!='X')
+        {
+          value1='<tbody><tr class="td_color"><td style="text-align:center" class="hf_td" width="140px">'+ocbcarray.ACCNO+'</td><td style="text-align:center" class="hf_td" width="80px">'+ocbcarray.TYPE+'</td><td style="text-align:center" class="hf_td" width="150px">'+ocbcarray.TODAYBAL+'</td><td style="text-align:center" class="hf_td" width="150px">'+ocbcarray.OPENBAL+'</td><td style="text-align:center" class="hf_td" width="150px">'+ocbcarray.CLOSEBAL+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.CREDIT+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.CREDITID+'</td><td style="text-align:center" class="hf_td" width="80px">'+ocbcarray.OPENDATE+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.DEBITID+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.DEBIT+'</td><td style="text-align:center" class="hf_td" width="140px">'+ocbcarray.DEBITS+'</td><td style="text-align:center" class="hf_td" width="90px">'+ocbcarray.PROCESSDATE+'</td><td style="text-align:center" class="hf_td" width="90px">'+ocbcarray.CLOSEDATE+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.DEBITAMOUNT+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.CREDITAMOUNT+'</td><td style="text-align:center" class="hf_td" width="70px">'+ocbcarray.TRANSACTIONTYPE+'</td><td class="hf_td" width="200px">'+ocbcarray.CLIENTREF+'</td><td class="hf_td" width="350px">'+ocbcarray.TRANSDESC+'</td><td class="hf_td" width="200px">'+ocbcarray.BANKREF+'</td><td class="hf_td" width="150px">'+ocbcarray.TRXTYPE+'</td><td class="hf_td" width="200px"><select  id="'+'FIN_OCBC_DU_lb_unit-'+ocbc_record_id+'" name="'+'FIN_OCBC_DU_lb_unit-'+ocbc_record_id+'" class="FIN_OCBC_DU_unitlistbox" class="OCBC_submitcheck" width="80px"><option>SELECT</option></select></td><td class="hf_td" width="400px"><select width="200px"  id="'+'FIN_OCBC_DU_lb_customer-'+ocbc_record_id+'" name="'+'FIN_OCBC_DU_lb_customer-'+ocbc_record_id+'" class="OCBC_submitcheck forperiodvalidation customernamecheck" hidden><option>SELECT</option></select><table id="FIN_OCBC_DU_multiplecustomer-'+ocbc_record_id+'"></table><input type="text" name="'+'FIN_OCBC_DU_custid-'+ocbc_record_id+'" id="'+'FIN_OCBC_DU_custid-'+ocbc_record_id+'" style="width:45px;height:20px" hidden /></td><td class="hf_td" width="100px"><select  id="'+'FIN_OCBC_DU_lb_recver-'+ocbc_record_id+'" name="'+'FIN_OCBC_DU_lb_recver-'+ocbc_record_id+'" class="forperiodrange OCBC_submitcheck" width="80px" hidden><option>SELECT</option></select></td><td class="hf_td" width="250px"><select  id="'+'FIN_OCBC_DU_lb_payment-'+ocbc_record_id+'" name="'+'FIN_OCBC_DU_lb_payment-'+ocbc_record_id+'" class="forperiodrange OCBC_submitcheck" width="120px"><option>SELECT</option></select></td><td class="hf_td" width="150px"><input type="text"  name="'+'FIN_OCBC_DU_tb_amount-'+ocbc_record_id+'" id="'+'FIN_OCBC_DU_tb_amount-'+ocbc_record_id+'" style="width:55px;height:20px" class="amtonly OCBC_submitcheck"/><input type="checkbox" name="checkbox" id="'+'FIN_OCBC_payment_highlighted-'+ocbc_record_id+'"/></td><td class="hf_td" width="150px"> <input  type="text" name="'+'FIN_OCBC_DU_db_forperiod-'+ocbc_record_id+'" id="'+'FIN_OCBC_DU_db_forperiod-'+ocbc_record_id+'" class="datepickperiod OCBC_submitcheck datemandtry" style="width:105px;height:20px"  /></td><td class="hf_td OCBC_submitcheck" width="300px"><textarea row="2"  name ="'+'FIN_OCBC_DU_ta_comments-'+ocbc_record_id+'" id="'+'FIN_OCBC_DU_ta_comments-'+ocbc_record_id+'" class="OCBC_submitcheck autogrowcomments" hidden>'+ocbc_comments+'</textarea></td><td class="hf_td" width="120px"><input type="button"  value="SAVE"  id="'+'FIN_OCBC_DU_btn_save-'+ocbc_record_id+'" class="FIN_OCBC_formvalues btn" disabled /></td><td class="hf_td" width="120px"></td></tr>'
+        }
+        else
+        {
+          value1='<tbody><tr class="td_color"><td style="text-align:center" class="hf_td" width="140px">'+ocbcarray.ACCNO+'</td><td style="text-align:center" class="hf_td" width="80px">'+ocbcarray.TYPE+'</td><td style="text-align:center" class="hf_td" width="150px">'+ocbcarray.TODAYBAL+'</td><td style="text-align:center" class="hf_td" width="150px">'+ocbcarray.OPENBAL+'</td><td style="text-align:center" class="hf_td" width="150px">'+ocbcarray.CLOSEBAL+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.CREDIT+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.CREDITID+'</td><td style="text-align:center" class="hf_td" width="80px">'+ocbcarray.OPENDATE+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.DEBITID+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.DEBIT+'</td><td style="text-align:center" class="hf_td" width="140px">'+ocbcarray.DEBITS+'</td><td style="text-align:center" class="hf_td" width="90px">'+ocbcarray.PROCESSDATE+'</td><td style="text-align:center" class="hf_td" width="90px">'+ocbcarray.CLOSEDATE+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.DEBITAMOUNT+'</td><td style="text-align:center" class="hf_td" width="120px">'+ocbcarray.CREDITAMOUNT+'</td><td style="text-align:center" class="hf_td" width="70px">'+ocbcarray.TRANSACTIONTYPE+'</td><td class="hf_td" width="200px">'+ocbcarray.CLIENTREF+'</td><td class="hf_td" width="350px">'+ocbcarray.TRANSDESC+'</td><td class="hf_td" width="200px">'+ocbcarray.BANKREF+'</td><td class="hf_td" width="150px">'+ocbcarray.TRXTYPE+'</td><td class="hf_td" width="200px"></td><td class="hf_td" width="300px"></td><td class="hf_td" width="100px"></td><td class="hf_td" width="200px"></td><td class="hf_td" width="200px"></td><td class="hf_td" width="200px"></td><td class="hf_td" width="300px"></td><td class="hf_td" width="120px"></td><td style="text-align:center" class="hf_td" width="120px">X</td></tr>'
+        }
+        $('#FIN_OCBC_DU_tbl_htmltable').append(value1);
+      }
+      for(var k=0;k<ocbc_id.length;k++)
+      {
+        $('#FIN_OCBC_DU_lb_unit-'+ocbc_id[k]).html(FIN_OCBC_DU_unitvalue);
+        $('#FIN_OCBC_DU_lb_payment-'+ocbc_id[k]).html(FIN_OCBC_paymentvalue);
+        $('#FIN_OCBC_DU_tb_amount-'+ocbc_id[k]).prop('title',errormsg[0]);
+      }
+      $(".datepickperiod").datepicker(
+        {
+          changeMonth: true,
+          changeYear: true,
+          showButtonPanel: true,
+          dateFormat: 'MM-yy',
+          onClose: function(dateText, inst) { 
+            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).datepicker('setDate', new Date(year, month, 1));
+            var sub_id=$(this).attr('id');
+            var no=(sub_id.toString()).split('-');
+            submitbuttonvalidation(no[1]);
+          }
+        });
+      $('.autogrowcomments').autogrow({onInitialize: true});
+      $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+      $('#FIN_OCBC_DU_lbl_error').removeClass("errormsg");
+      $('#FIN_OCBC_DU_lbl_error').addClass("srctitle").show();
+      $('#FIN_OCBC_DU_div_htmltable').show();
+    }
+    else
+    {
+      var FIN_OCBC_DU_tableheader="NO DETAILS OF SELECTED MONTH :"+ocbcselectedmonth
+      $('#FIN_OCBC_DU_div_htmltable').hide();
+      $('#FIN_OCBC_DU_lbl_error').removeClass("srctitle");
+      $('#FIN_OCBC_DU_lbl_error').addClass("errormsg").show();
+    }
+    $('#FIN_OCBC_DU_lbl_error').text(FIN_OCBC_DU_tableheader).show();
+    $("#FIN_OCBC_DU_savebutton").attr("disabled", "disabled");
+    $('#FIN_OCBC_DU_form').find('input[type=text]').val('');
+    $(".preloader").hide();
+  }
+  
+  $(document).on('change','.forperiodrange',function(){
+    $(".preloader").show();
+    var FIN_ENTRY_id=$(this).attr('id');
+    var idsplit=FIN_ENTRY_id.split('-');
+    var data=$("#FIN_OCBC_DU_lb_recver-"+idsplit[1]).val();
+    var paymenttype=$('#FIN_OCBC_DU_lb_payment-'+idsplit[1]).val();
+    var datas=data.split('/');
+    var startdatepayment=datas[0];
+    var enddatepayment=datas[1];
+    var id=datas[2];
+    var startdateendday=startFormTableDateFormat(startdatepayment);
+    $('#FIN_OCBC_DU_db_forperiod-'+id).val('');
+    $('#FIN_OCBC_DU_btn_save-'+id).attr("disabled", "disabled");
+    if(paymenttype!='SELECT')
+    {
+      if(paymenttype=='DEPOSIT' || paymenttype=='PROCESSING FEE')
+      {
+        var paymentflag=1;
+        var startdate=startdatepayment;
+        var enddate=startdateendday;
+      }
+      if(paymenttype=='PAYMENT' || paymenttype=='CLEANING FEE')
+      {
+        paymentflag=1;
+        startdate=startdatepayment;
+        enddate=enddatepayment;
+      }
+      if(paymenttype=='DEPOSIT REFUND')
+      {
+        paymentflag=0;
+        var start_datedb=enddatepayment.split('-');
+        var startdate=new Date(start_datedb[0],start_datedb[1]-1);
+      }
+      if(paymentflag==1)
+      {
+        var CCRE_db_chkindate1 = new Date( Date.parse(startdate)); 
+        CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());  
+        var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
+        CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1));
+        $('#FIN_OCBC_DU_db_forperiod-'+id).datepicker("option","minDate",CCRE_db_chkindate1);
+        var CCRE_db_chkoutdate1 = new Date( Date.parse(enddate)); 
+        CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate());  
+        var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
+        CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1 )); 
+        var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate()
+        var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()+1
+        var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear()
+        var CCRE_finnoticedate=CCRE_chkoutyear+"-"+CCRE_chkoutmonth+"-"+CCRE_chkoutdate;
+        CCRE_finnoticedate = new Date( Date.parse( CCRE_finnoticedate ) ); 
+        $('#FIN_OCBC_DU_db_forperiod-'+id).datepicker("option","maxDate",CCRE_db_chkoutdate1);
+      }
+      if(paymentflag==0)
+      {
+        $('#FIN_OCBC_DU_db_forperiod-'+id).datepicker("option","minDate",startdate);
+      }
+    }
+    $(".preloader").hide(); 
+  });
+  function startFormTableDateFormat(inputdate){
+    var string = inputdate.split("-");
+    var newstartdate=new Date(string[0],string[1]-1,string[2]);
+    var sd_day=newstartdate.getDate();
+    var sd_month=newstartdate.getMonth();
+    var sd_year=newstartdate.getFullYear();
+    var new_startdate=new Date(sd_year,sd_month+1);
+    var s_day=new_startdate.getDate();
+    var s_month=new_startdate.getMonth();
+    var s_year=new_startdate.getFullYear();
+    var new_start_date=new Date(s_year,s_month,s_day-1);
+    var fs_day=new_start_date.getDate();
+    var fs_month=new_start_date.getMonth()+1;
+    var fs_year=new_start_date.getFullYear();
+    var finaldate=fs_year+'-'+fs_month+'-'+fs_day;
+    return finaldate;
+  }
+  $(document).on('change','.FIN_OCBC_DU_showlist',function(){
+    var FIN_ENTRY_id=$(this).attr('id');
+    var splitedid=FIN_ENTRY_id.split('-');
+    var customer=splitedid[2]
+    var unit=splitedid[1];
+    var id=splitedid[3]
+    var rowid=splitedid[4]
+    var rowlength=splitedid[5];
+    $('#FIN_OCBC_DU_btn_save-'+id).attr("disabled", "disabled");
+    $('#FIN_OCBC_DU_custid-'+id).val(customer);
+    $(".preloader").show(); 
+    google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_ENTRY_FORPERIOD_Response).FIN_ENTRY_FORPERIOD_validation(unit,customer,id)
+  });
+  
+  function FIN_ENTRY_FORPERIOD_Response(response)
+  {
+    var Recver_dates=[]
+    Recver_dates=response[0];
+    var id=response[2];
+    var options ='<option value="">SELECT</option>';
+    for (var i = 0; i < Recver_dates.length; i++) 
+    {
+      var recverdata=Recver_dates[i];
+      var recverid=recverdata.recver;
+      var titlerecverdate=recverdata.startdateformat+'---'+recverdata.enddateformat
+      var recverdates=recverdata.startdate+'/'+recverdata.enddate+'/'+id+'/'+recverid;
+      options += '<option title='+titlerecverdate+' value="' + recverdates + '">' + recverid + '</option>';
+    }
+    $('#FIN_OCBC_DU_lb_recver-'+id).html(options);
+    $('#FIN_OCBC_DU_lb_recver-'+id).show();
+    $(".preloader").hide();
+  }
+  $(document).on('change','.forperiodvalidation',function(){
+    var FIN_ENTRY_id=$(this).attr('id');
+    var splitedid=FIN_ENTRY_id.split('-');
+    $('#FIN_OCBC_DU_btn_save-'+splitedid[1]).attr("disabled", "disabled");
+    var unit=$('#FIN_OCBC_DU_lb_unit-'+splitedid[1]).val();
+    var customer=$('#FIN_OCBC_DU_lb_customer-'+splitedid[1]).val();
+    $(".preloader").show(); 
+    google.script.runwithFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_OCBC_DU_FORPERIOD_Response).FIN_OCBC_DU_FORPERIOD_validation(unit,customer,splitedid[1]);
+  });
+  $(document).on('blur','.customernamecheck',function(){
+    var FIN_ENTRY_id=$(this).attr('id');
+    var splitedid=FIN_ENTRY_id.split('-');
+    var customer=$('#FIN_OCBC_DU_lb_customer-'+splitedid[1]).val();
+    var unit=$('#FIN_OCBC_DU_lb_unit-'+splitedid[1]).val();
+    $('#FIN_OCBC_DU_lb_recver-'+no)[0].selectedIndex = 0;
+    $('#FIN_OCBC_DU_lb_recver-'+no).hide();
+    if(customer!="SELECT" && customer!="" && customer!=" ")
+    {
+      var cuatomername_array=[];
+      for(var k=0;k<customer_array.length;k++)
+      {
+        if(customer_array[k].customername==customer)
+        {
+          cuatomername_array.push(customer_array[k]);
+        }
+      }
+      var tableid='FIN_OCBC_DU_multiplecustomer-'+no+''
+      $('#'+tableid+" tr").remove();
+      var arraylength=cuatomername_array.length;
+      for (var i=0;i<cuatomername_array.length;i++) 
+      {
+        var tablerowid=i+'_'+no
+        var customername_id=cuatomername_array[i];
+        var customer_nameid=customername_id.customername+' '+customername_id.customerid;
+        var unitid_custid=customername_id.unit+'-'+customername_id.customerid+'-'+no+'-'+i+'-'+arraylength;
+        var CRCHK_value ='<tr><td><input type="radio" value='+customername_id.customerid+' id="customerids-'+unitid_custid+'" name="customerid-'+no+'" class="FIN_OCBC_DU_showlist" />' + customer_nameid + '</td></tr>';
+        $('#FIN_OCBC_DU_multiplecustomer-'+no).append(CRCHK_value);
+      }
+      if(cuatomername_array.length!=1)
+      {
+        $('#FIN_OCBC_DU_multiplecustomer-'+no).show();
+      }
+      else
+      {
+        $('#FIN_OCBC_DU_multiplecustomer-'+no).hide();
+        customername_id=cuatomername_array[0];
+        var unit=customername_id.unit;
+        var customer_id=customername_id.customername;
+        $('#FIN_OCBC_DU_custid-'+no).val(customername_id.customerid);
+        google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_ENTRY_FORPERIOD_Response).FIN_OCBC_FORPERIOD_validation(unit,customername_id.customerid,no)
+      }
+    }
+    else
+    {
+    $('#FIN_OCBC_DU_lb_recver-'+no)[0].selectedIndex = 0;
+    $('#FIN_OCBC_DU_lb_recver-'+no).hide();
+    }
+    $(".preloader").hide();
+  });
+  function FIN_OCBC_DU_FORPERIOD_Response(res)
+  {
+    var datestartend=[];
+    datestartend=res[0]
+    var startdate=datestartend[0]
+    var enddate=datestartend[1];
+    var id=res[1]
+    var CCRE_db_chkindate1 = new Date( Date.parse(startdate)); 
+    CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());  
+    var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
+    CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ));
+    $('#FIN_OCBC_DU_db_forperiod-'+id).datepicker("option","minDate",CCRE_db_chkindate1);
+    var CCRE_db_chkoutdate1 = new Date( Date.parse(enddate)); 
+    CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate());  
+    var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
+    CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1 )); 
+    var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate()
+    var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()+1
+    var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear()
+    var CCRE_finnoticedate=CCRE_chkoutyear+"-"+CCRE_chkoutmonth+"-"+CCRE_chkoutdate;
+    CCRE_finnoticedate = new Date( Date.parse( CCRE_finnoticedate ) ); 
+    $('#FIN_OCBC_DU_db_forperiod-'+id).datepicker("option","maxDate",CCRE_db_chkoutdate1);
+    $(".preloader").hide(); 
+  }
+  ////////////////OCBC FORM RESET FUNCTION/////////////
+  $('#reset').click(function(){
+    $('#FIN_OCBC_DU_div_htmltable').hide();
+    $('#FIN_OCBC_DU_lbl_error').hide();
+    $('#FIN_OCBC_DU_form').find('input[type=text]').val('');
+    $('#FIN_OCBC_DU_selectedmonth').val('');
+  });
+  ////////CUSTOMER NAME RESPONSE FUNCTION//////////
+  var customer_array=[];
+  var no=[];
+  /*************UNIQUE FUNCTION*********************/  
+function unique(a) {
+var result = [];
+$.each(a, function(i, e) {
+if ($.inArray(e, result) == -1) result.push(e);
+});
+return result;
+}
+  function FIN_OCBC_CustomerResponse(response)
+  {
+    no=response[1];
+    customer_array=response[0];
+    var amount=response[2];
+    if(customer_array.length!=0)
+    {
+    var options ='<option value="">SELECT</option>';
+    var finalcustomerarray=[];
+    for(var w=0;w<customer_array.length;w++)
+    {
+    finalcustomerarray.push(customer_array[w].customername);
+    }
+    finalcustomerarray=unique(finalcustomerarray);
+    for (var i = 0; i < finalcustomerarray.length; i++) 
+    {
+      var customername=finalcustomerarray[i];
+      options += '<option value="' + finalcustomerarray[i] + '">' + customername+ '</option>';
+    }
+    $('#FIN_OCBC_DU_lb_customer-'+no).html(options);
+    $('#FIN_OCBC_DU_lb_customer-'+no).show();
+    $('#FIN_OCBC_DU_ta_comments-'+no).show();
+    $('#FIN_OCBC_DU_tb_amount-'+no).val(amount).show();
+    }
+    else
+    {
+    $('#FIN_OCBC_DU_lb_customer-'+no).hide();
+    $('#FIN_OCBC_DU_ta_comments-'+no).hide();
+    $('#FIN_OCBC_DU_tb_amount-'+no).val(amount).hide();
+    }
+    $(".preloader").hide(); 
+  }
+  /*********************OCBC_CONFORMATION FUNCTION**************************/
+  function FIN_OCBC_recordssaveresponse(response)
+  {
+    var ocbc_ack=response[0];
+    var ocbc_id=response[1];
+    if(ocbc_ack=="null" || ocbc_ack==null)
+    {
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:errormsg[1]}});
+      $('#FIN_OCBC_DU_lb_unit-'+ocbc_id)[0].selectedIndex = 0;
+      $('#FIN_OCBC_DU_lb_unit-'+ocbc_id).hide();
+      $('#FIN_OCBC_DU_lb_customer-'+ocbc_id)[0].selectedIndex = 0;
+      $('#FIN_OCBC_DU_lb_customer-'+ocbc_id).hide()
+      $('#FIN_OCBC_DU_lb_payment-'+ocbc_id)[0].selectedIndex = 0;
+      $('#FIN_OCBC_DU_lb_payment-'+ocbc_id).hide();
+      $('#FIN_OCBC_DU_tb_amount-'+ocbc_id).val('').hide();
+      $('#FIN_OCBC_DU_db_forperiod-'+ocbc_id).val('').hide();
+      $('#FIN_OCBC_DU_ta_comments-'+ocbc_id).val('').hide();
+      $('#FIN_OCBC_payment_highlighted-'+ocbc_id).hide();
+      $('#FIN_OCBC_DU_custid-'+ocbc_id).val('').hide();
+      $('#FIN_OCBC_DU_lb_recver-'+ocbc_id)[0].selectedIndex = 0;
+      $('#FIN_OCBC_DU_lb_recver-'+ocbc_id).hide();
+      $('#FIN_OCBC_DU_btn_save-'+ocbc_id).attr("disabled", "disabled").hide();
+      $('#FIN_OCBC_DU_multiplecustomer-'+ocbc_id).hide();
+    }
+    else
+    {
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:ocbc_ack}});
+    }
+    $('#FIN_OCBC_DU_btn_save-'+ocbc_id).attr("disabled", "disabled");
+    $(".preloader").hide();
+  }
+  $('#FIN_OCBC_DU_savebutton').click(function(){
+    $(".preloader").show();
+    google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_OCBC_DU_response).FIN_OCBC_DU_selectedmonthdetails(document.getElementById('FIN_OCBC_DU_form'))
+  });
+
+function FIN_OCBC_DU_error_message(OCBC_err)
+{
+if(OCBC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+OCBC_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#FIN_OCBC_DU_form').replaceWith('<center><label class="dberrormsg">'+OCBC_err+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:OCBC_err}});
+}
+$(".preloader").hide();
+}
+});
+</script>
+<style type="text/css">
+  .ui-datepicker-calendar {
+    display: none;
+  }
+</style>
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>OCBC </h3>
+<p>
+</div>
+</div>
+<form class="content" action="" id="FIN_OCBC_DU_form" name="FIN_OCBC_DU_form">
+<table id="ocbctable" cellspacing="5px"hidden >
+<tr>
+<td>
+<label>SELECT THE MONTH</label></td><td><input type="text" name="FIN_OCBC_DU_selectedmonth" id="FIN_OCBC_DU_selectedmonth" class="datemandtry" style="width:105px;"/>
+</td>
+</tr>
+<tr>
+<td>
+<input type="button" class="btn" value="SUBMIT"  id="FIN_OCBC_DU_savebutton" disabled /> </td><td> <input type="button" name="reset" id="reset" class="btn" onclick="FIN_OCBC_reset()" value="RESET" />
+</td>
+</tr>
+</table>
+<table id="FIN_OCBC_DU_tble_header" ><tr><label align='bottom' name='error' id='FIN_OCBC_DU_lbl_error' class="srctitle" visible="false" ></label></tr></table>
+<div id="FIN_OCBC_DU_div_htmltable" class="fixed-table-container">
+      <div class="header-background"> </div>
+      <div class="fixed-table-container-inner">
+        <table id="FIN_OCBC_DU_tbl_htmltable"  cellspacing="0">
+        </table>
+      </div>
+    </div>
+</form>
+</body>
+</html>

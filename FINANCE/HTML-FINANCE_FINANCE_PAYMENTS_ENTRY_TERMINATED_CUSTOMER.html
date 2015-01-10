@@ -1,0 +1,477 @@
+<!--//*******************************************PAYMENT ENTRY-TERMINATED CUSTOMER*********************************************//
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.00-SD:19/06/2014 ED:19/06/2014,TRACKER NO:672 added conn failure message and did paiddate validation(mindate as customer 1st lp startdate and maxdate as sysdate).
+//VER 0.09-SD:06/06/2014 ED:06/06/2014,TRACKER NO:672 Changed preloader and jquery and css link.
+//VER 0.08-SD:16/05/2014 ED:16/05/2014,TRACKER NO:672 Changed temp table dynamically in script side.
+//VER 0.07-SD:22/04/2014 ED:22/04/2014,TRACKER NO:672 Changed Table name and Restricted DP manual inputs.
+//VER 0.06-SD:26/03/2014 ED:26/03/2014,TRACKER NO:672 changed for period DP format.
+//VER 0.05-SD:06/03/2014 ED:06/03/2014,TRACKER NO:672 Changed uld_id and removed repeated queries functions and used array concepts.
+//VER 0.04-SD:07/02/2014 ED:07/02/2014,TRACKER NO:672 changed preloader path,title alignment,gave error msg not unit aval
+//VER 0.03-SD:31/12/2013 ED:01/01/2014,TRACKER NO:672 Removed sleep functions and multiple connections.did paid date validation.
+//VER 0.02-SD:17/12/2013 ED:17/12/2013, TRACKER NO:672- Changed gs and html file and for period validation function getting from eilib. in ver 0.02 
+//VER 0.01-INITIAL VERSION, SD:04/09/2013 ED:03/12/2013,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<html>
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<script>
+$(document).ready(function() {
+var errormsg=[];
+$(".preloader").show();
+$('#terminated_paymententry_form').hide();
+$('#FIN_TERM_ENTRY_errormessageform').hide();
+$('#FIN_TERM_ENTRY_lbl_customer').hide();
+$('#FIN_TERM_ENTRY_lb_customer').hide();
+$('#FIN_TERM_ENTRY_lbl_recver').hide();
+$('#FIN_TERM_ENTRY_lb_recver').hide();
+$('#FIN_TERM_ENTRY_recverstartdate').hide();
+$('#FIN_TERM_ENTRY_recverenddate').hide();
+$(".amountonly").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+/*****************INITIAL TABLE LOADING FUNCTION *************************/
+google.script.run.withFailureHandler(TERM_ENTRY_error_message).withSuccessHandler(TERM_payment_getCommonvalues_result).FIN_TERM_ENTRY_payment_commonvalues();
+/************************UNIQUE FUNCTION***********************************/
+function unique(a) {
+var result = [];
+$.each(a, function(i, e) {
+if ($.inArray(e, result) == -1) result.push(e);
+});
+return result;
+}
+function TERM_payment_getCommonvalues_result(TERM_payment_result)
+{
+var unit=[];
+unit=TERM_payment_result.unit;
+var payment=[];
+errormsg=TERM_payment_result.error;
+payment=TERM_payment_result.payment;
+var FIN_TERM_ENTRY_unitvalue='<option>SELECT</option>';
+var unit_array=[];
+for(var k=0;k<unit.length;k++)
+{
+unit_array.push(unit[k].unit)
+}
+unit_array=unique(unit_array);
+for(var i=0;i<unit_array.length;i++)
+{
+FIN_TERM_ENTRY_unitvalue += '<option value="' + unit_array[i] + '">' + unit_array[i] + '</option>';
+}
+$('#FIN_TERM_ENTRY_lb_unit').html(FIN_TERM_ENTRY_unitvalue);
+var FIN_TERM_ENTRY_paymentvalue='<option>SELECT</option>';
+for(var i=0;i<payment.length;i++)
+{
+FIN_TERM_ENTRY_paymentvalue += '<option value="' + payment[i] + '">' + payment[i] + '</option>';
+}
+$('#FIN_TERM_ENTRY_lb_payment').html(FIN_TERM_ENTRY_paymentvalue);
+$('#FIN_TERM_ENTRY_tb_amount').prop('title',errormsg[0]);
+$('#FIN_TERM_ENTRY_lbl_customererrormsg').text(errormsg[2])
+$('#terminated_paymententry_form').show();
+if(unit.length==0)
+{
+var uniterrormsg='<p><label class="errormsg">'+errormsg[3]+'</label></p>';
+$('#FIN_TERM_ENTRY_errormessagetable').append(uniterrormsg);
+$('#terminated_paymententry_form').hide();
+$('#FIN_TERM_ENTRY_errormessageform').show();
+}
+else
+{
+$('#terminated_paymententry_form').show();
+$('#FIN_TERM_ENTRY_errormessageform').hide();
+}
+$(".preloader").hide();
+}
+/*******************************SAMPLE******************************/
+$("#FIN_TERM_ENTRY_db_paiddate").datepicker({
+dateFormat: "dd-mm-yy", 
+changeYear: true,
+changeMonth: true
+});
+ $('#FIN_TERM_ENTRY_db_forperiod').datepicker( {
+    changeMonth: true,      //provide option to select Month
+    changeYear: true,       //provide option to select year
+    showButtonPanel: true,  // button panel having today and done button
+    dateFormat: 'MM-yy',    //set date format
+    onClose: function(dateText, inst) {
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+            $(this).blur();//remove focus input box
+            Submitbuttonvalidation();
+    }
+});
+$("#FIN_TERM_ENTRY_db_forperiod").focus(function () {
+    $(".ui-datepicker-calendar").hide();
+    $("#ui-datepicker-div").position({
+        my: "center top",
+        at: "center bottom",
+        of: $(this)
+    });
+});   
+var CCRE_d = new Date();
+var CCRE_year = CCRE_d.getFullYear()+2;
+var changedmonth=new Date(CCRE_d.setFullYear(CCRE_year));
+$('#FIN_TERM_ENTRY_db_forperiod').datepicker("option","maxDate",changedmonth);
+$('#FIN_TERM_ENTRY_db_paiddate').datepicker("option","maxDate",new Date());
+/************CUSTOMER NAME CALL FUNCTION FOR SELECTED UNIT*******************/
+$('#FIN_TERM_ENTRY_lb_unit').change(function(){
+$('#FIN_TERM_ENTRY_btn_save').attr("disabled", "disabled");
+$('#FIN_TERM_ENTRY_lbl_recver').hide();
+$('#FIN_TERM_ENTRY_lb_recver').hide();
+$('#FIN_TERM_ENTRY_recverstartdate').hide();
+$('#FIN_TERM_ENTRY_recverenddate').hide();
+$("#rec_ver_table tr").remove();
+$(".preloader").show();
+var payment_unit = $('#FIN_TERM_ENTRY_lb_unit').val();
+google.script.run.withFailureHandler(TERM_ENTRY_error_message).withSuccessHandler(payment_unitResponse).FIN_payment_Customer(payment_unit);
+});
+ /*************UNIQUE FUNCTION*********************/  
+function unique(a) {
+var result = [];
+$.each(a, function(i, e) {
+if ($.inArray(e, result) == -1) result.push(e);
+});
+return result;
+}
+/*************************CUSTOMER LIST BOX LOAD FUNCTIONS**********************/
+var FIN_TERM_ENTRY_myArray= [];
+function payment_unitResponse(response)
+{
+$('#FIN_TERM_ENTRY_btn_save').attr("disabled", "disabled");
+$('#FIN_TERM_ENTRY_lbl_customererrormsg').hide();
+FIN_TERM_ENTRY_myArray=response;
+var FIN_TERM_ENTRY_options='';
+if(FIN_TERM_ENTRY_myArray.length!=0)
+{
+var uniquecustname=[];
+for(var s=0;s<FIN_TERM_ENTRY_myArray.length;s++)
+{
+uniquecustname.push(FIN_TERM_ENTRY_myArray[s].customername)
+}
+uniquecustname=unique(uniquecustname)
+FIN_TERM_ENTRY_options ='<option>SELECT</option>';
+for (var i = 0; i < uniquecustname.length; i++)
+{
+var customerdetails=uniquecustname[i];
+var FIN_TERM_ENTRY_myarray=(customerdetails).replace('_',' ');
+var FIN_TERM_ENTRY_custname=FIN_TERM_ENTRY_myarray[0]+' '+FIN_TERM_ENTRY_myarray[1];
+FIN_TERM_ENTRY_options += '<option value="' + customerdetails+ '">' + FIN_TERM_ENTRY_myarray+ '</option>';
+}
+$('#FIN_TERM_ENTRY_lb_customer').html(FIN_TERM_ENTRY_options);
+$('#FIN_TERM_ENTRY_lb_customer').show();
+$('#FIN_TERM_ENTRY_lbl_customer').show();
+}
+else
+{
+$('#FIN_TERM_ENTRY_lbl_customererrormsg').show();
+$('#FIN_TERM_ENTRY_lb_customer').hide();
+$('#FIN_TERM_ENTRY_lbl_customer').hide();
+}
+$(".preloader").hide();
+}
+/*****************SUBMIT BUTTON VALIDATION ************************/
+$('#terminated_paymententry_form').change(function(){
+$('#FIN_TERM_ENTRY_btn_save').attr("disabled", "disabled");
+Submitbuttonvalidation();
+});
+function Submitbuttonvalidation()
+{
+if($('#FIN_TERM_ENTRY_lb_unit').val()!="SELECT" && $('#FIN_TERM_ENTRY_lb_customer').val()!="SELECT" && $('#FIN_TERM_ENTRY_lb_payment').val()!="SELECT"
+&& $('#FIN_TERM_ENTRY_tb_amount').val()!="" && $('#FIN_TERM_ENTRY_lb_recver').val()!="SELECT" && $('#FIN_TERM_ENTRY_db_forperiod').val()!="" && $('#FIN_TERM_ENTRY_db_paiddate').val()!="")
+{
+$('#FIN_TERM_ENTRY_btn_save').removeAttr("disabled");
+}
+else
+{
+$('#FIN_TERM_ENTRY_btn_save').attr("disabled", "disabled");
+}
+}
+/**************************MULTIPLE CUSTOMER CHECKING *********************/
+$(document).on('change','#FIN_TERM_ENTRY_lb_customer',function(){
+$(".preloader").show();
+var customername=$('#FIN_TERM_ENTRY_lb_customer').val();
+var FIN_ENTRY_namearray=[];
+$('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+$('#FIN_TERM_ENTRY_lbl_recver').hide();
+$('#FIN_TERM_ENTRY_lb_recver').hide();
+$('#FIN_TERM_ENTRY_recverstartdate').hide();
+$('#FIN_TERM_ENTRY_recverenddate').hide();
+$('#FIN_TERM_ENTRY_lb_payment')[0].selectedIndex = 0;
+$('#FIN_TERM_ENTRY_lb_recver').hide()[0].selectedIndex = 0;
+$("#rec_ver_table tr").remove();
+var diffcust_array=[];
+for(var k=0;k<FIN_TERM_ENTRY_myArray.length;k++)
+{
+if(FIN_TERM_ENTRY_myArray[k].customername==customername)
+{
+diffcust_array.push(FIN_TERM_ENTRY_myArray[k].customername+'-'+FIN_TERM_ENTRY_myArray[k].customerid+'-'+FIN_TERM_ENTRY_myArray[k].unit)
+FIN_ENTRY_namearray.push(FIN_TERM_ENTRY_myArray[k]);
+}
+}
+diffcust_array=unique(diffcust_array)
+if(diffcust_array.length!=1)
+{
+$("#CRCHK_tble_radiotable tr").remove();
+for (var i=0;i<diffcust_array.length;i++) 
+{
+var diffcustomerdetail=diffcust_array[i].split('-');
+var CRCHK_radio_customername=((diffcustomerdetail[0]).replace('_',' '))+' '+diffcustomerdetail[1];
+var multicustomerid=diffcustomerdetail[1]+'/'+diffcustomerdetail[2];
+var CRCHK_value ='<tr><td>&nbsp;&nbsp;&nbsp;<input type="radio" value='+multicustomerid+' id="+multicutomer'+i+'" name="custid" class="CRCHK_multicustomershowlist" />' + CRCHK_radio_customername + '</td></tr>';
+$('#rec_ver_table').append(CRCHK_value);
+$(".preloader").hide(); 
+}
+}
+else
+{
+$("#rec_ver_table tr").remove();
+diffcustomerdetail=diffcust_array[0].split('-');
+var CRCHK_id=diffcustomerdetail[1];
+var unitno=diffcustomerdetail[2];
+google.script.run.withFailureHandler(TERM_ENTRY_error_message).withSuccessHandler(TERM_FORPERIOD_Response).FIN_TERM_ENTRY_forperiod_validation(unitno,CRCHK_id);
+}
+});
+$(document).on('change','.CRCHK_multicustomershowlist',function(){
+$(".preloader").show();
+$('#FIN_TERM_ENTRY_lb_recver').hide();
+var FIN_ENTRY_id=$("input[name=custid]:checked").val();
+var splitedvalue=FIN_ENTRY_id.split('/');
+google.script.run.withFailureHandler(TERM_ENTRY_error_message).withSuccessHandler(TERM_FORPERIOD_Response).FIN_TERM_ENTRY_forperiod_validation(splitedvalue[1],splitedvalue[0]);
+});
+/*****************************FORPERIOD VALIDATION BASED ON PAYMENT TYPE*************/
+function TERM_FORPERIOD_Response(res)
+{
+$('#FIN_TERM_ENTRY_btn_save').attr("disabled", "disabled");
+var recver_array=[];
+recver_array=res[0];
+var customerid=res[1];
+var paid_startdate=res[2];
+var recstartdate=(paid_startdate).split('-');
+var recverstartdate=new Date(recstartdate[0]-1,recstartdate[1]-1,recstartdate[2]);
+$('#FIN_TERM_ENTRY_db_paiddate').datepicker("option","minDate",recverstartdate);
+var FIN_TERM_ENTRY_options='';
+FIN_TERM_ENTRY_options ='<option>SELECT</option>';
+for (var i = 0; i < recver_array.length; i++)
+{
+var FIN_TERM_ENTRY_myarray=recver_array[i];
+var recverid=FIN_TERM_ENTRY_myarray.recver;
+var filterstartdate=(FIN_TERM_ENTRY_myarray.startdate).split('-');
+var newfilterstartdate=new Date(filterstartdate[0],filterstartdate[1]-1,filterstartdate[2]);
+var filterenddate=(FIN_TERM_ENTRY_myarray.enddate).split('-');
+var newfilterenddate=new Date(filterenddate[0],filterenddate[1]-1,filterenddate[2]);
+if(newfilterstartdate<newfilterenddate)
+{
+var FIN_TERM_ENTRY_custnametiltle=FIN_TERM_ENTRY_myarray.startdateformat+'---'+FIN_TERM_ENTRY_myarray.enddateformat
+var FIN_TERM_ENTRY_custname=FIN_TERM_ENTRY_myarray.startdate+'/'+FIN_TERM_ENTRY_myarray.enddate+'/'+FIN_TERM_ENTRY_myarray.recver+'/'+customerid+'/'+FIN_TERM_ENTRY_myarray.startdateformat+'/'+FIN_TERM_ENTRY_myarray.enddateformat;
+FIN_TERM_ENTRY_options += '<option title='+FIN_TERM_ENTRY_custnametiltle+' value="'+FIN_TERM_ENTRY_custname+'">' + recverid+ '</option>';
+}
+}
+$('#FIN_TERM_ENTRY_lb_recver').html(FIN_TERM_ENTRY_options);
+$('#FIN_TERM_ENTRY_lbl_recver').show();
+$('#FIN_TERM_ENTRY_lb_recver').show();
+$(".preloader").hide();
+}
+$('.TERM_recverlbshowlist').change(function(){
+$('#FIN_TERM_ENTRY_btn_save').attr("disabled", "disabled");
+var rowid=$("#FIN_TERM_ENTRY_lb_recver").val();
+var rowidsplit=rowid.split('/');
+var startdatepayment=rowidsplit[0];
+var enddatepayment=rowidsplit[1];
+var startdateendday=startFormTableDateFormat(startdatepayment);
+var startdateformat=rowidsplit[4];
+var enddateformat=rowidsplit[5];
+var paymenttype=$('#FIN_TERM_ENTRY_lb_payment').val();
+if(paymenttype!="SELECT")
+{
+if(paymenttype=='DEPOSIT' || paymenttype=='PROCESSING FEE')
+{
+var paymentflag=1;
+var startdate=startdatepayment;
+var enddate=startdateendday;
+}
+if(paymenttype=='PAYMENT' || paymenttype=='CLEANING FEE')
+{
+paymentflag=1;
+startdate=startdatepayment;
+enddate=enddatepayment;
+}
+if(paymenttype=='DEPOSIT REFUND')
+{
+paymentflag=1;
+var start_datedb=enddatepayment.split('-');
+var startdate=new Date(start_datedb[0],start_datedb[1]-1);
+var enddate=enddatepayment;
+}
+if(paymentflag==1)
+{
+var CCRE_db_chkindate1 = new Date( Date.parse(startdate)); 
+CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());  
+var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
+CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1));
+$('#FIN_TERM_ENTRY_db_forperiod').datepicker("option","minDate",CCRE_db_chkindate1);
+var CCRE_db_chkoutdate1 = new Date( Date.parse(enddate)); 
+CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate());  
+var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
+CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1)); 
+var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate()
+var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()+1;
+var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear()
+var CCRE_finnoticedate=CCRE_chkoutyear+"-"+CCRE_chkoutmonth+"-"+CCRE_chkoutdate;
+CCRE_finnoticedate = new Date( Date.parse( CCRE_finnoticedate ) ); 
+$('#FIN_TERM_ENTRY_db_forperiod').datepicker("option","maxDate",CCRE_db_chkoutdate1);
+}
+}
+});
+/*********************ENDDATE CALCULATION********************************/
+function startFormTableDateFormat(inputdate){
+var string = inputdate.split("-");
+var newstartdate=new Date(string[0],string[1]-1,string[2]);
+var sd_day=newstartdate.getDate();
+var sd_month=newstartdate.getMonth();
+var sd_year=newstartdate.getFullYear();
+var new_startdate=new Date(sd_year,sd_month+1);
+var s_day=new_startdate.getDate();
+var s_month=new_startdate.getMonth();
+var s_year=new_startdate.getFullYear();
+var new_start_date=new Date(s_year,s_month,s_day-1);
+var fs_day=new_start_date.getDate();
+var fs_month=new_start_date.getMonth()+1;
+var fs_year=new_start_date.getFullYear();
+var finaldate=fs_year+'-'+fs_month+'-'+fs_day;
+return finaldate;
+}
+/*************************PAYMENT SAVE CALL CUNCTION*****************************/
+$('#FIN_TERM_ENTRY_btn_save').click(function(){
+$(".preloader").show(); 
+google.script.run.withFailureHandler(TERM_ENTRY_error_message).withSuccessHandler(TERM_Conformation_Response).FIN_TERM_ENTRY_input_details(document.getElementById('terminated_paymententry_form'));
+});
+$('#FIN_TERM_ENTRY_lb_recver').change(function(){
+var recverlistbox=$('#FIN_TERM_ENTRY_lb_recver').val();
+if(recverlistbox=='SELECT')
+{
+$('#FIN_TERM_ENTRY_recverenddate').val("").hide();
+$('#FIN_TERM_ENTRY_recverstartdate').val("").hide();
+}
+});
+$('#FINANCE_TERMINATION_reset').click(function(){
+termination_reset();
+});
+function termination_reset()
+{
+$('#FIN_TERM_ENTRY_btn_save').attr("disabled", "disabled");
+$('#terminated_paymententry_form').find('input[type=text]').val('');
+$('#FIN_TERM_ENTRY_lb_unit')[0].selectedIndex = 0;
+$('#FIN_TERM_ENTRY_lb_customer').hide()[0].selectedIndex = 0;
+$('#FIN_TERM_ENTRY_lb_payment')[0].selectedIndex = 0;
+$('#FIN_TERM_ENTRY_lb_recver').hide()[0].selectedIndex = 0;
+$('#rec_ver_table tr').remove();
+$('#FIN_TERM_ENTRY_lbl_recver').hide();
+$('#FIN_TERM_ENTRY_lbl_customer').hide();
+$('#FIN_TERM_ENTRY_lb_recver').hide();
+$('#FIN_TERM_ENTRY_recverstartdate').hide();
+$('#FIN_TERM_ENTRY_recverenddate').hide();
+$('#FIN_TERM_ENTRY_ta_comments').show().val('');
+}
+/************************CONFORMATION*********************************************/
+function TERM_Conformation_Response(response)
+{
+if(response=='success')
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENTS ENTRY-TERMINATED",msgcontent:errormsg[1]}});
+termination_reset()
+}
+else
+{
+$('#FIN_TERM_ENTRY_btn_save').attr("disabled", "disabled");
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENTS ENTRY-TERMINATED",msgcontent:response}});
+}
+$(".preloader").hide(); 
+}
+/**********************PROJECT ERROR MESSAGE*********************************/
+function TERM_ENTRY_error_message(TERM_err)
+{
+if(TERM_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+TERM_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#terminated_paymententry_form').replaceWith('<center><label class="dberrormsg">'+TERM_err+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENTS ENTRY-TERMINATED CUSTOMER",msgcontent:TERM_err}});
+}
+$(".preloader").hide(); 
+}
+});
+</script>
+<body bgcolor="#E6E6FA" >
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>PAYMENTS ENTRY-TERMINATED CUSTOMER
+</h3>
+<p>
+</div>
+</div>
+<form id='FIN_TERM_ENTRY_errormessageform'>
+<table id='FIN_TERM_ENTRY_errormessagetable'>
+</table>
+</form>
+<form class='content' action="" id="terminated_paymententry_form" name="terminated_paymententry_form">
+<table id="CCRE_tble_maintable">
+<tr>
+<td><label >UNIT<em>*</em></label></td>
+<td><select id='FIN_TERM_ENTRY_lb_unit' name="FIN_TERM_ENTRY_lb_unit"  style="height:20px">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td> </td><td><label id="FIN_TERM_ENTRY_lbl_customererrormsg" class="errormsg" hidden></label></td>
+</tr>
+<tr>
+<td><label id="FIN_TERM_ENTRY_lbl_customer">CUSTOMER<em>*</em></label></td>
+<td><select id='FIN_TERM_ENTRY_lb_customer' name="FIN_TERM_ENTRY_lb_customer" class="multiplecustomervalidation" style="height:20px">
+<option>SELECT</option>
+</select>
+</tr>
+<tr><td></td><td><table id="rec_ver_table"></table></td></tr>
+<tr>
+<td><label id="FIN_TERM_ENTRY_lbl_recver" >LEASE PERIOD<em>*</em></label></td>
+<td><table id="recverdatetable"><td><select id='FIN_TERM_ENTRY_lb_recver' name="FIN_TERM_ENTRY_lb_recver" class="TERM_recverlbshowlist"></select></td><td> <input type="text" name="FIN_TERM_ENTRY_recverstartdate" id="FIN_TERM_ENTRY_recverstartdate" style="width:80px"disabled/></td><td><input type="text" name="FIN_TERM_ENTRY_recverenddate" id="FIN_TERM_ENTRY_recverenddate" style="width:80px"disabled/></td></table></td></tr>
+<tr>
+<td><label >PAYMENT OF<em>*</em></label></td>
+<td><select id='FIN_TERM_ENTRY_lb_payment' name="FIN_TERM_ENTRY_lb_payment" class="TERM_recverlbshowlist" style="height:20px">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td><label >AMOUNT<em>*</em></label></td><td><input type="text" name="FIN_TERM_ENTRY_tb_amount" id="FIN_TERM_ENTRY_tb_amount"  maxlength="6"  style="width:60px;" class="amountonly"/></td>
+</tr>
+<tr>
+<td><label >FOR PERIOD<em>*</em></label></td><td> <input type="text" name="FIN_TERM_ENTRY_db_forperiod" id="FIN_TERM_ENTRY_db_forperiod" class="datemandtry" style="width:105px"/></td>
+</tr>
+<tr>
+<td><label >PAID DATE<em>*</em></label></td><td> <input type="text" name="FIN_TERM_ENTRY_db_paiddate" id="FIN_TERM_ENTRY_db_paiddate" class="datemandtry" style="width:75px"/></td>
+</tr>
+<tr>
+<td><label >BANKREF COMMENTS</label></td><td><textarea row="2" name="FIN_TERM_ENTRY_ta_comments" id="FIN_TERM_ENTRY_ta_comments" rows="5" cols="20" style = 'width = 2000px;'></textarea></td>
+</tr>
+</table>
+<table><tr><td><input type="button" class="btn" value="SAVE"   id="FIN_TERM_ENTRY_btn_save" disabled />  <input type="button" name="reset" id="FINANCE_TERMINATION_reset" class="btn" onclick="terminated_reset()" value="RESET" /></td></tr></table>
+</form>
+</body>
+</html>

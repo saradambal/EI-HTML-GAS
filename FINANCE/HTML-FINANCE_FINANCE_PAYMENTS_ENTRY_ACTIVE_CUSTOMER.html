@@ -1,0 +1,731 @@
+<!--**************************************PAYMENT ENTRY FOR ACTIVE CUSTOMER*************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.04- SD:28/06/2014 ED:28/06/2014,TRACKER NO:787 did delete row button validation and changed amount box maximum digits 4 to 5.
+//VER 1.03- SD:18/06/2014 ED:18/06/2014,TRACKER NO:787 Cleared form validations issues and did paiddate validation in payment entry form.
+//VER 1.02- SD:08/06/2014 ED:08/06/2014,TRACKER NO:787 cleared submit button validation issue.
+//VER 1.01- SD:06/06/2014 ED:06/06/2014,TRACKER NO:787 Changed jquery and css link.
+//VER 1.00- SD:16/04/2014 ED:16/04/2014,TRACKER NO:787 Cleared LP listbox issue and set DP for +2 years oly show in initially AND restricted DP manual inputs.
+//VER 0.09- SD:25/03/2014 ED:25/03/2014,TRACKER NO:735 some forperiod DP not working properly so i changed DP.
+//VER 0.08- SD:06/03/2014 ED:06/03/2014,TRACKER NO:735 changed ULD_ID,updated return flag and removed repeated queries in gs script and used array values in html script.
+//VER 0.07- SD:21/02/2014 ED:21/02/2014,TRACKER NO 735 Updated comments.
+//VER 0.06- SD:13/02/2014 ED:13/02/2014,TRACKER NO 735 Cleared all issues and did deposit refund validation,cleared reset form issue.
+//VER 0.05-SD:12/01/2014 ED:12/01/2014,TRACKER NO 682,changed preloader image path,title alignment,identifier.
+//VER 0.04- SD:31/12/2013 ED:01/01/2013,Removed sleep functiuons and multilple connectios
+//VER 0.03- SD:18/12/2013 ED:18/12/2013,Did paiddate validation and set drop down for month and year in datepicker.
+//VER 0.02- SD:13/12/2013 ED:13/12/2013,TRACKER NO:171Added Return function script in ver0.02
+//VER 0.01-INITIAL VERSION-SD:13/09/2013 ED:14/09/2013,TRACKER NO:171
+//*********************************************************************************************************//
+<!-------------
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+$(document).ready(function () {
+  $('#FIN_Entry_form').hide();
+  $('#Fin_entry_customerlistboxerror').hide();
+  var unit=[];
+  var payment=[];
+  var errormsg=[];
+  var paidforperiod=[];
+  $(".preloader").show(); 
+  /*******************************CALL CUSTOMER NAME GS FUNCTION***************************/
+  $(document).on('change','.FIN_ENTRY_class_unit',function() {
+  $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    var FIN_ENTRY_id=$(this).attr('id');
+    var FIN_ENTRY_no=FIN_ENTRY_id.split("-");
+    var FIN_ENTRY_unit = $("#"+FIN_ENTRY_id).val();
+    if(FIN_ENTRY_unit!="SELECT")
+    {
+      $(".preloader").show(); 
+      google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_CustomerResponse).FIN_ENTRY_Customer(FIN_ENTRY_unit,FIN_ENTRY_no[1]);
+    }
+    else
+    {
+     $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+      $('#FIN_ENTRY_recheckinflag-'+FIN_ENTRY_no[1]).hide();
+      $('#FIN_ENTRY_lb_customer-'+FIN_ENTRY_no[1]).hide();
+      $('#multiplecustomer-'+FIN_ENTRY_no[1]+" tr").hide();
+    }
+  });
+  google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_getCommonvalues_result).FIN_ENTRY_commonvalues();
+  function FIN_ENTRY_getCommonvalues_result(FIN_ENTRY_result)
+  {
+    unit=FIN_ENTRY_result.unit;
+    payment=FIN_ENTRY_result.payment;
+    errormsg=FIN_ENTRY_result.error;
+    var FIN_ENTRY_unitvalue='<option>SELECT</option>';
+    for(var i=0;i<unit.length;i++)
+    {
+      FIN_ENTRY_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+    }
+    $('#FIN_ENTRY_lb_unit-1').html(FIN_ENTRY_unitvalue);
+    var FIN_ENTRY_paymentvalue='<option>SELECT</option>';
+    for(var i=0;i<payment.length;i++)
+    {
+      FIN_ENTRY_paymentvalue += '<option value="' + payment[i] + '">' + payment[i] + '</option>';
+    }
+    $('#FIN_ENTRY_lb_payment-1').html(FIN_ENTRY_paymentvalue);
+    $('#FIN_ENTRY_tb_amount1').prop('title',errormsg[0]);
+    if(unit.length!=0)
+    {
+      $('#FIN_Entry_form').show();
+    }
+    else
+    {
+      $('#FIN_Entry_form').hide();
+      var paymentuniterrormsg='<p><label class="errormsg">'+errormsg[2]+'</label></p>';
+      $('#FIN_ENTRY_errormessagetable').append(paymentuniterrormsg);
+    }
+    $(".preloader").hide();
+  }
+  /*******************************AMOUNTBOX,FORPERIOD,PAIDDATE BOX VALIDATION***************************/
+  $(document).on('click','.amtonly',function() {
+    $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+  });
+  $('#FIN_ENTRY_db_period-1').datepicker( {
+    changeMonth: true,      //provide option to select Month
+    changeYear: true,       //provide option to select year
+    showButtonPanel: true,   // button panel having today and done button
+    dateFormat: 'MM-yy',    //set date format
+    onClose: function(dateText, inst) {
+      var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+      var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+      $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+      $(this).blur();//remove focus input box
+      FORPERIOD_buttonvalidation();
+    }
+  });
+  
+  $("#FIN_ENTRY_db_period-1").focus(function () {
+    $(".ui-datepicker-calendar").hide();
+    $("#ui-datepicker-div").position({
+      my: "center top",
+      at: "center bottom",
+      of: $(this)
+    });
+  });
+  var CCRE_d = new Date();
+  var CCRE_year = CCRE_d.getFullYear()+2;
+  var changedmonth=new Date(CCRE_d.setFullYear(CCRE_year));
+  $('#FIN_ENTRY_db_period-1').datepicker("option","maxDate",changedmonth);
+  $('#FIN_ENTRY_db_paiddate-1').datepicker({
+    dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true
+  });
+  function FORPERIOD_buttonvalidation()
+  {
+    var FIN_ENTRY_INPUT_table = document.getElementById('FIN_entry_form');
+    var FIN_ENTRY_rowlength=FIN_ENTRY_INPUT_table.rows.length;
+    var FIN_ENTRY_lastrowid=FIN_ENTRY_rowlength-1;
+    var count=0;
+    for(var i=1;i<=FIN_ENTRY_rowlength;i++)
+    {
+      var unit=$('#FIN_ENTRY_lb_unit-'+i).val()
+      var customer=$('#FIN_ENTRY_lb_customer-'+i).val();
+      var payment=$('#FIN_ENTRY_lb_payment-'+i).val();
+      var amount=$('#FIN_ENTRY_tb_amount'+i).val();
+      var forperiod=$('#FIN_ENTRY_db_period-'+i).val();
+      var paiddate=$('#FIN_ENTRY_db_paiddate-'+i).val();
+      var leaseperiod=$('#FIN_ENTRY_recheckinflag-'+i).val();
+      if((unit!=undefined)&&(customer!=undefined)&&(payment!=undefined)&&(unit!="SELECT")&&(customer!="SELECT")&&(payment!="SELECT")&&(unit!='')&&(customer!='')&&(payment!='')&&(amount!="")&&(forperiod!="")&&(paiddate!="")&&(amount!=undefined)&&(forperiod!=undefined)&&(paiddate!=undefined)&&(amount!='')&&(forperiod!='')&&(paiddate!='')&&(leaseperiod!="")&&(leaseperiod!=undefined)&&(leaseperiod!="SELECT"))
+      {
+        count=count+1;
+      }
+    }
+    if(count==FIN_ENTRY_rowlength-1)
+    {
+      $('#FIN_ENTRY_add'+FIN_ENTRY_lastrowid).removeAttr("disabled");
+      $('#FIN_ENTRY_btn_savebutton').removeAttr("disabled");
+      $('#Fin_entry_customerlistboxerror').hide();
+    }
+    else
+    {
+      $('#FIN_ENTRY_add'+FIN_ENTRY_lastrowid).attr("disabled", "disabled");
+      $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    }
+  }
+  $('#FIN_ENTRY_db_paiddate-1').datepicker("option","maxDate",new Date());
+  /*******************************SUBMIT BUTTON VALIDATION***************************/
+  $(document).on('change','.submultivalid',function() {
+    var FIN_ENTRY_INPUT_table = document.getElementById('FIN_entry_form');
+    var FIN_ENTRY_rowlength=FIN_ENTRY_INPUT_table.rows.length;
+    var FIN_ENTRY_lastrowid=FIN_ENTRY_rowlength-1;
+    var count=0;
+    for(var i=1;i<=FIN_ENTRY_rowlength;i++)
+    {
+      var unit=$('#FIN_ENTRY_lb_unit-'+i).val()
+      var customer=$('#FIN_ENTRY_lb_customer-'+i).val();
+      var payment=$('#FIN_ENTRY_lb_payment-'+i).val();
+      var amount=$('#FIN_ENTRY_tb_amount'+i).val();
+      var forperiod=$('#FIN_ENTRY_db_period-'+i).val();
+      var paiddate=$('#FIN_ENTRY_db_paiddate-'+i).val();
+      var leaseperiod=$('#FIN_ENTRY_recheckinflag-'+i).val();
+      
+      if((unit!=undefined)&&(customer!=undefined)&&(payment!=undefined)&&(unit!="SELECT")&&(customer!="SELECT")&&(payment!="SELECT")&&(unit!='')&&(customer!='')&&(payment!='')&&(amount!="")&&(forperiod!="")&&(paiddate!="")&&(amount!=undefined)&&(forperiod!=undefined)&&(paiddate!=undefined)&&(amount!='')&&(forperiod!='')&&(paiddate!='')&&(leaseperiod!="")&&(leaseperiod!=undefined)&&(leaseperiod!="SELECT"))
+      {
+        count=count+1;
+      }
+    }
+    if(count==FIN_ENTRY_rowlength-1)
+    {
+      $('#FIN_ENTRY_add'+FIN_ENTRY_lastrowid).removeAttr("disabled");
+      
+      $('#FIN_ENTRY_btn_savebutton').removeAttr("disabled");
+      $('#Fin_entry_customerlistboxerror').hide();
+    }
+    else
+    {
+      $('#FIN_ENTRY_add'+FIN_ENTRY_lastrowid).attr("disabled", "disabled");
+      $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    }
+  });
+  var newid=1;
+  /*******************************ADDING NEW ROW IN***************************/
+  $(document).on('click','.addbttn',function() {
+    var lastRow = $('#FIN_entry_form tr:last').find('input');
+    var lastitem = lastRow.attr('id');
+    var lastitem_num =lastitem.replace( /^\D+/g, '');
+    var table = document.getElementById('FIN_entry_form');
+    var rowCount = table.rows.length;
+    newid =rowCount;
+    var newid1=newid-1;
+    $('#FIN_ENTRY_add'+newid1).hide();
+    $('#FIN_ENTRY_del'+newid1).hide();
+    var newRow = table.insertRow(rowCount);
+    var oCell = newRow.insertCell(0);
+    oCell.innerHTML = "<select  class='submultivalid  showlist' name ='FIN_ENTRY_lb_unit' id='"+"FIN_ENTRY_lb_unit-"+newid+"' > <option value=''>SELECT</option></select> ";
+    
+    oCell = newRow.insertCell(1);
+    oCell.innerHTML = "<select  class='submultivalid customernamecheck' name='FIN_ENTRY_lb_customer'  id='"+"FIN_ENTRY_lb_customer-"+newid+"' hidden ><option value=''>SELECT</option></select>"; 
+    
+    oCell = newRow.insertCell(2);
+    oCell.innerHTML = "<table id=id='"+"multiplecustomer-"+newid+"' style='width:200px' hidden></table>"
+    
+    oCell = newRow.insertCell(3);
+    oCell.innerHTML = "<input type='text' name='customerids' id=id='"+"customerid-"+newid+"'hidden>"
+    
+    oCell = newRow.insertCell(4);
+    oCell.innerHTML = "<select  class='forperiodrange submultivalid' name='FIN_ENTRY_recheckinflag' id='"+"FIN_ENTRY_recheckinflag-"+newid+"' hidden ><option value=''>SELECT</option></select>"
+    
+    oCell = newRow.insertCell(5);
+    oCell.innerHTML = "<select  class='submultivalid forperiodrange' name='FIN_ENTRY_lb_payment'  id='"+"FIN_ENTRY_lb_payment-"+newid+"'><option value=''>SELECT</option></select>"; 
+    
+    oCell = newRow.insertCell(6);
+    oCell.innerHTML = "<table><tr><td><input   class='amtonly submultivalid' type='text' name ='FIN_ENTRY_tb_amount' id='"+"FIN_ENTRY_tb_amount"+newid+"' style='width:60px;' /></td><td><input type='checkbox' class='amountcheckbox' name='checkbox' id='"+"payment_hilighted-"+newid+"'/></td><td><input  type='text' name='FIN_ENTRY_tb_checkboxamount' id='"+"FIN_ENTRY_tb_checkboxamount-"+newid+"'hidden/></td></tr></table>";
+    
+    oCell = newRow.insertCell(7);
+    oCell.innerHTML = "<input   class='datepickperiod submultivalid datemandtry' type='text' name ='FIN_ENTRY_db_period' id='"+"FIN_ENTRY_db_period-"+newid+"'  style='width:105px;'  />";
+    
+    oCell = newRow.insertCell(8);
+    oCell.innerHTML = "<input   class='datepickpaiddate submultivalid datemandtry' type='text' name ='FIN_ENTRY_db_paiddate' id='"+"FIN_ENTRY_db_paiddate-"+newid+"'  style='width:75px;' />";
+    
+    oCell = newRow.insertCell(9);
+    oCell.innerHTML = "<textarea row='2' name ='FIN_ENTRY_ta_comments' id='"+"FIN_ENTRY_ta_comments"+newid+"'></textarea>";
+    
+    oCell = newRow.insertCell(10);
+    oCell.innerHTML = "<input type='button' value='+' class='addbttn' alt='Add Row' height='30' width='30' name ='FIN_ENTRY_add[]' id='"+"FIN_ENTRY_add"+newid+"' disabled>";
+    
+    oCell = newRow.insertCell(11);
+    oCell.innerHTML = "<input  type='button' value='-' class='deletebttn' alt='delete Row' height='30' width='30' name ='FIN_ENTRY_delete[]' id='"+"FIN_ENTRY_del"+newid+"'>";
+    var FIN_ENTRY_unitvalue='<option>SELECT</option>';
+    for(var i=0;i<unit.length;i++)
+    {
+      FIN_ENTRY_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+    }
+    $('#FIN_ENTRY_lb_unit-'+newid).html(FIN_ENTRY_unitvalue);
+    var FIN_ENTRY_paymentvalue='<option>SELECT</option>';
+    for(var i=0;i<payment.length;i++)
+    {
+      FIN_ENTRY_paymentvalue += '<option value="' + payment[i] + '">' + payment[i] + '</option>';
+    }
+    $('#FIN_ENTRY_lb_payment-'+newid).html(FIN_ENTRY_paymentvalue);
+    $('#FIN_ENTRY_tb_amount'+newid).prop('title',errormsg[0]);
+    $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    var CCRE_d = new Date();
+    var CCRE_year = CCRE_d.getFullYear()+2;
+    var changedmonth=new Date(CCRE_d.setFullYear(CCRE_year));
+    $('#FIN_ENTRY_db_period-'+newid).datepicker({
+      changeMonth: true,      //provide option to select Month
+      changeYear: true,       //provide option to select year
+      showButtonPanel: true,  // button panel having today and done button
+      dateFormat: 'MM-yy',    //set date format
+      onClose: function(dateText, inst) {
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+        $(this).blur();//remove focus input box
+        FORPERIOD_buttonvalidation();
+      }
+    });
+    $('#FIN_ENTRY_db_period-'+newid).focus(function () {
+      $(".ui-datepicker-calendar").hide();
+      $("#ui-datepicker-div").position({
+        my: "center top",
+        at: "center bottom",
+        of: $(this)
+      });
+    });  
+    $('#FIN_ENTRY_db_period-'+newid).datepicker("option","maxDate",changedmonth);
+    $('#FIN_ENTRY_db_paiddate-'+newid).datepicker({
+      dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true 
+    });
+    $('#FIN_ENTRY_db_paiddate-'+newid).datepicker("option","maxDate",new Date());
+  });
+  /*******************************DELETE ROW FUNCTION***************************/
+  $(document).on('click','.deletebttn',function() {
+    var table = document.getElementById('FIN_entry_form');
+    if(table.rows.length>2) 
+      $(this).closest("tr").remove();
+    var FIN_ENTRY_INPUT_table = document.getElementById('FIN_entry_form');
+    var FIN_ENTRY_rowlength=FIN_ENTRY_INPUT_table.rows.length;
+    var FIN_ENTRY_newid=FIN_ENTRY_rowlength-1;
+    $('#FIN_ENTRY_add'+FIN_ENTRY_newid).show();
+    $('#FIN_ENTRY_del'+FIN_ENTRY_newid).show();
+    var count=0;
+    for(var i=1;i<=FIN_ENTRY_rowlength;i++)
+    {
+      var unit=$('#FIN_ENTRY_lb_unit-'+i).val()
+      var customer=$('#FIN_ENTRY_lb_customer-'+i).val();
+      var payment=$('#FIN_ENTRY_lb_payment-'+i).val()
+      var amount=$('#FIN_ENTRY_tb_amount'+i).val()
+      var forperiod=$('#FIN_ENTRY_db_period-'+i).val()
+      var paiddate=$('#FIN_ENTRY_db_paiddate-'+i).val();
+      var leaseperiod=$('#FIN_ENTRY_recheckinflag-'+i).val();
+      if((unit!=undefined)&&(customer!=undefined)&&(payment!=undefined)&&(unit!="SELECT")&&(customer!="SELECT")&&(payment!="SELECT")&&(unit!='')&&(customer!='')&&(payment!='')&&(amount!="")&&(forperiod!="")&&(paiddate!="")&&(amount!=undefined)&&(forperiod!=undefined)&&(paiddate!=undefined)&&(amount!='')&&(forperiod!='')&&(paiddate!='')&&(leaseperiod!="")&&(leaseperiod!=undefined)&&(leaseperiod!="SELECT"))
+      {
+        count=count+1;
+      }
+    }
+    if(count==0)
+    {
+    $('#FIN_ENTRY_delete'+FIN_ENTRY_newid).attr("disabled", "disabled");
+    }
+    else
+    {
+    $('#FIN_ENTRY_delete'+FIN_ENTRY_newid).removeAttr("disabled");
+    }
+    if(count==FIN_ENTRY_rowlength-1)
+    {
+      $('#FIN_ENTRY_add'+FIN_ENTRY_newid).removeAttr("disabled");
+      $('#FIN_ENTRY_btn_savebutton').removeAttr("disabled");
+      $('#Fin_entry_customerlistboxerror').hide();
+    }
+    else
+    {
+      $('#FIN_ENTRY_add'+FIN_ENTRY_newid).attr("disabled", "disabled");
+      $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    }
+  });
+  function FormTableDateFormat(inputdate){
+    var string = inputdate.split("-");
+    return string[2]+'-'+ string[1]+'-'+string[0];
+  }
+  /**************************FOR PERIOD VALIDATION********************************/
+  $(document).on('change','.forperiodrange',function(){
+    $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    $(".preloader").hide();
+    var FIN_ENTRY_id=$(this).attr('id');
+    var idsplit=FIN_ENTRY_id.split('-');
+    var data=$('#FIN_ENTRY_recheckinflag-'+idsplit[1]).val();
+    var paymenttype=$('#FIN_ENTRY_lb_payment-'+idsplit[1]).val();
+    $('#FIN_ENTRY_db_period-'+idsplit[1]).val('')
+    var datas=data.split('/');
+    var startdatepayment=datas[0];
+    var startdateendday=startFormTableDateFormat(startdatepayment);
+    var enddatepayment=datas[1];
+    var id=datas[2];
+    if(paymenttype!='SELECT')
+    {
+      if(paymenttype=='DEPOSIT' || paymenttype=='PROCESSING FEE')
+      {
+        var paymentflag=1;
+        var startdate=startdatepayment;
+        var enddate=startdateendday;
+      }
+      if(paymenttype=='PAYMENT' || paymenttype=='CLEANING FEE')
+      {
+        paymentflag=1;
+        startdate=startdatepayment;
+        enddate=enddatepayment;
+      }
+      if(paymenttype=='DEPOSIT REFUND')
+      {
+        paymentflag=1;
+        var start_datedb=enddatepayment.split('-');
+        var startdate=new Date(start_datedb[0],start_datedb[1]-1,0+1);
+        var enddate=enddatepayment;
+        enddate
+      }
+      if(paymentflag==1)
+      {
+        var FIN_ENTRY_db_chkindate1 = new Date( Date.parse(startdate)); 
+        FIN_ENTRY_db_chkindate1.setDate( FIN_ENTRY_db_chkindate1.getDate());  
+        var FIN_ENTRY_db_chkindate1 = FIN_ENTRY_db_chkindate1.toDateString(); 
+        FIN_ENTRY_db_chkindate1 = new Date( Date.parse( FIN_ENTRY_db_chkindate1));
+        $('#FIN_ENTRY_db_period-'+id).datepicker("option","minDate",FIN_ENTRY_db_chkindate1);
+        var FIN_ENTRY_db_chkoutdate1 = new Date( Date.parse(enddate)); 
+        FIN_ENTRY_db_chkoutdate1.setDate( FIN_ENTRY_db_chkoutdate1.getDate());  
+        var FIN_ENTRY_db_chkoutdate1 = FIN_ENTRY_db_chkoutdate1.toDateString(); 
+        FIN_ENTRY_db_chkoutdate1 = new Date( Date.parse( FIN_ENTRY_db_chkoutdate1 )); 
+        $('#FIN_ENTRY_db_period-'+id).datepicker("option","maxDate",FIN_ENTRY_db_chkoutdate1);
+      }
+    }
+    $(".preloader").hide(); 
+  });
+  function startFormTableDateFormat(inputdate){
+    var string = inputdate.split("-");
+    var newstartdate=new Date(string[0],string[1]-1,string[2]);
+    var sd_day=newstartdate.getDate();
+    var sd_month=newstartdate.getMonth();
+    var sd_year=newstartdate.getFullYear();
+    var new_startdate=new Date(sd_year,sd_month+1);
+    var s_day=new_startdate.getDate();
+    var s_month=new_startdate.getMonth();
+    var s_year=new_startdate.getFullYear();
+    var new_start_date=new Date(s_year,s_month,s_day-1);
+    var fs_day=new_start_date.getDate();
+    var fs_month=new_start_date.getMonth()+1;
+    var fs_year=new_start_date.getFullYear();
+    var finaldate=fs_year+'-'+fs_month+'-'+fs_day;
+    return finaldate;
+  }
+  /*************************MULTIPLE CUSTOMER CHECKING***************************/
+  
+  $(document).on('change','.customernamecheck',function(){
+  $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    var FIN_ENTRY_id=$(this).attr('id');
+    var splitedid=FIN_ENTRY_id.split('-');
+    $('#FIN_ENTRY_recheckinflag-'+splitedid[1]).hide();
+    var customer=$('#FIN_ENTRY_lb_customer-'+splitedid[1]).val();
+    var unit=$('#FIN_ENTRY_lb_unit-'+splitedid[1]).val();
+    if(customer!="SELECT" && customer!="" && customer!=undefined)
+    {
+    $(".preloader").show(); 
+     google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_multipleCustomerResponse).FIN_ENTRY_Customer(unit,splitedid[1]);
+    }
+  });
+  function FIN_ENTRY_multipleCustomerResponse(response)
+  {
+ var customer_array=response[0];
+ var splitedid=response[1]
+  $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+  $(".preloader").show(); 
+    var splitedid=response[1];
+    var customer=$('#FIN_ENTRY_lb_customer-'+splitedid).val();
+    var unit=$('#FIN_ENTRY_lb_unit-'+splitedid).val();
+    if(customer!="SELECT" && customer!="")
+    {
+      var customername_array=[];
+      for(var k=0;k<customer_array.length;k++)
+      {
+        if(customer_array[k].customername==customer)
+        {
+          customername_array.push(customer_array[k]);
+        }
+      }
+      var id=splitedid;
+      $("#multiplecustomer-"+id+" tr").remove();
+      var arraylength=customername_array.length;
+      for (var i=0;i<customername_array.length;i++) 
+      {
+        var tablerowid=i+'_'+id;
+        var customername_id=customername_array[i];
+        var customer_nameid=customername_id.customername+' '+customername_id.customerid;
+        var unitid_custid=customername_id.unit+'-'+customername_id.customerid+'-'+id+'-'+i+'-'+arraylength;
+        var CRCHK_value ='<tr><td ><input type="radio" value='+customername_id.customerid+' id="customerids-'+unitid_custid+'" name="customerid-'+id+'" class="FIN_ENTRY_showlist" />' + customer_nameid + '</td></tr>';
+        $('#multiplecustomer-'+id).append(CRCHK_value);
+      }
+      if(customername_array.length!=1)
+      {
+        $('#multiplecustomer-'+id).show();
+        $(".preloader").hide();
+      }
+      else
+      {
+        $(".preloader").show();
+        $('#multiplecustomer-'+id).hide();
+        customername_id=customername_array[0];
+        var unit=customername_id.unit;
+        var customer_id=customername_id.customername;
+        $('#customerid-'+id).val(customername_id.customerid);
+        google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_FORPERIOD_Response).FIN_ENTRY_FORPERIOD_validation(unit,customername_id.customerid,id)
+      }
+    }
+    else
+    {
+      $('#FIN_ENTRY_recheckinflag-'+splitedid).hide();
+    }
+     $(".preloader").hide(); 
+  }
+  function FIN_ENTRY_FORPERIOD_Response(response)
+  {
+    var Recver_dates=[]
+    Recver_dates=response[0];
+    var paiddate_mindate=response[1];
+    var id=response[2];
+    var recstartdate=(paiddate_mindate).split('-');
+    var recverstartdate=new Date(recstartdate[0]-1,recstartdate[1]-1,recstartdate[2]);
+    $('#FIN_ENTRY_db_paiddate-'+id).datepicker("option","minDate",recverstartdate);
+    var options ='<option value="">SELECT</option>';
+    for (var i = 0; i < Recver_dates.length; i++) 
+    {
+      var recverdata=Recver_dates[i];
+      var recverid=recverdata.recver;
+      var recverdateperiod=recverdata.startdateformat+' --- '+recverdata.enddateformat;
+      var recverdates=recverdata.startdate+'/'+recverdata.enddate+'/'+id+'/'+recverid;
+      options += '<option title="'+recverdateperiod+'" value="' + recverdates + '">' + recverid + '</option>';
+    }
+    $('#FIN_ENTRY_recheckinflag-'+id).html(options);
+    $('#FIN_ENTRY_recheckinflag-'+id).show();
+    $(".preloader").hide(); 
+  }
+  $(document).on('change','.FIN_ENTRY_showlist',function(){
+    $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    var FIN_ENTRY_id=$(this).attr('id');
+    var splitedid=FIN_ENTRY_id.split('-');
+    var customer=splitedid[2]
+    var unit=splitedid[1];
+    var id=splitedid[3]
+    var rowid=splitedid[4]
+    var rowlength=splitedid[5];
+    $('#customerid-'+id).val(customer);
+    $('#FIN_ENTRY_recheckinflag-'+id).hide();
+    $(".preloader").show(); 
+    google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_FORPERIOD_Response).FIN_ENTRY_FORPERIOD_validation(unit,customer,id);
+  });
+  /*******************************PAID FORPERIOD VALIDATION***************************/
+  
+  $(document).on('change','.showlist',function(){
+  $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    var FIN_ENTRY_id=$(this).attr('id');
+    var FIN_ENTRY_unit = $("#"+FIN_ENTRY_id).val();
+    var FIN_ENTRY_no=FIN_ENTRY_id.split("-");
+    if((FIN_ENTRY_unit!="SELECT")&&(FIN_ENTRY_unit!=""))
+    {
+      $(".preloader").show(); 
+      google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_CustomerResponse).FIN_ENTRY_Customer(FIN_ENTRY_unit,FIN_ENTRY_no[1]);
+    }
+    else
+    {
+      $('#FIN_ENTRY_recheckinflag-'+FIN_ENTRY_no[1]).hide();
+      $('#FIN_ENTRY_lb_customer-'+FIN_ENTRY_no[1]).hide();
+      $('#multiplecustomer-'+FIN_ENTRY_no[1]+" tr").hide();
+      $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    }
+  });
+  /**************CUSTOMER LIST BOX LOAD FUNCTION ******************/
+  var customer_array=[];
+  function FIN_ENTRY_CustomerResponse(response)
+  {
+  $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    $('#Fin_entry_customerlistboxerror').hide();
+    var no=response[1];
+    customer_array=response[0];
+    if(customer_array.length!=0)
+    {
+      var options ='<option value="">SELECT</option>';
+      for (var i = 0; i < customer_array.length; i++) 
+      {
+        var customername=customer_array[i].customername;
+        options += '<option value="' + customer_array[i].customername + '">' + customername + '</option>';
+      }
+      $('#FIN_ENTRY_lb_customer-'+no).html(options);
+      $('#FIN_ENTRY_lb_customer-'+no).show();
+      //$('#FIN_ENTRY_recheckinflag-'+no).show();
+    }
+    else
+    {
+      $('#Fin_entry_customerlistboxerror').show();
+      $('#FIN_ENTRY_lb_customer-'+no).hide();
+      $('#FIN_ENTRY_recheckinflag-'+no).hide();
+    }
+    $(".preloader").hide(); 
+  }
+  $('#FIN_ENTRY_btn_savebutton').click(function(){
+    $(".preloader").show(); 
+    google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_rentalconformation).FIN_ENTRY_input_details(document.getElementById('FIN_Entry_form'));
+  });
+  /*******************************AMOUNT CHECKBOX***************************/
+  $(document).on('change','.amountcheckbox',function(){
+    var FIN_ENTRY_id=$(this).attr('id');
+    var paymentflagsplitedid=FIN_ENTRY_id.split('-');
+    var checkboxstatus=$('#'+FIN_ENTRY_id).is(":checked");
+    if(checkboxstatus==true)
+    {
+      $('#FIN_ENTRY_tb_checkboxamount-'+paymentflagsplitedid[1]).val('X');
+    }
+    else
+    {
+      $('#FIN_ENTRY_tb_checkboxamount-'+paymentflagsplitedid[1]).val('');
+    }
+  });
+  function FIN_ENTRY_rentalconformation(response)
+  {
+    if(response==null || response=="" || response=='null')
+    {
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:errormsg[1]}});
+    }
+    else
+    {
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:response}});
+    }
+    $('#FIN_entry_form tr').remove();
+    var tableheader='<tr> <td><label id="FIN_ENTRY_lbl_unit" >UNIT</label><em>*</em></td><td ><label  id="FIN_ENTRY_lbl_customer">CUSTOMER</label><em>*</em></td><td></td><td></td><td ><label  id="FIN_ENTRY_lbl_recver">LEASE PERIOD</label><em>*</em></td><td > <label id="FIN_ENTRY_lbl_payment">PAYMENT</label><em>*</em></td><td ><label id="FIN_ENTRY_lbl_amount">AMOUNT</label><em>*</em></td><td ><label id="FIN_ENTRY_lbl_forperiod" >FOR PERIOD</label><em>*</em></td><td ><label id="FIN_ENTRY_lbl_paiddate">PAID DATE</label><em>*</em></td><td ><label id="FIN_ENTRY_lbl_comments" >BANKREF COMMENTS</label> </td><td ><label id="FIN_ENTRY_lbl_add"></label></td><td ><label id="FIN_ENTRY_lbl_del"></label></td></tr>';
+    tableheader+='<tr><td> <select  class="FIN_ENTRY_class_unit submultivalid"  name="FIN_ENTRY_lb_unit" id="FIN_ENTRY_lb_unit-1"><option value="">SELECT</option></select> </td>'
+    +'<td><select  name="FIN_ENTRY_lb_customer" class="submultivalid customernamecheck"  id="FIN_ENTRY_lb_customer-1" hidden><option value="">SELECT</option></select></td>'
+    +'<td ><table id="multiplecustomer-1" style="width:200px" hidden></table>'
+    +'<td><input type="text" name="customerids" id="customerid-1" hidden></td>'
+    +'<td><select class="forperiodrange submultivalid" name="FIN_ENTRY_recheckinflag" id="FIN_ENTRY_recheckinflag-1" hidden><option>SELECT</option></select></td>'
+    +'<td><select  name="FIN_ENTRY_lb_payment" class="submultivalid forperiodrange" id="FIN_ENTRY_lb_payment-1"><option value="">SELECT</option></select></td>'
+    +'<td><table><tr><td><input  class="amtonly submultivalid"  type="text" name ="FIN_ENTRY_tb_amount" id="FIN_ENTRY_tb_amount1" style="width:60px;" /> </td><td><input type="checkbox" class="amountcheckbox" name="checkbox" id="payment_hilighted-1"/></td><td><input  type="text" name="FIN_ENTRY_tb_checkboxamount" id="FIN_ENTRY_tb_checkboxamount-1" style="width:10px;"hidden/></td></tr></table></td>'
+    +'<td><input  class="datepickperiod submultivalid paidforperiodvalidation datemandtry" type="text" name ="FIN_ENTRY_db_period" id="FIN_ENTRY_db_period-1" style="width:105px;" /> </td><td>'
+    +'<input  class="datepickpaiddate submultivalid datemandtry"  type="text" name ="FIN_ENTRY_db_paiddate" id="FIN_ENTRY_db_paiddate-1" style="width:75px;"/> </td><td>'
+    +'<textarea row="2" name ="FIN_ENTRY_ta_comments" id="FIN_ENTRY_ta_comments1"></textarea> </td><td>'
+    +'<input type="button" value="+" class="addbttn" alt="Add Row" height="30" width="30" name ="add[]" id="FIN_ENTRY_add1" disabled > </td><td>'
+    +'<input  type="button" value="-" class="deletebttn" alt="delete Row" height="30" width="30" name ="delete[]" id="FIN_ENTRY_del1" disabled></td>'
+    +'</tr>';
+    $('#FIN_entry_form').append(tableheader);
+    var FIN_ENTRY_unitvalue='<option>SELECT</option>';
+    for(var i=0;i<unit.length;i++)
+    {
+      FIN_ENTRY_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+    }
+    $('#FIN_ENTRY_lb_unit-1').html(FIN_ENTRY_unitvalue);
+    var FIN_ENTRY_paymentvalue='<option>SELECT</option>';
+    for(var i=0;i<payment.length;i++)
+    {
+      FIN_ENTRY_paymentvalue += '<option value="' + payment[i] + '">' + payment[i] + '</option>';
+    }
+    $('#FIN_ENTRY_lb_payment-1').html(FIN_ENTRY_paymentvalue);
+    $(document).on('click','.amtonly',function() {
+      $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+    });
+    $('#FIN_ENTRY_db_period-1').datepicker( {
+      changeMonth: true,      //provide option to select Month
+      changeYear: true,       //provide option to select year
+      showButtonPanel: true,  // button panel having today and done button
+      dateFormat: 'MM-yy',    //set date format
+      onClose: function(dateText, inst) {
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+        $(this).blur();//remove focus input box
+        FORPERIOD_buttonvalidation();
+      }
+    });
+    $("#FIN_ENTRY_db_period-1").focus(function () {
+      $(".ui-datepicker-calendar").hide();
+      $("#ui-datepicker-div").position({
+        my: "center top",
+        at: "center bottom",
+        of: $(this)
+      });
+    }); 
+    var CCRE_d = new Date();
+    var CCRE_year = CCRE_d.getFullYear()+2;
+    var changedmonth=new Date(CCRE_d.setFullYear(CCRE_year));
+    $('#FIN_ENTRY_db_period-1').datepicker("option","maxDate",changedmonth);
+    $('#FIN_ENTRY_db_paiddate-1').datepicker({
+      dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true
+    });
+    $('#FIN_ENTRY_db_paiddate-1').datepicker("option","maxDate",new Date());
+    $('#FIN_ENTRY_tb_amount1').prop('title',errormsg[0]);
+    $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
+    $(".preloader").hide(); 
+  }
+  function FIN_ENTRY_error_message(FIN_ENTRY_err)
+  {
+  if(FIN_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+  {
+  FIN_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+  $('#FIN_Entry_form').replaceWith('<center><label class="dberrormsg">'+FIN_ENTRY_err+'</label></center>');
+  }
+  else
+  {
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:FIN_ENTRY_err}});
+  }
+  $(".preloader").hide(); 
+  }
+});
+</script>
+<script>
+  function StopSubmit(){return false;}
+</script>
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>PAYMENT ENTRY-ACTIVE CUSTOMER
+</h3>
+<p>
+</div>
+</div>
+<form id='FIN_ENTRY_errormessageform'>
+<table id='FIN_ENTRY_errormessagetable'>
+</table>
+</form>
+<form onsubmit="return StopSubmit();" class="content" id='FIN_Entry_form'>
+<table id="FIN_entry_form" cellpadding="10" cellspacing="2"> 
+<tr> <td><label id="FIN_ENTRY_lbl_unit" >UNIT</label><em>*</em></td>
+<td ><label  id="FIN_ENTRY_lbl_customer">CUSTOMER</label><em>*</em></td>
+<td></td>
+<td></td>
+<td ><label  id="FIN_ENTRY_lbl_recver">LEASE PERIOD</label><em>*</em></td>
+<td > <label id="FIN_ENTRY_lbl_payment">PAYMENT</label><em>*</em></td>
+<td ><label id="FIN_ENTRY_lbl_amount">AMOUNT</label><em>*</em></td>
+<td ><label id="FIN_ENTRY_lbl_forperiod" >FOR PERIOD</label><em>*</em></td>
+<td ><label id="FIN_ENTRY_lbl_paiddate">PAID DATE</label><em>*</em></td>
+<td ><label id="FIN_ENTRY_lbl_comments" >BANKREF COMMENTS</label> </td>
+<td ><label id="FIN_ENTRY_lbl_add"></label></td>
+<td ><label id="FIN_ENTRY_lbl_del"></label></td>
+</tr>
+<tr><td> <select  class='FIN_ENTRY_class_unit submultivalid '  name="FIN_ENTRY_lb_unit" id="FIN_ENTRY_lb_unit-1"><option value="">SELECT</option></select> </td> 
+<td><select  name="FIN_ENTRY_lb_customer" class="submultivalid customernamecheck"  id="FIN_ENTRY_lb_customer-1" hidden><option value="">SELECT</option></select></td>
+<td ><table id="multiplecustomer-1" style="width:200px" hidden></table>
+<td><input type="text" name="customerids" id="customerid-1" hidden></td>
+<td><select class="forperiodrange" name="FIN_ENTRY_recheckinflag" id="FIN_ENTRY_recheckinflag-1" hidden><option>SELECT</option></select></td>
+<td><select  name="FIN_ENTRY_lb_payment" class="submultivalid forperiodrange" id='FIN_ENTRY_lb_payment-1'><option value="">SELECT</option></select></td>
+<td><table><tr><td><input  class="amtonly submultivalid"  type="text" name ="FIN_ENTRY_tb_amount" id="FIN_ENTRY_tb_amount1" style="width:60px;" /> </td><td><input type="checkbox" class="amountcheckbox" name="checkbox" id="payment_hilighted-1"/></td><td><input  type="text" name="FIN_ENTRY_tb_checkboxamount" id="FIN_ENTRY_tb_checkboxamount-1" style="width:10px;"hidden/></td></tr></table></td>
+<td><input  class='datepickperiod submultivalid paidforperiodvalidation datemandtry'  type="text" name ="FIN_ENTRY_db_period" id="FIN_ENTRY_db_period-1" style="width:105px;" /> </td><td>
+<input  class='datepickpaiddate submultivalid datemandtry'  type="text" name ="FIN_ENTRY_db_paiddate" id="FIN_ENTRY_db_paiddate-1" style="width:75px;"/> </td><td>
+<textarea row="2" name ="FIN_ENTRY_ta_comments" id="FIN_ENTRY_ta_comments1"></textarea> </td><td>
+<input type='button' value='+' class='addbttn' alt='Add Row' height='30' width='30' name ='add[]' id='FIN_ENTRY_add1' disabled> </td><td>
+<input  type='button' value='-' class='deletebttn' alt='delete Row' height='30' width='30' name ='delete[]' id='FIN_ENTRY_del1' disabled ></td>
+</tr>
+</table>
+<table>
+<tr><td>
+</td><td>
+<table class ="button_tableid" id="button_table" cellpadding="10" cellspacing="2"> 
+<div class="button_area">
+<tr><td><input type="submit" class='btn' name="save" value="SAVE" id="FIN_ENTRY_btn_savebutton"  disabled/> </td><td ><label  id="Fin_entry_customerlistboxerror" class="errormsg">NO CUSTOMER(S) FOR SELECTED UNIT</label></tr>
+</div>
+</table>
+</form>
+</body>
+</html>

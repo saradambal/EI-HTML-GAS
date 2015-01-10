@@ -1,0 +1,1198 @@
+<!--**************************************BANKTT SEARCH/UPDATE*******************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.05- SD:23/07/2014 ED:23/07/2014,TRACKER NO:675,showing all customer name in customer list for selected unit and all units.
+//VER 1.04- SD:15/07/2014 ED:15/07/2014,TRACKER NO:675,droped temp tables in script side.
+//VER 1.03- SD:21/06/2014 ED:21/06/2014,TRACKER NO:675,SET min and max date for banktt DP(MIN DATE AS old banktt date-1 YEAR AND MAX DATE AS SYSDATE) AND implemented connection error message.
+//VER 1.02- SD:06/06/2014 ED:06/06/2014,TRACKER NO:675,changed preloader and jquery,css links.
+//VER 1.01- SD:01/06/2014 ED:01/06/2014,TRACKER NO:675,Changed customer name search option now showing customer name search option oly banktt entry customer oly in list box.
+//VER 1.00- SD:15/05/2014 ED:15/04/2014,TRACKER NO:675,Changed dynamic temp table name in script side.
+//VER 0.09- SD:19/04/2014 ED:19/04/2014,TRACKER NO:675,Rstricted DP manual inputs and Did New CR as per tracker 319 comment#7
+//VER 0.08- SD:07/03/2014 ED:07/03/2014,TRACKER NO:675,Did ULD ID and removed repeated queries and return flag updated 
+//VER 0.07- SD:25/01/2014 ED:27/01/2014,TRACKER NO 675,Did TT TYPE,CREATED BY,CHARGES TO,STATUS tables merged to banktt configuration table and Error mesaages getting from Eilib.
+//VER 0.06- SD:05/01/2014 ED:06/01/2014,TRACKER NO 675,did New CR in ver0.06
+//VER 0.05- SD:30/12/2013 ED:30/12/2013,TRACKER NO 675,Removed sleep function and multiple conn in ver0.05
+//VER 0.04- SD:30/11/2013 ED:30/11/2013,TRACKER NO:675 -gave error msg no customers in sellected unit,changed datepicker for change month and year dropdown box and did account no auto complete newly in ver0.04
+//VER 0.03- SD:30/11/2013 ED:30/11/2013,TRACKER NO:171-changed html file name and gs file name in ver0.03
+//VER 0.02- SD:03/12/2013 ED:03/12/2013,TRACKER NO:171Added Return function script in ver0.02
+//VER 0.01-INITIAL VERSION-SD:14/09/2013 ED:17/09/2013,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+var ErrorControl ={AmountCompare:'InValid'}
+$(document).ready(function() {
+  $(document).on('click','#BANKTT_SRC_tbl_htmltable tr td input[type="radio"]',function() {
+    $('#BANKTT_SRC_tbl_htmltable tr').removeClass('higlightrow');
+    $(this).closest('tr').addClass('higlightrow');
+  })
+  $(".preloader").show();
+  var errormsg=[];
+  var model;
+  $('#BANKTT_SRC_form_mainform').hide();
+  $('#BANKTT_SRC_errormessageform').hide();
+  $("#BANKTT_SRC_tb_accountno").doValidation({rule:'numbersonly',prop:{realpart:25,leadzero:true}});
+  $(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+  $("#BANKTT_SRC_db_date").datepicker({dateFormat:'dd-mm-yy',changeYear: true,changeMonth: true});
+  $('#BANKTT_SRC_db_date').datepicker("option","maxDate",new Date());
+  $('#BANKTT_SRC_div_htmltable').hide();
+  $(".uppercase").doValidation({rule:'general'});
+  $("#BANKTT_SRC_tb_fromamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'BANKTT_SRC_tb_toamount'}});
+  $("#BANKTT_SRC_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'BANKTT_SRC_tb_fromamount'}});
+  $('.amtonly').doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+  $(document).doValidation({rule:'fromto',prop:{elem1:'BANKTT_SRCL_db_fromdate',elem2:'BANKTT_SRCL_db_todate'}}); 
+  $('#BANKTT_SRC_unitsearch_table').hide();
+  $('#BANKTT_SRC_tble_customersearch').hide();
+  $('#BANKTT_SRC_customername_LBL').hide()
+  $('#BANKTT_SRC_lb_customernameselect').hide();
+  $('#BANKTT_SRC_tble_datesearch').hide();
+  $('#BANKTT_SRC_tble_accountnamesearch').hide();
+  $('#BANKTT_SRC_tble_modelnamesearch').hide();
+  $('#BANKTT_SRC_tble_amountrangetable').hide();
+  $('#BANKTT_SRC_tble_updateformtable').hide();
+  /////////// DATE PICKER////////////
+  $('#BANKTT_SRC_db_debited').datepicker({
+    dateFormat: "dd-mm-yy",
+    changeYear: true,
+    changeMonth: true 
+  });
+  $('#BANKTT_SRC_lb_status').change(function()
+  {
+   var debiteddate=$('#BANKTT_SRC_db_date').val();
+  var CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(debiteddate))); 
+  CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());  
+  var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
+  CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) );
+  $('#BANKTT_SRC_db_debited').datepicker("option","minDate",CCRE_db_chkindate1);
+  $('#BANKTT_SRC_db_debited').datepicker("option","maxDate",new Date());
+  if(($('#BANKTT_SRC_lb_status').val()!="SELECT")&&($('#BANKTT_SRC_lb_status').val()!="ENTERED")&&($('#BANKTT_SRC_lb_status').val()!="CREATED"))
+  {
+  $('#BANKTT_SRC_db_debited').show().val('');
+  $('#BANKTT_SRC_lbl_debited').show();
+  }
+  else
+  {
+  $('#BANKTT_SRC_db_debited').hide().val('');
+  $('#BANKTT_SRC_lbl_debited').hide();
+  }
+  });
+  ///////////////COMMON VALUES//////////////////////
+  
+  google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_getCommonvalues_result).BANKTT_SRC_commonvalues();
+  function BANKTT_SRC_getCommonvalues_result(BANKTT_SRC_result)
+  {
+    var unit=BANKTT_SRC_result.unit;
+    model=BANKTT_SRC_result.model;
+    var charges=BANKTT_SRC_result.charges;
+    var status=BANKTT_SRC_result.status;
+    var created=BANKTT_SRC_result.created;
+    errormsg=BANKTT_SRC_result.error;
+    var emailname=BANKTT_SRC_result.emailname;
+    var bankttrecord=BANKTT_SRC_result.Records;
+    var searchoption=BANKTT_SRC_result.BANKTTsearchoption;
+    $('#BANKTT_SRC_lbl_amounterrormsg').text(errormsg[4]);
+    $('#autocompleteerrormsg').text(errormsg[6])
+    $('#BANKTT_SRC_lbl_amounterrormsg').hide();
+    //////SEARCH OPTION////////////
+    var BANKTT_SRC_searchoptionvalue='<option>SELECT</option>';
+    for(var i=0;i<searchoption.length;i++)
+    {
+      var searchoptionlist=searchoption[i];
+      BANKTT_SRC_searchoptionvalue += '<option value="' + searchoptionlist.BANKTToptionid + '">' + searchoptionlist.BANKTToptiondata + '</option>';
+    }
+    $('#BANKTT_SRC_lb_main').html(BANKTT_SRC_searchoptionvalue);
+    //////UNIT////////////
+    var BANKTT_SRC_unitvalue='<option>SELECT</option>';
+    for(var i=0;i<unit.length;i++)
+    {
+      BANKTT_SRC_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+    }
+    $('#BANKTT_SRC_lb_unitsearch').html(BANKTT_SRC_unitvalue);
+    $('#BANKTT_SRC_lb_customerunitsearch').html(BANKTT_SRC_unitvalue);
+    ////////////////MODEL/////////////////////////
+    var BANKTT_SRC_modelvalue='<option>SELECT</option>';
+    for(var i=0;i<model.length;i++)
+    {
+      BANKTT_SRC_modelvalue += '<option value="' + model[i] + '">' + model[i] + '</option>';
+    }
+    $('#BANKTT_SRC_lb_modelnamesearch').html(BANKTT_SRC_modelvalue);
+    $('#BANKTT_SRC_lb_modelname').html(BANKTT_SRC_modelvalue);
+    /////////////////CHARGES/////////////////////
+    var BANKTT_SRC_chargesvalue='<option>SELECT</option>';
+    for(var i=0;i<charges.length;i++)
+    {
+      if(charges[i]=="")continue;
+      BANKTT_SRC_chargesvalue += '<option value="' + charges[i] + '">' + charges[i] + '</option>';
+    }
+    $('#BANKTT_SRC_lb_chargesto').html(BANKTT_SRC_chargesvalue);
+    /////////////CREATED//////////////
+    var BANKTT_SRC_createdvalue='<option>SELECT</option>';
+    for(var i=0;i<created.length;i++)
+    {
+      if(created[i]==" ")continue;
+      BANKTT_SRC_createdvalue += '<option value="' + created[i] + '">' + created[i] + '</option>';
+    }
+    $('#BANKTT_SRC_lb_created').html(BANKTT_SRC_createdvalue);
+    ////////////////STATUS///////////////////
+    var BANKTT_SRC_statusvalue='<option>SELECT</option>';
+    for(var i=0;i<status.length;i++)
+    {
+      
+      BANKTT_SRC_statusvalue += '<option value="' + status[i] + '">' + status[i] + '</option>';
+    }
+    $('#BANKTT_SRC_lb_status').html(BANKTT_SRC_statusvalue);
+    $('#BANKTT_SRC_lbl_main').show();
+    $('#BANKTT_SRC_lb_main').show();
+    
+    if(bankttrecord==null || emailname==null)
+    {
+      if(bankttrecord==null)
+      {
+        var bankttrecord='<p><label class="errormsg">NO RECORDS AVAILABLE IN BANK TRANSFER TABLE </label></p>';
+        $('#BANKTT_SRC_errormessagetable').append(bankttrecord);
+        $('#BANKTT_SRC_form_mainform').hide();
+        $('#BANKTT_SRC_errormessageform').show();
+      }
+      if(emailname==null)
+      {
+        var emailerrormsg='<p><label class="errormsg">'+errormsg[3]+'</label></p>';
+        $('#BANKTT_SRC_errormessagetable').append(emailerrormsg);
+        $('#BANKTT_SRC_form_mainform').hide();
+        $('#BANKTT_SRC_errormessageform').show();
+      }
+     }
+    else
+    {
+      $('#BANKTT_SRC_form_mainform').show();
+      $('#BANKTT_SRC_errormessageform').hide();
+    }
+    
+    $(".preloader").hide();
+  }
+  $('#BANKTT_SRC_lb_main').change(function(){
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    var BANKTT_SRC_OPTION=$('#BANKTT_SRC_lb_main').val();
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    $('#modelerrormsg').hide();
+    if(BANKTT_SRC_OPTION==1)
+    {
+      $('#BANKTT_SRC_lb_unitsearch')[0].selectedIndex = 0;
+      $("#BANKTT_SRC_btn_unitsearchbutton").attr("disabled", "disabled");
+      $('#BANKTT_SRC_tble_customersearch').hide();
+      $('#BANKTT_SRC_unitsearch_table').show();
+      $('#BANKTT_SRC_tble_datesearch').hide();
+      $('#BANKTT_SRC_tble_accountnamesearch').hide();
+      $('#BANKTT_SRC_tble_modelnamesearch').hide();
+      $('#BANKTT_SRC_tble_amountrangetable').hide();
+    }
+    if(BANKTT_SRC_OPTION==2)
+    {
+      $('#BANKTT_SRC_unitsearch_table').hide();
+      $('#BANKTT_SRC_tble_customersearch').show();
+      $('#BANKTT_SRC_tble_datesearch').hide();
+      $('#BANKTT_SRC_tble_accountnamesearch').hide();
+      $('#BANKTT_SRC_tble_modelnamesearch').hide();
+      $('#BANKTT_SRC_lb_customernameselect').hide();
+      $('#BANKTT_SRC_customername_LBL').hide()
+      $('#BANKTT_SRC_lb_customernameselect')[0].selectedIndex = 0;
+      $("#BANKTT_SRC_btn_customersearchbutton").attr("disabled", "disabled");
+      $('#BANKTT_SRC_tble_amountrangetable').hide();
+    }
+    if(BANKTT_SRC_OPTION==3)
+    {
+      $('#BANKTT_SRC_unitsearch_table').hide();
+      $('#BANKTT_SRCL_db_fromdate').val('');
+      $('#BANKTT_SRCL_db_todate').val('');
+      $("#BANKTT_SRC_btn_datesearchbutton").attr("disabled", "disabled");
+      $('#BANKTT_SRC_tble_customersearch').hide();
+      $('#BANKTT_SRC_tble_datesearch').show();
+      $('#BANKTT_SRC_tble_accountnamesearch').hide();
+      $('#BANKTT_SRC_tble_modelnamesearch').hide();
+      $('#BANKTT_SRC_tble_amountrangetable').hide();
+    }
+    if(BANKTT_SRC_OPTION=="SELECT")
+    {
+      $('#BANKTT_SRC_unitsearch_table').hide();
+      $('#BANKTT_SRC_tble_customersearch').hide();
+      $('#BANKTT_SRC_tble_datesearch').hide();
+      $('#BANKTT_SRC_tble_accountnamesearch').hide();
+      $('#BANKTT_SRC_tble_modelnamesearch').hide();
+      $('#BANKTT_SRC_tble_amountrangetable').hide();
+    }
+    if(BANKTT_SRC_OPTION==4)
+    {
+      $(".preloader").show();
+      $("#BANKTT_SRC_btn_accountnamesearchbutton").attr("disabled", "disabled");;
+      //$('#BANKTT_SRC_lb_accountnamesearch')[0].selectedIndex = 0;
+      $('#BANKTT_SRC_unitsearch_table').hide();
+      $('#BANKTT_SRC_tble_customersearch').hide();
+      $('#BANKTT_SRC_tble_datesearch').hide();
+      $('#BANKTT_SRC_tble_accountnamesearch').show();
+      $('#BANKTT_SRC_tble_modelnamesearch').hide()
+      $('#BANKTT_SRC_tble_amountrangetable').hide();
+      google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_accname_result).BANKTT_SRC_accountnamesearch()
+    }
+    if(BANKTT_SRC_OPTION==6)
+    {
+      $("#BANKTT_SRC_btn_modelnamesearchbutton").attr("disabled", "disabled");
+      $('#BANKTT_SRC_lb_modelnamesearch')[0].selectedIndex = 0;
+      $('#BANKTT_SRC_unitsearch_table').hide();
+      $('#BANKTT_SRC_tble_customersearch').hide();
+      $('#BANKTT_SRC_tble_datesearch').hide();
+      $('#BANKTT_SRC_tble_accountnamesearch').hide();
+      $('#BANKTT_SRC_tble_amountrangetable').hide();
+      if(model.length==0)
+      {
+      $('#BANKTT_SRC_lb_modelnamesearch').hide();
+      $('#BANKTT_SRC_lbl_modelname').hide();
+      $('#modelerrormsg').show();
+      $('#BANKTT_SRC_tble_modelnamesearch').show();
+      $('#modelnameheader').hide();
+      }
+      else
+      {
+       $('#BANKTT_SRC_lb_modelnamesearch').show();
+       $('#BANKTT_SRC_lbl_modelname').show();
+       $('#modelerrormsg').hide();
+       $('#BANKTT_SRC_tble_modelnamesearch').show();
+       $('#modelnameheader').show();
+      }
+    }
+    if(BANKTT_SRC_OPTION==5)
+    {
+      $("#BANKTT_SRC_btn_modelnamesearchbutton").attr("disabled", "disabled");
+      $('#BANKTT_SRC_lb_modelnamesearch')[0].selectedIndex = 0;
+      $('#BANKTT_SRC_unitsearch_table').hide();
+      $('#BANKTT_SRC_tble_customersearch').hide();
+      $('#BANKTT_SRC_tble_datesearch').hide();
+      $('#BANKTT_SRC_tble_accountnamesearch').hide();
+      $('#BANKTT_SRC_tble_modelnamesearch').hide();
+      $('#BANKTT_SRC_tble_amountrangetable').show();
+      $('#BANKTT_SRC_tb_fromamount').val('');
+      $('#BANKTT_SRC_tb_toamount').val('');
+    }
+  });
+  ////////////////////CUSTOMERNAME CALL FUNCTION FOR  SELECTED UNIT///////////
+  $('#BANKTT_SRC_lb_customerunitsearch').change(function(){
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_errormsgcustomer').show();
+    $('#BANKTT_SRC_customername_LBL').hide()
+    $('#BANKTT_SRC_lb_customernameselect').hide();
+    $("#BANKTT_SRC_btn_customersearchbutton").attr("disabled", "disabled");
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    var unit=$('#BANKTT_SRC_lb_customerunitsearch').val();
+    $('#BANKTT_SRC_lb_customernameselect')[0].selectedIndex = 0;
+    if(unit!='SELECT')
+    {
+     $(".preloader").show();
+      google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_customer_result).BANKTT_SRC_Customer(unit);
+    }
+    else
+    {
+      $('#BANKTT_SRC_customername_LBL').hide()
+      $('#BANKTT_SRC_lb_customernameselect').hide();
+      $("#BANKTT_SRC_btn_customersearchbutton").attr("disabled", "disabled");
+    }
+  });
+  //////////////////////UNIT SEARCH BUTTON VALIDATION///////////////////////////
+  $('#BANKTT_SRC_lb_unitsearch').change(function(){
+  $('#BANKTT_SRC_lbl_error').hide();
+  $('#BANKTT_SRC_div_htmltable').hide();
+   $('#BANKTT_SRC_tble_updateformtable').hide();
+    if($('#BANKTT_SRC_lb_unitsearch').val()!="SELECT")
+    {
+      $("#BANKTT_SRC_btn_unitsearchbutton").removeAttr("disabled");
+    }
+    else
+    {
+      $("#BANKTT_SRC_btn_unitsearchbutton").attr("disabled", "disabled");
+    }
+  });
+  ///////ACCOUNT NAME AUTO COMPLETE////////////////
+  function ACCNAME_SEARCH_highlightSearchText() {
+    $.ui.autocomplete.prototype._renderItem = function( ul, item) {
+      var re = new RegExp(this.term, "i") ;
+      var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
+      return $( "<li></li>" )
+      .data("item.autocomplete", item)
+      .append("<a>" + t + "</a>")
+      .appendTo(ul);
+    };
+  }
+  var accname_array=[];
+  function BANKTT_SRC_accname_result(ressponse)
+  {
+    accname_array=ressponse;
+    $("#BANKTT_SRC_tb_accountnametext").val("");
+    $(".preloader").hide();
+  }
+  $("#BANKTT_SRC_tb_accountnametext").keypress(function(){
+  flag=0;
+    $('#BANKTT_SRC_lbl_error').hide();
+    ACCNAME_SEARCH_highlightSearchText();
+    $( "#BANKTT_SRC_tb_accountnametext").autocomplete({
+      source: accname_array,
+      select:ACCNAME_SEARCH_AutoCompleteSelectHandler
+    });
+  });
+  var flag;
+  $(document).on('change','.accnameresultsvalidate',function(){
+if(flag==1){
+$('#autocompleteerrormsg').hide();
+}
+else
+{
+$('#autocompleteerrormsg').show();
+$("#BANKTT_SRC_btn_accountnamesearchbutton").attr("disabled", "disabled");
+}
+if($('#BANKTT_SRC_tb_accountnametext').val()=="")
+{
+$('#autocompleteerrormsg').hide();
+}
+});
+  function ACCNAME_SEARCH_AutoCompleteSelectHandler(event, ui) {
+    flag=1;
+    $('#autocompleteerrormsg').hide();
+    $('#BANKTT_SRC_btn_accountnamesearchbutton').removeAttr("disabled");
+  }
+  ///////////////////CUSTOMER SEARCH BUTTON VALIDATION///////////////////
+  $('#BANKTT_SRC_tble_customersearch').change(function(){
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+     $('#BANKTT_SRC_tble_updateformtable').hide();
+    if(($("#BANKTT_SRC_lb_customerunitsearch").val()!="SELECT")&&($("#BANKTT_SRC_lb_customernameselect").val()!="SELECT")&&($("#BANKTT_SRC_lb_customernameselect").val()!="")&&($("#BANKTT_SRC_lb_customernameselect").val()!=undefined))
+    {
+      $("#BANKTT_SRC_btn_customersearchbutton").removeAttr("disabled");
+    }
+    else
+    {
+      $("#BANKTT_SRC_btn_customersearchbutton").attr("disabled", "disabled");
+    }
+  });
+  ////////////DATE RANGE SEARCH SUBMIT BUTTON VALIDATION //////////// 
+  $('#BANKTT_SRC_tble_datesearch').change(function(){
+    $('#BANKTT_SRC_div_htmltable').hide();
+     $('#BANKTT_SRC_lbl_error').hide();
+      $('#BANKTT_SRC_tble_updateformtable').hide();
+    if(($("#BANKTT_SRCL_db_fromdate").val()!="")&&($("#BANKTT_SRCL_db_todate").val()!=""))
+    {
+      $("#BANKTT_SRC_btn_datesearchbutton").removeAttr("disabled");
+    }
+    else
+    {
+      $("#BANKTT_SRC_btn_datesearchbutton").attr("disabled", "disabled");
+    }
+  });
+  //////////////////////ACC NAME SEARCH BUTTON VALIDATION///////////////////////////
+  $('#BANKTT_SRC_lb_accountnamesearch').change(function(){
+    $('#BANKTT_SRC_div_htmltable').hide();
+     $('#BANKTT_SRC_lbl_error').hide();
+      $('#BANKTT_SRC_tble_updateformtable').hide();
+    if($('#BANKTT_SRC_lb_accountnamesearch').val()!="SELECT")
+    {
+      $("#BANKTT_SRC_btn_accountnamesearchbutton").removeAttr("disabled");
+    }
+    else
+    {
+      $("#BANKTT_SRC_btn_accountnamesearchbutton").attr("disabled", "disabled");
+    }
+  });
+  //////////////////////MODEL NAME SEARCH BUTTON VALIDATION///////////////////////////
+  $('#BANKTT_SRC_lb_modelnamesearch').change(function(){
+    $('#BANKTT_SRC_div_htmltable').hide();
+     $('#BANKTT_SRC_lbl_error').hide();
+      $('#BANKTT_SRC_tble_updateformtable').hide();
+    if($('#BANKTT_SRC_lb_modelnamesearch').val()!="SELECT")
+    {
+      $("#BANKTT_SRC_btn_modelnamesearchbutton").removeAttr("disabled");
+    }
+    else
+    {
+      $("#BANKTT_SRC_btn_modelnamesearchbutton").attr("disabled", "disabled");
+    }
+  });
+  ////////////AMOUNT RANGE SEARCH SUBMIT BUTTON VALIDATION //////////// 
+  $('.amountvalidation').blur(function(){
+    $('#BANKTT_SRC_div_htmltable').hide();
+     $('#BANKTT_SRC_lbl_error').hide();
+     $('#BANKTT_SRC_tble_updateformtable').hide();
+    if($('#BANKTT_SRC_tb_fromamount').val()!='' && $('#BANKTT_SRC_tb_toamount').val()!='')
+    {
+      if(ErrorControl.AmountCompare=='Valid')
+      {
+        $("#BANKTT_SRC_btn_amountrangesearchbutton").removeAttr("disabled");
+        $('#BANKTT_SRC_lbl_amounterrormsg').hide();
+      }
+      else
+      {
+        $('#BANKTT_SRC_lbl_amounterrormsg').show();
+        $("#BANKTT_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
+      }
+    }
+  });
+  /////////////UPDATE FORM VALIDATION///////
+  $('.BANKTT_UPDATION_validate').change(function(){
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    var type=$('#BANKTT_SRC_tb_temptttype').val();
+    $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+    if((type=='TT')||(type=="GIRO"))
+    {
+      if(($('#BANKTT_SRC_lb_status').val()!="SELECT") && ($('#BANKTT_SRC_lb_status').val()!="ENTERED")&& ($('#BANKTT_SRC_lb_status').val()!="CREATED"))
+      {
+        if(type=='TT')
+        {
+          if($('#BANKTT_SRC_tb_accountname').val()!="" && $('#BANKTT_SRC_tb_accountno').val()!="" && $('#BANKTT_SRC_db_date').val()!="" && $('#BANKTT_SRC_tb_amount').val()!="" && $('#BANKTT_SRC_tb_swiftcode').val()!="" && $('#BANKTT_SRC_lb_chargesto').val()!="SELECT" && $('#BANKTT_SRC_db_debited').val()!="")
+          {
+            $("#BANKTT_SRC_btn_updatebutton").removeAttr("disabled");
+          }
+          else
+          {
+            $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+          }
+        }
+        if(type=='GIRO')
+        {
+          if($('#BANKTT_SRC_tb_accountname').val()!="" && $('#BANKTT_SRC_tb_accountno').val()!="" && $('#BANKTT_SRC_db_date').val()!="" && $('#BANKTT_SRC_tb_amount').val()!="" && $('#BANKTT_SRC_db_debited').val()!="" )
+          {
+            $("#BANKTT_SRC_btn_updatebutton").removeAttr("disabled");
+          }
+          else
+          {
+            $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+          }
+        }
+      }
+      else
+      {
+        if(type=='TT')
+        {
+          if($('#BANKTT_SRC_tb_accountname').val()!="" && $('#BANKTT_SRC_tb_accountno').val()!="" && $('#BANKTT_SRC_db_date').val()!="" && $('#BANKTT_SRC_tb_amount').val()!="" && $('#BANKTT_SRC_tb_swiftcode').val()!="" && $('#BANKTT_SRC_lb_status').val()!="SELECT" && $('#BANKTT_SRC_lb_chargesto').val()!="SELECT")
+          {
+            $("#BANKTT_SRC_btn_updatebutton").removeAttr("disabled");
+          }
+          else
+          {
+            $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+          }
+        }
+        if(type=='GIRO')
+        {
+          if($('#BANKTT_SRC_tb_accountname').val()!="" && $('#BANKTT_SRC_tb_accountno').val()!="" && $('#BANKTT_SRC_db_date').val()!="" && $('#BANKTT_SRC_tb_amount').val()!="" && $('#BANKTT_SRC_lb_status').val()!="SELECT" )
+          {
+            $("#BANKTT_SRC_btn_updatebutton").removeAttr("disabled");
+          }
+          else
+          {
+            $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+          }
+        }
+      }
+    }
+    else
+    {
+      if(($('#BANKTT_SRC_lb_status').val()!="SELECT") && ($('#BANKTT_SRC_lb_status').val()!="ENTERED") && ($('#BANKTT_SRC_lb_status').val()!="CREATED"))
+      {
+        if($('#BANKTT_SRC_db_date').val()!="" && $('#BANKTT_SRC_tb_amount').val()!="" && $('#BANKTT_SRC_lb_modelname').val()!="SELECT" && $('#BANKTT_SRC_db_debited').val()!="")
+        {
+          $("#BANKTT_SRC_btn_updatebutton").removeAttr("disabled");
+        }
+        else
+        {
+          $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+        }
+      }
+      else
+      {
+        if($('#BANKTT_SRC_db_date').val()!="" && $('#BANKTT_SRC_tb_amount').val()!="" && $('#BANKTT_SRC_lb_modelname').val()!="SELECT" && $('#BANKTT_SRC_lb_status').val()!="SELECT")
+        {
+          $("#BANKTT_SRC_btn_updatebutton").removeAttr("disabled");
+        }
+        else
+        {
+          $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+        }
+      }
+    }
+  });
+  function BANKTT_SRC_customer_result(unitresponse)
+  {
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    var customer=[];
+    var unit=$('#BANKTT_SRC_lb_customerunitsearch').val();
+    customer=unitresponse;
+    var options ='<option value="">SELECT</option>';
+    if(customer.length!=0)
+    {
+      for (var i = 0; i < customer.length; i++) 
+      {
+        var new_customer=customer[i].replace('_',' ');
+        options += '<option value="' + customer[i] + '">' + new_customer + '</option>';
+      }
+      $('#BANKTT_SRC_lb_customernameselect').html(options);
+      $('#BANKTT_SRC_customername_LBL').show()
+      $('#BANKTT_SRC_lb_customernameselect').show();
+    }
+    else
+    {
+      var customererrormsg=errormsg[5].replace("[UNIT NO]",unit);
+      $('#BANKTT_SRC_lbl_errormsgcustomer').text(customererrormsg).show();
+      $('#BANKTT_SRC_customername_LBL').hide()
+      $('#BANKTT_SRC_lb_customernameselect').hide();
+    }
+     $(".preloader").hide();
+  }
+  $('#BANKTT_SRC_btn_unitsearchbutton').click(function(){
+    $(".preloader").show(); 
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    var unitno=$('#BANKTT_SRC_lb_unitsearch').val();
+    var selectedoption=$('#BANKTT_SRC_lb_main').val();
+    var empty=''
+    if(unitno!="SELECT")
+    {
+      google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_search_result).BANKTT_SRC_searchoption(unitno,empty,selectedoption);
+    }
+  });
+  $('#BANKTT_SRC_btn_customersearchbutton').click(function(){
+    $(".preloader").show();
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    var selectedoption=$('#BANKTT_SRC_lb_main').val();
+    var unitno=$('#BANKTT_SRC_lb_customerunitsearch').val();
+    var customername=$('#BANKTT_SRC_lb_customernameselect').val();
+    if((unitno!="SELECT")&&(customername!="SELECT"))
+    {
+      google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_search_result).BANKTT_SRC_searchoption(unitno,customername,selectedoption);
+    }
+  });
+  $('#BANKTT_SRC_btn_accountnamesearchbutton').click(function(){
+    $(".preloader").show(); 
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    var selectedoption=$('#BANKTT_SRC_lb_main').val();
+    var accname=$('#BANKTT_SRC_tb_accountnametext').val();
+    var empty="";
+    google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_search_result).BANKTT_SRC_searchoption(accname,empty,selectedoption);
+  });
+  $('#BANKTT_SRC_btn_datesearchbutton').click(function(){
+    $(".preloader").show(); 
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    var selectedoption=$('#BANKTT_SRC_lb_main').val();
+    var fromdate=$('#BANKTT_SRCL_db_fromdate').val();
+    var todate=$('#BANKTT_SRCL_db_todate').val();
+    if((fromdate!="SELECT")&&(todate!="SELECT"))
+    {
+      google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_search_result).BANKTT_SRC_searchoption(fromdate,todate,selectedoption);
+    }
+  });
+  $('#BANKTT_SRC_btn_amountrangesearchbutton').click(function(){
+    $(".preloader").show(); 
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    var selectedoption=$('#BANKTT_SRC_lb_main').val();
+    var fromamount=$('#BANKTT_SRC_tb_fromamount').val();
+    var toamount=$('#BANKTT_SRC_tb_toamount').val();
+    if((fromamount!="")&&(toamount!=""))
+    {
+      google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_search_result).BANKTT_SRC_searchoption(fromamount,toamount,selectedoption);
+    }
+  });
+  $('#BANKTT_SRC_btn_modelnamesearchbutton').click(function(){
+    $(".preloader").show(); 
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    var selectedoption=$('#BANKTT_SRC_lb_main').val();
+    var modelname=$('#BANKTT_SRC_lb_modelnamesearch').val();
+    var nullvalue='';
+    if(modelname!="SELECT")
+    {
+      google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_search_result).BANKTT_SRC_searchoption(modelname,nullvalue,selectedoption);
+    }
+  });
+  function BANKTT_SRC_search_result(res)
+  {
+    $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    var selectedoption=$('#BANKTT_SRC_lb_main').val();
+    $('#BANKTT_SRC_lbl_error').text("");
+    var BANKTT_RESULT_LENGTH=res;
+    if(BANKTT_RESULT_LENGTH.length > 10){ var px = '600px'}
+    else
+    { 
+      var x = BANKTT_RESULT_LENGTH.length*60+60;
+      if(x <=100){var px = '155px'}
+      else{
+        var px = x+"px" }
+    }
+    if(BANKTT_RESULT_LENGTH.length == 1) {var px ="170px"}
+    $('#BANKTT_SRC_div_htmltable').css('height',px)
+    var value=''
+    var value1='<thead class="srcresult"><tr><th width="25px"></th><th width="75px">TRANSACTION TYPE</th><th width="60px">DATE</th><th width="100px">ACC NAME</th><th width="90px">ACC NO</th><th width="50px">AMOUNT</th><th width="30px">UNIT</th><th width="150px">CUSTOMER</th><th width="75px">STATUS</th><th width="75px">DEBITED / REJECTED DATE</th><th width="40px">BANK CODE</th><th width="40px">BRANCH CODE</th><th width="200px">BANK ADDRESS</th><th width="70px">SWIFT CODE</th><th width="70px">CHARGES TO</th><th width="70px">CUST REF</th><th width="150px">INV DETAILS</th><th width="200px">COMMENTS</th><th width="70px">CREATED BY</th><th width="120px">USERSTAMP</th><th width="100px">TIMESTAMP</th></tr></thead>'
+    $('#BANKTT_SRC_lbl_error').show();
+    $('#BANKTT_SRC_tbl_htmltable').html(value1);
+    if(BANKTT_RESULT_LENGTH.length!=0)
+    {
+      for(var i=0;i<BANKTT_RESULT_LENGTH.length;i++)
+      {
+        var rowid=(i+1);
+        var BANKTT_RESULT=BANKTT_RESULT_LENGTH[i];
+        value='<tbody><tr><td><input id = '+rowid+' type="radio" name="radiobuttons" value= '+BANKTT_RESULT.BTID+' class="bankttupdateformrecords"></td><td>'+BANKTT_RESULT.TYPE+'</td><td>'+BANKTT_RESULT.DATE+'</td><td>'+BANKTT_RESULT.ACCNAME+'</td><td>'+BANKTT_RESULT.ACCNO+'</td><td>'+BANKTT_RESULT.AMOUNT+'</td><td>'+BANKTT_RESULT.UNIT+'</td><td>'+BANKTT_RESULT.CUSTOMER+'</td><td>'+BANKTT_RESULT.STATUS+'</td><td>'+BANKTT_RESULT.DEBITED+'</td><td>'+BANKTT_RESULT.BANKCODE+'</td><td>'+BANKTT_RESULT.BRANCHCODE+'</td><td>'+BANKTT_RESULT.BANKADDRESS+'</td><td>'+BANKTT_RESULT.SWIFTCODE+'</td><td>'+BANKTT_RESULT.CHARGESTO+'</td><td>'+BANKTT_RESULT.CUSTREF+'</td><td>'+BANKTT_RESULT.INVDETAILS+'</td><td>'+BANKTT_RESULT.COMMENTS+'</td><td>'+BANKTT_RESULT.CREATEDBY+'</td><td>'+BANKTT_RESULT.USERSTAMP+'</td><td>'+BANKTT_RESULT.TIMESTAMP+'</td></tr>'
+        $('#BANKTT_SRC_tbl_htmltable').append(value);
+      }
+    }
+    if(selectedoption==1)
+    {
+      var unitno=$('#BANKTT_SRC_lb_unitsearch').val();
+      if((selectedoption==1)&&(BANKTT_RESULT_LENGTH.length!=0))
+      {
+        var FIN_SRC_UPD_DEL_errorflag=0;
+        var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED UNIT : "+unitno
+        $('#BANKTT_SRC_div_htmltable').show();
+      }
+      else
+      {
+        FIN_SRC_UPD_DEL_errorflag=1;
+        FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED UNIT: "+unitno
+      }
+    }
+    if(selectedoption==2)
+    {
+      var unitno=$('#BANKTT_SRC_lb_customerunitsearch').val();
+      var customername=$('#BANKTT_SRC_lb_customernameselect').val();
+      customername=customername.replace('_',' ');
+      if((selectedoption==2)&&(BANKTT_RESULT_LENGTH.length!=0))
+      {
+        var FIN_SRC_UPD_DEL_errorflag=0;
+        var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED UNIT : "+unitno +" AND CUSTOMER "+customername
+        $('#BANKTT_SRC_div_htmltable').show();
+      }
+      else
+      {
+        FIN_SRC_UPD_DEL_errorflag=1;
+        FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED UNIT: "+unitno +" AND CUSTOMER "+customername
+      }
+    }
+    if(selectedoption==4)
+    {
+      var accname=$('#BANKTT_SRC_tb_accountnametext').val();
+      if((selectedoption==4)&&(BANKTT_RESULT_LENGTH.length!=0))
+      {
+        var FIN_SRC_UPD_DEL_errorflag=0;
+        var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED ACC NAME : "+accname
+        $('#BANKTT_SRC_div_htmltable').show();
+      }
+      else
+      {
+        FIN_SRC_UPD_DEL_errorflag=1;
+        FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED ACC NAME: "+accname
+      }
+    }
+    if(selectedoption==3)
+    {
+      var fromdate=$('#BANKTT_SRCL_db_fromdate').val();
+      var todate=$('#BANKTT_SRCL_db_todate').val();
+      if((selectedoption==3)&&(BANKTT_RESULT_LENGTH.length!=0))
+      {
+        var FIN_SRC_UPD_DEL_errorflag=0;
+        var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED DATE RANGE : "+fromdate+" TO "+todate
+        $('#BANKTT_SRC_div_htmltable').show();
+      }
+      else
+      {
+        FIN_SRC_UPD_DEL_errorflag=1;
+        FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED DATE RANGE : "+fromdate+" TO "+todate
+      }
+    }
+    if(selectedoption==5)
+    {
+      var fromamount=$('#BANKTT_SRC_tb_fromamount').val();
+      var toamount=$('#BANKTT_SRC_tb_toamount').val();
+      if((selectedoption==5)&&(BANKTT_RESULT_LENGTH.length!=0))
+      {
+        var FIN_SRC_UPD_DEL_errorflag=0;
+        var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED AMOUNT RANGE : "+fromamount+" TO "+toamount
+        $('#BANKTT_SRC_div_htmltable').show();
+      }
+      else
+      {
+        FIN_SRC_UPD_DEL_errorflag=1;
+        FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED AMOUNT RANGE : "+fromamount+" TO "+toamount
+      }
+    }
+    if(selectedoption==6)
+    {
+      var modelname=$('#BANKTT_SRC_lb_modelnamesearch').val();
+      if((selectedoption==6)&&(BANKTT_RESULT_LENGTH.length!=0))
+      {
+        var FIN_SRC_UPD_DEL_errorflag=0;
+        var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED MODEL : "+modelname
+        $('#BANKTT_SRC_div_htmltable').show();
+      }
+      else
+      {
+        FIN_SRC_UPD_DEL_errorflag=1;
+        FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED MODEL : "+modelname
+      }
+    }
+    if(FIN_SRC_UPD_DEL_errorflag==0)
+    {
+      $('#BANKTT_SRC_lbl_error').text(FIN_SRC_UPD_DEL_unittableheader);
+      $('#BANKTT_SRC_lbl_error').removeClass("errormsg");
+      $('#BANKTT_SRC_lbl_error').addClass("srctitle").show();
+    }else
+    {
+      $('#BANKTT_SRC_lbl_error').text(FIN_SRC_UPD_DEL_unittableheader);
+      $('#BANKTT_SRC_lbl_error').removeClass("srctitle");
+      $('#BANKTT_SRC_lbl_error').addClass("errormsg").show();
+    }
+    $("#BANKTT_SRC_btn_unitsearchbutton").attr("disabled", "disabled");
+    $('#BANKTT_SRC_lb_unitsearch')[0].selectedIndex = 0;
+    $("#BANKTT_SRC_btn_customersearchbutton").attr("disabled", "disabled");
+    $('#BANKTT_SRC_lb_customerunitsearch')[0].selectedIndex = 0;
+    $('#BANKTT_SRC_lb_customernameselect')[0].selectedIndex = 0;
+    $('#BANKTT_SRC_customername_LBL').hide()
+    $('#BANKTT_SRC_lb_customernameselect').hide();
+    $("#BANKTT_SRC_btn_datesearchbutton").attr("disabled", "disabled");
+    $('#BANKTT_SRCL_db_fromdate').val('');
+    $('#BANKTT_SRCL_db_todate').val('');
+    $("#BANKTT_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
+    $('#BANKTT_SRC_tb_fromamount').val('');
+    $('#BANKTT_SRC_tb_toamount').val('');
+    $('#BANKTT_SRC_tb_accountnametext').val("");
+    $('#BANKTT_SRC_lb_modelnamesearch')[0].selectedIndex = 0;
+    $("#BANKTT_SRC_btn_modelnamesearchbutton").attr("disabled", "disabled");
+    $('#BANKTT_SRC_btn_accountnamesearchbutton').attr("disabled", "disabled");;
+    $(".preloader").hide(); 
+  }
+  
+  function FormTableDateFormat(inputdate){
+    var string = inputdate.split("-");
+    return string[2]+'-'+ string[1]+'-'+string[0];
+  }
+  
+  $(document).on('change','.bankttupdateformrecords',function(){
+    $("#BANKTT_SRC_btn_search").removeAttr("disabled");
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+    });
+  $(document).on('click','#BANKTT_SRC_btn_search',function(){
+  $(".preloader").show();
+    var BANKTT_SRC_id=$("input[name=radiobuttons]:checked").val();
+    $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
+     $("#BANKTT_SRC_btn_search").attr("disabled", "disabled");
+    $('#BANKTT_SRC_tb_id').val(BANKTT_SRC_id);
+    $('#BANKTT_SRC_div_htmltable').show();
+    var rowid=$("input[name=radiobuttons]:checked").attr('id');
+    $('#BANKTT_SRC_tbl_htmltable tr:eq('+rowid+')').each(function () {
+      var $tds = $(this).find('td'),
+          type = $tds.eq(1).text(),
+          bankttdate = $tds.eq(2).text(),
+          accname= $tds.eq(3).text(),
+          accno= $tds.eq(4).text(),
+          amount= $tds.eq(5).text(),
+          unit= $tds.eq(6).text(),
+          customer= $tds.eq(7).text(),
+          status= $tds.eq(8).text(),
+          debited=$tds.eq(9).text(),
+          bankcode= $tds.eq(10).text(),
+          branchcode= $tds.eq(11).text(),
+          bankaddress=$tds.eq(12).text(),
+          swiftcode= $tds.eq(13).text(),
+          chargesto= $tds.eq(14).text(),
+          custref= $tds.eq(15).text(),
+          invdetails= $tds.eq(16).text(),
+          comments= $tds.eq(17).text(),
+          donby= $tds.eq(18).text();
+      var BANKTT_date1=bankttdate;
+      var BANKTT_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(BANKTT_date1))); 
+      BANKTT_db_chkindate1.setDate( BANKTT_db_chkindate1.getDate());  
+      var BANKTT_db_chkindate1 = BANKTT_db_chkindate1.toDateString(); 
+      BANKTT_db_chkindate1 = new Date( Date.parse( BANKTT_db_chkindate1 ) );
+      $('#BANKTT_SRC_db_debited').datepicker("option","minDate",BANKTT_db_chkindate1);
+      $('#BANKTT_SRC_db_debited').datepicker("option","maxDate",new Date());
+      $('#BANKTT_SRC_tb_tttype').val(type);
+      if(type=='TT' || type=='GIRO')
+      {
+        $('#BANKTT_SRC_tb_temptttype').val(type);
+      }
+      else
+      {
+        $('#BANKTT_SRC_tb_temptttype').val("MODEL");
+      }
+      $('#BANKTT_SRC_db_date').datepicker("option","minDate",new Date(BANKTT_db_chkindate1.getFullYear()-1,BANKTT_db_chkindate1.getMonth(),BANKTT_db_chkindate1.getDate()));
+      $('#BANKTT_SRC_db_date').val(bankttdate);
+      $('#BANKTT_SRC_tb_amount').val(amount);
+      $('#BANKTT_SRC_tb_custref').attr("size",custref.length);
+      $('#BANKTT_SRC_tb_custref').val(custref);
+      $('#BANKTT_SRC_ta_invdetails').val(invdetails);
+      $('#BANKTT_SRC_ta_comments').val(comments);
+      $('#BANKTT_SRC_ta_bankaddress').val(bankaddress);
+      $('#BANKTT_SRC_lb_status').val(status)
+      $('#BANKTT_SRC_lb_created').val(donby)
+      if((status!="ENTERED")&&(status!="CREATED"))
+      {
+        $('#BANKTT_SRC_lbl_debited').show()
+        $('#BANKTT_SRC_db_debited').show().val(debited);
+      }
+      else
+      {
+        $('#BANKTT_SRC_lbl_debited').hide()
+        $('#BANKTT_SRC_db_debited').hide().val('');
+      }
+      if((type=='TT')||(type=='GIRO'))
+      {
+        $('#BANKTT_SRC_lbl_modelname').hide()
+        $('#BANKTT_SRC_lb_modelname')[0].selectedIndex = 0;
+        $('#BANKTT_SRC_lb_modelname').hide();
+        $('#BANKTT_SRC_tb_accountname').val(accname).show();
+        $('#BANKTT_SRC_tb_accountname').attr("size",accname.length);
+        $('#BANKTT_SRC_tb_accountno').val(accno).show();
+        $('#BANKTT_SRC_tb_unit').val(unit).show();
+        $('#BANKTT_SRC_tb_tempunit').val(unit);
+        $('#BANKTT_SRC_lbl_unit').show();
+        $('#BANKTT_SRC_tb_customer').val(customer).show();
+        $('#BANKTT_SRC_tb_customer').attr("size",customer.length);
+        $('#BANKTT_SRC_tb_tempcustomer').val(customer);
+        $('#BANKTT_SRC_lbl_customer').show();
+        $('#BANKTT_SRC_lbl_accountno').show();
+        $('#BANKTT_SRC_lbl_accountname').show();
+        if(type=='GIRO')
+        {
+          $('#BANKTT_SRC_tb_bankcode').val(bankcode).show();
+          $('#BANKTT_SRC_tb_branchcode').val(branchcode).show();
+          $('#BANKTT_SRC_lbl_bankcode').show();
+          $('#BANKTT_SRC_lbl_branchcode').show();
+          $('#BANKTT_SRC_tb_swiftcode').val('').hide();
+          $('#BANKTT_SRC_lb_chargesto')[0].selectedIndex = 0;
+          $('#BANKTT_SRC_lb_chargesto').hide()
+          $('#BANKTT_SRC_lbl_swiftcode').hide();
+          $('#BANKTT_SRC_lbl_chargesto').hide();
+        }
+        if(type=='TT')
+        {
+          $('#BANKTT_SRC_tb_bankcode').val('').hide();
+          $('#BANKTT_SRC_tb_branchcode').val('').hide();
+          $('#BANKTT_SRC_lbl_bankcode').hide();
+          $('#BANKTT_SRC_lbl_branchcode').hide();
+          $('#BANKTT_SRC_tb_swiftcode').val(swiftcode).show();
+          $('#BANKTT_SRC_lb_chargesto').val(chargesto).show();
+          $('#BANKTT_SRC_lbl_swiftcode').show();
+          $('#BANKTT_SRC_lbl_chargesto').show()
+        }
+      }
+      else
+      {
+        $('#BANKTT_SRC_tb_bankcode').val('').hide();
+        $('#BANKTT_SRC_tb_branchcode').val('').hide();
+        $('#BANKTT_SRC_tb_tttype').val('MODEL');
+        $('#BANKTT_SRC_tb_swiftcode').val('').hide();
+        $('#BANKTT_SRC_lbl_swiftcode').hide();
+        $('#BANKTT_SRC_lb_chargesto').hide()
+        $('#BANKTT_SRC_lbl_chargesto').hide()
+        $('#BANKTT_SRC_lb_chargesto')[0].selectedIndex = 0;
+        $('#BANKTT_SRC_lbl_bankcode').hide();
+        $('#BANKTT_SRC_lbl_branchcode').hide();
+        $('#BANKTT_SRC_tb_accountname').val('').hide();
+        $('#BANKTT_SRC_lbl_accountname').hide();
+        $('#BANKTT_SRC_tb_accountno').val('').hide();
+        $('#BANKTT_SRC_lbl_accountno').hide();
+        $('#BANKTT_SRC_tb_unit').val('').hide();
+        $('#BANKTT_SRC_tb_tempunit').val('');
+        $('#BANKTT_SRC_lbl_unit').hide();
+        $('#BANKTT_SRC_tb_customer').val('').hide();
+        $('#BANKTT_SRC_tb_tempcustomer').val('')
+        $('#BANKTT_SRC_lbl_customer').hide();
+        $('#BANKTT_SRC_lb_modelname').val(type).show();
+      }
+      $('#BANKTT_SRC_tble_updateformtable').show();
+      $(".preloader").hide();
+    });
+    
+    var BANKTT_date1=bankttdate;
+    var BANKTT_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(BANKTT_date1))); 
+    BANKTT_db_chkindate1.setDate( BANKTT_db_chkindate1.getDate());  
+    var BANKTT_db_chkindate1 = BANKTT_db_chkindate1.toDateString(); 
+    BANKTT_db_chkindate1 = new Date( Date.parse( BANKTT_db_chkindate1 ) );
+    $('#BANKTT_db_startdate').datepicker("option","minDate",BANKTT_db_chkindate1);     
+    
+  });
+  $('#BANKTT_SRC_btn_updatebutton').click(function(){
+    $(".preloader").show(); 
+    google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_form_updateform).BANKTT_SRC_processFormUpdate(document.getElementById('BANKTT_SRC_form_mainform'))
+  });
+  function BANKTT_SRC_form_updateform(res)
+  {
+  if(res==1)
+  {
+    $('#BANKTT_SRC_div_htmltable').hide();
+    $('#BANKTT_SRC_lbl_error').hide();
+    $('#BANKTT_SRC_tble_updateformtable').hide();
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:errormsg[2]}});
+   }
+   else
+   {
+   $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:errormsg[7]}});
+   }
+    $(".preloader").hide(); 
+  }
+  $('#BANKTT_SRC_db_date').change(function(){
+  var debiteddate=$('#BANKTT_SRC_db_date').val();
+  var CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(debiteddate))); 
+  CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());  
+  var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
+  CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) );
+  $('#BANKTT_SRC_db_debited').datepicker("option","minDate",CCRE_db_chkindate1);
+  });
+  function BANKTT_SRC_error_message(BANKTT_SRC_err)
+  {
+  if(BANKTT_SRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+  {
+  BANKTT_SRC_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+  $('#BANKTT_SRC_form_mainform').replaceWith('<center><label class="dberrormsg">'+BANKTT_SRC_err+'</label></center>');
+  }
+  else
+  {
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:BANKTT_SRC_err}});
+  }
+  $(".preloader").hide(); 
+  }
+});
+</script>
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>BANKTT SEARCH/UPDATE
+</h3>
+<p>
+</div>
+</div>
+<form id='BANKTT_SRC_errormessageform' hidden>
+<table id='BANKTT_SRC_errormessagetable'>
+</table>
+</form>
+<form class="content" id="BANKTT_SRC_form_mainform">
+<table id="BANKK_SRC_tble_maintable">
+<tr>
+<td><label class="fontstyle" id="BANKTT_SRC_lbl_main"hidden>BANKTT SEARCH BY<em>*</em></label></td>
+<td><select  id='BANKTT_SRC_lb_main' name="BANKTT_SRC_lb_main" hidden>
+</select>
+</tr>
+</table>
+<table cellspacing="5px" id="BANKTT_SRC_unitsearch_table" hidden>
+<tr><td><label class="srctitle" id="BANKTT_SRC_lbl_unitlabel" name="BANKTT_SRC_lbl_unitlabel"> UNIT NO SEARCH </label></td></tr> 
+<tr>
+<td><label>UNIT<em>*</em></label></td>
+<td><select  id='BANKTT_SRC_lb_unitsearch' name="BANKTT_SRC_lb_unitsearch">
+<option>SELECT</option>
+</select>
+</tr>
+<tr><td>
+<input type="button"  id="BANKTT_SRC_btn_unitsearchbutton" class="maxbtn" value="SEARCH" disabled/> 
+</td></tr>
+</table>
+<table cellspacing="5px" id="BANKTT_SRC_tble_customersearch" hidden>
+<tr><td><label class="srctitle"> CUSTOMER NAME SEARCH </label></td></tr> 
+<tr>
+<td><label class="fontstyle">UNIT<em>*</em></label></td>
+<td><select  id='BANKTT_SRC_lb_customerunitsearch' name="BANKTT_SRC_lb_customerunitsearch">
+<option>SELECT</option>
+</select>
+</tr>
+<td><label id="BANKTT_SRC_customername_LBL">CUSTOMER NAME<em>*</em></label></td>
+<td>
+<SELECT name="BANKTT_SRC_lb_customernameselect" id="BANKTT_SRC_lb_customernameselect" >
+<option>SELECT</option>
+</SELECT>
+</td>
+<tr>
+<td><label id='BANKTT_SRC_lbl_errormsgcustomer' class="errormsg" hidden></label></td>
+</tr>
+<tr><td>
+<input type="button"  id="BANKTT_SRC_btn_customersearchbutton" class="maxbtn"  value="SEARCH" disabled/> 
+</td></tr>
+</table>
+<table cellspacing="5px" id="BANKTT_SRC_tble_datesearch" hidden>
+<tr><td><label class="srctitle"> DATE RANGE SEARCH </label></td></tr> 
+<tr>
+<td><label >FROM DATE<em>*</em></label></td>
+<td><input  type="text" name="BANKTT_SRCL_db_fromdate" id="BANKTT_SRCL_db_fromdate" class="datemandtry" style="width:75px;height:20px"/></td>
+</tr>
+<tr>
+<td><label >TO DATE<em>*</em></label></td>
+<td>
+<input  type="text" name="BANKTT_SRCL_db_todate" id="BANKTT_SRCL_db_todate" class="datemandtry" style="width:75px;height:20px"/></td>
+</tr>
+<tr><td>
+<input type="button"  id="BANKTT_SRC_btn_datesearchbutton" class="maxbtn"  value="SEARCH" disabled onclick="BANKTT_SRC_daterangesearch()"   /> 
+</td></tr>
+</table>
+<table cellspacing="5px" id="BANKTT_SRC_tble_accountnamesearch" hidden>
+<tr><td><label class="srctitle" id="BANKTT_SRC_lbl_unitlabel" name="BANKTT_SRC_lbl_unitlabel"> ACCOUNT NAME SEARCH </label></td></tr> 
+<tr>
+<td><label>ACC NAME<em>*</em></label></td>
+<td>
+<input  type="text" name="BANKTT_SRC_tb_accountnametext" id="BANKTT_SRC_tb_accountnametext" class="accnameresultsvalidate" style="width:300px" /></td><td><label id="autocompleteerrormsg" class="errormsg" hidden></label></td>
+</tr>
+<tr><td>
+<input type="button"  id="BANKTT_SRC_btn_accountnamesearchbutton" class="maxbtn" value="SEARCH"/> 
+</td></tr>
+</table>
+<table cellspacing="5px" id="BANKTT_SRC_tble_modelnamesearch" hidden>
+<tr><td><label class="srctitle" id="BANKTT_SRC_lbl_modellabel" name="BANKTT_SRC_lbl_modellabel">MODELNAME SEARCH </label></td></tr> 
+<tr>
+<td><label id="modelnameheader">MODEL NAME<em>*</em></label></td>
+<td><select  id='BANKTT_SRC_lb_modelnamesearch' name="BANKTT_SRC_lb_modelnamesearch" >
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td><label class="errormsg" id="modelerrormsg" hidden>MODEL DETAILS TABLE IS EMPTY</label></td>
+<tr><td>
+<input type="button"  id="BANKTT_SRC_btn_modelnamesearchbutton" class="maxbtn" value="SEARCH" disabled /> 
+</td></tr>
+</table>
+<table cellspacing="5px" id="BANKTT_SRC_tble_amountrangetable" hidden>
+<tr><td><label class="srctitle"> AMOUNT RANGE SEARCH </label></td></tr> 
+<tr>
+<td><label>FROM AMOUNT<em>*</em></label></td>
+<td>
+<input  type="text" name="BANKTT_SRC_tb_fromamount" id="BANKTT_SRC_tb_fromamount" class="amountvalidation" style="width:55px;"/></td>
+</tr>
+<tr>
+<td><label>TO AMOUNT<em>*</em></label></td>
+<td>
+<input  type="text" name="BANKTT_SRC_tb_toamount" id="BANKTT_SRC_tb_toamount" class="amountvalidation" style="width:55px;"/></td><td><label id="BANKTT_SRC_lbl_amounterrormsg" class='errormsg'></label></td>
+</tr>
+<tr><td>
+<input type="button"  id="BANKTT_SRC_btn_amountrangesearchbutton" class="maxbtn"  value="SEARCH" disabled /> 
+</td></tr>
+</table>
+<table id="BANKTT_SRC_tble_header" ><tr><label align='bottom' name='error' id='BANKTT_SRC_lbl_error' class="srctitle" visible="false" ></label></tr></table>
+<div id ="BANKTT_SRC_div_htmltable" style="width:3020px;overflow:auto;">
+<table id="BANKTT_SRC_tbl_htmltable" border="1"  cellspacing="0" class="srcresult" style="width:3000px" >  
+</table>
+<table><tr><td><input type="button" id="BANKTT_SRC_btn_search" class="maxbtn" value="SEARCH" disabled/></td>
+</table>
+</div>
+
+<table id="BANKTT_SRC_tble_updateformtable">
+<tr><td><label class="srctitle">BANK TT UPDATION FORM</label></td></tr>
+<tr>
+<td><label >TRANSACTION TYPE</label></td><td> <input  type="text" name="BANKTT_SRC_tb_tttype" id="BANKTT_SRC_tb_tttype" style="width:45px;" disabled /></td><td> <input  type="text" name="BANKTT_SRC_tb_temptttype" id="BANKTT_SRC_tb_temptttype" hidden /></td><td> <input  type="text" name="BANKTT_SRC_tb_id" id="BANKTT_SRC_tb_id" hidden /></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_modelname'>MODEL NAME<em>*</em></label></td>
+<td><select id='BANKTT_SRC_lb_modelname' name="BANKTT_SRC_lb_modelname" class="BANKTT_UPDATION_validate" >
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td><label >DATE<em>*</em></label></td><td> <input type="text" name="BANKTT_SRC_db_date" id="BANKTT_SRC_db_date" class="BANKTT_UPDATION_validate datemandtry" style="width:75px"/></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_accountname' >ACCOUNT NAME<em>*</em></label></td><td> <input  type="text" name="BANKTT_SRC_tb_accountname" id="BANKTT_SRC_tb_accountname" class="autosize BANKTT_UPDATION_validate" maxlength="40" /></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_accountno' >ACCOUNT NO<em>*</em></label></td><td> <input  type="text" name="BANKTT_SRC_tb_accountno" id="BANKTT_SRC_tb_accountno" maxlength="15" class="BANKTT_UPDATION_validate" /></td>
+</tr>
+<tr>
+<td><label >AMOUNT<em>*</em></label></td><td> <input type="text" name="BANKTT_SRC_tb_amount" id="BANKTT_SRC_tb_amount"  maxlength="7" style="width:55px" class="amtonly BANKTT_UPDATION_validate"/></td> 
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_unit'>UNIT<em>*</em></label></td><td>
+<input type="text" name="BANKTT_SRC_tb_unit" id="BANKTT_SRC_tb_unit" style="width:40px" disabled/></td><td><input type="text" name="BANKTT_SRC_tb_tempunit" id="BANKTT_SRC_tb_tempunit" class="BANKTT_UPDATION_validate" style="width:40px" hidden/></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_customer' >CUSTOMER<em>*</em></label></td><td>
+<input type="text" name="BANKTT_SRC_tb_custmer" id="BANKTT_SRC_tb_customer" disabled/></td><td><input type="text" name="BANKTT_SRC_tb_tempcustomer" id="BANKTT_SRC_tb_tempcustomer" class="BANKTT_UPDATION_validate" hidden /></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_status'>STATUS<em>*</em></label></td>
+<td><select id='BANKTT_SRC_lb_status' name="BANKTT_SRC_lb_status" class="BANKTT_UPDATION_validate" >
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td><label id="BANKTT_SRC_lbl_debited" hidden >DEBITED/REJECTED DATE<em>*</em></label></td><td> <input type="text" name="BANKTT_SRC_db_debited" id="BANKTT_SRC_db_debited" style="width:75px" class="BANKTT_UPDATION_validate datemandtry" hidden/></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_bankcode' >BANK CODE</label></td><td> <input  type="text" name="BANKTT_SRC_tb_bankcode" id="BANKTT_SRC_tb_bankcode" style = 'width:60px;'  maxlength="4" class='numonly BANKTT_UPDATION_validate' /></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_branchcode' >BRANCH CODE</label></td><td> <input  type="text" name="BANKTT_SRC_tb_branchcode" id="BANKTT_SRC_tb_branchcode" style = 'width:60px;' maxlength="3" class='numonly BANKTT_UPDATION_validate' /></td>
+</tr>
+<tr>
+<td><label >BANK ADDRESS</label></td><td><textarea  name="BANKTT_SRC_ta_bankaddress" id="BANKTT_SRC_ta_bankaddress"rows="5" cols="20" class="BANKTT_UPDATION_validate uppercase" style = 'width = 2000px;'></textarea></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_swiftcode' >SWIFT CODE<em>*</em></label></td><td> <input  type="text" name="BANKTT_SRC_tb_swiftcode" id="BANKTT_SRC_tb_swiftcode" class="BANKTT_UPDATION_validate" /></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_chargesto' >CHARGES TO<em>*</em></label></td>
+<td><select id='BANKTT_SRC_lb_chargesto' name="BANKTT_SRC_lb_chargesto" class="BANKTT_UPDATION_validate">
+</select>
+</tr>
+<tr>
+<td><label >CUSTOMER REF</label></td><td> <input  type="text" name="BANKTT_SRC_tb_custref" id="BANKTT_SRC_tb_custref" class="BANKTT_UPDATION_validate autosize"/></td>
+</tr>
+<tr>
+<td><label >INV DETAILS</label></td><td><textarea  name="BANKTT_SRC_ta_invdetails" id="BANKTT_SRC_ta_invdetails"rows="5" cols="20" style = 'width = 2000px;' class="BANKTT_UPDATION_validate"></textarea></td>
+</tr>
+<tr>
+<td><label id='BANKTT_SRC_lbl_created'>CREATED BY</label></td>
+<td><select id='BANKTT_SRC_lb_created' name="BANKTT_SRC_lb_created" class="BANKTT_UPDATION_validate" >
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td><label >COMMENTS</label></td><td><textarea  name="BANKTT_SRC_ta_comments" id="BANKTT_SRC_ta_comments"rows="5" cols="20" style = 'width = 2000px;' class="BANKTT_UPDATION_validate"></textarea></td>
+</tr>
+<tr><td><input type="button" class="maxbtn"  value="UPDATE"  id="BANKTT_SRC_btn_updatebutton" disabled  /></td></tr> 
+</table>
+</form>
+</body>
+</html>

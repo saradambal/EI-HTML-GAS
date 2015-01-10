@@ -1,0 +1,554 @@
+<!--******************************************BANK TT************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.03- SD:13/08/2014 ED:13/08/2014,TRACKER NO:674,changed bankcode and branch code prefix accepting zero.
+//VER 1.02- SD:23/07/2014 ED:23/07/2014,TRACKER NO:674,showing all customer name in customer list for selected unit and all units.
+//VER 1.01- SD:21/06/2014 ED:21/06/2014,TRACKER NO:674,SET min and max date for banktt DP(MIN DATE AS SYSDATE-1 YEAR AND MAX DATE AS SYSDATE) AND implemented connection error message.
+//VER 1.00- SD:06/06/2014 ED:06/06/2014,TRACKER NO:674,Changed preloader and jquery,css links.
+//VER 0.09- SD:19/04/2014 ED:19/04/2014,TRACKER NO:674,Changed table name and Restricted manual inputs in DP.
+//VER 0.08- SD:07/03/2014 ED:07/03/2014,TRACKER NO:674,Did ULD ID and removed repeated queries and return flag updated 
+//VER 0.07- SD:25/01/2014 ED:27/01/2014,TRACKER NO 674,Did TT TYPE,CREATED BY,CHARGES TO,STATUS tables merged to banktt configuration table and Error mesaages getting from Eilib.
+//VER 0.06- SD:05/01/2014 ED:06/01/2014,TRACKER NO 674,did New CR in ver0.06
+//VER 0.05- SD:30/12/2013 ED:30/12/2013,TRACKER NO 674,Removed sleep function and multiple conn in ver0.05
+//VER 0.04- SD:30/11/2013 ED:30/11/2013,TRACKER NO:674 -gave error msg no customers in sellected unit and changed datepicker for change month and year dropdown box in ver0.04
+//VER 0.03- SD:30/11/2013 ED:30/11/2013,TRACKER NO:171-changed html file name and gs file name in ver0.03
+//VER 0.02- SD:03/12/2013 ED:03/12/2013,TRACKER NO:171Added Return function script in ver0.02
+//VER 0.01-INITIAL VERSION-SD:14/09/2013 ED:17/09/2013,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+$(document).ready(function(){
+var max = 250;
+   $('#BANKTT_ENTRY_ta_bankaddress').keypress(function(e) {
+       if (e.which < 0x20) {
+           // e.which < 0x20, then it's not a printable character
+           // e.which === 0 - Not a character
+           return;     // Do nothing
+       }
+       if (this.value.length == max) {
+           e.preventDefault();
+       } else if (this.value.length > max) {
+           // Maximum exceeded
+           this.value = this.value.substring(0, max);
+       }
+   });
+$(".preloader").show(); 
+var errormsg=[];
+var model=[];
+$('#FIN_OCBC_BANKTT_ENTRY_form_mainform').hide();
+$(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+$("#BANKTT_ENTRY_tb_accountno").doValidation({rule:'numbersonly',prop:{realpart:25,leadzero:true}});
+$(".alphanumonly").doValidation({rule:'alphanumeric'});
+$(".uppercase").doValidation({rule:'general'});
+$(".autosize").doValidation({rule:'alphanumeric',prop:{whitespace:true,autosize:true}});
+$(".compautosize").doValidation({rule:'general',prop:{autosize:true}});
+$(".numonly").doValidation({rule:'numbersonly'});
+$("#BANKTT_ENTRY_tb_bankcode").doValidation({rule:'numbersonly',prop:{realpart:4,leadzero:true}});
+$("#BANKTT_ENTRY_tb_branchcode").doValidation({rule:'numbersonly',prop:{realpart:3,leadzero:true}});
+$('#BANKTT_ENTRY_lb_customer').hide();
+$('#BANKTT_ENTRY_lbl_customer').hide();
+//$("#BANKTT_ENTRY_db_date").datepicker({dateFormat:'dd-mm-yy',changeYear: true,changeMonth: true});
+$('#BANKTT_ENTRY_lb_modelname').hide();
+$('#BANKTT_ENTRY_lbl_modelname').hide();
+$('#BANKTT_ENTRY_lbl_bankcode').hide();
+$('#BANKTT_ENTRY_tb_bankcode').hide().val('');
+$('#BANKTT_ENTRY_tb_branchcode').hide().val('');
+$('#BANKTT_ENTRY_lbl_branchcode').hide();
+$('#BANKTT_ENTRY_tb_swiftcode').hide().val('');
+$('#BANKTT_ENTRY_lb_chargesto').hide();
+$('#BANKTT_ENTRY_lbl_chargesto').hide();
+$('#BANKTT_ENTRY_lbl_swiftcode').hide();
+$('#BANKTT_ENTRY_db_date').datepicker(
+{
+    dateFormat: 'dd-mm-yy',
+    changeYear: true,
+    changeMonth: true 
+});
+$('#BANKTT_ENTRY_db_date').datepicker("option","minDate",new Date(new Date().getFullYear()-1,new Date().getMonth(),new Date().getDate()));
+$('#BANKTT_ENTRY_db_date').datepicker("option","maxDate",new Date());
+google.script.run.withFailureHandler(BANKTT_ENTRY_error_message).withSuccessHandler(BANKTT_ENTRY_getCommonvalues_result).BANKTT_ENTRY_commonvalues();
+function BANKTT_ENTRY_getCommonvalues_result(BANKTT_ENTRY_result)
+{
+var unit=[];
+var type=[];
+var charge=[];
+var emailname=BANKTT_ENTRY_result.emailname;
+errormsg=BANKTT_ENTRY_result.error;
+unit=BANKTT_ENTRY_result.unit;
+type=BANKTT_ENTRY_result.type;
+model=BANKTT_ENTRY_result.model;
+charge=BANKTT_ENTRY_result.charges;
+var BANKTT_ENTRY_unitvalue='<option>SELECT</option>';
+for(var i=0;i<unit.length;i++)
+{
+BANKTT_ENTRY_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+}
+$('#BANKTT_ENTRY_lb_unit').html(BANKTT_ENTRY_unitvalue);
+$('#BANKTT_ENTRY_lb_unit').show();
+var BANKTT_ENTRY_typevalue='<option>SELECT</option>';
+for(var i=0;i<type.length;i++)
+{
+BANKTT_ENTRY_typevalue += '<option value="' + type[i] + '">' + type[i] + '</option>';
+}
+$('#BANKTT_ENTRY_lb_tttype').html(BANKTT_ENTRY_typevalue);
+$('#BANKTT_ENTRY_lb_tttype').show();
+var BANKTT_ENTRY_modelvalue='<option>SELECT</option>';
+for(var i=0;i<model.length;i++)
+{
+BANKTT_ENTRY_modelvalue += '<option value="' + model[i] + '">' + model[i] + '</option>';
+}
+$('#BANKTT_ENTRY_lb_modelname').html(BANKTT_ENTRY_modelvalue);
+var BANKTT_ENTRY_chargevalue='<option>SELECT</option>';
+for(var i=0;i<charge.length;i++)
+{
+if(charge[i]=="")continue;
+BANKTT_ENTRY_chargevalue += '<option value="' + charge[i] + '">' + charge[i] + '</option>';
+}
+$('#BANKTT_ENTRY_lb_chargesto').html(BANKTT_ENTRY_chargevalue);
+$('#BANKTT_ENTRY_tb_amount').prop('title',errormsg[1]);
+$('#BANKTT_ENTRY_tb_accountname').prop('title',errormsg[0]);
+if(unit.length==0 || emailname==null)
+{
+if(unit.length==0)
+{
+var uniterrormsg='<p><label class="errormsg">'+errormsg[5]+'</label></p>';
+$('#BANKTT_ENTRY_errormessagetable').append(uniterrormsg);
+$('#FIN_OCBC_BANKTT_ENTRY_form_mainform').hide();
+$('#BANKTT_ENTRY_errormessageform').show();
+}
+if(emailname==null)
+{
+var emailerrormsg='<p><label class="errormsg">'+errormsg[3]+'</label></p>';
+$('#BANKTT_ENTRY_errormessagetable').append(emailerrormsg);
+$('#FIN_OCBC_BANKTT_ENTRY_form_mainform').hide();
+$('#BANKTT_ENTRY_errormessageform').show();
+}
+}
+else
+{
+$('#FIN_OCBC_BANKTT_ENTRY_form_mainform').show();
+}
+$(".preloader").hide(); 
+}
+$('#BANKTT_ENTRY_lb_unit').change(function(){
+var unit=$('#BANKTT_ENTRY_lb_unit').val();
+$('#BANKTT_ENTRY_lbl_errormsgcustomer').hide();
+if(unit!='SELECT')
+{
+$(".preloader").show(); 
+google.script.run.withFailureHandler(BANKTT_ENTRY_error_message).withSuccessHandler(BANKTT_ENTRY_customer_result).BANKTT_ENTRY_Customer(unit);
+}
+else
+{
+$('#BANKTT_ENTRY_lbl_modelnameerrormsg').hide();
+$('#BANKTT_ENTRY_lb_customer').hide();
+$('#BANKTT_ENTRY_lbl_customer').hide();
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+}
+});
+$('#BANKTT_ENTRY_lb_tttype').change(function(){
+$("#BANKTT_ENTRY_tble_radiotable tr").remove();
+$('#BANKTT_ENTRY_lbl_errormsgcustomer').hide();
+$('#BANKTT_ENTRY_lbl_modelnameerrormsg').hide();
+$('#BANKTT_ENTRY_ta_bankaddress').val('');
+$('#BANKTT_ENTRY_tb_custref').val('');
+$('#BANKTT_ENTRY_ta_invdetails').val('');
+$('#BANKTT_ENTRY_ta_comments').val('');
+if($('#BANKTT_ENTRY_lb_tttype').val()=='TT')
+{
+$('#BANKTT_ENTRY_lbl_modelnameerrormsg').hide();
+$('#BANKTT_ENTRY_lbl_bankcode').hide();
+$('#BANKTT_ENTRY_tb_bankcode').hide().val('');
+$('#BANKTT_ENTRY_tb_branchcode').hide().val('');
+$('#BANKTT_ENTRY_lbl_branchcode').hide();
+$('#BANKTT_ENTRY_lb_modelname').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_modelname').hide();
+$('#BANKTT_ENTRY_tb_accountno').show().val('');
+$('#BANKTT_ENTRY_lbl_accountno').show();
+$('#BANKTT_ENTRY_lbl_unit').show();
+$('#BANKTT_ENTRY_lb_unit').show()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lb_customer').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_customer').hide();
+$('#BANKTT_ENTRY_tb_accountname').show().val('');
+$('#BANKTT_ENTRY_lbl_accountname').show();
+$('#BANKTT_ENTRY_lbl_swiftcode').show();
+$('#BANKTT_ENTRY_tb_swiftcode').show().val('');
+$('#BANKTT_ENTRY_tb_amount').show().val('');
+$('#BANKTT_ENTRY_db_date').show().val('');
+$('#BANKTT_ENTRY_lb_chargesto').show()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_chargesto').show();
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+}
+if($('#BANKTT_ENTRY_lb_tttype').val()=='GIRO')
+{
+$('#BANKTT_ENTRY_lbl_modelnameerrormsg').hide();
+$('#BANKTT_ENTRY_lbl_swiftcode').hide();
+$('#BANKTT_ENTRY_tb_amount').show().val('');
+$('#BANKTT_ENTRY_db_date').show().val('');
+$('#BANKTT_ENTRY_tb_swiftcode').hide().val('');
+$('#BANKTT_ENTRY_lb_chargesto').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_chargesto').hide();
+$('#BANKTT_ENTRY_lb_modelname').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_modelname').hide();
+$('#BANKTT_ENTRY_tb_accountno').show().val('');
+$('#BANKTT_ENTRY_lbl_accountno').show();
+$('#BANKTT_ENTRY_lbl_unit').show();
+$('#BANKTT_ENTRY_lb_unit').show()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lb_customer').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_customer').hide();
+$('#BANKTT_ENTRY_tb_accountname').show().val('');
+$('#BANKTT_ENTRY_lbl_accountname').show();
+$('#BANKTT_ENTRY_lbl_bankcode').show();
+$('#BANKTT_ENTRY_tb_bankcode').show().val('');
+$('#BANKTT_ENTRY_tb_branchcode').show().val('');
+$('#BANKTT_ENTRY_lbl_branchcode').show();
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+}
+if($('#BANKTT_ENTRY_lb_tttype').val()=='MODEL')
+{
+$('#BANKTT_ENTRY_tb_accountno').hide().val('');
+$('#BANKTT_ENTRY_tb_amount').show().val('');
+$('#BANKTT_ENTRY_db_date').show().val('');
+$('#BANKTT_ENTRY_lbl_accountno').hide();
+$('#BANKTT_ENTRY_lbl_unit').hide();
+$('#BANKTT_ENTRY_lb_unit').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lb_customer').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_customer').hide();
+$('#BANKTT_ENTRY_tb_accountname').hide().val('');
+$('#BANKTT_ENTRY_lbl_accountname').hide();
+$('#BANKTT_ENTRY_lbl_swiftcode').hide().val('');
+$('#BANKTT_ENTRY_tb_swiftcode').hide();
+$('#BANKTT_ENTRY_lb_chargesto').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_chargesto').hide();
+$('#BANKTT_ENTRY_lbl_bankcode').hide();
+$('#BANKTT_ENTRY_tb_bankcode').hide().val('');
+$('#BANKTT_ENTRY_tb_branchcode').hide().val('');
+$('#BANKTT_ENTRY_lbl_branchcode').hide();
+if(model.length!=0)
+{
+$('#BANKTT_ENTRY_lb_modelname').show()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_modelname').show();
+$('#BANKTT_ENTRY_lbl_modelnameerrormsg').hide();
+}
+else
+{
+$('#BANKTT_ENTRY_lb_modelname').hide();
+$('#BANKTT_ENTRY_lbl_modelname').hide();
+$('#BANKTT_ENTRY_lbl_modelnameerrormsg').show();
+}
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+}
+});
+$('.BANKTT_ENTRY_validation').blur(function(){
+if($('#BANKTT_ENTRY_lb_tttype').val()=="TT")
+{
+if($('#BANKTT_ENTRY_db_date').val()!='' && $('#BANKTT_ENTRY_tb_amount').val()!='' && $('#BANKTT_ENTRY_lb_unit').val()!='SELECT'
+&& $('#BANKTT_ENTRY_lb_customer').val()!='SELECT' && $('#BANKTT_ENTRY_lb_customer').val()!='' && $('#BANKTT_ENTRY_lb_customer').val()!=undefined 
+&& $('#BANKTT_ENTRY_tb_swiftcode').val()!='' && $('#BANKTT_ENTRY_lb_chargesto').val()!="SELECT"
+&& $('#BANKTT_ENTRY_tb_accountno').val()!='' && $('#BANKTT_ENTRY_tb_accountname').val()!='')
+{
+$("#BANKTT_ENTRY_btn_savebutton").removeAttr("disabled");
+}
+else
+{
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+}
+}
+else if($('#BANKTT_ENTRY_lb_tttype').val()=="GIRO")
+{
+if($('#BANKTT_ENTRY_db_date').val()!='' && $('#BANKTT_ENTRY_tb_amount').val()!='' && $('#BANKTT_ENTRY_lb_unit').val()!='SELECT'
+&&  $('#BANKTT_ENTRY_lb_customer').val()!='SELECT' && $('#BANKTT_ENTRY_lb_customer').val()!='' && $('#BANKTT_ENTRY_lb_customer').val()!=undefined && $('#BANKTT_ENTRY_tb_accountno').val()!='' && $('#BANKTT_ENTRY_tb_accountname').val()!='')
+{
+$("#BANKTT_ENTRY_btn_savebutton").removeAttr("disabled");
+}
+else
+{
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+}
+}
+else if($('#BANKTT_ENTRY_lb_tttype').val()=="MODEL")
+{
+if($('#BANKTT_ENTRY_db_date').val()!='' && $('#BANKTT_ENTRY_tb_amount').val()!='' && $('#BANKTT_ENTRY_lb_modelname').val()!="SELECT")
+{
+$("#BANKTT_ENTRY_btn_savebutton").removeAttr("disabled");
+}
+else
+{
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+}
+}
+else
+{
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+}
+});
+/************************UNIQUE FUNCTION***********************************/
+function unique(a) {
+var result = [];
+$.each(a, function(i, e) {
+if ($.inArray(e, result) == -1) result.push(e);
+});
+return result;
+}
+/*************UNIT RESPONSE**************************/
+var customer=[];
+function BANKTT_ENTRY_customer_result(unitresponse)
+{
+$('#BANKTT_ENTRY_lbl_errormsgcustomer').hide();
+var unit=$('#BANKTT_ENTRY_lb_unit').val();
+$('#BANKTT_ENTRY_lbl_errormsgcustomer').hide();
+customer=unitresponse;
+var customername_array=[];
+for(var k=0;k<customer.length;k++)
+{
+customername_array.push(customer[k].customername)
+}
+customername_array=unique(customername_array);
+var options ='<option value="">SELECT</option>';
+if(customer.length!=0)
+{
+for (var i = 0; i < customername_array.length; i++) 
+{
+var listboxname=customername_array[i].replace('_',' ');
+options += '<option value="' + customername_array[i] + '">' + listboxname + '</option>';
+}
+$('#BANKTT_ENTRY_lb_customer').html(options);
+$('#BANKTT_ENTRY_lb_customer').show();
+$('#BANKTT_ENTRY_lbl_customer').show();
+}
+else
+{
+var customererrormsg=errormsg[4].replace("[UNIT NO]",unit)
+$('#BANKTT_ENTRY_lbl_errormsgcustomer').text(customererrormsg).show();
+$('#BANKTT_ENTRY_lb_customer').hide();
+$('#BANKTT_ENTRY_lbl_customer').hide();
+}
+$(".preloader").hide(); 
+}
+$('#BANKTT_ENTRY_btn_savebutton').click(function(){
+$(".preloader").show(); 
+google.script.run.withFailureHandler(BANKTT_ENTRY_error_message).withSuccessHandler(BANKTT_ENTRY_Conformation).BANKTT_ENTRY_processFormSubmit(document.getElementById('FIN_OCBC_BANKTT_ENTRY_form_mainform'))
+});
+$('#BANKTT_ENTRY_btn_reset').click(function(){
+BANKTT_ENTRY_reset();
+});
+$('.multiplecustomer').change(function(){
+    $('#BANKTT_ENTRY_tb_customerid').val("");
+    var customername=$('#BANKTT_ENTRY_lb_customer').val();
+    var customername_array=[];
+    for(var k=0;k<customer.length;k++)
+    {
+    if(customer[k].customername==customername)
+    {
+    customername_array.push(customer[k])
+    }
+    }
+    $("#BANKTT_ENTRY_tble_radiotable tr").remove();
+    if(customername_array.length!=1)
+    {
+      for (var i=0;i<customername_array.length;i++) 
+      {
+       var namedetails=customername_array[i];
+        var BANKTT_ENTRY_radio_customername=namedetails.customername+'-'+namedetails.customerid;
+        var BANKTT_ENTRY_radio_customerid=namedetails.customerid
+        var BANKTT_ENTRY_value ='<tr><td><input type="radio" value='+BANKTT_ENTRY_radio_customerid+' id='+BANKTT_ENTRY_radio_customerid+' name="BANKTT_ENTRY_tbleradiotable" class="BANKTT_ENTRY_radioshowlist" />' + BANKTT_ENTRY_radio_customername + '</td></tr>';
+        $('#BANKTT_ENTRY_tble_radiotable').append(BANKTT_ENTRY_value);
+        $('#BANKTT_ENTRY_tble_radiotable').show();
+         $(".preloader").hide();
+      }
+    }
+    else
+    {
+        namedetails=customername_array[0];
+        BANKTT_ENTRY_radio_customername=namedetails.customername+'-'+namedetails.customerid;
+        BANKTT_ENTRY_radio_customerid=namedetails.customerid
+        BANKTT_ENTRY_value ='<tr><td><input type="radio" value='+BANKTT_ENTRY_radio_customerid+' id='+BANKTT_ENTRY_radio_customerid+' name="BANKTT_ENTRY_tbleradiotable" class="BANKTT_ENTRY_radioshowlist" />' + BANKTT_ENTRY_radio_customername + '</td></tr>';
+        $('#BANKTT_ENTRY_tble_radiotable').append(BANKTT_ENTRY_value);
+        $('#BANKTT_ENTRY_tble_radiotable').hide();
+        $('#'+BANKTT_ENTRY_radio_customerid).prop('checked',true);
+        $('#BANKTT_ENTRY_tb_customerid').val(BANKTT_ENTRY_radio_customerid);
+        $(".preloader").hide();
+    }
+});
+$(document).on('click','.BANKTT_ENTRY_radioshowlist',function(){
+    var cust_id=$("input[name=BANKTT_ENTRY_tbleradiotable]:checked").val();
+    $('#BANKTT_ENTRY_tb_customerid').val(cust_id)
+  });
+function BANKTT_ENTRY_reset()
+{
+$('#BANKTT_ENTRY_lbl_errormsgcustomer').hide();
+$('#FIN_OCBC_BANKTT_ENTRY_form_mainform').find('input:text').prop("size","20");
+$('#FIN_OCBC_BANKTT_ENTRY_form_mainform').find('input[type=text]').val('');
+$('#BANKTT_ENTRY_lb_tttype').show()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lb_unit').show()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_unit').show();
+$('#BANKTT_ENTRY_lb_modelname').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_modelname').hide();
+$('#BANKTT_ENTRY_lbl_swiftcode').show().val('');
+$('#BANKTT_ENTRY_tb_swiftcode').show();
+$('#BANKTT_ENTRY_lb_chargesto').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_chargesto').hide();
+$('#BANKTT_ENTRY_lb_customer').hide()[0].selectedIndex = 0;
+$('#BANKTT_ENTRY_lbl_customer').hide();
+$('#BANKTT_ENTRY_ta_bankaddress').show().val('');
+$('#BANKTT_ENTRY_ta_invdetails').show().val('');
+$('#BANKTT_ENTRY_ta_comments').show().val('');
+$('#BANKTT_ENTRY_lbl_bankcode').hide();
+$('#BANKTT_ENTRY_tb_bankcode').hide().val('');
+$('#BANKTT_ENTRY_tb_branchcode').hide().val('');
+$('#BANKTT_ENTRY_lbl_branchcode').hide();
+$('#BANKTT_ENTRY_tb_accountname').show().val('');
+$('#BANKTT_ENTRY_lbl_accountname').show();
+$('#BANKTT_ENTRY_tb_accountno').show().val('');
+$('#BANKTT_ENTRY_lbl_accountno').show();
+$("#BANKTT_ENTRY_btn_savebutton").attr("disabled", "disabled");
+$("#BANKTT_ENTRY_tble_radiotable tr").remove();
+$('#BANKTT_ENTRY_lbl_modelnameerrormsg').hide();
+$('#BANKTT_ENTRY_ta_bankaddress,#BANKTT_ENTRY_ta_invdetails,#BANKTT_ENTRY_ta_comments').prop("rows",2).prop("cols",20);
+}
+function BANKTT_ENTRY_Conformation(res)
+{
+if(res==1)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:errormsg[2]}});
+BANKTT_ENTRY_reset();
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:errormsg[6]}});
+}
+$(".preloader").hide(); 
+}
+function BANKTT_ENTRY_error_message(BANKTT_ENTRY_err)
+{
+if(BANKTT_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+BANKTT_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#FIN_OCBC_BANKTT_ENTRY_form_mainform').replaceWith('<center><label class="dberrormsg">'+BANKTT_ENTRY_err+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:BANKTT_ENTRY_err}});
+}
+$(".preloader").hide();
+}
+});
+</script>
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>BANKTT ENTRY
+</h3>
+<p>
+</div>
+</div>
+<form id='BANKTT_ENTRY_errormessageform' hidden>
+<table id='BANKTT_ENTRY_errormessagetable'>
+</table>
+</form>
+<form class="content" id="FIN_OCBC_BANKTT_ENTRY_form_mainform">
+<table id="FIN_OCBC_BANKTT_ENTRY_tble_maintable">
+<tr>
+<td><label >TRANSACTION TYPE<em>*</em></label></td>
+<td><select id='BANKTT_ENTRY_lb_tttype' name="BANKTT_ENTRY_lb_tttype" class="BANKTT_ENTRY_validation">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_modelname'>MODEL NAME<em>*</em></label></td>
+<td><select id='BANKTT_ENTRY_lb_modelname' name="BANKTT_ENTRY_lb_modelname" class="BANKTT_ENTRY_validation">
+<option>SELECT</option>
+</select></td>
+</tr>
+<tr><td><label>   </label></td><td><label id='BANKTT_ENTRY_lbl_modelnameerrormsg' class="errormsg" hidden>NO DATA AVAILABLE IN MODEL DETAILS TABLE</label></td>
+<tr>
+<td><label >DATE<em>*</em></label></td><td> <input type="text" name="BANKTT_ENTRY_db_date" id="BANKTT_ENTRY_db_date" style="width:75px" class="BANKTT_ENTRY_validation datemandtry"/></td>
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_accountname' >ACCOUNT NAME<em>*</em></label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_accountname" id="BANKTT_ENTRY_tb_accountname" class='autosize BANKTT_ENTRY_validation' maxlength="40" /></td>
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_accountno' >ACCOUNT NO<em>*</em></label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_accountno" id="BANKTT_ENTRY_tb_accountno" class="BANKTT_ENTRY_validation" maxlength="25" /></td>
+</tr>
+<tr>
+<td><label >AMOUNT<em>*</em></label></td><td> <input type="text" name="BANKTT_ENTRY_tb_amount" id="BANKTT_ENTRY_tb_amount"  maxlength="7" style="width:55px" class="amtonly BANKTT_ENTRY_validation"/></td> 
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_unit'>UNIT<em>*</em></label></td>
+<td><select id='BANKTT_ENTRY_lb_unit' name="BANKTT_ENTRY_lb_unit" class="BANKTT_ENTRY_validation">
+</select>
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_customer' >CUSTOMER<em>*</em></label></td>
+<td><select id='BANKTT_ENTRY_lb_customer' name="BANKTT_ENTRY_lb_customer" class="multiplecustomer BANKTT_ENTRY_validation">
+</select></td>
+<td> <input type="text" name="BANKTT_ENTRY_tb_customerid" id="BANKTT_ENTRY_tb_customerid" style="width:35px" class="BANKTT_ENTRY_validation" hidden/></td>
+</tr>
+<tr>
+<td>  </td><td><table id="BANKTT_ENTRY_tble_radiotable" class="BANKTT_ENTRY_validation" hidden></table>
+</tr>
+<tr>
+<td></td><td><label id='BANKTT_ENTRY_lbl_errormsgcustomer' class="errormsg BANKTT_ENTRY_validation" hidden></label></td>
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_bankcode' >BANK CODE</label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_bankcode" id="BANKTT_ENTRY_tb_bankcode" style = 'width:60px;'  maxlength="4" class='BANKTT_ENTRY_validation' /></td>
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_branchcode' >BRANCH CODE</label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_branchcode" id="BANKTT_ENTRY_tb_branchcode" style = 'width:60px;' maxlength="3" class='BANKTT_ENTRY_validation' /></td>
+</tr>
+<tr>
+<td><label >BANK ADDRESS</label></td><td><textarea  name="BANKTT_ENTRY_ta_bankaddress" id="BANKTT_ENTRY_ta_bankaddress" class="BANKTT_ENTRY_validation uppercase"></textarea></td>
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_swiftcode' >SWIFT CODE<em>*</em></label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_swiftcode" style = 'width:110px;' maxlength="12" id="BANKTT_ENTRY_tb_swiftcode" class="BANKTT_ENTRY_validation" /></td>
+</tr>
+<tr>
+<td><label id='BANKTT_ENTRY_lbl_chargesto' >CHARGES TO<em>*</em></label></td>
+<td><select id='BANKTT_ENTRY_lb_chargesto' name="BANKTT_ENTRY_lb_chargesto" class="BANKTT_ENTRY_validation">
+</select>
+</tr>
+<tr>
+<td><label >CUSTOMER REF</label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_custref" id="BANKTT_ENTRY_tb_custref" maxlength="200" class="autosize BANKTT_ENTRY_validation"/></td>
+</tr>
+<tr>
+<td><label >INV DETAILS</label></td><td><textarea  name="BANKTT_ENTRY_ta_invdetails" id="BANKTT_ENTRY_ta_invdetails"  class="BANKTT_ENTRY_validation"></textarea></td>
+</tr>
+<tr>
+<td><label >COMMENTS</label></td><td><textarea  name="BANKTT_ENTRY_ta_comments" id="BANKTT_ENTRY_ta_comments" class="BANKTT_ENTRY_validation"></textarea></td>
+</tr>
+</table>
+<table>
+<tr><td width="60px"></td><td><input type="button" class="btn"  value="SAVE"  id="BANKTT_ENTRY_btn_savebutton" disabled  /></td><td>  <input type="button" class="btn"  name="reset" id="BANKTT_ENTRY_btn_reset" onclick="BANKTT_ENTRY_formreset()"  value="RESET" /></td></tr> 
+</table>
+</form>
+</body>
+</html>

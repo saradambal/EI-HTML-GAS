@@ -1,0 +1,340 @@
+<!--*********************************************GLOBAL DECLARATION******************************************-->
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//*******************************************SITE MAINTENANCE*********************************************//
+//DONE BY:LALITHA
+//VER 1.0-SD:15/07/2014 ED:15/07/2014,TRACKER NO:683,Deleted the access rights menu,Replaced the btn name
+//VER 0.09-SD:14/06/2014 ED:14/06/2014,TRACKER NO:683,Changed failure funct,Removed the btn disabling functn,after updating the record reload the tree view function,Put condition for(frst form reloaded nd thn shown err msg)
+//VER 0.08-SD:06/06/2014 ED:06/06/2014,Changed jquery link 
+//VER 0.07-SD:26/05/2014 ED:27/05/2014,Updated correct forloop(checked sub menu loaded in integrated site),Removed return functn file
+//VER 0.06-SD:14/03/2014 ED:14/03/2014,changed id fr updating,updated prefix for new validation part
+//VER 0.05-SD:26/02/2012 ED:27/02/2014,TRACKER NO:683,Did Tree View Validation in ver0.05 DONE BY KUMAR.
+//VER 0.04-SD:04/02/2014 ED:04/02/2014,implemented eilib for err msg,h3 tag,implemented grant,revoke label nd err msg in button validation,updated On failure function
+//VER 0.03-SD:17/01/2014,ED:18/01/2014,updated prefix name,pending submit button nd err msg  bec need to discuss wth sn sr nd tl
+//VER 0.02-SD:13/01/2014,ED:14/01/2014,removed doget function,updated the int links
+//VER 0.01-INITIAL VERSION, SD:09/12/2013 ED:23/12/2013,TRACKER NO:683,pending validation
+//*********************************************************************************************************//
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!--SCRIPT TAG START-->
+<script>
+//FAILURE FUNCTION START
+function USR_SITE_onFailure(USR_SITE_error) 
+{
+$(".preloader").hide();
+if(USR_SITE_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+USR_SITE_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#formid').replaceWith('<center><label class="dberrormsg">'+USR_SITE_error+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_error.message}});
+}
+}
+//FAILURE FUNCTION END
+var USR_SITE_sucsval=0;
+//START DOCUMENT READY FUNCTION
+$(document).ready(function(){
+var USR_SITE_multi_array=[];
+var USR_SITE_multi_arrays=[];
+var USR_SITE_errorMsg_array=[]
+$('#USR_SITE_btn_submitbutton').hide();
+google.script.run.withSuccessHandler(USR_SITE_get_errresult).withFailureHandler(USR_SITE_onFailure).USR_SITE_get_err();
+google.script.run.withSuccessHandler(USR_SITE_tree_view).withFailureHandler(USR_SITE_onFailure).USR_SITE_getintialvalue();
+//SUCCESS FUNCTION FOR ERROR MESSAGE
+function USR_SITE_get_errresult(USR_SITE_get_errresult_response)
+{
+USR_SITE_errorMsg_array=USR_SITE_get_errresult_response.USR_SITE_errormsg;
+}
+//SUCCESS FUNCTION TREE VIEW
+function USR_SITE_tree_view(USR_SITE_menus)
+{
+USR_SITE_multi_array=USR_SITE_menus[0].USR_SITE_multi_array;
+USR_SITE_multi_arrays=USR_SITE_menus[0].USR_SITE_menuarray;
+$('#USR_SITE_tble_menu').replaceWith('<table id="USR_SITE_tble_menu"></table>')
+var USR_SITE_count=0;
+var USR_SITE_main=USR_SITE_multi_array[0]
+var USR_SITE_submain=USR_SITE_multi_array[1]
+var USR_SITE_subsubmain=USR_SITE_multi_array[2];
+var USR_SITE_menulb='<label>MENU</label>'
+$('#USR_SITE_tble_menu').append(USR_SITE_menulb);
+var USR_SITE_menu=''
+for(var i=0;i<USR_SITE_main.length;i++)
+{
+var USR_SITE_id="USR_SITE_tble_submenu"+i;
+var USR_SITE_subid="menu"+"_"+i;
+var USR_SITE_subsubid="USR_SITE_sub"+i
+var USR_SITE_menu_value=USR_SITE_main[i].replace(/ /g,"&");
+var USR_SITE_id_menu=i+'m'
+var USR_SITE_mainmenuid=i;
+USR_SITE_menu='<div><ul style="list-style: none;"><li style="list-style: none;"><tr><td>&nbsp;&nbsp;&nbsp;<input value="+" type="button" id='+USR_SITE_subid+' height="1" width="1" class="exp" /><input type="checkbox" name="menu" id='+USR_SITE_id_menu+' value='+USR_SITE_menu_value+' level="parent" class="tree Parent USR_SITE_chckaccess"/>' + USR_SITE_main[i] + '</td></tr>';
+USR_SITE_menu+='<div id='+USR_SITE_subsubid+' hidden><tr><td><table id='+USR_SITE_id+' class="USR_SITE_class_submenu USR_SITE_chckaccess"></table></tr></div></li></ul></div>';
+$('#USR_SITE_tble_menu').append(USR_SITE_menu);
+var USR_SITE_submenu='';
+for(var j=0;j<USR_SITE_submain.length;j++)
+{
+if(i==j)
+{
+var USR_SITE_submenulength=USR_SITE_submain[j].length;
+for(var k=0;k<USR_SITE_submain[j].length;k++)
+{
+var USR_SITE_submenuid="USR_SITE_tble_submenus"+k+j;
+var USR_SITE_submenusid="sub_menu"+"_"+k+j;
+var USR_SITE_subsubmenuid="USR_SITE_subs"+k+j;
+var USR_SITE_sub_menu_submainvalue=USR_SITE_submain[j][k].replace(/ /g,"&");
+var USR_SITE_sub_menu_values=USR_SITE_sub_menu_submainvalue.split("_");
+var USR_SITE_sub_menu_id=USR_SITE_sub_menu_values[1]
+USR_SITE_sub_menu_values[0]=USR_SITE_sub_menu_values[0].replace(/&/g," ");
+var USR_SITE_submenuids="USR_SITE_submenus-"+USR_SITE_mainmenuid+'-'+USR_SITE_submenulength+'-'+k;
+var USR_SITE_idsubmenu=k+j;
+if(USR_SITE_subsubmain[USR_SITE_count].length!=0)
+{
+USR_SITE_submenu='<div><ul style="list-style: none;"><li style="list-style: none;" ><tr><td>&nbsp;&nbsp;&nbsp;<input value="+" type="button"  id='+USR_SITE_submenusid+' height="1" width="1" class="exp1" /><input type="checkbox" name="USR_SITE_submenu_arry" id='+USR_SITE_submenuids+' value='+USR_SITE_sub_menu_id+'&&'+' level="child" class="tree submenucheck Child "/>' + USR_SITE_sub_menu_values[0] + '</td></tr>';
+}
+else
+{
+USR_SITE_submenu='<div><ul style="list-style: none;"><li style="list-style: none;" ><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="USR_SITE_submenu_arry" id='+USR_SITE_submenuids+' value='+USR_SITE_sub_menu_id+' class="tree submenucheck" level="child" />' + USR_SITE_sub_menu_values[0] + '</td></tr>';
+}
+USR_SITE_submenu+='<div id='+USR_SITE_subsubmenuid+'  ><tr><td><table id='+USR_SITE_submenuid+' hidden></table></tr></div></li></ul></div>';
+$('#'+"USR_SITE_tble_submenu"+i).append(USR_SITE_submenu);
+for(var m1=0;m1<USR_SITE_multi_arrays.length;m1++){
+if(USR_SITE_sub_menu_id==USR_SITE_multi_arrays[m1]){
+$('#'+USR_SITE_submenuids).prop("checked", true)
+$('#'+USR_SITE_id_menu).prop("checked", true)
+}
+}
+var USR_SITE_subsubmenu='';
+var subsubmenucount=USR_SITE_subsubmain[USR_SITE_count].length;
+for(var m=0;m<USR_SITE_subsubmain[USR_SITE_count].length;m++)
+{
+var USR_SITE_submenu_value=USR_SITE_subsubmain[USR_SITE_count][m].replace(/ /g,"&");
+var USR_SITE_submenu_values=USR_SITE_submenu_value.split("_");
+USR_SITE_submenu_values[0]=USR_SITE_submenu_values[0].replace(/&/g," ")
+var USR_SITE_submenu_id=USR_SITE_submenu_values[1];
+var USR_SITE_id_submenu=USR_SITE_count+m+'s1'
+var USR_SITE_subsubmenuids='USR_SITE_submenuchk-'+USR_SITE_mainmenuid+'-'+USR_SITE_submenulength+'-'+k+'-'+USR_SITE_sub_menu_id+'-'+m+'-'+subsubmenucount;
+USR_SITE_subsubmenu='<div><ul style="list-style: none;"><li style="list-style: none;" ><tr ><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="USR_SITE_subsubmenu_arry"  value='+USR_SITE_submenu_id+'  id="'+USR_SITE_subsubmenuids+'" class="tree subsubmenuchk  level="child1" />' +USR_SITE_submenu_values[0] + '</td></tr></li></ul></div>';
+$('#'+"USR_SITE_tble_submenus"+k+j).append(USR_SITE_subsubmenu);
+for(var m1=0;m1<USR_SITE_multi_arrays.length;m1++){
+if(USR_SITE_submenu_id==USR_SITE_multi_arrays[m1]){
+$('#'+USR_SITE_subsubmenuids).prop("checked", true)
+$('#'+USR_SITE_submenuids).prop("checked", true)
+$('#'+USR_SITE_id_menu).prop("checked", true)
+}
+}
+}
+USR_SITE_count++;
+}
+}
+}
+}
+if($("input[name=menu]").is(":checked")==true)
+{
+$('#USR_SITE_btn_submitbutton').val('GRANT ACCESS');
+}
+else
+{
+$('#USR_SITE_btn_submitbutton').val('REVOKE ACCESS');
+}
+$('#USR_SITE_btn_submitbutton').show();
+if(USR_SITE_sucsval==1)
+{
+//MESSAGE BOX FOR REVOKE AND GRANT BUTTON
+$(".preloader").hide();
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_errorMsg_array[0]}}); 
+}
+if(USR_SITE_sucsval==2)
+{
+$(".preloader").hide();
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_errorMsg_array[1]}}); 
+}
+}
+//CLICK FUNCTION FOR CHECKBOX MENU
+$(document).on("click",'.exp,.collapse', function (){
+var USR_SITE_id=$(this).attr("id")
+var USR_SITE_btnid=USR_SITE_id.split("_");
+var USR_SITE_menu_btnid=USR_SITE_btnid[1]
+if($(this).val()=='+'){
+$(this).replaceWith('<input type="button" value="-" id='+USR_SITE_id+' height="3" width="3" class="collapse" />');
+if(USR_SITE_btnid[0]=='folder'){
+$('#USR_SITE_subf'+USR_SITE_menu_btnid).toggle("fold",100);
+}
+else
+{
+$('#USR_SITE_sub'+USR_SITE_menu_btnid).toggle("fold",100);
+}
+}
+else
+{
+if(USR_SITE_btnid[0]=='folder'){
+$('#USR_SITE_subf'+USR_SITE_menu_btnid).toggle("fold",100);
+}
+else
+{
+$('#USR_SITE_sub'+USR_SITE_menu_btnid).toggle("fold",100);
+}
+$(this).replaceWith('<input type="button" value="+" id='+USR_SITE_id+'  height="3" width="3" class="exp" />');
+}
+});
+//CLICK FUNCTION FOR CHECKBOX SUB MENU
+$(document).on("click",'.exp1,.collapse1', function (){
+var USR_SITE_id=$(this).attr("id")
+var USR_SITE_btnid=USR_SITE_id.split("_");
+var USR_SITE_menu_btnid=USR_SITE_btnid[2]
+if($(this).val()=='+'){
+$(this).replaceWith('<input type="button" value="-" id='+USR_SITE_id+' height="3" width="3" class="collapse1" />');
+$('#USR_SITE_tble_submenus'+USR_SITE_menu_btnid).toggle("fold",100);
+}
+else
+{
+$('#USR_SITE_tble_submenus'+USR_SITE_menu_btnid).toggle("fold",100);
+$(this).replaceWith('<input type="button" value="+" id='+USR_SITE_id+' height="3" width="3" class="exp1" />');
+}
+});
+//VALIDATION FOR MENU SUB MENU FULLY CHECKED BOX CLICKING 
+$(document).on("change",'.tree ', function ()
+{
+var USR_SITE_val = $(this).attr("checked");
+$(this).parent().find("input:checkbox").each(function()
+{
+if(USR_SITE_val!=undefined)
+{
+$(this).attr("checked", "checked");
+} 
+else 
+{
+$(this).removeAttr("checked");
+$(this).parents('ul').each(function()
+{
+$(this).prev('input:checkbox').removeAttr("checked");
+$(this).closest('ul').prev().attr('checked', false);
+});
+}
+});
+});
+//CLICK FUNCTON FOR SUBMIT BUTTON
+$(document).on('click','#USR_SITE_btn_submitbutton',function(){
+$(".preloader").show();
+google.script.run.withSuccessHandler(USR_SITE_clear).withFailureHandler(USR_SITE_onFailure).USR_SITE_update(document.getElementById('USR_SITE_form_user'));
+});
+//VALIDATION FOR SUB MENU CHECK BOX CLICKING
+$(document).on('click','.submenucheck',function(){
+var USR_SITE_idvalid=$(this).attr("id");
+var USR_SITE_idsplit=USR_SITE_idvalid.split('-');
+var USR_SITE_countchecking=0;
+for(var g=0;g<USR_SITE_idsplit[2];g++)
+{
+var USR_SITE_checked='USR_SITE_submenus-'+USR_SITE_idsplit[1]+'-'+USR_SITE_idsplit[2]+'-'+g;
+var USR_SITE_checked=$('#'+USR_SITE_checked).attr("checked");
+if(USR_SITE_checked)
+{
+ USR_SITE_countchecking++;
+}
+}
+if(USR_SITE_countchecking!=0)
+{
+$('#'+USR_SITE_idsplit[1]+'m').prop('checked',true);
+}
+else
+{
+$('#'+USR_SITE_idsplit[1]+'m').prop('checked',false);
+}
+});
+//VALIDATION FOR SUB SUB MENU CHECK BOX CLICKING
+$(document).on('click','.subsubmenuchk',function(){
+var USR_SITE_idvalid=$(this).attr("id");
+var USR_SITE_idsplit=USR_SITE_idvalid.split('-');
+var USR_SITE_countchecking=0;
+for(var i=0;i<USR_SITE_idsplit[6];i++)
+{
+var USR_SITE_chkboxid=USR_SITE_idsplit[0]+'-'+USR_SITE_idsplit[1]+'-'+USR_SITE_idsplit[2]+'-'+USR_SITE_idsplit[3]+'-'+USR_SITE_idsplit[4]+'-'+i+'-'+USR_SITE_idsplit[6]
+var USR_SITE_checked=$('#'+USR_SITE_chkboxid).attr("checked");
+if(USR_SITE_checked)
+{
+USR_SITE_countchecking++;
+}
+}
+if(USR_SITE_countchecking!=0)
+{
+$('#USR_SITE_submenus-'+USR_SITE_idsplit[1]+'-'+USR_SITE_idsplit[2]+'-'+USR_SITE_idsplit[3]).prop('checked',true);
+}
+else
+{
+$('#USR_SITE_submenus-'+USR_SITE_idsplit[1]+'-'+USR_SITE_idsplit[2]+'-'+USR_SITE_idsplit[3]).prop('checked',false);
+}
+var USR_SITE_submenucount=0;
+for(var j=0;j<USR_SITE_idsplit[2];j++)
+{
+var USR_SITE_subchkid=USR_SITE_idsplit[1]+'-'+USR_SITE_idsplit[2]+'-'+j;
+var USR_SITE_submenuchecked=$('#USR_SITE_submenus-'+USR_SITE_subchkid).attr("checked");
+if(USR_SITE_submenuchecked)
+{
+USR_SITE_submenucount++;
+}
+}
+if(USR_SITE_submenucount!=0)
+{
+$('#'+USR_SITE_idsplit[1]+'m').prop('checked',true);
+}
+else
+{
+$('#'+USR_SITE_idsplit[1]+'m').prop('checked',false);
+}
+});
+//SUCCESS FUNCTION FOR UPDATING
+function USR_SITE_clear(USR_SITE_response)
+{
+if($('#USR_SITE_btn_submitbutton').val()=='REVOKE ACCESS')
+{
+$(".preloader").show();
+USR_SITE_sucsval=1;
+google.script.run.withSuccessHandler(USR_SITE_tree_view).withFailureHandler(USR_SITE_onFailure).USR_SITE_getintialvalue();
+}
+else
+{
+$(".preloader").show();
+USR_SITE_sucsval=2;
+google.script.run.withSuccessHandler(USR_SITE_tree_view).withFailureHandler(USR_SITE_onFailure).USR_SITE_getintialvalue();
+}
+}
+});
+//END DOCUMENT READY FUNCTION
+</script>
+<!--SCRIPT TAG END-->
+</head>
+<!--HEAD TAG END-->
+<!--BODY TAG START-->
+<body>
+<div>
+<?!=include('HTML-MENU') ?>
+<div class="wrapper">
+<div class="preloader MaskPanel"><div class="preloader statusarea"><div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>SITE MAINTENANCE</h3><p></div></div>
+<form class="content" name="USR_SITE_form_user" id="USR_SITE_form_user">
+<table id="USR_SITE_tble_menu" hidden>
+</table>
+<input align="right" type="button" class="maxbtn" name="USR_SITE_btn_submitbutton" id="USR_SITE_btn_submitbutton" style="width:190px">
+</form>
+</div>
+</div>
+</body>
+<!--BODY TAG END-->
+</html>
+<!--HTML TAG END-->

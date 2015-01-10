@@ -1,0 +1,117 @@
+<!--***************************************MODEL ENTRY **************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 0.09- SD:19/06/2014 ED:19/06/2014,TRACKER NO:678 Added conn failure message.
+//VER 0.08- SD:09/06/2014 ED:09/06/2014,TRACKER NO:678,Added commit() command after inserting record.
+//VER 0.07- SD:06/06/2014 ED:06/06/2014,TRACKER NO:678,changed preloader and jquery,css links.
+//VER 0.06- SD:08/03/2014 ED:08/03/2014,TRACKER NO:678 changed uld id and repeated queries put in eilib.
+//VER 0.05- SD:02/01/2014 ED:02/01/2014,TRACKER NO:678 cleared autogorw issue.
+//VER 0.04- SD:16/12/2013 ED:16/12/2013,TRACKER NO:678 set maxlength and auto grow for model textbox in ver 0.04
+//VER 0.03- SD:03/12/2013 ED:03/12/2013,TRACKER NO:171Added Return function script in ver0.03
+//VER 0.02- SD:30/11/2013 ED:30/11/2013,TRACKER NO:171-changed html file name and gs file name in ver0.02
+//VER 0.01-INITIAL VERSION-SD:14/09/2013 ED:17/09/2013,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+$(document).ready(function() {
+var errormsg=[];
+$('#MODEL_ENTRY_errormsg').hide();
+$(".autosize").doValidation({rule:'general',prop:{whitespace:true,autosize:true}});
+$('#FIN_OCBC_MODEL_ENTRY_tb_modelname').blur(function(){
+$("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
+$('#MODEL_ENTRY_errormsg').hide();
+var modelname=$('#FIN_OCBC_MODEL_ENTRY_tb_modelname').val()
+if(modelname!="")
+{
+google.script.run.withFailureHandler(MODEL_ENTRY_error_message).withSuccessHandler(MODEL_ENTRY_getexistingmodel_result).MODEL_ENTRY_existingmodels(modelname);
+}
+});
+function MODEL_ENTRY_getexistingmodel_result(res)
+{
+var result=res.flag;
+errormsg=res.conform
+if(result==0)
+{
+$('#MODEL_ENTRY_errormsg').hide();
+$("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").removeAttr("disabled");
+}
+else
+{
+$('#MODEL_ENTRY_errormsg').show();
+$("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
+}
+}
+$('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').click(function(){
+$(".preloader").show(); 
+google.script.run.withFailureHandler(MODEL_ENTRY_error_message).withSuccessHandler(FIN_OCBC_MODEL_ENTRY_Conformation).FIN_OCBC_MODEL_ENTRY_processFormSubmit(document.getElementById('FIN_OCBC_MODEL_ENTRY_form_mainform'))
+});
+function FIN_OCBC_MODEL_ENTRY_Conformation(response)
+{
+if(response=='true')
+{
+$('#FIN_OCBC_MODEL_ENTRY_form_mainform').find('input:text').prop("size","20");//set
+$('#FIN_OCBC_MODEL_ENTRY_form_mainform').find('input[type=text]').val('');
+$("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:errormsg}});
+$(".preloader").hide(); 
+}
+}
+function MODEL_ENTRY_error_message(MODEL_ENTRY_err)
+{
+if(MODEL_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+MODEL_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#FIN_OCBC_MODEL_ENTRY_form_mainform').replaceWith('<center><label class="dberrormsg">'+MODEL_ENTRY_err+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:MODEL_ENTRY_err}});
+}
+}
+});
+</script>
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>MODEL ENTRY
+</h3>
+<p>
+</div>
+</div>
+<form class="content" id="FIN_OCBC_MODEL_ENTRY_form_mainform">
+<table id="FIN_OCBC_MODEL_ENTRY_tble_maintable">
+<tr>
+<td><label>MODEL NAME<em>*</em></label></td>
+<td><input  type="text" name="FIN_OCBC_MODEL_ENTRY_tb_modelname" id="FIN_OCBC_MODEL_ENTRY_tb_modelname" maxlength="50" class="autosize"/></td><td><label id="MODEL_ENTRY_errormsg" class='errormsg'>MODEL NAME ALREADY EXIST</label></td>
+</tr>
+<tr>
+<td>
+<input type="button"  id="FIN_OCBC_MODEL_ENTRY_btn_modelnamesave" class="btn" value="CREATE" disabled /> 
+</td></tr>
+</table>
+</form>
+</body>
+</html>

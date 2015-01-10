@@ -1,0 +1,366 @@
+<!--*****************************************ERM ENTRY********************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.03- SD:22/07/2014 ED:22/07/2014,TRACKER NO:708 coverted age,guests,minimum stay data's to string.
+//VER 1.02- SD:16/06/2014 ED:16/07/2014,TRACKER NO:708 changed Contact no datatype bigint(20) to varchar(20) and used class prefix accept 00 also 
+//VER 1.01- SD:28/06/2014 ED:28/06/2014,TRACKER NO:708 cleared email id button vlaidation issue and chenaged erm rent maximum digit 4 to 5 
+//VER 1.00- SD:18/06/2014 ED:18/06/2014,TRACKER NO:708 Added conn error mesaage and did moving date min and max date validation.and updated new email id validation.
+//VER 0.09- SD:06/06/2014 ED:06/06/2014,TRACKER NO:708 Changed jquery common link and css link.
+//ver 0.08- SD:02/06/2014 ED:02/06/2014,TRACKER NO:708 Some nationality have spl character so used eilib splchar conversion function in save part.
+//VER 0.07- SD:17/04/2014 ED:17/04/2014,TRACKER NO:708 Restricted DP manual inputs and Removed Mantatory Field for Email id.
+//VER 0.06- SD:27/02/2014 ED:27/02/2014,TRACKER NO:708 did userstamp id convrsion changes and return flags;
+//VER 0.05- SD:12/01/2014 ED:12/12/2014,TRACKER NO:708 changed conformation msg and preloader id and title position
+//VER O.O4- SD:30/12/2013 ED:30/12/2013,TRACKER NO:171 Removed multiple conn in same function.in ver 0.04
+//VER 0.03- SD:03/12/2013 ED:03/12/2013,TRACKER NO:171Added Return function script in ver0.03
+//VER 0.02- SD:30/11/2013 ED:30/11/2013,TRACKER NO:171-changed html file name and gs file name in ver0.02
+//VER 0.01-INITIAL VERSION-SD:14/09/2013 ED:17/09/2013,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+//***************INITIAL CALL FUNCTION *********************//
+$(document).ready(function() {
+  $(".preloader").show();
+  var errormsg=[];
+  $('#CERM_ENTRY_tb_others').hide();
+  $('#CERM_errormessageform').hide();
+  $('#CERM_ENTRY_mainform').hide();
+  $("#CERM_ENTRY_tb_contact").doValidation({rule:'numbersonly',prop:{realpart:20,leadzero:true}});
+  $(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+  $('#CERM_ENTRY_tb_mailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
+  $(".compautosize").doValidation({prop:{autosize:true}});
+  $(".numonly").doValidation({rule:'numbersonly'});
+  $("#CERM_ENTRY_tb_rent").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+  $('#CERM_ENTRY_db_movingdate').datepicker({
+    dateFormat: "dd-mm-yy",
+    changeYear: true,
+    changeMonth: true
+  });
+var CERM_id = new Date();
+$('#CERM_ENTRY_db_movingdate').datepicker("option","minDate",new Date(CERM_id.getFullYear()-1,CERM_id.getMonth(),CERM_id.getDate()));
+$('#CERM_ENTRY_db_movingdate').datepicker("option","maxDate",new Date(CERM_id.getFullYear(),CERM_id.getMonth()+3,CERM_id.getDate()));
+var CERM_id1 = new Date();
+var CERM_year2 = CERM_id1.getFullYear()-2;
+var changedmonth2=new Date(CERM_id1.setFullYear(CERM_year2));
+//*************OCCUPATION TEXT BOX VALIDATION*******************//
+  $('#CERM_ENTRY_lb_occupation').change(function(){
+    if($('#CERM_ENTRY_lb_occupation').val()=="OTHERS")
+    {
+      $('#CERM_ENTRY_tb_others').show();
+    }
+    else
+    {
+      $('#CERM_ENTRY_tb_others').val('').hide();
+    }
+  });
+  //*************ERM SUBMIT BUTTON VALIDATION*******************//
+  $('#CERM_ENTRY_mainform').change(function(){
+  //************************MAIL ID VALIDATION******************//
+    var CERM_ENTRY_emailid=$("#CERM_ENTRY_tb_mailid").val();
+    if(CERM_ENTRY_emailid.length>0)
+    {
+      var CERM_ENTRY_atpos=CERM_ENTRY_emailid.indexOf("@");
+      var CERM_ENTRY_dotpos=CERM_ENTRY_emailid.lastIndexOf(".");
+       if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(CERM_ENTRY_emailid) || "" == CERM_ENTRY_emailid)&&(CERM_ENTRY_dotpos-1!=CERM_ENTRY_emailid.indexOf(".")))
+      {
+        var CERM_ENTRY_emailchk="valid";
+        $('#CERM_ENTRY_tb_mailid').removeClass('invalid');
+        $('#CERM_ENTRY_lbl_emailiderrormsg').hide();
+        $('#CERM_ENTRY_tb_mailid').val($('#CERM_ENTRY_tb_mailid').val().toLowerCase());
+      }
+      else
+      {
+        CERM_ENTRY_emailchk="invalid"
+        $('#CERM_ENTRY_tb_mailid').addClass('invalid');
+        $('#CERM_ENTRY_lbl_emailiderrormsg').show();
+      }
+    }
+    else
+    {
+      CERM_ENTRY_emailchk="valid";
+      $('#CERM_ENTRY_tb_mailid').removeClass('invalid');
+      $('#CERM_ENTRY_lbl_emailiderrormsg').hide();
+    }
+    if($('#CERM_ENTRY_lb_occupation').val()!="OTHERS")
+    {
+    //***********************IF OCCUPATION IS NOT= OTHERS THE FOLLOWING ID DATA'S ARE MANDATORY************************//
+      if($('#CERM_ENTRY_tb_customername').val()!="" && $('#CERM_ENTRY_tb_rent').val()!="" && $('#CERM_ENTRY_db_movingdate').val()!="" && $('#CERM_ENTRY_tb_minimumstay').val()!="" &&
+        $('#CERM_ENTRY_lb_occupation').val()!="SELECT" && $('#CERM_ENTRY_ta_comments').val()!="" &&(CERM_ENTRY_emailchk=="valid"))
+        {
+          $("#CERM_ENTRY_btn_savebutton").removeAttr("disabled");
+        }
+      else
+      {
+        $("#CERM_ENTRY_btn_savebutton").attr("disabled", "disabled");
+      }
+    }
+    else
+    {
+    //***********************IF OCCUPATION IS EQUAL TO OTHERS THE FOLLOWING ID DATA'S ARE MANDATORY************************//
+      if($('#CERM_ENTRY_tb_customername').val()!="" && $('#CERM_ENTRY_tb_rent').val()!="" && $('#CERM_ENTRY_db_movingdate').val()!="" && $('#CERM_ENTRY_tb_minimumstay').val()!="" &&
+        $('#CERM_ENTRY_lb_occupation').val()!="SELECT" && $('#CERM_ENTRY_tb_others').val()!=""&& $('#CERM_ENTRY_ta_comments').val()!="")
+        {
+          $("#CERM_ENTRY_btn_savebutton").removeAttr("disabled");
+        }
+      else
+      {
+        $("#CERM_ENTRY_btn_savebutton").attr("disabled", "disabled");
+      }
+    }
+  });
+ //*****************************CALLING INITIAL TABLE LOADING FUNCTION*************************// 
+  google.script.run.withFailureHandler(CERM_error_message).withSuccessHandler(CERM_ENTRY_getCommonvalues_result).CERM_ENTRY_commonvalues();
+ //*************************RETURN FUNCTION FOR INTIAL  TABLE VALUES****************************// 
+ function CERM_ENTRY_getCommonvalues_result(CERM_ENTRY_result)
+  {
+    var occupation=[];
+    var nation=[];
+    errormsg=CERM_ENTRY_result.error;
+    occupation=CERM_ENTRY_result.occupation;
+    nation=CERM_ENTRY_result.nationality;
+    var emaillist=CERM_ENTRY_result.name;
+    var CERM_ENTRY_occupationvalue='<option>SELECT</option>';
+    for(var i=0;i<occupation.length;i++)
+    {
+      CERM_ENTRY_occupationvalue += '<option value="' + occupation[i] + '">' + occupation[i] + '</option>';
+    }
+    $('#CERM_ENTRY_lb_occupation').html(CERM_ENTRY_occupationvalue);
+    $('#CERM_ENTRY_lb_occupation').show();
+    var CERM_ENTRY_nationvalue='<option>SELECT</option>';
+    for(var i=0;i<nation.length;i++)
+    {
+      CERM_ENTRY_nationvalue += '<option value="' + nation[i] + '">' + nation[i] + '</option>';
+    }
+    $('#CERM_ENTRY_lb_nationselect').html(CERM_ENTRY_nationvalue);
+    $('#CERM_ENTRY_lb_nationselect').show();
+    $('#CERM_ENTRY_tb_customername').prop('title',errormsg[0])
+    $('#CERM_ENTRY_tb_rent').prop('title',errormsg[1]);
+    $('#CERM_ENTRY_tb_contact').prop('title',errormsg[1]);
+    $('#CERM_ENTRY_lbl_emailiderrormsg').text(errormsg[4]);
+    $('#CERM_ENTRY_lbl_emailiderrormsg').hide();
+    if(emaillist=="" || emaillist==null)
+    {
+     $('#CERM_errormessageform').show();
+     var emailerrormsg='<p><label class="errormsg">'+errormsg[3]+'</label></p>';
+     $('#CERM_errormessagetable').append(emailerrormsg);
+     $('#CERM_ENTRY_mainform').hide();
+    }
+    else
+    {
+    $('#CERM_errormessageform').hide();
+    $('#CERM_ENTRY_mainform').show();
+    }
+    $(".preloader").hide();
+  }
+  //**********************CALLING GS SAVE FUNCTION****************************//
+  $('#CERM_ENTRY_btn_savebutton').click(function(){
+    $(".preloader").show(); 
+    google.script.run.withFailureHandler(CERM_error_message).withSuccessHandler(CERM_ENTRY_Conformation).CERM_ENTRY_processFormSubmit(document.getElementById('CERM_ENTRY_mainform'))
+  });
+  //**********************ERM DETAILS SAVE CONFORMATION************************//
+ function CERM_ENTRY_Conformation(response)
+  {
+    if(response=='SAVED')
+    {
+      CERM_reset();
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:errormsg[5]}});
+    }
+    else
+    {
+     $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:errormsg[6]}});
+    }
+    $(".preloader").hide(); 
+  }
+  //************************ERM FORM TRY CATCH ERROR RETURN FUNCTION********************//
+  function CERM_error_message(ERM_ENTRY_err)
+   {
+  if(ERM_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+  {
+  ERM_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+  $('#CERM_ENTRY_mainform').replaceWith('<center><label class="dberrormsg">'+ERM_ENTRY_err+'</label></center>');
+  }
+  else
+  {
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:ERM_ENTRY_err}});
+  }
+  $(".preloader").hide(); 
+  }
+  //***********************ERM FORM RESET FUNCTION*******************************************//
+  $('#CERM_ENTRY_btn_reset').click(function(){
+  CERM_reset();
+  });
+  //***************************ERM COMMON RESET FUNCTION*************************************//
+  function CERM_reset()
+  {
+      $('#CERM_ENTRY_mainform').find('input:text').prop("size","20");//set
+      $('#CERM_ENTRY_mainform').find('input[type=text]').val('');
+      $("#CERM_ENTRY_lb_occupation")[0].selectedIndex = 0;
+      $("#CERM_ENTRY_lb_nationselect")[0].selectedIndex = 0;
+      $('#CERM_ENTRY_ta_comments').val('');
+      $('#CERM_ENTRY_tb_others').hide();
+      $('#CERM_ENTRY_tb_mailid').removeClass('invalid');
+      $('#CERM_ENTRY_lbl_emailiderrormsg').hide();
+      $("#CERM_ENTRY_btn_savebutton").attr("disabled", "disabled");
+  }
+});
+/*************HTML PART*****************************/
+</script>
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>ERM ENTRY
+</h3>
+<p>
+</div>
+</div>
+<form id='CERM_errormessageform'>
+<table id='CERM_errormessagetable'>
+</table>
+</form>
+<form class='content' action="" id="CERM_ENTRY_mainform" name="CERM_ENTRY_mainform" hidden>
+<table id="CERM_ENTRY_tble_maintable">
+<tr>
+<td>
+<label>CUSTOMER NAME<em>*</em></label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_tb_customername" id="CERM_ENTRY_tb_customername" maxlength="50" class="autosize"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>RENT<em>*</em></label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_tb_rent" id="CERM_ENTRY_tb_rent" maxlength="8" style="width:55px" class="amtonly"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>MOVING DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_db_movingdate" id="CERM_ENTRY_db_movingdate" class="datemandtry" style="width:75px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>MINIMUM STAY<em>*</em></label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_tb_minimumstay" id="CERM_ENTRY_tb_minimumstay" maxlength="10" style="width:100px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>OCCUPATION<em>*</em></label>
+</td>
+<td>
+&nbsp;<select id='CERM_ENTRY_lb_occupation' name="CERM_ENTRY_lb_occupation" style="width:250px;">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<label></label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_tb_others" id="CERM_ENTRY_tb_others" maxlength="40" class="autosize"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>NATIONALITY</label>
+</td>
+<td>
+&nbsp;<select id='CERM_ENTRY_lb_nationselect' name="CERM_ENTRY_lb_nationselect" style="width:250px;">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<label>NUMBER OF GUESTS</label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_tb_noofguests" id="CERM_ENTRY_tb_noofguests" style="width:85px" maxlength="10" class="alphanumonly"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>AGE</label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_tb_age" id="CERM_ENTRY_tb_age" maxlength="10" style="width:85px" class="alphanumonly"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>CONTACT NO</label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_tb_contact" id="CERM_ENTRY_tb_contact" maxlength="20" style="width:150px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>EMAIL ID</label>
+</td>
+<td>
+<input type="text" name="CERM_ENTRY_tb_mailid" id="CERM_ENTRY_tb_mailid" maxlength="40"/>
+</td>
+<td>
+<label id="CERM_ENTRY_lbl_emailiderrormsg" class='errormsg'></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>COMMENTS<em>*</em></label>
+</td>
+<td>
+<textarea name="CERM_ENTRY_ta_comments" id="CERM_ENTRY_ta_comments" rows="5" cols="20" style 'width th 2000px;'></textarea>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td width="50px">
+</td>
+<td>
+<input type="button" class="btn" value="SAVE" id="CERM_ENTRY_btn_savebutton" disabled/>
+</td>
+<td>
+<input type="button" class="btn" name="reset" id="CERM_ENTRY_btn_reset" onclick="CERM_ENTRY_formreset()" value="RESET"/>
+</td>
+</tr>
+</table>
+</form>
+</body>
+</html>

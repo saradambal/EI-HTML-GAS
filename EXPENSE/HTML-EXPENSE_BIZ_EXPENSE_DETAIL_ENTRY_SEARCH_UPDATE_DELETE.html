@@ -1,0 +1,1450 @@
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//************************************************BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE********************************************//
+<!--DONE BY:SARADAMBAL
+VER 0.08 -SD:21/06/2014 ED:21/06/2014,TRACKER NO:469,updated class for comments to trim the values,updated failure function and commit, and err msg if any issue in calendar ,removed arr concept for already exists data and implement script for already exist from db
+VER 0.07 -SD:07/06/2014 ED:07/06/2014,TRACKER NO:469,updated new link
+VER 0.06-SD:10/03/2014 ED:10/03/2014,TRACKER NO:469,changed preloader for int
+VER 0.05-SD:06/03/2014 ED:08/03/2014,TRACKER NO:469,implemented array concept to reduced query and using twodimension to reduced coding,removed eilib function for aircon serviced by ,using array to check the already exists data
+VER 0.04-SD:17/02/2014 ED:17/02/2014,TRACKER NO:469,implemented eilib for errormsg,and special character for general data,implemented sp for deletion and implemented script for update whether the data is update or not,implmented keypress event for search by comments,implemented one function to get primary id,reduced script using array 
+VER 0.03-SD:30/12/2013 ED:30/12/2013,TRACKER NO:469,removed utilities function,implement connection open & close function for eilib function,changed alignment for form title
+VER 0.02-SD:20/11/2013 ED:02/12/2013,TRACKER NO:469,updated primary id instead of using data,implemented update validation to checking old values new values,implemented calendar event fro creation,deletion,,change name for addtnl channel,implemented failure function,Implemented date validation for sdate & edate
+VER 0.01-INITIAL VERSION,TRACKER NO:469,SD:13/09/2013,ED:08/10/2013-->
+<html>
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<script>
+function BDTL_SEARCH_FormTableDateFormat(BDTL_SEARCH_inputdate){
+var BDTL_SEARCH_string  = BDTL_SEARCH_inputdate.split("-");
+return BDTL_SEARCH_string[2]+'-'+ BDTL_SEARCH_string[1]+'-'+BDTL_SEARCH_string[0];
+}
+/*------------------------------------------FUNCTION FOR CHANGING DATE FORMAT----------------------------------------------------*/
+function DatePickerFormat(inputdate){
+var string  = inputdate.split("-");
+return string[2]+'-'+ string[1]+'-'+string[0];
+}
+/*--------------------------------------------DOCUMENT READY FUNCTION------------------------------------------------------------*/
+$(document).ready(function(){
+var BTDTL_SEARCH_obj='';
+var BTDTL_SEARCH_airconservicedby='';
+var BTDTL_SEARCH_digitalinvoiceto='';
+var BTDTL_SEARCH_elecinvoiceto='';
+var BTDTL_SEARCH_starhubinvoiceto='';
+var BTDTL_SEARCH_cable_sdate='';
+var BTDTL_SEARCH_cable_edate='';
+var BTDTL_SEARCH_internet_sdate='';
+var BTDTL_SEARCH_internet_edate='';
+var BTDTL_SEARCH_flag_autocom;
+var BTDTL_SEARCH_arr_invoicto=[];
+var BTDTL_SEARCH_options_invoiceto ='<option>SELECT</option>';
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_expense).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_expensetypes();
+var BTDTL_SEARCH_expensearr=[];
+var BTDTL_SEARCH_errorarr=[];
+var BTDTL_SEARCH_configmon_aircon=[];
+var BTDTL_SEARCH_starhubid=[];
+var BTDTL_SEARCH_airconserviceby=[];
+var BTDTL_SEARCH_aircontypes ='<option>SELECT</option>';
+var BTDTL_SEARCH_carparktypes ='<option>SELECT</option>';
+var BTDTL_SEARCH_digitaltypes ='<option>SELECT</option>';
+var BTDTL_SEARCH_electricitytypes ='<option>SELECT</option>';
+var BTDTL_SEARCH_starhubtypes ='<option>SELECT</option>';
+var BTDTL_SEARCH_aircontypes_flag ='';
+var BTDTL_SEARCH_carparktypes_flag ='';
+var BTDTL_SEARCH_digitaltypes_flag ='';
+var BTDTL_SEARCH_electricitytypes_flag ='';
+var BTDTL_SEARCH_starhubtypes_flag ='';
+var sdate='';
+var edate='';
+/*------------------------------------------------FAILURE FUNCTION ----------------------------------------------------*/
+function BTDTL_SEARCH_onFailure(BTDTL_SEARCH_error){
+$(".preloader").hide();
+if(BTDTL_SEARCH_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+BTDTL_SEARCH_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#BTDTL_SEARCH_form_bizdetail').replaceWith('<center><label class="dberrormsg">'+BTDTL_SEARCH_error+'</label></center>');
+}
+else{
+if(BTDTL_SEARCH_error=='TypeError: Cannot call method "getEvents" of undefined.'||BTDTL_SEARCH_error=='TypeError: Cannot call method "createEvent" of undefined.')
+{
+BTDTL_SEARCH_error=BTDTL_SEARCH_errorarr[63];
+}
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_error}});
+}}
+/*------------------------------------highlight selected row start---------------------------------------------------------------*/
+$(document).on('click','#BTDTL_SEARCH_tble_flex tr td input[type="radio"]',function(){
+    $('#BTDTL_SEARCH_tble_flex tr').removeClass('higlightrow');
+    $(this).closest('tr').addClass('higlightrow');
+});
+/*-----------------------------------------SUCCESS FUNCTION FOR EXPENSE TYPES-----------------------------------------------------*/
+function BTDTL_SEARCH_success_expense(BTDTL_SEARCH_response){
+BTDTL_SEARCH_errorarr=BTDTL_SEARCH_response.BTDTL_SEARCH_errormsg;
+BTDTL_SEARCH_configmon_aircon=BTDTL_SEARCH_response.BTDTL_SEARCH_aircon_errmsg;
+BTDTL_SEARCH_expensearr=BTDTL_SEARCH_response.BTDTL_SEARCH_expense;
+BTDTL_SEARCH_starhubid=BTDTL_SEARCH_response.BTDTL_SEARCH_obj_starhubid;
+BTDTL_SEARCH_arr_invoicto=BTDTL_SEARCH_response.BTDTL_SEARCH_obj_invoiceto;
+BTDTL_SEARCH_aircontypes_flag=BTDTL_SEARCH_response.BTDTL_SEARCH_aircondetail_obj;
+BTDTL_SEARCH_carparktypes_flag=BTDTL_SEARCH_response.BTDTL_SEARCH_cardetail_obj;
+BTDTL_SEARCH_digitaltypes_flag=BTDTL_SEARCH_response.BTDTL_SEARCH_digitaldetail_obj;
+BTDTL_SEARCH_electricitytypes_flag=BTDTL_SEARCH_response.BTDTL_SEARCH_elecdetail_obj;
+BTDTL_SEARCH_starhubtypes_flag=BTDTL_SEARCH_response.BTDTL_SEARCH_stardetail_obj;
+var BTDTL_SEARCH_flag_notable=BTDTL_SEARCH_response.BTDTL_SEARCH_notable_obj;
+if(BTDTL_SEARCH_flag_notable==false){
+$('#BTDTL_SEARCH_form_bizdetail').replaceWith('<p><label class="errormsg"> '+BTDTL_SEARCH_errorarr[41]+'<br>'+BTDTL_SEARCH_errorarr[39]+'<br>'+BTDTL_SEARCH_errorarr[38]+'<br>'+BTDTL_SEARCH_errorarr[40]+'<br>'+BTDTL_SEARCH_errorarr[37]+'</label></p>')
+}else{
+var BTDTL_SEARCH_options ='<option>SELECT</option>';
+for (var i = 0; i < BTDTL_SEARCH_expensearr.length; i++)
+{
+if((BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==16)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==17)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==15)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==13)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==14))
+BTDTL_SEARCH_options += '<option value="' + BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id + '">'+ BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_data+' </option>';
+} 
+for (var i = 0; i < BTDTL_SEARCH_arr_invoicto.length; i++)
+{
+BTDTL_SEARCH_options_invoiceto += '<option value="' + BTDTL_SEARCH_arr_invoicto[i].BTDTL_SEARCH_expensetypes_id + '">'+ BTDTL_SEARCH_arr_invoicto[i].BTDTL_SEARCH_expensetypes_data+' </option>';
+}
+$('#BTDTL_SEARCH_form_bizdetail').show();
+$('#BTDTL_SEARCH_lb_expense_type').html(BTDTL_SEARCH_options).show();
+for (var i = 0; i < BTDTL_SEARCH_expensearr.length; i++)
+{
+if((BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==100)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==101)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==191)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==195))
+BTDTL_SEARCH_aircontypes += '<option value="' + BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id + '">'+ BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_data+' </option>';
+if((BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==102)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==103)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==191))
+BTDTL_SEARCH_carparktypes += '<option value="' + BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id + '">'+ BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_data+' </option>';
+if((BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==106)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==107)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==191)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==108)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==109))
+BTDTL_SEARCH_digitaltypes += '<option value="' + BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id + '">'+ BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_data+' </option>';
+if((BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==104)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==105)||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==191))
+BTDTL_SEARCH_electricitytypes += '<option value="' + BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id + '">'+ BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_data+' </option>';
+if(((BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id >=110)&&(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id <=123))||(BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id ==191))
+BTDTL_SEARCH_starhubtypes += '<option value="' + BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_id + '">'+ BTDTL_SEARCH_expensearr[i].BTDTL_SEARCH_expensetypes_data+' </option>';
+} 
+}}
+/*------------------------------------------FUNCTION TO AUTOCOMPLETE SEARCH TEXT--------------------------------------------------------*/
+var BTDTL_SEARCH_comments = [];
+var BTDTL_SEARCH_comment_flag='';
+function BTDTL_SEARCH_success_comments(BTDTL_SEARCH_response){
+BTDTL_SEARCH_comments=BTDTL_SEARCH_response.BTDTL_SEARCH_searchvalue_comments;
+BTDTL_SEARCH_comment_flag=BTDTL_SEARCH_response.BTDTL_SEARCH_flag_comments;
+}
+$(document).on('keypress','#BTDTL_SEARCH_ta_airconcomments',function(){
+BTDTL_SEARCH_flag_autocom=0;
+highlightSearchText();
+$("#BTDTL_SEARCH_ta_airconcomments").autocomplete({
+source: BTDTL_SEARCH_comments,
+select: AutoCompleteSelectHandler
+});});
+$(document).on('keypress','#BTDTL_SEARCH_ta_carparkcomments',function(){
+BTDTL_SEARCH_flag_autocom=0;
+highlightSearchText();
+$("#BTDTL_SEARCH_ta_carparkcomments").autocomplete({
+source: BTDTL_SEARCH_comments,
+select: AutoCompleteSelectHandler
+});});
+$(document).on('keypress','#BTDTL_SEARCH_ta_digitalcomments',function(){
+BTDTL_SEARCH_flag_autocom=0;
+highlightSearchText();
+$("#BTDTL_SEARCH_ta_digitalcomments").autocomplete({
+source: BTDTL_SEARCH_comments,
+select: AutoCompleteSelectHandler
+});});
+$(document).on('keypress','#BTDTL_SEARCH_ta_electricitycomments',function(){
+BTDTL_SEARCH_flag_autocom=0;
+highlightSearchText();
+$("#BTDTL_SEARCH_ta_electricitycomments").autocomplete({
+source: BTDTL_SEARCH_comments,
+select: AutoCompleteSelectHandler
+});});
+$(document).on('keypress','#BTDTL_SEARCH_ta_starhubcomments',function(){
+BTDTL_SEARCH_flag_autocom=0;
+highlightSearchText();
+$("#BTDTL_SEARCH_ta_starhubcomments").autocomplete({
+source: BTDTL_SEARCH_comments,
+select: AutoCompleteSelectHandler
+});});
+$(document).on('keypress','#BTDTL_SEARCH_ta_starhubbasic',function(){
+BTDTL_SEARCH_flag_autocom=0;
+highlightSearchText();
+$("#BTDTL_SEARCH_ta_starhubbasic").autocomplete({
+source: BTDTL_SEARCH_comments,
+select: AutoCompleteSelectHandler
+});});
+$(document).on('keypress','#BTDTL_SEARCH_ta_starhubaddtnlch',function(){
+BTDTL_SEARCH_flag_autocom=0;
+highlightSearchText();
+$("#BTDTL_SEARCH_ta_starhubaddtnlch").autocomplete({
+source: BTDTL_SEARCH_comments,
+select: AutoCompleteSelectHandler
+});
+});
+/*----------------------------------------------------FUNCTION TO HIGHLIGHT SEARCH TEXT------------------------------------------------------------------------*/
+function highlightSearchText() {
+$.ui.autocomplete.prototype._renderItem = function( ul, item) {
+var re = new RegExp(this.term, "i") ;
+var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
+return $( "<li></li>" )
+.data( "item.autocomplete", item )
+.append( "<a>" + t + "</a>" )
+.appendTo( ul );
+}}
+/*---------------------------------------------------FUNCTION TO GET SELECTED VALUE----------------------------------------------------------------*/
+function AutoCompleteSelectHandler(event, ui) {
+var BTDTL_SEARCH_comment_value=ui.item.value;
+BTDTL_SEARCH_flag_autocom=1;
+}
+//CHANGE FUNCTION FOR CUSTOMER NAME
+$(document).on('change blur','.BTDTL_SEARCH_class_autocomplete',function(){
+if(BTDTL_SEARCH_flag_autocom==1){
+$('#BTDTL_SEARCH_lbl_errauto').text('')
+$('#BTDTL_SEARCH_btn_datesearch').removeAttr("disabled");
+}
+else
+{
+$('#BTDTL_SEARCH_lbl_errauto').addClass('errormsg')
+if((BTDTL_SEARCH_comment_flag==101)&&($('#BTDTL_SEARCH_ta_airconcomments').val()!=''))
+$('#BTDTL_SEARCH_lbl_errauto').text(BTDTL_SEARCH_errorarr[47].replace('[ACOMTS]',$('#BTDTL_SEARCH_ta_airconcomments').val()))
+else if((BTDTL_SEARCH_comment_flag==103)&&($('#BTDTL_SEARCH_ta_carparkcomments').val()!=''))
+$('#BTDTL_SEARCH_lbl_errauto').text(BTDTL_SEARCH_errorarr[48].replace('[CCOMTS]',$('#BTDTL_SEARCH_ta_carparkcomments').val()))
+else if((BTDTL_SEARCH_comment_flag==108)&&($('#BTDTL_SEARCH_ta_digitalcomments').val()!=''))
+$('#BTDTL_SEARCH_lbl_errauto').text(BTDTL_SEARCH_errorarr[49].replace('[DCOMTS]',$('#BTDTL_SEARCH_ta_digitalcomments').val()))
+else if((BTDTL_SEARCH_comment_flag==104)&&($('#BTDTL_SEARCH_ta_electricitycomments').val()!=''))
+$('#BTDTL_SEARCH_lbl_errauto').text(BTDTL_SEARCH_errorarr[50].replace('[ECOMTS]',$('#BTDTL_SEARCH_ta_electricitycomments').val()))
+else if((BTDTL_SEARCH_comment_flag==122)&&($('#BTDTL_SEARCH_ta_starhubcomments').val()!=''))
+$('#BTDTL_SEARCH_lbl_errauto').text(BTDTL_SEARCH_errorarr[51].replace('[SCOMTS]',$('#BTDTL_SEARCH_ta_starhubcomments').val()))
+else if((BTDTL_SEARCH_comment_flag==110)&&($('#BTDTL_SEARCH_ta_starhubaddtnlch').val()!=''))
+$('#BTDTL_SEARCH_lbl_errauto').text(BTDTL_SEARCH_errorarr[52].replace('[ADDTNLCH]',$('#BTDTL_SEARCH_ta_starhubaddtnlch').val()))
+else if((BTDTL_SEARCH_comment_flag==112)&&($('#BTDTL_SEARCH_ta_starhubbasic').val()!=''))
+$('#BTDTL_SEARCH_lbl_errauto').text(BTDTL_SEARCH_errorarr[54].replace('[BGROUP]',$('#BTDTL_SEARCH_ta_starhubbasic').val()))
+$("#BTDTL_SEARCH_btn_datesearch").attr("disabled", "disabled");
+}});
+/*----------------------------------------------------CHANGE EVENT FUNCTION FOR EXPENSE TYPES---------------------------------------------------*/
+$('#BTDTL_SEARCH_lb_expense_type').change(function(){
+var BTDTL_SEARCH_bizdetail_search_exp_types = $(this).val();
+$('#BTDTL_SEARCH_tble_update').empty();
+$('#BTDTL_SEARCH_lb_searchoptions').hide();
+$('#BTDTL_SEARCH_lbl_searchoptions').hide();
+$('#BTDTL_SEARCH_div_aircon').hide();
+$('#BTDTL_SEARCH_div_flex_searchbtn').hide();
+$('#BTDTL_SEARCH_div_update').hide();
+$('#BTDTL_SEARCH_div_errmsg').text('');
+$('#BTDTL_SEARCH_div_msg').text('');
+$('#BTDTL_SEARCH_btn_datesearch').attr("disabled", "disabled")
+if($('#BTDTL_SEARCH_lb_expense_type').val()!='SELECT'){
+if($('#BTDTL_SEARCH_lb_expense_type').val()==16){//AIRCON
+if(BTDTL_SEARCH_aircontypes_flag==false)
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text(BTDTL_SEARCH_errorarr[41])
+else{
+$('#BTDTL_SEARCH_lb_searchoptions').show();
+$('#BTDTL_SEARCH_lbl_searchoptions').show();
+$('#BTDTL_SEARCH_lb_searchoptions').html(BTDTL_SEARCH_aircontypes);
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text('');
+}}
+else if($('#BTDTL_SEARCH_lb_expense_type').val()==17){//CARPARK
+if(BTDTL_SEARCH_carparktypes_flag==false)
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text(BTDTL_SEARCH_errorarr[39])
+else{
+$('#BTDTL_SEARCH_lb_searchoptions').show();
+$('#BTDTL_SEARCH_lbl_searchoptions').show();
+$('#BTDTL_SEARCH_lb_searchoptions').html(BTDTL_SEARCH_carparktypes);
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text('');
+}}
+else if($('#BTDTL_SEARCH_lb_expense_type').val()==15){//DIGITAL VOICE
+if(BTDTL_SEARCH_digitaltypes_flag==false)
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text(BTDTL_SEARCH_errorarr[40])
+else{
+$('#BTDTL_SEARCH_lb_searchoptions').show();
+$('#BTDTL_SEARCH_lbl_searchoptions').show();
+$('#BTDTL_SEARCH_lb_searchoptions').html(BTDTL_SEARCH_digitaltypes);
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text('');
+}}
+else if($('#BTDTL_SEARCH_lb_expense_type').val()==13){//ELECTRICITY
+if(BTDTL_SEARCH_electricitytypes_flag==false)
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text(BTDTL_SEARCH_errorarr[38])
+else{
+$('#BTDTL_SEARCH_lb_searchoptions').show();
+$('#BTDTL_SEARCH_lbl_searchoptions').show();
+$('#BTDTL_SEARCH_lb_searchoptions').html(BTDTL_SEARCH_electricitytypes);
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text('');
+}}
+else if($('#BTDTL_SEARCH_lb_expense_type').val()==14){//STARHUB
+if(BTDTL_SEARCH_starhubtypes_flag==false)
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text(BTDTL_SEARCH_errorarr[37])
+else{
+$('#BTDTL_SEARCH_lb_searchoptions').show();
+$('#BTDTL_SEARCH_lbl_searchoptions').show();
+$('#BTDTL_SEARCH_lb_searchoptions').html(BTDTL_SEARCH_starhubtypes);
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text('');
+}}}
+else
+$('#BTDTL_SEARCH_lbl_errmsg_notable').text('');
+});
+/*----------------------------------------------------CHANGE EVENT FUNCTION FOR SEARCH OPTION----------------------------------------------------*/
+$('#BTDTL_SEARCH_lb_searchoptions').change(function(){
+$('#BTDTL_SEARCH_div_aircon').hide();
+$('#BTDTL_SEARCH_tble_update').empty();
+$('#BTDTL_SEARCH_div_flex_searchbtn').hide();
+$('#BTDTL_SEARCH_div_update').hide();
+$('#BTDTL_SEARCH_div_errmsg').text('');
+$('#BTDTL_SEARCH_div_msg').text('');
+var BTDTL_SEARCH_search_option = $(this).val();
+var BTDTL_SEARCH_lb_expense_types = $('#BTDTL_SEARCH_lb_expense_type').val();
+if(BTDTL_SEARCH_search_option!='SELECT')
+{ 
+$(".preloader").show();
+var BTDTL_SEARCH_flag_searchby='BTDTL_SEARCH_flag_load';
+if(BTDTL_SEARCH_search_option==100)//AIRCON SERVICED BY
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_search_option,BTDTL_SEARCH_lb_expense_types,BTDTL_SEARCH_flag_searchby)
+}
+else
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_searchby).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_search_option,BTDTL_SEARCH_lb_expense_types,BTDTL_SEARCH_flag_searchby)
+}}});
+/*-----------------------------SUCCESS FUNCTION FOR SEARCH BY OPTION------------------------------------------------------------*/
+function BTDTL_SEARCH_success_searchby(BTDTL_SEARCH_response){
+$(".preloader").hide();
+$('#BTDTL_SEARCH_div_aircon').show();
+var BTDTL_SEARCH_lb_expense_types = $('#BTDTL_SEARCH_lb_expense_type').val();
+var BTDTL_SEARCH_search_option = $('#BTDTL_SEARCH_lb_searchoptions').val();
+$('#BTDTL_SEARCH_btn_datesearch').attr("disabled", "disabled")
+$('#BTDTL_SEARCH_tble_searchby').empty();
+var BTDTL_SEARCH_searchby_arr=[];
+var BTDTL_SEARCH_flag=BTDTL_SEARCH_response.BTDTL_SEARCH_search_flag;
+var BTDTL_SEARCH_parentfunction=BTDTL_SEARCH_response.BTDTL_SEARCH_parentfunction;
+BTDTL_SEARCH_searchby_arr=BTDTL_SEARCH_response.BTDTL_SEARCH_searchvalue;
+if((BTDTL_SEARCH_searchby_arr!='')&&(BTDTL_SEARCH_searchby_arr!=undefined))
+{
+var BTDTL_SEARCH_options ='<option>SELECT</option>';
+for (var i = 0; i < BTDTL_SEARCH_searchby_arr.length; i++) 
+{
+BTDTL_SEARCH_options += '<option value="' + BTDTL_SEARCH_searchby_arr[i]  + '">' + BTDTL_SEARCH_searchby_arr[i] + '</option>';
+}
+$('<tr><td><div class="srctitle">'+$('#BTDTL_SEARCH_lb_searchoptions').find('option:selected').text()+'</div></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+if(BTDTL_SEARCH_search_option==191)//UNIT NO
+{
+if(BTDTL_SEARCH_lb_expense_types==16)//AIRCON
+$('<tr><td style="width:255px"><label>UNIT NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_ariconunitno" id="BTDTL_SEARCH_lb_ariconunitno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+else if(BTDTL_SEARCH_lb_expense_types==17)//CARPARK
+$('<tr><td style="width:255px"><label>UNIT NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_carparkunitno" id="BTDTL_SEARCH_lb_carparkunitno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+else if(BTDTL_SEARCH_lb_expense_types==15)//DIGITAL VOICE
+$('<tr><td style="width:255px"><label>UNIT NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_digitalunitno" id="BTDTL_SEARCH_lb_digitalunitno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+else if(BTDTL_SEARCH_lb_expense_types==13)//ELECTRICITY
+$('<tr><td style="width:255px"><label>UNIT NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_electricityunitno" id="BTDTL_SEARCH_lb_electricityunitno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+else if(BTDTL_SEARCH_lb_expense_types==14)//STARHUB
+$('<tr><td style="width:255px"><label>UNIT NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_starhubunitno" id="BTDTL_SEARCH_lb_starhubunitno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==195)
+{
+$('<tr><td style="width:255px"><label>AIRCON SERVICED WITH UNIT<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_ariconservicedbyunitno" id="BTDTL_SEARCH_lb_ariconservicedbyunitno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==102)
+{
+$('<tr><td style="width:255px"><label>CARNO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_carno" id="BTDTL_SEARCH_lb_carno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==109)
+{
+$('<tr><td style="width:255px"><label>DIGITAL ACCOUNT NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_digitalacctno" id="BTDTL_SEARCH_lb_digitalacctno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==107)
+{
+$('<tr><td style="width:255px"><label>DIGITAL INVOICE TO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_digitalinvoiceto" id="BTDTL_SEARCH_lb_digitalinvoiceto">'+BTDTL_SEARCH_options_invoiceto+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==106)
+{
+$('<tr><td style="width:255px"><label>DIGITAL VOICE NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_digitalvoiceno" id="BTDTL_SEARCH_lb_digitalvoiceno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==105)
+{
+$('<tr><td style="width:255px"><label>ELECTRICITY INVOICE TO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_electricityinvoiceto" id="BTDTL_SEARCH_lb_electricityinvoiceto">'+BTDTL_SEARCH_options_invoiceto+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==118)
+{
+$('<tr><td style="width:255px"><label>STARHUB INVOICE TO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_starhubinvoiceto" id="BTDTL_SEARCH_lb_starhubinvoiceto">'+BTDTL_SEARCH_options_invoiceto+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==123)
+{
+$('<tr><td style="width:255px"><label>STARHUB ACCOUNT NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_starhubacctno" id="BTDTL_SEARCH_lb_starhubacctno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==113)
+{
+$('<tr><td style="width:255px"><label>STARHUB CABLE BOX SERIAL NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_starhub_cableserialno" id="BTDTL_SEARCH_lb_starhub_cableserialno">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==119)
+{
+$('<tr><td style="width:255px"><label>STARHUB MODEM SERIAL NO<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_starhubmodem" id="BTDTL_SEARCH_lb_starhubmodem">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==121)
+{
+$('<tr><td style="width:255px"><label>STARHUB PWD<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_starhubpwd" id="BTDTL_SEARCH_lb_starhubpwd">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if(BTDTL_SEARCH_search_option==120)
+{
+$('<tr><td style="width:255px"><label>STARHUB SSID<em>*</em></label></td><td><select class="BTDTL_SEARCH_class_starhubssid" id="BTDTL_SEARCH_lb_starhubssid">'+BTDTL_SEARCH_options+'</select></td></tr>').appendTo($("#BTDTL_SEARCH_tble_searchby"));
+}
+else if((BTDTL_SEARCH_search_option==101)||(BTDTL_SEARCH_search_option==108)||(BTDTL_SEARCH_search_option==110)||(BTDTL_SEARCH_search_option==111)||(BTDTL_SEARCH_search_option==122)||(BTDTL_SEARCH_search_option==112)||(BTDTL_SEARCH_search_option==104)||(BTDTL_SEARCH_search_option==103)||(BTDTL_SEARCH_search_option==117)||(BTDTL_SEARCH_search_option==116)||(BTDTL_SEARCH_search_option==115)||(BTDTL_SEARCH_search_option==114)||(BTDTL_SEARCH_search_option==110))
+{
+var BTDTL_SEARCH_table_searchby  ='';
+if(BTDTL_SEARCH_search_option==101)
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>AIRCON COMMENTS<em>*</em></label></td><td><textarea class="auto BTDTL_SEARCH_class_autocomplete BTDTL_SEARCH_comments" id="BTDTL_SEARCH_ta_airconcomments"></textarea></td><td><label id="BTDTL_SEARCH_lbl_errauto"></label></td>'
+}
+else if(BTDTL_SEARCH_search_option==108)
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>DIGITAL COMMENTS<em>*</em></label></td><td><textarea class="auto BTDTL_SEARCH_class_autocomplete BTDTL_SEARCH_comments" id="BTDTL_SEARCH_ta_digitalcomments"></textarea></td><td><label id="BTDTL_SEARCH_lbl_errauto"></label></td>';
+}
+else if(BTDTL_SEARCH_search_option==104)
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>ELECTRICITY COMMENTS<em>*</em></label></td><td><textarea class="auto BTDTL_SEARCH_class_autocomplete BTDTL_SEARCH_comments" id="BTDTL_SEARCH_ta_electricitycomments"></textarea></td><td><label id="BTDTL_SEARCH_lbl_errauto"></label></td>';
+}
+else if(BTDTL_SEARCH_search_option==103)
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>CARPARK COMMENTS<em>*</em></label></td><td><textarea class="auto BTDTL_SEARCH_class_autocomplete BTDTL_SEARCH_comments" id="BTDTL_SEARCH_ta_carparkcomments"></textarea></td><td><label id="BTDTL_SEARCH_lbl_errauto"></label></td>';
+}
+else if(BTDTL_SEARCH_search_option==122)
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>STARHUB COMMENTS<em>*</em></label></td><td><textarea class="auto BTDTL_SEARCH_class_autocomplete BTDTL_SEARCH_comments" id="BTDTL_SEARCH_ta_starhubcomments"></textarea></td><td><label id="BTDTL_SEARCH_lbl_errauto"></label></td>';
+}
+else if(BTDTL_SEARCH_search_option==110)
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>STARHUB ADDTNL CH<em>*</em></label></td><td><textarea class="auto BTDTL_SEARCH_class_autocomplete BTDTL_SEARCH_comments" id="BTDTL_SEARCH_ta_starhubaddtnlch"></textarea></td><td><label id="BTDTL_SEARCH_lbl_errauto"></label></td>';
+}
+else if(BTDTL_SEARCH_search_option==111)
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>FROM DATE<em>*</em></label></td><td><input type="text" id="BTDTL_SEARCH_db_starhubappl_startdate" style="width:75px" class="BTDTL_SEARCH_class_datesearchbtn datemandtry"></td></tr><tr><td><label>TO DATE<em>*</em></label></td><td><input type="text" id="BTDTL_SEARCH_db_starhubappl_enddate" style="width:75px" class="datemandtry BTDTL_SEARCH_class_datesearchbtn"></td>';
+}
+else if(BTDTL_SEARCH_search_option==112)
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>STARHUB BASIC GROUP<em>*</em></label></td><td><textarea class="auto BTDTL_SEARCH_class_autocomplete BTDTL_SEARCH_comments" id="BTDTL_SEARCH_ta_starhubbasic"></textarea></td><td><label id="BTDTL_SEARCH_lbl_errauto"></label></td>';
+}
+else if((BTDTL_SEARCH_search_option==115)||(BTDTL_SEARCH_search_option==114))
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>FROM DATE<em>*</em></label></td><td><input type="text" id="BTDTL_SEARCH_db_starhubcable_startdate" style="width:75px" class="BTDTL_SEARCH_class_datesearchbtn datemandtry"></td></tr><tr><td><label>TO DATE<em>*</em></label></td><td><input type="text" id="BTDTL_SEARCH_db_starhubcable_enddate" style="width:75px" class="BTDTL_SEARCH_class_datesearchbtn datemandtry"></td>';
+}
+else if((BTDTL_SEARCH_search_option==117)||(BTDTL_SEARCH_search_option==116))
+{
+BTDTL_SEARCH_table_searchby +='<tr><td style="width:255px"><label>FROM DATE<em>*</em></label></td><td><input type="text"  id="BTDTL_SEARCH_db_starhubinternet_startdate" style="width:75px" class="BTDTL_SEARCH_class_datesearchbtn datemandtry"></td></tr><tr><td><label>TO DATE<em>*</em></label></td><td><input type="text" id="BTDTL_SEARCH_db_starhubinternet_enddate" style="width:75px" class="BTDTL_SEARCH_class_datesearchbtn datemandtry"></td>';
+}
+BTDTL_SEARCH_table_searchby +='</tr><td></td><td><input type="button" id="BTDTL_SEARCH_btn_datesearch" value="SEARCH" class="btn" disabled=""></td></tr>';
+$(BTDTL_SEARCH_table_searchby).appendTo($("#BTDTL_SEARCH_tble_searchby"));
+if((BTDTL_SEARCH_search_option==112)||(BTDTL_SEARCH_search_option==110)||(BTDTL_SEARCH_search_option==122)||(BTDTL_SEARCH_search_option==104)||(BTDTL_SEARCH_search_option==108)||(BTDTL_SEARCH_search_option==103)||(BTDTL_SEARCH_search_option==101)){
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_comments).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_comments_autocomplete($('#BTDTL_SEARCH_lb_searchoptions').val());
+}
+/*------------------------------------------------------------VALIDATION FOR DATE BOX-------------------------------------------------------------------------------------------------*/
+$(".BTDTL_SEARCH_comments").doValidation({rule:'general',prop:{uppercase:false}});
+$(document).doValidation({rule:'fromto',prop:{elem1:'BTDTL_SEARCH_db_starhubappl_startdate',elem2:'BTDTL_SEARCH_db_starhubappl_enddate'}});
+$(document).doValidation({rule:'fromto',prop:{elem1:'BTDTL_SEARCH_db_starhubcable_startdate',elem2:'BTDTL_SEARCH_db_starhubcable_enddate'}});
+$(document).doValidation({rule:'fromto',prop:{elem1:'BTDTL_SEARCH_db_starhubinternet_startdate',elem2:'BTDTL_SEARCH_db_starhubinternet_enddate'}});
+$('#BTDTL_SEARCH_db_starhubappl_startdate,#BTDTL_SEARCH_db_starhubappl_enddate,#BTDTL_SEARCH_db_starhubcable_startdate,#BTDTL_SEARCH_db_starhubcable_enddate,#BTDTL_SEARCH_db_starhubinternet_startdate,#BTDTL_SEARCH_db_starhubinternet_enddate').datepicker("option","maxDate",new Date());
+if(BTDTL_SEARCH_search_option==114 || BTDTL_SEARCH_search_option==116)
+$('#BTDTL_SEARCH_db_starhubcable_startdate,#BTDTL_SEARCH_db_starhubcable_enddate,#BTDTL_SEARCH_db_starhubinternet_startdate,#BTDTL_SEARCH_db_starhubinternet_enddate').datepicker("option", { maxDate: null});
+}}
+$(".preloader").hide();
+if(BTDTL_SEARCH_parentfunction=='BTDTL_SEARCH_update_listbox')
+{
+if(BTDTL_SEARCH_search_option==100)//AIRCON SERVICED BY
+{
+$('#BTDTL_SEARCH_lb_searchoptions').val('SELECT')
+var BTDTL_SEARCH_errorupdate_replace=BTDTL_SEARCH_errorarr[60];
+}
+else
+var BTDTL_SEARCH_errorupdate_replace=BTDTL_SEARCH_errorarr[4].replace('[TYPE]',$('#BTDTL_SEARCH_lb_expense_type').find('option:selected').text());
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_errorupdate_replace}});
+}
+else if(BTDTL_SEARCH_parentfunction=='BTDTL_SEARCH_flag_delete')
+{
+if(BTDTL_SEARCH_search_option==100)//AIRCON SERVICED BY
+{
+$('#BTDTL_SEARCH_lb_searchoptions').val('SELECT')
+}
+var BTDTL_SEARCH_errordelete_replace=BTDTL_SEARCH_errorarr[5].replace('[TYPE]',$('#BTDTL_SEARCH_lb_expense_type').find('option:selected').text());
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_errordelete_replace}});
+}
+}
+/*---------------------------------------------CLICK FUNCTION FOR SEARCH BY ALL TYPES-------------------------------------------------*/
+$(document).on('change','#BTDTL_SEARCH_tble_searchby',function(){
+$('#BTDTL_SEARCH_tble_update').empty();
+$('#BTDTL_SEARCH_div_flex_searchbtn').hide();
+$('#BTDTL_SEARCH_tble_updatereset').hide();
+$('#BTDTL_SEARCH_btn_search').attr("disabled", "disabled")
+$('#BTDTL_SEARCH_btn_delete').attr("disabled", "disabled")
+$('#BTDTL_SEARCH_btn_update').attr("disabled", "disabled")
+$('#BTDTL_SEARCH_div_errmsg').text('');
+$('#BTDTL_SEARCH_div_msg').text('');
+});
+/*---------------------------------------------CHANGE EVENT FUNCTION FOR AIRCON UNIT NO----------------------------------------*/
+$(document).on('change','.BTDTL_SEARCH_class_ariconunitno',function(){
+if($('#BTDTL_SEARCH_lb_ariconunitno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_flex_aircon($('#BTDTL_SEARCH_lb_ariconunitno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+/*---------------------------------------------CHANGE EVENT FUNCTION FOR SEARCH BY ALL TYPES OF EXPENSE----------------------------------------*/
+$(document).on('change','.BTDTL_SEARCH_class_ariconservicedbyunitno',function(){
+if($('#BTDTL_SEARCH_lb_ariconservicedbyunitno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_flex_aircon($('#BTDTL_SEARCH_lb_ariconservicedbyunitno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_carno',function(){
+if($('#BTDTL_SEARCH_lb_carno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_carpark($('#BTDTL_SEARCH_lb_carno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_carparkunitno',function(){
+if($('#BTDTL_SEARCH_lb_carparkunitno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_carpark($('#BTDTL_SEARCH_lb_carparkunitno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_digitalacctno',function(){
+if($('#BTDTL_SEARCH_lb_digitalacctno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_digital($('#BTDTL_SEARCH_lb_digitalacctno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_digitalvoiceno',function(){
+if($('#BTDTL_SEARCH_lb_digitalvoiceno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_digital($('#BTDTL_SEARCH_lb_digitalvoiceno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_digitalinvoiceto',function(){
+if($('#BTDTL_SEARCH_lb_digitalinvoiceto').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_digital($('#BTDTL_SEARCH_lb_digitalinvoiceto').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_digitalunitno',function(){
+if($('#BTDTL_SEARCH_lb_digitalunitno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_digital($('#BTDTL_SEARCH_lb_digitalunitno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_electricityinvoiceto',function(){
+if($('#BTDTL_SEARCH_lb_electricityinvoiceto').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_electricity($('#BTDTL_SEARCH_lb_electricityinvoiceto').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_electricityunitno',function(){
+if($('#BTDTL_SEARCH_lb_electricityunitno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_electricity($('#BTDTL_SEARCH_lb_electricityunitno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_starhubunitno',function(){
+if($('#BTDTL_SEARCH_lb_starhubunitno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_flag').val(),$('#BTDTL_SEARCH_lb_starhubunitno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_starhubacctno',function(){
+if($('#BTDTL_SEARCH_lb_starhubacctno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_flag').val(),$('#BTDTL_SEARCH_lb_starhubacctno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_starhubinvoiceto',function(){
+if($('#BTDTL_SEARCH_lb_starhubinvoiceto').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_emptyflag').val(),$('#BTDTL_SEARCH_lb_starhubinvoiceto').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_starhubssid',function(){
+if($('#BTDTL_SEARCH_lb_starhubssid').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_emptyflag').val(),$('#BTDTL_SEARCH_lb_starhubssid').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_starhubpwd',function(){
+if($('#BTDTL_SEARCH_lb_starhubpwd').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_emptyflag').val(),$('#BTDTL_SEARCH_lb_starhubpwd').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_starhubmodem',function(){
+if($('#BTDTL_SEARCH_lb_starhubmodem').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_emptyflag').val(),$('#BTDTL_SEARCH_lb_starhubmodem').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('change','.BTDTL_SEARCH_class_starhub_cableserialno',function(){
+if($('#BTDTL_SEARCH_lb_starhub_cableserialno').val()!='SELECT')
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_emptyflag').val(),$('#BTDTL_SEARCH_lb_starhub_cableserialno').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+$(document).on('click','#BTDTL_SEARCH_btn_datesearch',function(){
+$(".preloader").show();
+if($('#BTDTL_SEARCH_lb_searchoptions').val()==101)//AIRCON COMMENTS
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_flex_aircon($('#BTDTL_SEARCH_ta_airconcomments').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==103)//CARPARK COMMENTS
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_carpark($('#BTDTL_SEARCH_ta_carparkcomments').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==108)//DIGITAL COMMENTS
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_digital($('#BTDTL_SEARCH_ta_digitalcomments').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==104)//ELECTRICITY COMMENTS
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_electricity($('#BTDTL_SEARCH_ta_electricitycomments').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==110)//ADDITIONAL CHANNEL
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_emptyflag').val(),$('#BTDTL_SEARCH_ta_starhubaddtnlch').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==112)//BASIC GROUP
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_emptyflag').val(),$('#BTDTL_SEARCH_ta_starhubbasic').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==122)//STARHUB COMMENTS
+{
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub($('BTDTL_SEARCH_emptyflag').val(),$('#BTDTL_SEARCH_ta_starhubcomments').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==111)//STARHUB APPL DATE
+{
+var BTDTL_SEARCH_starhubappl_startdate=DatePickerFormat($('#BTDTL_SEARCH_db_starhubappl_startdate').val());
+var BTDTL_SEARCH_starhubappl_enddate=DatePickerFormat($('#BTDTL_SEARCH_db_starhubappl_enddate').val());
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub(BTDTL_SEARCH_starhubappl_startdate,BTDTL_SEARCH_starhubappl_enddate,$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if(($('#BTDTL_SEARCH_lb_searchoptions').val()==114)||($('#BTDTL_SEARCH_lb_searchoptions').val()==115))//CABLE START DATE & END DATE
+{
+var BTDTL_SEARCH_cable_startdate=DatePickerFormat($('#BTDTL_SEARCH_db_starhubcable_startdate').val());
+var BTDTL_SEARCH_cable_enddate=DatePickerFormat($('#BTDTL_SEARCH_db_starhubcable_enddate').val());
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub(BTDTL_SEARCH_cable_startdate,BTDTL_SEARCH_cable_enddate,$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+else if(($('#BTDTL_SEARCH_lb_searchoptions').val()==116)||($('#BTDTL_SEARCH_lb_searchoptions').val()==117))//INTERNET START DATE & END DATE
+{
+var BTDTL_SEARCH_internet_startdate=DatePickerFormat($('#BTDTL_SEARCH_db_starhubinternet_startdate').val());
+var BTDTL_SEARCH_internet_enddate=DatePickerFormat($('#BTDTL_SEARCH_db_starhubinternet_enddate').val());
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_show_starhub(BTDTL_SEARCH_internet_startdate,BTDTL_SEARCH_internet_enddate,$('#BTDTL_SEARCH_lb_searchoptions').val(),'BTDTL_SEARCH_parentfunc_flex')
+}
+});
+/*--------------------------------------------SUCCESS FUNCTION FOR FLEX TABLE-----------------------------------------------------*/
+function BTDTL_SEARCH_success_showflex(BTDTL_SEARCH_responseflex){  
+$(".preloader").hide();
+$('#BTDTL_SEARCH_btn_datesearch').attr("disabled", "disabled")
+$('#BTDTL_SEARCH_tble_searchdel').hide();
+$('#BTDTL_SEARCH_div_errmsg').text('');
+$('#BTDTL_SEARCH_div_msg').text('');
+$('#BTDTL_SEARCH_div_update').hide();
+var BTDTL_SEARCH_response=[]; 
+var BTDTL_SEARCH_searchby_arr=[];
+var BTDTL_SEARCH_id=[];
+var BTDTL_SEARCH_aircon_unitno=BTDTL_SEARCH_responseflex.BTDTL_SEARCH_search_flag;
+BTDTL_SEARCH_searchby_arr=BTDTL_SEARCH_responseflex.BTDTL_SEARCH_aircondata;
+BTDTL_SEARCH_id=BTDTL_SEARCH_responseflex.BTDTL_SEARCH_id;
+BTDTL_SEARCH_response=BTDTL_SEARCH_responseflex.BTDTL_SEARCH_expenseflex;
+var BTDTL_SEARCH_searchvalue=[];
+BTDTL_SEARCH_searchvalue=BTDTL_SEARCH_responseflex.BTDTL_SEARCH_searchvalue;
+var BTDTL_SEARCH_expensetypes=$('#BTDTL_SEARCH_lb_expense_type').val();
+if(BTDTL_SEARCH_searchvalue!=undefined){
+if(BTDTL_SEARCH_aircon_unitno==100)
+BTDTL_SEARCH_response=BTDTL_SEARCH_searchby_arr;
+else
+BTDTL_SEARCH_success_searchby(BTDTL_SEARCH_responseflex)
+}
+$('#BTDTL_SEARCH_tble_flex').empty();
+var BTDTL_SEARCH_tr  ='';
+if((BTDTL_SEARCH_response!='')&&(BTDTL_SEARCH_response!=undefined))
+{
+if(BTDTL_SEARCH_response.length!=1)
+{
+$('#BTDTL_SEARCH_div_errmsg').text('');
+if($('#BTDTL_SEARCH_lb_searchoptions').val()==191)//UNIT NO
+{
+if(BTDTL_SEARCH_expensetypes==16)//AIRCON SERVICES
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[2].replace('[UNIT NO]',$('#BTDTL_SEARCH_lb_ariconunitno').val());
+else if(BTDTL_SEARCH_expensetypes==17)//CARPARK
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[2].replace('[UNIT NO]',$('#BTDTL_SEARCH_lb_carparkunitno').val());
+else if(BTDTL_SEARCH_expensetypes==15)//DIGITAL VOICE
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[2].replace('[UNIT NO]',$('#BTDTL_SEARCH_lb_digitalunitno').val());
+else if(BTDTL_SEARCH_expensetypes==13)//ELECTRICITY
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[2].replace('[UNIT NO]',$('#BTDTL_SEARCH_lb_electricityunitno').val());
+else if(BTDTL_SEARCH_expensetypes==14)//STARHUB
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[2].replace('[UNIT NO]',$('#BTDTL_SEARCH_lb_starhubunitno').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==108)//DIGITAL COMMENTS
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[44].replace('[DCOMTS]',$('#BTDTL_SEARCH_ta_digitalcomments').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==104)//ELECTRICITY COMMENTS
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[45].replace('[ECOMTS]',$('#BTDTL_SEARCH_ta_electricitycomments').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==122)//STARHUB COMMENTS
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[46].replace('[SCOMTS]',$('#BTDTL_SEARCH_ta_starhubcomments').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==101)//AIRCON COMMENTS
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[42].replace('[ACOMTS]',$('#BTDTL_SEARCH_ta_airconcomments').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==103)//CARPARK COMMENTS
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[43].replace('[CCOMTS]',$('#BTDTL_SEARCH_ta_carparkcomments').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==110)//STARHUB ADDITIONAL CHANNEL
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[30].replace('[ADDTNLCH]',$('#BTDTL_SEARCH_ta_starhubaddtnlch').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==112)//STARHUB BASIC 
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[28].replace('[BG]',$('#BTDTL_SEARCH_ta_starhubbasic').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==195)//ARICON SERVICED WITH UNIT
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[7].replace('[AB]',$('#BTDTL_SEARCH_lb_ariconservicedbyunitno').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==100)//AIRCON SERVICED BY
+{
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_configmon_aircon[1]);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==102)//CAR NO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[9].replace('[CAR NO]',$('#BTDTL_SEARCH_lb_carno').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==109)//DIGITAL ACCOUNT NO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[17].replace('[ACCNO]',$('#BTDTL_SEARCH_lb_digitalacctno').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==107)//DIGITAL INVOICE TO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[13].replace('[INVETO]',$('#BTDTL_SEARCH_lb_digitalinvoiceto').find('option:selected').text());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==106)//DIGITAL VOICE NO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[15].replace('[DGTLVNO]',$('#BTDTL_SEARCH_lb_digitalvoiceno').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==105)//ELECTRICITY INVOICE TO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[12].replace('[INVETO]',$('#BTDTL_SEARCH_lb_electricityinvoiceto').find('option:selected').text());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==123)//STARHUB ACCT NO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[18].replace('[ACCNO]',$('#BTDTL_SEARCH_lb_starhubacctno').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==113)//STARHUB CABLE SERIAL NO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[24].replace('[SNO]',$('#BTDTL_SEARCH_lb_starhub_cableserialno').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==118)//STARHUB INVOICE TO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[11].replace('[INVETO]',$('#BTDTL_SEARCH_lb_starhubinvoiceto').find('option:selected').text());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==119)//STARHUB MODEM SERIAL NO
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[26].replace('[SNO]',$('#BTDTL_SEARCH_lb_starhubmodem').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==121)//STARHUB PWD
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[22].replace('[PWD]',$('#BTDTL_SEARCH_lb_starhubpwd').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==120)//STARHUB SSID
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[20].replace('[SSID]',$('#BTDTL_SEARCH_lb_starhubssid').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==114)//STARHUB CABEL SDATE
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[34].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubcable_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubcable_enddate').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==115)//STARHUB CABLE EDATE
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[33].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubcable_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubcable_enddate').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==116)//STARHUB INTERNET SDATE
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[36].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubinternet_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubinternet_enddate').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==117)//STARHUB INTERNET EDATE
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[35].replace('[SDATE]',$('# BTDTL_SEARCH_db_starhubinternet_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubinternet_enddate').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==111)//STARHUB APPL SDATE
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[32].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubappl_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubappl_enddate').val());
+$('#BTDTL_SEARCH_div_msg').text(BTDTL_SEARCH_error_replace);
+}
+if(BTDTL_SEARCH_expensetypes==16)
+{
+if($('#BTDTL_SEARCH_lb_searchoptions').val()==100)
+{
+BTDTL_SEARCH_airconserviceby=BTDTL_SEARCH_responseflex.BTDTL_SEARCH_searchvalue;
+$('#BTDTL_SEARCH_tble_flex').attr('width',750);
+$('#BTDTL_SEARCH_div_flex').width(775);
+BTDTL_SEARCH_tr +='<tr><th style="width:20px"></th><th style="width:300px">AIRCON SERVICED BY</th><th style="width:250px">USERSTAMP</th><th style="width:180px">TIMESTAMP</th></tr>'
+}
+else 
+{
+$('#BTDTL_SEARCH_tble_flex').attr('width',1200);
+$('#BTDTL_SEARCH_div_flex').width(1225);
+BTDTL_SEARCH_tr +='<tr><th style="width:20px"></th><th style="width:75px">UNIT NUMBER</th><th style="width:300px">AIRCON SERVICED BY</th><th style="width:300px">COMMENTS</th><th style="width:250px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>'
+}
+}
+else if(BTDTL_SEARCH_expensetypes==17)
+{
+$('#BTDTL_SEARCH_tble_flex').attr('width',900);
+$('#BTDTL_SEARCH_div_flex').width(925);
+BTDTL_SEARCH_tr +='<tr><th style="width:20px"></th><th style="width:75px">UNIT NUMBER</th><th style="width:80px">CAR NO</th><th style="width:250px">COMMENTS</th><th style="width:250px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>'
+}
+else if(BTDTL_SEARCH_expensetypes==15)
+{
+$('#BTDTL_SEARCH_tble_flex').attr('width', 1300);
+$('#BTDTL_SEARCH_div_flex').width(1325);
+BTDTL_SEARCH_tr +='<tr><th style="width:20px"></th><th style="width:75px">UNIT NUMBER</th><th style="width:150px">INVOICE TO</th><th style="width:80px">DIGITAL VOICE NO</th><th style="width:110px">DIGITAL ACCOUNT NO</th><th style="width:300px">COMMENTS</th><th style="width:250px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>'
+}
+else if(BTDTL_SEARCH_expensetypes==13)
+{
+$('#BTDTL_SEARCH_div_flex').width(1075);
+$('#BTDTL_SEARCH_tble_flex').attr('width',1050);
+BTDTL_SEARCH_tr +='<tr><th style="width:20px"></th><th style="width:75px">UNIT NUMBER</th><th style="width:140px">INVOICE TO</th><th style="width:300px">COMMENTS</th><th style="width:250px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>'
+}
+else if(BTDTL_SEARCH_expensetypes==14)
+{
+$('#BTDTL_SEARCH_tble_flex').attr('width', 2750);
+$('#BTDTL_SEARCH_div_flex').width(2775);
+BTDTL_SEARCH_tr += '<tr><th style="width:20px"></th><th style="width:75px">UNIT NUMBER</th><th style="width:140px">INVOICE TO</th><th style="width:100px">STARHUB ACCOUNT NO</th><th style="width:75px">APPL DATE</th><th style="width:75px">CABLE START DATE</th><th style="width:75px">CABLE END DATE</th><th style="width:75px">INTERNET START DATE</th><th style="width:75px">INTERNET END DATE</th><th style="width:200px">SSID</th><th style="width:200px">PWD</th><th style="width:200px">CABLE BOX SERIAL NO</th><th style="width:250px">MODEM SERIAL NO</th><th style="width:200px">BASIC GROUP</th><th style="width:200px">ADDTNL CH</th><th style="width:200px">COMMENTS</th><th style="width:200px">USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>';
+}
+}
+else if(BTDTL_SEARCH_response.length==1)
+{
+$('#BTDTL_SEARCH_btn_datesearch').attr("disabled", "disabled")
+if($('#BTDTL_SEARCH_lb_searchoptions').val()==108)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[49].replace('[DCOMTS]',$('#BTDTL_SEARCH_ta_digitalcomments').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==104)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[50].replace('[ECOMTS]',$('#BTDTL_SEARCH_ta_electricitycomments').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==122)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[51].replace('[SCOMTS]',$('#BTDTL_SEARCH_ta_starhubcomments').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==101)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[47].replace('[ACOMTS]',$('#BTDTL_SEARCH_ta_airconcomments').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==103)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[48].replace('[CCOMTS]',$('#BTDTL_SEARCH_ta_carparkcomments').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==110)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[36].replace('[ADDTNLCH]',$('#BTDTL_SEARCH_ta_starhubaddtnlch').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==112)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[54].replace('[BGROUP]',$('#BTDTL_SEARCH_ta_starhubbasic').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==100)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[8].replace('[AB]',$('#BTDTL_SEARCH_lb_ariconservicedby').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==195)
+{
+$('#BTDTL_SEARCH_btn_ariconservicedbyunitno').attr("disabled", "disabled")
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[8].replace('[AB]',$('#BTDTL_SEARCH_lb_ariconservicedbyunitno').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==100)
+{
+$('#BTDTL_SEARCH_btn_ariconservicedbyunitno').attr("disabled", "disabled")
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[8].replace('[AB]',$('#BTDTL_SEARCH_lb_ariconservicedbyunitno').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==102)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[10].replace('[CAR NO]',$('#BTDTL_SEARCH_lb_carno').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==123)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[19].replace('[ACCNO]',$('#BTDTL_SEARCH_lb_starhubacctno').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==109)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[19].replace('[ACCNO]',$('#BTDTL_SEARCH_lb_digitalacctno').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==107)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[14].replace('[INVETO]',$('#BTDTL_SEARCH_lb_digitalinvoiceto').find('option:selected').text());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==105)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[14].replace('[INVETO]',$('#BTDTL_SEARCH_lb_electricityinvoiceto').find('option:selected').text());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==118)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[14].replace('[INVETO]',$('#BTDTL_SEARCH_lb_starhubinvoiceto').find('option:selected').text());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==106)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[16].replace('[DGTLVNO]',$('#BTDTL_SEARCH_lb_digitalvoiceno').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==113)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[25].replace('[SNO]',$('#BTDTL_SEARCH_lb_starhub_cableserialno').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==119)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[27].replace('[SNO]',$('#BTDTL_SEARCH_lb_starhubmodem').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==121)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[23].replace('[PWD]',$('#BTDTL_SEARCH_lb_starhubpwd').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==120)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[21].replace('[SSID]',$('#BTDTL_SEARCH_lb_starhubssid').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==114)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[55].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubcable_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubcable_enddate ').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==115)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[56].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubcable_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubcable_enddate').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==116)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[57].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubinternet_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubinternet_enddate').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==117)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[58].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubinternet_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubinternet_enddate').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+else if($('#BTDTL_SEARCH_lb_searchoptions').val()==111)
+{
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_errorarr[53].replace('[SDATE]',$('#BTDTL_SEARCH_db_starhubappl_startdate').val());
+var BTDTL_SEARCH_error_replace=BTDTL_SEARCH_error_replace.replace('[EDATE]',$('#BTDTL_SEARCH_db_starhubappl_startdate').val());
+$('#BTDTL_SEARCH_div_errmsg').text(BTDTL_SEARCH_error_replace);
+}
+}
+if(BTDTL_SEARCH_response.length > 10){ var px='500px'}
+     else
+     { 
+     var x = BTDTL_SEARCH_response.length*40+50;
+     if(x <=120){var px = '125px'}
+     else{
+     var px = x+"px"}
+     }
+     if(BTDTL_SEARCH_response.length == 2) {var px ="110px"}
+     $('#BTDTL_SEARCH_div_flex').css('height',px)
+for(var j=0;j<BTDTL_SEARCH_response.length;j++)
+{
+if(j!=BTDTL_SEARCH_response.length-1)
+{
+BTDTL_SEARCH_tr +='<tr><td><input type="radio" value="'+BTDTL_SEARCH_id[j]+'" class="BTDTL_SEARCH_class_expense"" name="BTDTL_SEARCH_radio_expense" id = '+(j+1)+'></td>';
+for (var i = 0; i < BTDTL_SEARCH_response[j].length; i++) 
+{
+var USRC_null=BTDTL_SEARCH_response[j][i];
+if(USRC_null==null)
+BTDTL_SEARCH_tr += '<td></td>';
+else
+BTDTL_SEARCH_tr += '<td>' + USRC_null + '</td>';
+}
+BTDTL_SEARCH_tr +='</tr>';
+}
+else
+{
+var BTDTL_SEARCH_parentfunction=BTDTL_SEARCH_response[j];
+if(BTDTL_SEARCH_parentfunction=='BTDTL_SEARCH_flag_delete')
+{
+var BTDTL_SEARCH_errordelete_replace=BTDTL_SEARCH_errorarr[5].replace('[TYPE]',$('#BTDTL_SEARCH_lb_expense_type').find('option:selected').text());
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_errordelete_replace}});
+}
+else if(BTDTL_SEARCH_parentfunction==0){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_errorarr[5]}});
+}
+else if(BTDTL_SEARCH_parentfunction=='BTDTL_SEARCH_flag_notupdate'){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_errorarr[62]}});
+}
+else if(BTDTL_SEARCH_parentfunction=='BTDTL_SEARCH_flag_update')
+{
+var BTDTL_SEARCH_errorupdate_replace=BTDTL_SEARCH_errorarr[4].replace('[TYPE]',$('#BTDTL_SEARCH_lb_expense_type').find('option:selected').text());
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_errorupdate_replace}});
+}
+else if(BTDTL_SEARCH_parentfunction=='BTDTL_SEARCH_flag_aircon_update')
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_errorarr[60]}});
+}}}
+$('#BTDTL_SEARCH_div_flex_searchbtn').show();
+$('#BTDTL_SEARCH_tble_flex').html(BTDTL_SEARCH_tr).show();
+}
+}
+/*---------------------------------------------CLICK FUNCTION FOR RADIO BUTTON-------------------------------------------------*/
+$(document).on('click','.BTDTL_SEARCH_class_expense',function(){
+$('#BTDTL_SEARCH_div_update').hide();
+if($("input[type='radio'][name='BTDTL_SEARCH_radio_expense']:checked").val()!=''){
+var BTDTL_SEARCH_expensedata = $('input:radio[name=BTDTL_SEARCH_radio_expense]:checked').val();
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_radio_delete).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_radio_delete(BTDTL_SEARCH_expensedata,$('#BTDTL_SEARCH_lb_expense_type').val(),$('#BTDTL_SEARCH_lb_searchoptions').val())
+$('#BTDTL_SEARCH_btn_update').attr("disabled", "disabled")
+}});
+/*------------------------------------------SUCCESS FUNCTION FOR RADIO BUTTON FOR DELETION--------------------*/
+function BTDTL_SEARCH_success_radio_delete(BTDTL_SEARCH_response_delete){
+$(".preloader").hide();
+$('#BTDTL_SEARCH_tble_searchdel').show();
+$('#BTDTL_SEARCH_btn_search').removeAttr("disabled");
+$('#BTDTL_SEARCH_btn_delete').removeAttr("disabled");
+if(BTDTL_SEARCH_response_delete==1){
+$('#BTDTL_SEARCH_btn_delete').show();
+}
+else if(BTDTL_SEARCH_response_delete==0){
+$('#BTDTL_SEARCH_btn_delete').hide();
+}}
+/*---------------------------------------------COMMON FUNCTION FOR FETECHING FLEX TABLE ROW VALUE---------------------------------------*/
+function BTDTL_SEARCH_fetchrowvalue(){
+var BTDTL_SEARCH_expensedata = $('input:radio[name=BTDTL_SEARCH_radio_expense]:checked').val();
+var BTDTL_SEARCH_expenseid = $('input:radio[name=BTDTL_SEARCH_radio_expense]:checked').attr('id');
+$('#BTDTL_SEARCH_tble_flex tr:eq('+BTDTL_SEARCH_expenseid+')').each(function () {
+var $tds = $(this).find('td');
+BTDTL_SEARCH_obj={"BTDTL_SEARCH_objfirst":$tds.eq(1).text(),"BTDTL_SEARCH_objsec":$tds.eq(2).text(),"BTDTL_SEARCH_objthird":$tds.eq(3).text(),"BTDTL_SEARCH_objfour":$tds.eq(4).text(),"BTDTL_SEARCH_objfive":$tds.eq(5).text(),"BTDTL_SEARCH_objsix":$tds.eq(6).text(),"BTDTL_SEARCH_objseven":$tds.eq(7).text(),"BTDTL_SEARCH_objeight":$tds.eq(8).text(),"BTDTL_SEARCH_objnine":$tds.eq(9).text(),"BTDTL_SEARCH_objten":$tds.eq(10).text(),"BTDTL_SEARCH_objeleven":$tds.eq(11).text(),"BTDTL_SEARCH_objtwelve":$tds.eq(12).text(),"BTDTL_SEARCH_objthirteen":$tds.eq(13).text(),"BTDTL_SEARCH_objfourteen":$tds.eq(14).text(),"BTDTL_SEARCH_objfifteen":$tds.eq(15).text()}
+});}
+/*--------------------------------------------CLICK FUNCTION FOR SEARCH BUTTON---------------------------------------------------------*/
+$(document).on('click','#BTDTL_SEARCH_btn_search',function(){
+var BTDTL_SEARCH_expensedata = $('input:radio[name=BTDTL_SEARCH_radio_expense]:checked').val();
+var BTDTL_SEARCH_expenseid = $('input:radio[name=BTDTL_SEARCH_radio_expense]:checked').attr('id');
+$('#BTDTL_SEARCH_div_update').hide();
+$('#BTDTL_SEARCH_tble_update').empty();
+$('#BTDTL_SEARCH_tble_flex tr:eq('+BTDTL_SEARCH_expenseid+')').each(function () {
+var $tds = $(this).find('td');
+BTDTL_SEARCH_elecinvoiceto=$tds.eq(2).text();
+BTDTL_SEARCH_digitalinvoiceto=$tds.eq(2).text(); 
+BTDTL_SEARCH_starhubinvoiceto=$tds.eq(2).text();
+if(BTDTL_SEARCH_starhubinvoiceto=='')
+BTDTL_SEARCH_starhubinvoiceto='SELECT';
+if(BTDTL_SEARCH_elecinvoiceto=='')
+BTDTL_SEARCH_elecinvoiceto='SELECT';
+if(BTDTL_SEARCH_digitalinvoiceto=='')
+BTDTL_SEARCH_digitalinvoiceto='SELECT';
+if($('#BTDTL_SEARCH_lb_expense_type').val()==13)
+var BTDTL_SEARCH_invoiceto=BTDTL_SEARCH_elecinvoiceto;
+if($('#BTDTL_SEARCH_lb_expense_type').val()==15)
+var BTDTL_SEARCH_invoiceto=BTDTL_SEARCH_digitalinvoiceto;
+if($('#BTDTL_SEARCH_lb_expense_type').val()==14)
+var BTDTL_SEARCH_invoiceto=BTDTL_SEARCH_starhubinvoiceto;
+var BTDTL_SEARCH_options_invoiceto_upd='<option value="">SELECT</option>';
+for (var i = 0; i <BTDTL_SEARCH_arr_invoicto.length; i++) {
+if(BTDTL_SEARCH_arr_invoicto[i].BTDTL_SEARCH_expensetypes_data==BTDTL_SEARCH_invoiceto){
+BTDTL_SEARCH_options_invoiceto_upd +='<option value="'+BTDTL_SEARCH_arr_invoicto[i].BTDTL_SEARCH_expensetypes_id +'" selected>' + BTDTL_SEARCH_arr_invoicto[i].BTDTL_SEARCH_expensetypes_data + '</option>';
+}else
+BTDTL_SEARCH_options_invoiceto_upd +='<option value="'+BTDTL_SEARCH_arr_invoicto[i].BTDTL_SEARCH_expensetypes_id +'">' + BTDTL_SEARCH_arr_invoicto[i].BTDTL_SEARCH_expensetypes_data + '</option>';
+}
+BTDTL_SEARCH_obj={"BTDTL_SEARCH_objfirst":$tds.eq(1).text(),"BTDTL_SEARCH_objsec":$tds.eq(2).text(),"BTDTL_SEARCH_objthird":$tds.eq(3).text(),"BTDTL_SEARCH_objfour":$tds.eq(4).text(),"BTDTL_SEARCH_objfive":$tds.eq(5).text(),"BTDTL_SEARCH_objsix":$tds.eq(6).text(),"BTDTL_SEARCH_objseven":$tds.eq(7).text(),"BTDTL_SEARCH_objeight":$tds.eq(8).text(),"BTDTL_SEARCH_objnine":$tds.eq(9).text(),"BTDTL_SEARCH_objten":$tds.eq(10).text(),"BTDTL_SEARCH_objeleven":$tds.eq(11).text(),"BTDTL_SEARCH_objtwelve":$tds.eq(12).text(),"BTDTL_SEARCH_objthirteen":$tds.eq(13).text(),"BTDTL_SEARCH_objfourteen":$tds.eq(14).text(),"BTDTL_SEARCH_objfifteen":$tds.eq(15).text()}
+if($('#BTDTL_SEARCH_lb_expense_type').val()==16)//AIRCON SERVICES
+{
+if($('#BTDTL_SEARCH_lb_searchoptions').val()==100)//AIRCON SERVICED BY
+{
+$('<tr><td style="width:200px">AIRCON SERVICED BY</td><td style="width:255px"><input type="text" id="BTDTL_SEARCH_tb_update_airconname" value="'+$tds.eq(1).text()+'" name="BTDTL_SEARCH_tb_update_airconname" maxlength=50 title="'+BTDTL_SEARCH_errorarr[0]+'"></td><td><label id="BTDTL_SEARCH_lbl_aircon" class="errormsg"></label></td></tr>').appendTo($('#BTDTL_SEARCH_tble_update'));
+$("#BTDTL_SEARCH_tb_update_airconname").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+$('#BTDTL_SEARCH_div_update').show();
+$('#BTDTL_SEARCH_tble_updatereset').show();
+}
+else{
+BTDTL_SEARCH_airconservicedby=$tds.eq(2).text();
+if(BTDTL_SEARCH_airconservicedby=='')
+BTDTL_SEARCH_airconservicedby='SELECT';
+$(".preloader").show();
+$('<table><tr><td style="width:200px"><label>UNIT NO<em>*</em></label></td><td><input type="text" style="width:40px" value="'+$tds.eq(1).text()+'" id="BTDTL_SEARCH_tb_upd_unitno" name="BTDTL_SEARCH_tb_upd_unitno" class="rdonly" readonly></td></tr><tr><td><label>AIRCON SERVICED BY<em>*</em></label></td><td><select id="BTDTL_SEARCH_lb_oldaircon" name="BTDTL_SEARCH_lb_oldaircon"></select></td><td style="width:70px"></tr></table><table><tr><td style="width:200px">COMMENTS</td><td><textarea id="BTDTL_SEARCH_ta_upd_airconcomments" name="BTDTL_SEARCH_ta_upd_airconcomments" class="BTDTL_SEARCH_comments">'+$tds.eq(3).text()+'</textarea></td></tr></table>').appendTo($('#BTDTL_SEARCH_tble_update'));
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_searchupdate).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_expense_searchby(100,$('#BTDTL_SEARCH_lb_expense_type').val(),'BTDTL_SEARCH_parentfunc_flex')
+}}
+else if($('#BTDTL_SEARCH_lb_expense_type').val()==17) //CARPARK
+{
+$('<table><tr><td style="width:200px"><label>UNIT NO<em>*</em></label></td><td><input type="text" value="'+$tds.eq(1).text()+'"  style="width:40px" id="BTDTL_SEARCH_tb_upd_unitno" name="BTDTL_SEARCH_tb_upd_unitno" readonly class="rdonly"></td></tr><tr><td><label>CAR NO<em>*</em></label></td><td><input value="'+$tds.eq(2).text()+'" type="text" style="width:85px" id="BTDTL_SEARCH_tb_upd_carno" name="BTDTL_SEARCH_tb_upd_carno" maxlength=9></td></tr></table><table><tr><td style="width:200px">COMMENTS</td><td><textarea id="BTDTL_SEARCH_ta_upd_carparkcomments" name="BTDTL_SEARCH_ta_upd_carparkcomments" class="BTDTL_SEARCH_comments">'+$tds.eq(3).text()+'</textarea></td></tr></table>').appendTo($('#BTDTL_SEARCH_tble_update'));
+$("#BTDTL_SEARCH_tb_upd_carno").doValidation({rule:'alphanumeric'});
+$('#BTDTL_SEARCH_div_update').show();
+$('#BTDTL_SEARCH_tble_updatereset').show();
+}
+else if($('#BTDTL_SEARCH_lb_expense_type').val()==13)//ELECTRICITY
+{
+$('<table><tr><td style="width:200px"><label>UNIT NO<em>*</em></label></td><td><input type="text" value="'+$tds.eq(1).text()+'"  style="width:40px" id="BTDTL_SEARCH_tb_upd_unitno" name="BTDTL_SEARCH_tb_upd_unitno" readonly class="rdonly"></td></tr><tr><td><label>INVOICE TO<em>*</em></label></td><td><select id="BTDTL_SEARCH_upd_elec_invoiceto" name="BTDTL_SEARCH_upd_elec_invoiceto">'+BTDTL_SEARCH_options_invoiceto_upd+'</select></td></tr></table><table><tr><td style="width:200px">COMMENTS</td><td><textarea id="BTDTL_SEARCH_ta_upd_electricitycomments" name="BTDTL_SEARCH_ta_upd_electricitycomments" class="BTDTL_SEARCH_comments">'+$tds.eq(3).text()+'</textarea></td></tr></table>').appendTo($('#BTDTL_SEARCH_tble_update'));
+}
+else if($('#BTDTL_SEARCH_lb_expense_type').val()==15)//DIGITAL VOICE
+{
+$('<table><tr><td style="width:200px"><label>UNIT NO<em>*</em></label></td><td ><input type="text" value="'+$tds.eq(1).text()+'"  style="width:40px" id="BTDTL_SEARCH_tb_upd_unitno" name="BTDTL_SEARCH_tb_upd_unitno" readonly class="rdonly"></td></tr><tr><td ><label>INVOICE TO</label></td><td><select id="BTDTL_SEARCH_upd_digital_invoiceto" name="BTDTL_SEARCH_upd_digital_invoiceto">'+BTDTL_SEARCH_options_invoiceto_upd+'</select></td></tr><tr><td>DIGITAL VOICE NO<em>*</em></td><td><input type="text" style="width:70px" id="BTDTL_SEARCH_tb_upd_digital_voiceno" name="BTDTL_SEARCH_tb_upd_digital_voiceno" maxlength=8 value="'+$tds.eq(3).text()+'" title="'+BTDTL_SEARCH_errorarr[1]+'"></td></tr><tr><td>DIGITAL ACCOUNT NO<em>*</em></td><td><input type="text" id="BTDTL_SEARCH_tb_upd_digitalacctno" name="BTDTL_SEARCH_tb_upd_digitalacctno" maxlength=11 value="'+$tds.eq(4).text()+'" class="general"></td></tr></table><table><tr><td style="width:200px">COMMENTS</td><td><textarea id="BTDTL_SEARCH_ta_upd_digitalcomments" name="BTDTL_SEARCH_ta_upd_digitalcomments" class="BTDTL_SEARCH_comments">'+$tds.eq(5).text()+'</textarea></td></tr></table>').appendTo($('#BTDTL_SEARCH_tble_update'));
+$("#BTDTL_SEARCH_tb_upd_digitalacctno").doValidation({rule:'alphanumeric',prop:{allowdot:true}});
+$("#BTDTL_SEARCH_tb_upd_digital_voiceno").doValidation({rule:'numbersonly',prop:{leadzero:true}});
+$('#BTDTL_SEARCH_tb_upd_digital_voiceno').attr("size",$tds.eq(3).text().length);
+$('#BTDTL_SEARCH_tb_upd_digitalacctno').attr("size",$tds.eq(4).text().length);
+}
+else if($('#BTDTL_SEARCH_lb_expense_type').val()==14){//STARHUB
+BTDTL_SEARCH_appl_date=$tds.eq(4).text();
+BTDTL_SEARCH_cable_sdate=$tds.eq(5).text();
+BTDTL_SEARCH_cable_edate=$tds.eq(6).text();
+BTDTL_SEARCH_internet_sdate=$tds.eq(7).text();
+BTDTL_SEARCH_internet_edate=$tds.eq(8).text();
+$('<table><tr><td style="width:200px">UNIT NO</td><td><input type="text" style="width:40px" value="'+$tds.eq(1).text()+'" id="BTDTL_SEARCH_tb_upd_unitno" name="BTDTL_SEARCH_tb_upd_unitno" readonly class="rdonly"></td></tr><tr><td><label>INVOICE TO</label></td><td><select id="BTDTL_SEARCH_lb_upd_starhub_invoiceto" name="BTDTL_SEARCH_lb_upd_starhub_invoiceto">'+BTDTL_SEARCH_options_invoiceto_upd+'</select></td></tr><tr><td>STARHUB ACCOUNT NO<em>*</em></td><td><input type="text" maxlength=11 id="BTDTL_SEARCH_tb_upd_starhub_acctno" name="BTDTL_SEARCH_tb_upd_starhub_acctno" value="'+$tds.eq(3).text()+'" class="general"></td></tr><tr><td><label id="BTDTL_SEARCH_lbl_upd_starhubappldate" name="BTDTL_SEARCH_lbl_upd_starhubappldate" >APPL DATE</label></td><td><input style="width:75px" type="text" id="BTDTL_SEARCH_db_upd_starhubappldate" name="BTDTL_SEARCH_db_upd_starhubappldate" value="'+BTDTL_SEARCH_appl_date+'" class="datenonmandtry"></td></tr><tr><td><label id="BTDTL_SEARCH_lbl_upd_cablestartdate" name="BTDTL_SEARCH_lbl_upd_cablestartdate">CABLE START DATE</label></td><td><input type="text" style="width:75px" id="BTDTL_SEARCH_db_upd_cablestartdate" name="BTDTL_SEARCH_db_upd_cablestartdate" class="BTDTL_SEARCH_class_upd_cablestartdate datenonmandtry" value="'+BTDTL_SEARCH_cable_sdate+'"></td></tr><tr><td><label id="BTDTL_SEARCH_lbl_upd_cableenddate" name="BTDTL_SEARCH_lbl_upd_cableenddate">CABLE END DATE</label></td><td><input type="text" style="width:75px" class="BTDTL_SEARCH_class_upd_cablestartdate datenonmandtry" id="BTDTL_SEARCH_db_upd_cableenddate" name="BTDTL_SEARCH_db_upd_cableenddate" value="'+BTDTL_SEARCH_cable_edate+'"></td></tr><tr><td><label id="BTDTL_SEARCH_lbl_upd_internetstartdate" name="BTDTL_SEARCH_lbl_upd_internetstartdate">INTERNET START DATE</label></td><td><input style="width:75px" type="text" id="BTDTL_SEARCH_db_upd_internetstartdate" name="BTDTL_SEARCH_db_upd_internetstartdate"  value="'+BTDTL_SEARCH_internet_sdate+'" class="datenonmandtry"></td></tr><tr><td><label name="BTDTL_SEARCH_lbl_upd_internetenddate" id="BTDTL_SEARCH_lbl_upd_internetenddate">INTERNET END DATE</label></td><td><input style="width:75px" type="text" id="BTDTL_SEARCH_db_upd_internetenddate" name="BTDTL_SEARCH_db_upd_internetenddate" value="'+BTDTL_SEARCH_internet_edate+'" class="datenonmandtry"></td></tr><tr><td>SSID</td><td><input type="text" id="BTDTL_SEARCH_tb_upd_ssid" name="BTDTL_SEARCH_tb_upd_ssid" value="'+$tds.eq(9).text()+'" class="autosize" maxlength=25></td></tr><tr><td>PWD</td><td><input type="text" id="BTDTL_SEARCH_tb_upd_pwd" name="BTDTL_SEARCH_tb_upd_pwd" value="'+$tds.eq(10).text()+'" class="autosize" maxlength=25></td></tr><tr><td>CABLE BOX SERIAL NO</td><td><input type="text" id="BTDTL_SEARCH_tb_upd_cableboxno" name="BTDTL_SEARCH_tb_upd_cableboxno" value="'+$tds.eq(11).text()+'" class="general" maxlength=50></td></tr><tr><td>MODEM SERIAL NO</td><td><input type="text" id="BTDTL_SEARCH_tb_upd_modemno" name="BTDTL_SEARCH_tb_upd_modemno" class="general" value="'+$tds.eq(12).text()+'" maxlength=50></td></tr></table><table><tr><td style="width:200px">BASIC GROUP</td><td><textarea id="BTDTL_SEARCH_ta_upd_basicgroup" name="BTDTL_SEARCH_ta_upd_basicgroup" class="BTDTL_SEARCH_comments">'+$tds.eq(13).text()+'</textarea></td></tr></table><table><tr><td style="width:200px">ADDITIONAL CHANNEL</td><td><textarea id="BTDTL_SEARCH_ta_upd_addtnl" name="BTDTL_SEARCH_ta_upd_addtnl" class="BTDTL_SEARCH_comments">'+$tds.eq(14).text()+'</textarea></td></tr><table><table><tr><td style="width:200px">COMMENTS</td><td><textarea id="BTDTL_SEARCH_ta_upd_starhubcomments" name="BTDTL_SEARCH_ta_upd_starhubcomments" class="BTDTL_SEARCH_comments">'+$tds.eq(15).text()+'</textarea></td></tr></table>').appendTo($('#BTDTL_SEARCH_tble_update'));
+$('#BTDTL_SEARCH_tb_upd_starhub_acctno').attr("size",$tds.eq(3).text().length);
+$('#BTDTL_SEARCH_tb_upd_ssid').attr("size",$tds.eq(9).text().length);
+$('#BTDTL_SEARCH_tb_upd_pwd').attr("size",$tds.eq(10).text().length);
+$('#BTDTL_SEARCH_tb_upd_cableboxno').attr("size",$tds.eq(11).text().length);
+$('#BTDTL_SEARCH_tb_upd_modemno').attr("size",$tds.eq(12).text().length);
+$("#BTDTL_SEARCH_tb_upd_starhub_acctno").doValidation({rule:'alphanumeric',prop:{allowdot:true}});
+$(".general").doValidation({rule:'general',prop:{autosize:true}});
+$(".autosize").doValidation({rule:'general',prop:{uppercase:false,autosize:true}});
+$("#BTDTL_SEARCH_db_upd_starhubappldate").datepicker({dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true});
+/*--------------------------------------DATE VALIDATION FOR CABLE,INTERNET START DATE & END DATE------------------------*/
+$("#BTDTL_SEARCH_db_upd_cableenddate").datepicker({dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true});
+$("#BTDTL_SEARCH_db_upd_internetenddate").datepicker({dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true});
+$("#BTDTL_SEARCH_db_upd_cablestartdate").datepicker({
+dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true,
+onSelect: function(date){ 
+if(($('#BTDTL_SEARCH_tb_upd_starhub_acctno').val()=='')||(($('#BTDTL_SEARCH_db_upd_cablestartdate').val()=='')&&($('#BTDTL_SEARCH_db_upd_cableenddate').val()!=''))||(($('#BTDTL_SEARCH_db_upd_cablestartdate').val()!='')&&($('#BTDTL_SEARCH_db_upd_cableenddate').val()==''))||(($('#BTDTL_SEARCH_db_upd_internetstartdate').val()=='')&&($('#BTDTL_SEARCH_db_upd_internetenddate').val()!=''))||(($('#BTDTL_SEARCH_db_upd_internetstartdate').val()!='')&&($('#BTDTL_SEARCH_db_upd_internetenddate').val()=='')))
+$('#BTDTL_SEARCH_btn_update').attr("disabled", "disabled")
+else
+$('#BTDTL_SEARCH_btn_update').removeAttr("disabled");
+var BDTL_SEARCH_startdate = new Date( Date.parse( BDTL_SEARCH_FormTableDateFormat( $('#BTDTL_SEARCH_db_upd_cablestartdate').val())) ); 
+BDTL_SEARCH_startdate.setDate( BDTL_SEARCH_startdate.getDate());    
+var BDTL_SEARCH_newsDate = BDTL_SEARCH_startdate.toDateString(); 
+BDTL_SEARCH_newsDate = new Date( Date.parse( BDTL_SEARCH_newsDate ) ); 
+$('#BTDTL_SEARCH_db_upd_cableenddate').datepicker("option","minDate",BDTL_SEARCH_newsDate);
+}
+});
+$("#BTDTL_SEARCH_db_upd_internetstartdate").datepicker({
+dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true,
+onSelect: function(date){ 
+if(($('#BTDTL_SEARCH_tb_upd_starhub_acctno').val()=='')||(($('#BTDTL_SEARCH_db_upd_cablestartdate').val()=='')&&($('#BTDTL_SEARCH_db_upd_cableenddate').val()!=''))||(($('#BTDTL_SEARCH_db_upd_cablestartdate').val()!='')&&($('#BTDTL_SEARCH_db_upd_cableenddate').val()==''))||(($('#BTDTL_SEARCH_db_upd_internetstartdate').val()=='')&&($('#BTDTL_SEARCH_db_upd_internetenddate').val()!=''))||(($('#BTDTL_SEARCH_db_upd_internetstartdate').val()!='')&&($('#BTDTL_SEARCH_db_upd_internetenddate').val()=='')))
+$('#BTDTL_SEARCH_btn_update').attr("disabled", "disabled")
+else
+$('#BTDTL_SEARCH_btn_update').removeAttr("disabled");
+var BDTL_SEARCH_startdate = new Date( Date.parse( BDTL_SEARCH_FormTableDateFormat( $('#BTDTL_SEARCH_db_upd_internetstartdate').val())) ); 
+BDTL_SEARCH_startdate.setDate( BDTL_SEARCH_startdate.getDate());    
+var BDTL_SEARCH_newsDate = BDTL_SEARCH_startdate.toDateString(); 
+BDTL_SEARCH_newsDate = new Date( Date.parse( BDTL_SEARCH_newsDate ) ); 
+$('#BTDTL_SEARCH_db_upd_internetenddate').datepicker("option","minDate",BDTL_SEARCH_newsDate);
+}});
+if(BTDTL_SEARCH_cable_sdate!='')
+{
+var BTDTL_SEARCH_appl_startdate = DatePickerFormat(BTDTL_SEARCH_cable_sdate); 
+var BTDTL_SEARCH_appl_date = new Date( Date.parse( BTDTL_SEARCH_appl_startdate) ); 
+BTDTL_SEARCH_appl_date.setDate( BTDTL_SEARCH_appl_date.getDate());        
+var newDate = BTDTL_SEARCH_appl_date.toDateString(); 
+newDate = new Date( Date.parse( newDate ) ); 
+$('#BTDTL_SEARCH_db_upd_cableenddate').datepicker("option","minDate",newDate);
+}
+if(BTDTL_SEARCH_internet_sdate!='')
+{
+var BTDTL_SEARCH_internet_startdate = DatePickerFormat(BTDTL_SEARCH_internet_sdate); 
+var BTDTL_SEARCH_internet_start = new Date( Date.parse( BTDTL_SEARCH_internet_startdate) ); 
+BTDTL_SEARCH_internet_start.setDate( BTDTL_SEARCH_internet_start.getDate());        
+var newDate = BTDTL_SEARCH_internet_start.toDateString(); 
+newDate = new Date( Date.parse( newDate ) ); 
+$('#BTDTL_SEARCH_db_upd_internetenddate').datepicker("option","minDate",newDate);
+}
+sdate=BTDTL_SEARCH_expensedata.split('_')[2];
+edate=BTDTL_SEARCH_expensedata.split('_')[3];
+var sdate_unit = new Date( Date.parse( sdate) ); 
+sdate_unit.setDate( sdate_unit.getDate() );        
+var sdate_unit_new = sdate_unit.toDateString(); 
+sdate_unit_new = new Date( Date.parse( sdate_unit_new ) ); 
+$('#BTDTL_SEARCH_db_upd_starhubappldate,#BTDTL_SEARCH_db_upd_cablestartdate,#BTDTL_SEARCH_db_upd_internetstartdate').datepicker("option","minDate",sdate_unit_new);
+if(BTDTL_SEARCH_cable_edate=='')
+$('#BTDTL_SEARCH_db_upd_cableenddate').datepicker("option","minDate",sdate_unit_new);
+if(BTDTL_SEARCH_internet_edate=='')
+$('#BTDTL_SEARCH_db_upd_internetenddate').datepicker("option","minDate",sdate_unit_new);
+BDLY_INPUT_func_enddate();
+}
+$('#BTDTL_SEARCH_tble_update').show();
+$('#BTDTL_SEARCH_tble_updatereset').show();
+$('#BTDTL_SEARCH_div_update').show();
+$(".BTDTL_SEARCH_comments").doValidation({rule:'general',prop:{uppercase:false}});
+if(($('#BTDTL_SEARCH_lb_expense_type').val()==16)&&($('#BTDTL_SEARCH_lb_searchoptions').val()!=100)){
+$('#BTDTL_SEARCH_tble_update').hide();
+$('#BTDTL_SEARCH_tble_updatereset').hide();
+}});
+}); 
+/*------------------------------------FUNCTION FOR DATE PICKER VALIDATION--------------------------*/
+function BDLY_INPUT_func_enddate(){
+var BDLY_INPUT_enddate=new Date(Date.parse( edate));
+var BIZDLY_SRC_chkoutdate=BDLY_INPUT_enddate.getDate();
+var BIZDLY_SRC_chkoutmonth=BDLY_INPUT_enddate.getMonth()+parseInt(BTDTL_SEARCH_configmon_aircon[0]);
+var BIZDLY_SRC_chkoutyear=BDLY_INPUT_enddate.getFullYear();
+var BDLY_INPUT_enddate_unit = new Date(BIZDLY_SRC_chkoutyear,BIZDLY_SRC_chkoutmonth,BIZDLY_SRC_chkoutdate);
+if(BDLY_INPUT_enddate_unit.setHours(0,0,0,0)<=new Date().setHours(0,0,0,0))
+{
+var BDLY_INPUT_unit_end_date=BDLY_INPUT_enddate_unit;
+}
+else{
+var BDLY_INPUT_unit_end_date=new Date();
+}
+$('#BTDTL_SEARCH_db_upd_starhubappldate,#BTDTL_SEARCH_db_upd_cablestartdate,#BTDTL_SEARCH_db_upd_internetstartdate').datepicker("option","maxDate",BDLY_INPUT_unit_end_date);
+$('#BTDTL_SEARCH_db_upd_cableenddate,#BTDTL_SEARCH_db_upd_internetenddate').datepicker("option","maxDate",BDLY_INPUT_enddate_unit);
+}
+/*----------------------------SUCCESS FUNCTION FOR SEARCH FOR UPDATION-------------------------------------------------------------*/
+function BTDTL_SEARCH_success_searchupdate(BTDTL_SEARCH_response){ 
+$(".preloader").hide(); 
+$('#BTDTL_SEARCH_btn_update').attr("disabled", "disabled")
+$('#BTDTL_SEARCH_tble_update').show();
+$('#BTDTL_SEARCH_tble_updatereset').show();
+$('#BTDTL_SEARCH_div_update').show();
+var BTDTL_SEARCH_searchby_arr=[];
+var BTDTL_SEARCH_flag=BTDTL_SEARCH_response.BTDTL_SEARCH_search_flag;
+BTDTL_SEARCH_searchby_arr=BTDTL_SEARCH_response.BTDTL_SEARCH_searchvalue;
+var BTDTL_SEARCH_options ='<option>SELECT</option>';
+for (var i = 0; i < BTDTL_SEARCH_searchby_arr.length; i++) 
+{
+if(BTDTL_SEARCH_searchby_arr[i].BTDTL_SEARCH_obj_data==BTDTL_SEARCH_airconservicedby){
+BTDTL_SEARCH_options +='<option value="'+BTDTL_SEARCH_searchby_arr[i].BTDTL_SEARCH_obj_id +'" selected>' + BTDTL_SEARCH_searchby_arr[i].BTDTL_SEARCH_obj_data + '</option>';
+}else
+BTDTL_SEARCH_options +='<option value="'+BTDTL_SEARCH_searchby_arr[i].BTDTL_SEARCH_obj_id +'">' + BTDTL_SEARCH_searchby_arr[i].BTDTL_SEARCH_obj_data + '</option>';
+}
+if(BTDTL_SEARCH_flag==100)//AIRCON SERVICED BY
+{
+$('#BTDTL_SEARCH_lb_oldaircon').html(BTDTL_SEARCH_options);
+}
+$('#BTDTL_SEARCH_div_update').show();
+}
+/*-----------------------------------------CLICK FUNCTION FOR UPDATION-----------------------------------------------------------*/
+$(document).on('click','#BTDTL_SEARCH_btn_update',function(){
+$(".preloader").show();
+var BTDTL_SEARCH_obj_frmval={"BTDTL_SEARCH_radio_expense":$("input[type='radio'][name='BTDTL_SEARCH_radio_expense']:checked").val(),"BTDTL_SEARCH_lb_expense_type":$('#BTDTL_SEARCH_lb_expense_type').val(),"BTDTL_SEARCH_lb_searchoptions":$('#BTDTL_SEARCH_lb_searchoptions').val(),"BTDTL_SEARCH_tb_upd_unitno":$('#BTDTL_SEARCH_tb_upd_unitno').val(),"BTDTL_SEARCH_tb_upd_carno":$('#BTDTL_SEARCH_tb_upd_carno').val(),"BTDTL_SEARCH_ta_upd_carparkcomments":$('#BTDTL_SEARCH_ta_upd_carparkcomments').val(),"BTDTL_SEARCH_ta_upd_electricitycomments":$('#BTDTL_SEARCH_ta_upd_electricitycomments').val(),"BTDTL_SEARCH_upd_elec_invoiceto":$('#BTDTL_SEARCH_upd_elec_invoiceto').val(),"BTDTL_SEARCH_tb_upd_digital_voiceno":$('#BTDTL_SEARCH_tb_upd_digital_voiceno').val(),"BTDTL_SEARCH_tb_upd_digitalacctno":$('#BTDTL_SEARCH_tb_upd_digitalacctno').val(),"BTDTL_SEARCH_ta_upd_digitalcomments":$('#BTDTL_SEARCH_ta_upd_digitalcomments').val(),"BTDTL_SEARCH_upd_digital_invoiceto":$('#BTDTL_SEARCH_upd_digital_invoiceto').val(),"BTDTL_SEARCH_lb_oldaircon":$('#BTDTL_SEARCH_lb_oldaircon').val(),"BTDTL_SEARCH_ta_upd_airconcomments":$('#BTDTL_SEARCH_ta_upd_airconcomments').val(),"BTDTL_SEARCH_tb_update_airconname":$('#BTDTL_SEARCH_tb_update_airconname').val(),"BTDTL_SEARCH_lb_upd_starhub_invoiceto":$('#BTDTL_SEARCH_lb_upd_starhub_invoiceto').val(),"BTDTL_SEARCH_tb_upd_starhub_acctno":$('#BTDTL_SEARCH_tb_upd_starhub_acctno').val(),"BTDTL_SEARCH_db_upd_starhubappldate":$('#BTDTL_SEARCH_db_upd_starhubappldate').val(),"BTDTL_SEARCH_db_upd_cablestartdate":$('#BTDTL_SEARCH_db_upd_cablestartdate').val(),"BTDTL_SEARCH_db_upd_cableenddate":$('#BTDTL_SEARCH_db_upd_cableenddate').val(),"BTDTL_SEARCH_db_upd_internetstartdate":$('#BTDTL_SEARCH_db_upd_internetstartdate').val(),"BTDTL_SEARCH_db_upd_internetenddate":$('#BTDTL_SEARCH_db_upd_internetenddate').val(),"BTDTL_SEARCH_tb_upd_ssid":$('#BTDTL_SEARCH_tb_upd_ssid').val(),"BTDTL_SEARCH_tb_upd_pwd":$('#BTDTL_SEARCH_tb_upd_pwd').val(),"BTDTL_SEARCH_tb_upd_cableboxno":$('#BTDTL_SEARCH_tb_upd_cableboxno').val(),"BTDTL_SEARCH_tb_upd_modemno":$('#BTDTL_SEARCH_tb_upd_modemno').val(),"BTDTL_SEARCH_ta_upd_basicgroup":$('#BTDTL_SEARCH_ta_upd_basicgroup').val(),"BTDTL_SEARCH_ta_upd_addtnl":$('#BTDTL_SEARCH_ta_upd_addtnl').val(),"BTDTL_SEARCH_ta_upd_starhubcomments":$('#BTDTL_SEARCH_ta_upd_starhubcomments').val()}
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_updatForm(BTDTL_SEARCH_obj_frmval,BTDTL_SEARCH_cable_sdate,BTDTL_SEARCH_cable_edate,BTDTL_SEARCH_internet_sdate,BTDTL_SEARCH_internet_edate, $('input:radio[name=BTDTL_SEARCH_radio_expense]:checked').val(),BTDTL_SEARCH_starhubid)
+});
+/*-----------------------------------------CLICK FUNCTION FOR DELETE-----------------------------------------------------------*/
+$(document).on('click','.messageconfirm',function(){
+if($("input[type='radio'][name='BTDTL_SEARCH_radio_expense']:checked").val()!=''){
+var BTDTL_SEARCH_expensedata = $('input:radio[name=BTDTL_SEARCH_radio_expense]:checked').val();
+$(".preloader").show();
+BTDTL_SEARCH_fetchrowvalue();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_showflex).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_delete(BTDTL_SEARCH_expensedata,$('#BTDTL_SEARCH_lb_expense_type').val(),$('#BTDTL_SEARCH_lb_searchoptions').val(),BTDTL_SEARCH_obj,BTDTL_SEARCH_starhubid);
+$('#BTDTL_SEARCH_div_update').hide();
+}});
+//CALL CONFIRM MESSAGE
+$('#BTDTL_SEARCH_btn_delete').click(function(){
+$(document ).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:BTDTL_SEARCH_errorarr[59],confirmation:true}});
+});
+/*-----------------------------------------SUCCESS FUNCTION FOR LOADING AIRCON SERVICED BY---------------------------------------*/
+function BTDTL_SEARCH_success_searchupdateaircon(BTDTL_SEARCH_response){
+var BTDTL_SEARCH_options ='<option>SELECT</option>';
+for (var i = 0; i < BTDTL_SEARCH_response.length; i++) 
+{
+BTDTL_SEARCH_options += '<option value="' + BTDTL_SEARCH_response[i]  + '">' + BTDTL_SEARCH_response[i] + '</option>';
+}
+$('#BTDTL_SEARCH_lb_oldaircon').html(BTDTL_SEARCH_options);
+}
+/*--------------------------------------------------CHANGE FUNCTION VALIDATION FOR SEARCH BUTTON--------------------------------------------------------------*/
+$(document).on('change','.BTDTL_SEARCH_class_datesearchbtn',function(){
+if((($('#BTDTL_SEARCH_ta_airconcomments').val()=='')&&($('#BTDTL_SEARCH_ta_airconcomments').val()!=undefined))||(($('#BTDTL_SEARCH_ta_carparkcomments').val()=='')&&($('#BTDTL_SEARCH_ta_carparkcomments').val()!=undefined))||(($('#BTDTL_SEARCH_ta_digitalcomments').val=='')&&($('#BTDTL_SEARCH_ta_digitalcomments').val()!=undefined))||(($('#BTDTL_SEARCH_ta_electricitycomments').val()=='')&&($('#BTDTL_SEARCH_ta_electricitycomments').val()!=undefined))||(($('#BTDTL_SEARCH_ta_starhubcomments').val()!='')&&($('#BTDTL_SEARCH_ta_starhubcomments').val()!=undefined))||(($('#BTDTL_SEARCH_ta_starhubcomments').val()=='')&&($('#BTDTL_SEARCH_ta_starhubcomments').val()!=undefined))||(($('#BTDTL_SEARCH_ta_starhubaddtnlch').val()=='')&&($('#BTDTL_SEARCH_ta_starhubaddtnlch').val()!=undefined))||(($('#BTDTL_SEARCH_ta_starhubbasic').val()=='')&&($('#BTDTL_SEARCH_ta_starhubbasic').val()!=undefined))||(($('#BTDTL_SEARCH_db_starhubappl_startdate').val()=='')&&($('#BTDTL_SEARCH_db_starhubappl_startdate').val()!=undefined))||(($('#BTDTL_SEARCH_db_starhubappl_enddate').val()=='')&&($('#BTDTL_SEARCH_db_starhubappl_enddate').val()!=undefined))||(($('#BTDTL_SEARCH_db_starhubcable_startdate').val()=='')&&($('#BTDTL_SEARCH_db_starhubcable_startdate').val()!=undefined))||(($('#BTDTL_SEARCH_db_starhubcable_enddate').val()=='')&&($('#BTDTL_SEARCH_db_starhubcable_enddate').val()!=undefined))||(($('#BTDTL_SEARCH_db_starhubinternet_startdate').val()=='')&&($('#BTDTL_SEARCH_db_starhubinternet_startdate').val()!=undefined))||(($('#BTDTL_SEARCH_db_starhubinternet_enddate').val()=='')&&($('#BTDTL_SEARCH_db_starhubinternet_enddate').val()!=undefined)))
+{
+$('#BTDTL_SEARCH_btn_datesearch').attr("disabled", "disabled")
+} 
+else if((($('#BTDTL_SEARCH_db_starhubappl_startdate').val()!='')&&($('#BTDTL_SEARCH_db_starhubappl_startdate').val()!=undefined)&&($('#BTDTL_SEARCH_db_starhubappl_enddate').val()!='')&&($('#BTDTL_SEARCH_db_starhubappl_enddate').val()!=undefined))||(($('#BTDTL_SEARCH_db_starhubcable_startdate').val()!='')&&($('#BTDTL_SEARCH_db_starhubcable_startdate').val()!=undefined)&&($('#BTDTL_SEARCH_db_starhubcable_enddate').val()!='')&&($('#BTDTL_SEARCH_db_starhubcable_enddate').val()!=undefined))||(($('#BTDTL_SEARCH_db_starhubinternet_startdate').val()!='')&&($('#BTDTL_SEARCH_db_starhubinternet_startdate').val()!=undefined)&&($('#BTDTL_SEARCH_db_starhubinternet_enddate').val()!='')&&($('#BTDTL_SEARCH_db_starhubinternet_enddate').val()!=undefined)))
+{
+$('#BTDTL_SEARCH_btn_datesearch').removeAttr("disabled");
+}});
+/*--------------------------------------------------BLUR FUNCTION VALIDATION FOR UPDATE BUTTON--------------------------------------------------------------*/
+$(document).on('blur change','#BTDTL_SEARCH_form_bizdetail',function(){
+if(((BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec=='')&&($('#BTDTL_SEARCH_lb_expense_type').val()==15))||((BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec=='')&&($('#BTDTL_SEARCH_lb_expense_type').val()==14)))
+BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec='SELECT'
+if((($('#BTDTL_SEARCH_tb_update_airconname').val()!=undefined)&&(($('#BTDTL_SEARCH_tb_update_airconname').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objfirst))||(($('#BTDTL_SEARCH_tb_update_airconname').val()=='')&&($('#BTDTL_SEARCH_tb_update_airconname').val()!=undefined))||(($('#BTDTL_SEARCH_tb_update_airconname').val()!=undefined)&&(BTDTL_SEARCH_flag_airconserviceby==0))||(($('#BTDTL_SEARCH_lb_oldaircon').val()!=undefined)&&($('#BTDTL_SEARCH_lb_oldaircon').find('option:selected').text()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec)&&(($('#BTDTL_SEARCH_ta_upd_airconcomments').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objthird))||(($('#BTDTL_SEARCH_lb_oldaircon').val()=='SELECT')&&($('#BTDTL_SEARCH_lb_oldaircon').val()!=undefined))||(($('#BTDTL_SEARCH_lb_oldaircon').val()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec)&&($('#BTDTL_SEARCH_lb_oldaircon').val()!=undefined)&&(($('#BTDTL_SEARCH_ta_upd_airconcomments').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objthird))||(($('#BTDTL_SEARCH_tb_upd_carno').val()=='')&&($('#BTDTL_SEARCH_tb_upd_carno').val()!=undefined))||(($('#BTDTL_SEARCH_tb_upd_carno').val()!=undefined)&&(($('#BTDTL_SEARCH_tb_upd_carno').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec)&&(($('#BTDTL_SEARCH_ta_upd_carparkcomments').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objthird))||((($('#BTDTL_SEARCH_upd_elec_invoiceto').val()=='SELECT')||($('#BTDTL_SEARCH_upd_elec_invoiceto').val()==''))&&($('#BTDTL_SEARCH_upd_elec_invoiceto').val()!=undefined))||(($('#BTDTL_SEARCH_upd_elec_invoiceto').val()!=undefined)&&($('#BTDTL_SEARCH_upd_elec_invoiceto').find('option:selected').text()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec)&&(($('#BTDTL_SEARCH_ta_upd_electricitycomments').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objthird))||(($('#BTDTL_SEARCH_tb_upd_digitalacctno').val()=='')&&($('#BTDTL_SEARCH_tb_upd_digitalacctno').val()!=undefined))||(($('#BTDTL_SEARCH_tb_upd_digital_voiceno').val()=='')&&($('#BTDTL_SEARCH_tb_upd_digital_voiceno').val()!=undefined))||(($('#BTDTL_SEARCH_tb_upd_digital_voiceno').val()!=undefined)&&($('#BTDTL_SEARCH_upd_digital_invoiceto').find('option:selected').text()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec)&&(($('#BTDTL_SEARCH_tb_upd_digital_voiceno').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objthird)&&($('#BTDTL_SEARCH_tb_upd_digitalacctno').val()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objfour)&&(($('#BTDTL_SEARCH_ta_upd_digitalcomments').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objfive))||(($('#BTDTL_SEARCH_tb_upd_starhub_acctno').val()=='')&&($('#BTDTL_SEARCH_tb_upd_starhub_acctno').val()!=undefined))||(($('#BTDTL_SEARCH_tb_upd_starhub_acctno').val()!=undefined)&&($('#BTDTL_SEARCH_lb_upd_starhub_invoiceto').find('option:selected').text()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objsec)&&(($('#BTDTL_SEARCH_tb_upd_starhub_acctno').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objthird)&&($('#BTDTL_SEARCH_db_upd_starhubappldate').val()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objfour)&&($('#BTDTL_SEARCH_db_upd_cablestartdate').val()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objfive)&&($('#BTDTL_SEARCH_db_upd_cableenddate').val()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objsix)&&($('#BTDTL_SEARCH_db_upd_internetstartdate').val()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objseven)&&($('#BTDTL_SEARCH_db_upd_internetenddate').val()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objeight)&&(($('#BTDTL_SEARCH_tb_upd_ssid').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objnine)&&(($('#BTDTL_SEARCH_tb_upd_pwd').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objten)&&(($('#BTDTL_SEARCH_tb_upd_cableboxno').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objeleven)&&(($('#BTDTL_SEARCH_tb_upd_modemno').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objtwelve)&&(($('#BTDTL_SEARCH_ta_upd_basicgroup').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objthirteen)&&(($('#BTDTL_SEARCH_ta_upd_addtnl').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objfourteen)&&(($('#BTDTL_SEARCH_ta_upd_starhubcomments').val()).trim()==BTDTL_SEARCH_obj.BTDTL_SEARCH_objfifteen))||(($('#BTDTL_SEARCH_db_upd_cablestartdate').val()=='')&&($('#BTDTL_SEARCH_db_upd_cableenddate').val()!=''))||(($('#BTDTL_SEARCH_db_upd_cablestartdate').val()!='')&&($('#BTDTL_SEARCH_db_upd_cableenddate').val()==''))||(($('#BTDTL_SEARCH_db_upd_internetstartdate').val()=='')&&($('#BTDTL_SEARCH_db_upd_internetenddate').val()!=''))||(($('#BTDTL_SEARCH_db_upd_internetstartdate').val()!='')&&($('#BTDTL_SEARCH_db_upd_internetenddate').val()==''))){
+$('#BTDTL_SEARCH_btn_update').attr("disabled", "disabled")
+}
+else
+{$('#BTDTL_SEARCH_btn_update').removeAttr("disabled");
+}});
+var BTDTL_SEARCH_flag_airconserviceby=1;
+/*--------------------------------FUNCTION TO CHECK ALREADY EXISTS FOR AIRCON SERVICE BY---------------------------------*/
+$(document).on('blur','#BTDTL_SEARCH_tb_update_airconname',function(){
+if(($('#BTDTL_SEARCH_tb_update_airconname').val().length>0)&&($('#BTDTL_SEARCH_tb_update_airconname').val()!=undefined)&&($('#BTDTL_SEARCH_tb_update_airconname').val().trim()!=BTDTL_SEARCH_obj.BTDTL_SEARCH_objfirst))
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(BTDTL_SEARCH_success_aircon).withFailureHandler(BTDTL_SEARCH_onFailure).BTDTL_SEARCH_airconservicedby_check($('#BTDTL_SEARCH_tb_update_airconname').val());
+}
+});
+/*------------------------------------------------SUCCESS FUNCTION FOR ALREADY EXISTS FOR AIRCON SERVICED BY-------------------------------------*/
+function BTDTL_SEARCH_success_aircon(BTDTL_SEARCH_response){
+$(".preloader").hide();
+if(BTDTL_SEARCH_response==false)
+{
+$('#BTDTL_SEARCH_btn_update').removeAttr("disabled");
+$('#BTDTL_SEARCH_lbl_aircon').text('');
+$("#BTDTL_SEARCH_tb_update_airconname").removeClass('invalid');
+}
+else if(BTDTL_SEARCH_response==true)
+{
+$('#BTDTL_SEARCH_btn_update').attr("disabled", "disabled")
+$('#BTDTL_SEARCH_lbl_aircon').text(BTDTL_SEARCH_errorarr[3]);
+$("#BTDTL_SEARCH_tb_update_airconname").addClass('invalid');
+}
+}
+/*-------------------------------------------------CLICK EVENT FUNCTION FOR RESET--------------------------------------------------*/
+$(document).on('click','#BTDTL_SEARCH_btn_reset',function(){ 
+$('#BTDTL_SEARCH_db_upd_cableenddate,#BTDTL_SEARCH_db_upd_internetenddate').datepicker('option', {minDate: null, maxDate: null});
+$('#BTDTL_SEARCH_lb_oldaircon').val('SELECT')
+$('#BTDTL_SEARCH_upd_elec_invoiceto').val('SELECT')
+$('#BTDTL_SEARCH_upd_digital_invoiceto').val('SELECT')
+$('#BTDTL_SEARCH_lb_upd_starhub_invoiceto').val('SELECT')
+$("#BTDTL_SEARCH_tb_update_airconname").val('')
+$("#BTDTL_SEARCH_tb_upd_digitalacctno").val('')
+$("#BTDTL_SEARCH_tb_upd_carno").val('')
+$("#BTDTL_SEARCH_tb_upd_digital_voiceno").val('')
+$("#BTDTL_SEARCH_db_upd_cablestartdate").val('')
+$("#BTDTL_SEARCH_db_upd_starhubappldate").val('')
+$("#BTDTL_SEARCH_tb_upd_starhub_acctno").val('')
+$("#BTDTL_SEARCH_db_upd_internetenddate").val('')
+$("#BTDTL_SEARCH_db_upd_internetstartdate").val('')
+$("#BTDTL_SEARCH_db_upd_cableenddate").val('')
+$("#BTDTL_SEARCH_tb_upd_ssid").val('')
+$("#BTDTL_SEARCH_tb_upd_pwd").val('')
+$("#BTDTL_SEARCH_tb_upd_cableboxno").val('')
+$("#BTDTL_SEARCH_tb_upd_modemno").val('')   
+$('#BTDTL_SEARCH_btn_update').attr("disabled", "disabled")
+$('#BTDTL_SEARCH_lbl_aircon').text('');
+$("#BDTL_SEARCH_INPUT_tb_newaircon").removeClass('invalid');
+$('textarea:not(#BTDTL_SEARCH_ta_electricitycomments,#BTDTL_SEARCH_ta_carparkcomments,#BTDTL_SEARCH_ta_airconcomments,#BTDTL_SEARCH_ta_starhubcomments,#BTDTL_SEARCH_ta_digitalcomments)').val('');
+$('#BTDTL_SEARCH_form_bizdetail').find('input:text').prop("size","20");
+$("#BTDTL_SEARCH_tb_update_airconname").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+$(".general").doValidation({rule:'general',prop:{autosize:true}});
+BDLY_INPUT_func_enddate();
+var sdate_unit = new Date( Date.parse( sdate) ); 
+sdate_unit.setDate( sdate_unit.getDate() );        
+var sdate_unit_new = sdate_unit.toDateString(); 
+sdate_unit_new = new Date( Date.parse( sdate_unit_new ) ); 
+$('#BTDTL_SEARCH_db_upd_starhubappldate,#BTDTL_SEARCH_db_upd_cablestartdate,#BTDTL_SEARCH_db_upd_internetstartdate,#BTDTL_SEARCH_db_upd_cableenddate,#BTDTL_SEARCH_db_upd_internetenddate').datepicker("option","minDate",sdate_unit_new);
+});
+});//END DOCUMENT READY FUNCTION
+</script>
+</head>
+<body>
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+<!------------------------------------------BIZ DETAIL SEARCH WITH UPDATE AND DELETE FORM------------------------------------------------------->
+<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><b>BIZ EXPENSE DETAIL ENTRY :SEARCH/UPDATE/DELETE</b><p></div></div>
+<form class="content" id="BTDTL_SEARCH_form_bizdetail" name="BTDTL_SEARCH_form_bizdetail" hidden>
+<table style="width:1000px">
+<tr>
+<td style="width:255px"><label>TYPE OF EXPENSE<em>*</em></label></td>
+<td><select style="width:150px" id='BTDTL_SEARCH_lb_expense_type' name='BTDTL_SEARCH_lb_expense_type'>
+<option>SELECT</option>
+</select></td>
+</tr>
+<tr>
+<td><label style="width:255px" hidden="" name='BTDTL_SEARCH_lbl_searchoptions' id='BTDTL_SEARCH_lbl_searchoptions'>SEARCH OPTIONS<em>*</em></label></td>
+<td><select name='BTDTL_SEARCH_lb_searchoptions' id='BTDTL_SEARCH_lb_searchoptions' hidden>
+<option>SELECT</option>
+</select>
+</td>
+</tr>
+<tr><td><label id="BTDTL_SEARCH_lbl_errmsg_notable" class="errormsg"></label></td></tr>
+</table>    
+<!----------CODING TO CREATE SEARCH FORM FOR AIRCON SERVICES------------------------------------------------>
+<div id='BTDTL_SEARCH_div_aircon'>
+<table style="width:1000px" id='BTDTL_SEARCH_tble_airconcomments'>
+</table>
+<table  id="BTDTL_SEARCH_tble_searchby" >
+</table>
+</div>
+<div id="BTDTL_SEARCH_div_flex_searchbtn">
+<div id="BTDTL_SEARCH_div_msg" class="srctitle"></div>
+<div id="BTDTL_SEARCH_div_errmsg" class="errormsg"></div>
+<div id ="BTDTL_SEARCH_div_flex" style="height:500px;overflow:auto;">
+<table class="srcresult" id="BTDTL_SEARCH_tble_flex">
+</table></div>
+<table id="BTDTL_SEARCH_tble_searchdel" hidden>
+<tr>
+<td ><input type="button" disabled="" name="BTDTL_SEARCH_btn_search" id="BTDTL_SEARCH_btn_search" class="btn" value="SEARCH" /></td>
+<td><input type="button" disabled="" name="BTDTL_SEARCH_btn_delete" id="BTDTL_SEARCH_btn_delete" class="btn" value="DELETE" /></td>
+</tr>
+</table>
+</div>
+<div id="BTDTL_SEARCH_div_update" hidden>
+<table id="BTDTL_SEARCH_tble_update">
+</table>
+<table id="BTDTL_SEARCH_tble_updatereset">
+<tr>
+<td style="width:200px" align="right"><input type="button" name="BTDTL_SEARCH_btn_update" id="BTDTL_SEARCH_btn_update" class="btn" value="UPDATE" disabled=""/></td>
+<td align="left"><input type="button" name="BTDTL_SEARCH_btn_reset" id="BTDTL_SEARCH_btn_reset" class="btn" value="RESET" /></td>
+</tr>
+</table>
+</div>
+</form>
+</div>
+</body>
+</html>

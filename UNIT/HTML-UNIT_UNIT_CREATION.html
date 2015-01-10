@@ -1,0 +1,665 @@
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//********************************************UNIT CREATION***********************************************//
+<!--DONE BY:SARADAMBAL
+VER 1.6-TRACKER NO:724,SD:08/07/2014 ED:08/07/2014,implemented eilib for already exists for doorcode and weblogin and then set min data,change id name for doorcode & weblogin
+VER 1.5-TRACKER NO:724,SD:09/06/2014 ED:09/06/2014,implemented script for failure function
+VER 1.4-TRACKER NO:724,SD:07/06/2014 ED:07/06/2014,Updated new link
+VER 1.3-TRACKER NO:724,SD:09/04/2014 ED:09/04/2014,changed dp for startdate and enddate validation(min:-1M of sysdate,max:+2Y of sysdate,sd>=ed),implemented class for dp(mandatory and non-mandatory)
+VER 1.2-TRACKER NO:724,SD:18/02/2014 ED:01/03/2014,implemented sp(returning flag) and added errormsg for not saving data,checked sp after changing uldid instead of userstamp and uldtlid for web login details
+VER 1.1-TRACKER NO:724,SD:04/02/2014 ED:07/02/2014,implemented calendar event for unit creation,cleared issue for disable submit btn when clear btn enable,give autosize to bank addr ta and give maxlength using jquery
+VER 1.0-SD:22/01/2014 ED:22/01/2014,converted acc no as number only,converted h3 tag
+VER 0.09-SD:01/01/2014 ED:03/01/2014,removed repeated function,cleared listbox loading issue for stamptype for no data,implemented all amt validation for save part
+VER 0.08-SD:28/12/2013 ED:30/12/2013,removed utilities function,implement connection open & close function for eilib function,changed alignment for form title
+VER 0.07-SD:30/11/2013 ED:30/11/2013,changed syntax for array length check,changed reset function coding to reduce time consumption,implemented utilities.sleep function
+VER 0.06-SD:20/11/2013 ED:25/11/2013,implemented errormsg for roomtype & stamptype for no data available from table,updated failure function,implemented eilib for unit no already exists  
+VER 0.05-SD:19/11/2013 ED:19/11/2013,changed access card as integer
+VER 0.04-SD:09/11/2013 ED:10/11/2013,change sp name,change parameters in sp,change maxlength for doorcode,remove already exists coding in form blur function,implement eilib function for accesscard,roomtype and stamptype
+VER 0.03-SD:07/10/2013 ED:07/10/2013,change prefix for userstamp,implement return function,change head tag links
+VER 0.02-SD:01/10/2013 ED:04/10/2013,updated eilib connection,message box,preloader,removed scriplet,convert blur function for all change function,fix add btn width for auto grow text,change reset coding,change comments nd EI/NON EI check.
+VER 0.01-INITIAL VERSION,TRACKER NO:243,SD:12/08/2013,ED:03/09/2013-->
+<html>
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<script>
+/*------------------------------------------------FAILURE FUNCTION ----------------------------------------------------*/
+function UCRE_onFailure(UCRE_error) {
+$(".preloader").hide();
+if(UCRE_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+UCRE_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#UCRE_form_unitcreation').replaceWith('<center><label class="dberrormsg">'+UCRE_error+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT CREATION",msgcontent:UCRE_error.message}});
+}}
+$(document).ready(function(){
+var UCRE_flaglen=0;
+var UCRE_flag='true';
+var UCRE_flag_unit='true';
+var UCRE_flag_room='true';
+var UCRE_flag_stamp='true';
+var UCRE_flg_Login=1;
+var UCRE_flg_Doorcode=1;
+/*---------------------------------------VALIDATION FOR NUMBERS AND AMOUNT VALUES----------------------------*/
+$("#UCRE_tb_accesscard,#UCRE_tb_unitdeposite,#UCRE_tb_unitrentalamt").doValidation({rule:'numbersonly',prop:{leadzero:false}});
+$("#UCRE_tb_stampamount").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+$("#UCRE_db_stampdutydate").datepicker({dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true});
+$(".numonly").doValidation({rule:'numbersonly',prop:{leadzero:true}});
+$('.autosize').doValidation({rule:'general',prop:{autosize:true}});
+$("#UCRE_db_startdate").datepicker({dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true,maxDate: '+2Y',minDate:'-1M',
+onSelect:function(date){ 
+$('#UCRE_db_enddate').datepicker("option","minDate",date);
+}});
+$("#UCRE_db_enddate").datepicker({dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true,maxDate: '+2Y'});
+var UCRE_room=[];
+var UCRE_errorMsg_array=[];
+var UCRE_stamp=[];
+$(".preloader").show();
+google.script.run.withSuccessHandler(UCRE_result).withFailureHandler(UCRE_onFailure).UCRE_getroomstamp_err('UCRE_flag_notcreation');
+/*----------------------------------------------SUCCESS FUNCTION FOR LOAD STAMP,ROOM TYPE PLUS ERROR MSG--------------------------------------------------------*/
+function UCRE_result(UCRE_response){
+$(".preloader").hide();
+$('#UCRE_form_unitcreation').show();
+var UCRE_flag=UCRE_response.UCRE_obj_flag;
+if((UCRE_flag!=true)&&(UCRE_flag!=0)){
+UCRE_room=UCRE_response.UCRE_room;
+UCRE_stamp=UCRE_response.UCRE_stamp;
+UCRE_errorMsg_array=UCRE_response.UCRE_errorarray;   
+$(".UCRE_class_numonly").prop("title",UCRE_errorMsg_array[1])
+if((UCRE_flag=='UCRE_flag_roomtype')||(UCRE_flag=='UCRE_flag_notcreation')||(UCRE_flag=='UCRE_flag_created')){
+if(UCRE_room.length==0){
+$('#UCRE_lb_oldroomtype').replaceWith('<input type="text" name="UCRE_tb_newroomtype" id="UCRE_tb_newroomtype" maxlength="30" class="autosize"/>');
+$('#UCRE_btn_addroomtype').hide();
+$('#UCRE_btn_removeroomtype').hide();
+$('.autosize').doValidation({rule:'general',prop:{autosize:true}});
+}
+else{
+var UCRE_roomoptions ='<option>SELECT</option>';
+for (var i = 0; i < UCRE_room.length; i++) {
+UCRE_roomoptions += '<option value="' + UCRE_room[i]  + '">' + UCRE_room[i] + '</option>';
+}
+$('#UCRE_tb_newroomtype').replaceWith('<select id="UCRE_lb_oldroomtype" name="UCRE_lb_oldroomtype" ><option>SELECT</option></select>');
+$('#UCRE_btn_removeroomtype').replaceWith('<input type="button" name="UCRE_btn_addroomtype" value="ADD" id="UCRE_btn_addroomtype" class="btn" value="button"/>');
+$('#UCRE_lb_oldroomtype').html(UCRE_roomoptions).show();
+$('#UCRE_btn_addroomtype').show();}}
+if((UCRE_flag=='UCRE_flag_stamptype')||(UCRE_flag=='UCRE_flag_notcreation')||(UCRE_flag=='UCRE_flag_created')){
+if(UCRE_stamp.length==0){
+$('#UCRE_lb_oldstamptype').replaceWith('<input type="text" name="UCRE_tb_newstamptype" id="UCRE_tb_newstamptype" style="width:105px" maxlength="12" class="autosize"/>');
+$('#UCRE_btn_addstamptype').hide();
+$('#UCRE_btn_removestamptype').hide();
+$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+}
+else{
+var UCRE_stampoptions ='<option>SELECT</option>';
+for (var i = 0; i < UCRE_stamp.length; i++) {
+UCRE_stampoptions += '<option value="' + UCRE_stamp[i]  + '">' + UCRE_stamp[i] + '</option>';
+}
+$('#UCRE_tb_newstamptype').replaceWith('<select id="UCRE_lb_oldstamptype" name="UCRE_lb_oldstamptype" ><option>SELECT</option></select>');
+$('#UCRE_btn_removestamptype').replaceWith('<input type="button" name="UCRE_btn_addstamptype" value="ADD" id="UCRE_btn_addstamptype" class="btn"/>');
+$('#UCRE_lb_oldstamptype').html(UCRE_stampoptions).show();
+$('#UCRE_btn_addstamptype').show();
+}}
+if(UCRE_flag=='UCRE_flag_created'){
+var UCRE_unitnumber= $("#UCRE_tb_unitnumber").val();
+var UCRE_errmsg =UCRE_errorMsg_array[6].replace('[UNITNO]',UCRE_unitnumber);
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT CREATION",msgcontent:UCRE_errmsg}});
+UCRE_resetfrm();}
+}
+else if(UCRE_response.UCRE_obj_flag==0)
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT CREATION",msgcontent:UCRE_errorMsg_array[9]}});
+}
+var UCRE_max = 250;
+/*--------------------------------------------KEYPRESS EVENT OF BANK ADDRESSS--------------------------------------*/
+$('#UCRE_tb_bankaddrs').keypress(function(e) {
+if (e.which < 0x20) {
+return;   
+}
+if (this.value.length == UCRE_max) {
+e.preventDefault();
+} else if (this.value.length > UCRE_max) {
+this.value = this.value.substring(0, UCRE_max);
+}});
+/*-----------------------------------------------CLICK FUNCTION FOR SAVE BUTTON-------------------------------------------------*/
+$("#UCRE_btn_submit").click(function(){
+var UCRE_checked_nonEI=$('#UCRE_cb_nonEI').is(":checked");
+if (UCRE_checked_nonEI==true){
+$('#UCRE_cb_nonEI').val('X')}
+else{
+$('#UCRE_cb_nonEI').val('')
+}
+$(".preloader").show();
+google.script.run.withSuccessHandler(UCRE_result).withFailureHandler(UCRE_onFailure).UCRE_processForm(document.getElementById('UCRE_form_unitcreation'));
+});
+/*------------------------------------------------CLICK FUNCTION FOR RESET-------------------------------------------------------*/
+$("#UCRE_btn_reset").click(function(){
+if((($('#UCRE_lb_oldroomtype').val()==undefined)&&($('#UCRE_btn_removeroomtype').val()=='CLEAR'))||(($('#UCRE_lb_oldstamptype').val()==undefined)&&($('#UCRE_btn_removestamptype').val()=='CLEAR'))){
+$(".preloader").show();
+google.script.run.withSuccessHandler(UCRE_result).withFailureHandler(UCRE_onFailure).UCRE_getroomstamp_err('UCRE_flag_notcreation');
+}
+UCRE_resetfrm();
+});
+/*------------------------------------------------FUCNTION FOR CLEAR ALL VALUES--------------------------------------*/
+function UCRE_resetfrm(){
+$('#UCRE_form_unitcreation').find('textarea').val('');
+$(':input','#UCRE_form_unitcreation')
+.not(':button')
+.val('')
+.removeAttr('checked')
+.removeAttr('selected'); 
+$("#UCRE_db_enddate").datepicker('option', {minDate: '-1M', maxDate: '+2Y'});
+$('input').removeClass('invalid');
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+$('#UCRE_div_errunitno').text(" ");
+$('#UCRE_div_errasscard').text(" ");
+$('#UCRE_div_errroom').text('');
+$('#UCRE_div_errstamp').text('');
+$('#UCRE_ta_comments,#UCRE_tb_bankaddrs').height(20);//set default size for textarea , we can give id also
+$('#UCRE_form_unitcreation').find('input:text').prop("size","20");//set 
+}
+/*-----------------------------------------CHECK UNIT NUMBER LENGTH--------------------------------------------------*/
+$(document).on("change",'#UCRE_tb_unitnumber',function(){ 
+if(($('#UCRE_tb_unitnumber').val().length>0)&&($('#UCRE_tb_unitnumber').val().length<4)){
+UCRE_flag='false';
+$('#UCRE_div_errunitno').text(UCRE_errorMsg_array[2]);
+$("#UCRE_tb_unitnumber").addClass('invalid');
+}
+if(($('#UCRE_tb_unitnumber').val().length==4)&&(parseInt($('#UCRE_tb_unitnumber').val())!=0)){
+$(".preloader").show();
+UCRE_flag='true';
+var UCRE_source='UCRE_tb_unitnumber';
+google.script.run.withSuccessHandler(UCRE_unitresult).withFailureHandler(UCRE_onFailure).UCRE_checkExistingUnit(UCRE_source,$('#UCRE_tb_unitnumber').val());
+}
+if(($('#UCRE_tb_unitnumber').val()==0)||(parseInt($('#UCRE_tb_unitnumber').val())==0)){
+$('#UCRE_div_errunitno').text('');
+$("#UCRE_tb_unitnumber").removeClass('invalid');
+}});
+/*--------------------------------------------------SUCESS FUNCTION FOR UNIT ALREADY EXISTS----------------------------------------*/
+function UCRE_unitresult(response){
+$(".preloader").hide();
+if(response==true){
+UCRE_flag_unit='false';
+$('#UCRE_div_errunitno').text(UCRE_errorMsg_array[4]);
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+$("#UCRE_tb_unitnumber").addClass('invalid');
+}
+else if(response==false){
+UCRE_flag_unit='true';
+$('#UCRE_div_errunitno').text('');
+$("#UCRE_tb_unitnumber").removeClass('invalid');
+if((UCRE_flaglen==1)&&(UCRE_flag=='true')&&(UCRE_flag_stamp=='true')&&(UCRE_flag_room=='true')&&(UCRE_flag_unit=='true')&&(UCRE_flg_Doorcode==1)&&(UCRE_flg_Login==1)){
+$("#UCRE_btn_submit").removeAttr("disabled");
+}}}
+/*-----------------------------------------------CHECKING ACCESSCARD LENGTH----------------------------------------------------------*/
+$(document).on("change",'#UCRE_tb_accesscard',function(){
+var access_card=parseInt($('#UCRE_tb_accesscard').val())
+if((parseInt($('#UCRE_tb_accesscard').val()).toString().length>0)&&(parseInt($('#UCRE_tb_accesscard').val()).toString().length<4)){
+UCRE_flaglen=0;
+$('#UCRE_div_errasscard').text(UCRE_errorMsg_array[3]);
+$("#UCRE_tb_accesscard").addClass('invalid');
+}
+if((parseInt($('#UCRE_tb_accesscard').val())==0)||($('#UCRE_tb_accesscard').val().length==0)){
+UCRE_flag='true';
+$('#UCRE_div_errasscard').text('');
+$("#UCRE_tb_accesscard").removeClass('invalid');
+}
+if(parseInt($('#UCRE_tb_accesscard').val()).toString().length>=4){
+$(".preloader").show();
+var UCRE_source='UCRE_tb_accesscard';
+google.script.run .withSuccessHandler(UCRE_accessresult).withFailureHandler(UCRE_onFailure).UCRE_checkExistingUnit(UCRE_source,$('#UCRE_tb_accesscard').val());
+}});
+/*-----------------------------------------------SUCCESS FUNCTION FOR UNIT NUMBER AND ACCESS CARD--------------------------------*/
+function UCRE_accessresult(response){
+$(".preloader").hide();
+if(response==true){
+UCRE_flag='false';
+$('#UCRE_div_errasscard').text(UCRE_errorMsg_array[5]);
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+$("#UCRE_tb_accesscard").addClass('invalid');
+}
+else if(response==false){
+UCRE_flag='true';
+$('#UCRE_div_errasscard').text('');
+$("#UCRE_tb_accesscard").removeClass('invalid');
+if((UCRE_flaglen==1)&&(UCRE_flag=='true')&&(UCRE_flag_stamp=='true')&&(UCRE_flag_room=='true')&&(UCRE_flag_unit=='true')&&(UCRE_flg_Doorcode==1)&&(UCRE_flg_Login==1)){
+$("#UCRE_btn_submit").removeAttr("disabled");
+}}}
+/*-------------------------------------- CHANGE EVENT FOR ENABLING SUBMIT BUTTON UNTIL MANDATORY VALUES ARE GIVEN----------------------*/
+$(document).on("change blur",'#UCRE_form_unitcreation',function(){ 
+var UCRE_unitno=$("#UCRE_tb_unitnumber").val();
+var UCRE_access=$("#UCRE_tb_accesscard").val();
+if((parseInt($('#UCRE_tb_unitnumber').val())==0)||($("#UCRE_tb_unitnumber").val()=='')||($("#UCRE_tb_unitrentalamt").val()=='')||(parseInt($("#UCRE_tb_unitrentalamt").val())=='')||($("#UCRE_db_startdate").val()=='')||($("#UCRE_db_enddate").val()=='')||((UCRE_unitno.length>0)&&(UCRE_unitno.length<4))||((parseInt($('#UCRE_tb_accesscard').val()).toString().length>0)&&(parseInt($('#UCRE_tb_accesscard').val()).toString().length<4)&&(parseInt(UCRE_access)!=0)&&(UCRE_access!=''))||(UCRE_flg_Doorcode==0)||(UCRE_flg_Login==0)){
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+UCRE_flaglen=0;
+}
+else
+UCRE_flaglen=1;
+if((UCRE_flaglen==1)&&(UCRE_flag=='true')&&(UCRE_flag_stamp=='true')&&(UCRE_flag_room=='true')&&(UCRE_flag_unit=='true')&&(UCRE_flag=='true')&&(UCRE_flg_Doorcode==1)&&(UCRE_flg_Login==1)){
+$("#UCRE_btn_submit").removeAttr("disabled");
+}
+else{
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+}});
+/*--------------------------------------------------CLICK FUNCTION FOR ADD AND REMOVE ROOM TYPE BUTTON----------------------------------*/
+$(document).on('click','#UCRE_btn_addroomtype,#UCRE_btn_removeroomtype',function(){ 
+$('#UCRE_div_errroom').text('');
+$("#UCRE_tb_newroomtype").removeClass('invalid');
+if($(this).attr('id')=="UCRE_btn_addroomtype"){
+UCRE_flag_room='false';
+/*-------------------------------------------------------------REPLACE NEW ROOM TYPE--------------------------------------------------------------*/
+$('#UCRE_lb_oldroomtype').replaceWith('<input type="text" name="UCRE_tb_newroomtype" id="UCRE_tb_newroomtype" maxlength="30" class="autosize"/>');
+$(this).replaceWith('<input type="button" name="UCRE_btn_removeroomtype" value="CLEAR" id="UCRE_btn_removeroomtype" class="btn"/>');
+$('.autosize').doValidation({rule:'general',prop:{autosize:true}});
+}
+if($(this).attr('id')=='UCRE_btn_removeroomtype'){ 
+$(".preloader").show();
+UCRE_flag_room='true';
+google.script.run.withSuccessHandler(UCRE_result).withFailureHandler(UCRE_onFailure).UCRE_getroomstamp_err('UCRE_flag_roomtype');
+$('#UCRE_tb_newroomtype').replaceWith('<select id="UCRE_lb_oldroomtype" name="UCRE_lb_oldroomtype" ><option>SELECT</option></select>');
+$(this).replaceWith('<input type="button" name="UCRE_btn_addroomtype" value="ADD" id="UCRE_btn_addroomtype" class="btn"/>');
+}
+if((UCRE_flaglen==1)&&(UCRE_flag=='true')&&(UCRE_flag_stamp=='true')&&(UCRE_flag_room=='true')&&(UCRE_flag_unit=='true')&&(UCRE_flag=='true')&&(UCRE_flg_Doorcode==1)&&(UCRE_flg_Login==1)){
+$("#UCRE_btn_submit").removeAttr("disabled");
+}
+else{
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+}
+});
+/*------------------------------------------------CHANGE EVENT FUNCTION FOR ROOM TYPE-------------------------------------------*/
+$(document).on("blur",'#UCRE_tb_newroomtype',function(){ 
+var UCRE_newroom=$(this).val();
+var UCRE_source=  $(this).attr('id');
+if(UCRE_newroom.length==0){
+UCRE_flag_room='false';
+if((UCRE_newroom.length==0)&&(UCRE_room.length==0))
+UCRE_flag_room='true';
+$('#UCRE_div_errroom').text('');
+$("#UCRE_tb_newroomtype").removeClass('invalid');
+}
+else{
+$(".preloader").show();
+google.script.run.withSuccessHandler(UCRE_roomresult).withFailureHandler(UCRE_onFailure).UCRE_checkExistingUnit(UCRE_source,UCRE_newroom);
+}
+});
+/*--------------------------------------------------CLICK FUNCTION FOR ADD AND REMOVE ROOM TYPE BUTTON----------------------------------*/
+$(document).on('click','#UCRE_btn_addstamptype,#UCRE_btn_removestamptype',function(){ 
+$('#UCRE_div_errstamp').text('');
+$("#UCRE_tb_newstamptype").removeClass('invalid');
+/*-----------------------------------------------REPLACE NEW STAMP TYPE---------------------------------------------------------------*/
+if($(this).attr('id')=="UCRE_btn_addstamptype"){
+UCRE_flag_stamp='false';
+$('#UCRE_lb_oldstamptype').replaceWith('<input type="text" name="UCRE_tb_newstamptype" id="UCRE_tb_newstamptype" maxlength="12"  class="autosize" style="width:105px"/>');
+$(this).replaceWith('<input type="button" name="UCRE_btn_removestamptype"  value="CLEAR" id="UCRE_btn_removestamptype" class="btn"/>');
+$('.autosize').doValidation({rule:'general',prop:{autosize:true}});
+}
+if($(this).attr('id')=='UCRE_btn_removestamptype'){ 
+$(".preloader").show();
+UCRE_flag_stamp='true';
+google.script.run.withSuccessHandler(UCRE_result).withFailureHandler(UCRE_onFailure).UCRE_getroomstamp_err('UCRE_flag_stamptype');
+$('#UCRE_div_errstamp').text('');
+$('#UCRE_tb_newstamptype').replaceWith('<select id="UCRE_lb_oldstamptype" name="UCRE_lb_oldstamptype" ><option>SELECT</option></select>');
+$(this).replaceWith('<input type="button" name="UCRE_btn_addstamptype" value="ADD" id="UCRE_btn_addstamptype" class="btn"/>');
+}
+if((UCRE_flaglen==1)&&(UCRE_flag=='true')&&(UCRE_flag_stamp=='true')&&(UCRE_flag_room=='true')&&(UCRE_flag_unit=='true')&&(UCRE_flag=='true')&&(UCRE_flg_Doorcode==1)&&(UCRE_flg_Login==1)){
+$("#UCRE_btn_submit").removeAttr("disabled");
+}
+else{
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+}});
+/*------------------------------------------------CHANGE EVENT FUNCTION FOR STAMP TYPE-------------------------------------------*/
+$(document).on("blur",'#UCRE_tb_newstamptype',function(){ 
+var UCRE_newstamp=$(this).val();
+var UCRE_source=  $(this).attr('id');
+if(UCRE_newstamp.length==0){
+UCRE_flag_stamp='false';
+if((UCRE_newstamp.length==0)&&(UCRE_stamp.length==0))
+UCRE_flag_stamp='true';
+$('#UCRE_div_errstamp').text('');
+$("#UCRE_tb_newstamptype").removeClass('invalid');
+}
+else{
+$(".preloader").show();
+google.script.run.withSuccessHandler(UCRE_stampresult).withFailureHandler(UCRE_onFailure).UCRE_checkExistingUnit(UCRE_source,UCRE_newstamp);
+}});
+/*------------------------------------------SUCCESS FUNCTION FOR STAMP TYPE ALREADY EXISTS--------------------------------*/ 
+function UCRE_roomresult(UCRE_msgroom) {
+$(".preloader").hide();
+if(UCRE_msgroom==true){
+$('#UCRE_div_errroom').text(UCRE_errorMsg_array[7]);
+$("#UCRE_tb_newroomtype").addClass('invalid');
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+UCRE_flag_room='false';
+} 
+else if(UCRE_msgroom==false)
+{
+UCRE_flag_room='true';
+$('#UCRE_div_errroom').text('');
+$("#UCRE_tb_newroomtype").removeClass('invalid');
+if((UCRE_flaglen==1)&&(UCRE_flag=='true')&&(UCRE_flag_room=='true')&&(UCRE_flag_stamp=='true')&&(UCRE_flag_unit=='true')&&(UCRE_flg_Doorcode==1)&&(UCRE_flg_Login==1))
+$("#UCRE_btn_submit").removeAttr("disabled");
+}}
+/*------------------------------------------SUCCESS FUNCTION FOR STAMP TYPE ALREADY EXISTS--------------------------------*/ 
+function UCRE_stampresult(UCRE_msgstamp) {
+$(".preloader").hide();
+if(UCRE_msgstamp==true)
+{
+UCRE_flag_stamp='false';
+$('#UCRE_div_errstamp').text(UCRE_errorMsg_array[8]);
+$("#UCRE_tb_newstamptype").addClass('invalid');
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+}
+else if(UCRE_msgstamp==false)
+{
+UCRE_flag_stamp='true';
+$('#UCRE_div_errstamp').text('');
+$("#UCRE_tb_newstamptype").removeClass('invalid');
+if((UCRE_flaglen==1)&&(UCRE_flag=='true')&&(UCRE_flag_stamp=='true')&&(UCRE_flag_room=='true')&&(UCRE_flag_unit=='true')&&(UCRE_flg_Doorcode==1)&&(UCRE_flg_Login==1))
+$("#UCRE_btn_submit").removeAttr("disabled");
+}}
+/*-----------------------------------------CHECK DOORCODE--------------------------------------------------*/
+$(document).on("change blur",'#UNIT_tb_doorcode',function(){
+$('#UCRE_lbl_doorcode').text('');
+$(this).removeClass('invalid');
+UCRE_flg_Doorcode=1;
+if(($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length<6)){
+$(this).addClass('invalid');
+UCRE_flg_Doorcode=0;
+$('#UCRE_lbl_doorcode').text(UCRE_errorMsg_array[13]);
+}
+else if(($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length>=6)){
+UCRE_func_doorcode_login($(this).val(),$(this).attr('id'));
+}});
+/*-----------------------------------------CHECK WEBLOGIN--------------------------------------------------*/
+$(document).on("change blur",'#UNIT_tb_weblogin',function(){
+$('#UCRE_lbl_weblogin').text('');
+$(this).removeClass('invalid');
+UCRE_flg_Login=1;
+if(($(this).val()!='')&&($(this).val().length<5)){
+$(this).addClass('invalid');
+UCRE_flg_Login=0;
+$('#UCRE_lbl_weblogin').text(UCRE_errorMsg_array[12]);
+}
+else if(($(this).val()!='')&&($(this).val().length>=5)){
+UCRE_func_doorcode_login($(this).val(),$(this).attr('id'));
+}});
+function UCRE_func_doorcode_login(UCRE_value,UCRE_attrid){
+$(".preloader").show();
+$("#UCRE_btn_submit").attr("disabled", "disabled");
+google.script.run.withSuccessHandler(UCRE_SuccessLoginDoor).withFailureHandler(UCRE_onFailure).UCRE_checkExistingUnit(UCRE_attrid,UCRE_value);
+}
+/*--------------------------------------------SUCCESS FUNCTION FOR DOORCODE AND WEBLOGIN----------------------*/
+function UCRE_SuccessLoginDoor(UCRE_response_Login){
+$(".preloader").hide();
+if(UCRE_response_Login[0]==0){
+if(UCRE_response_Login[1]=='UNIT_tb_doorcode'){
+UCRE_flg_Doorcode=0;
+$('#UCRE_lbl_doorcode').text(UCRE_errorMsg_array[10]);
+}
+else if(UCRE_response_Login[1]=='UNIT_tb_weblogin'){
+UCRE_flg_Login=0;
+$('#UCRE_lbl_weblogin').text(UCRE_errorMsg_array[11]);
+}
+$("#"+UCRE_response_Login[1]).addClass('invalid');
+if((UCRE_flaglen==1)&&(UCRE_flag=='true')&&(UCRE_flag_stamp=='true')&&(UCRE_flag_room=='true')&&(UCRE_flag_unit=='true')&&(UCRE_flg_Doorcode==1)&&(UCRE_flg_Login==1))
+$("#UCRE_btn_submit").removeAttr("disabled");
+}
+else{
+if(UCRE_response_Login[1]=='UNIT_tb_doorcode'){
+UCRE_flg_Doorcode=1;
+$('#UCRE_lbl_doorcode').text('');
+}
+else if(UCRE_response_Login[1]=='UNIT_tb_weblogin'){
+$('#UCRE_lbl_weblogin').text('');
+UCRE_flg_Login=1;
+}
+$("#"+UCRE_response_Login[1]).removeClass('invalid');
+}
+}
+});
+</script>
+<!--SCRIPT TAG END-->
+</head>
+<body>
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>UNIT CREATION</h3>
+<p>
+</div>
+</div>
+<form class="content" name="UCRE_form_unitcreation" id="UCRE_form_unitcreation" hidden>
+<table>
+<tr>
+<td style="width:180px">
+<label name="UCRE_lbl_unitnumber" id="UCRE_lbl_unitnumber">UNIT NUMBER<em>*</em></label>
+</td>
+<td style="width:280px">
+<input type="text" name="UCRE_tb_unitnumber" id="UCRE_tb_unitnumber" style="width:40px" maxlength=4 class="UCRE_class_numonly numonly"/>
+</td>
+<td>
+<div id="UCRE_div_errunitno" name="UCRE_div_errunitno" class="errormsg">
+</div>
+</td>
+</tr>
+<tr>
+<td>
+<label>ACCESS CARD</label>
+</td>
+<td>
+<input type="text" name="UCRE_tb_accesscard" id="UCRE_tb_accesscard" style="width:60px" class="UCRE_class_numonly" maxlength=7/>
+</td>
+<td>
+<div id="UCRE_div_errasscard" name="UCRE_div_errasscard" class="errormsg">
+</div>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td style="width:180px">
+<label>ROOM TYPE</label>
+</td>
+<td style="width:280px">
+<select id="UCRE_lb_oldroomtype" name="UCRE_lb_oldroomtype">
+<option>SELECT</option>
+</select>
+</td>
+<td>
+<input type="button" name="UCRE_btn_addroomtype" value="ADD" id="UCRE_btn_addroomtype" class="btn"/>
+</td>
+<td>
+<td>
+<div id="UCRE_div_errroom" name="UCRE_div_errroom" class="errormsg">
+</div>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td style="width:180px">
+<label>UNIT RENTAL<em>*</em></label>
+</td>
+<td style="width:280px">
+<input type="text" name="UCRE_tb_unitrentalamt" id="UCRE_tb_unitrentalamt" style="width:40px" class="UCRE_class_numonly" maxlength=4/>
+</td>
+<tr>
+<td>
+<label>UNIT DEPOSIT</label>
+</td>
+<td>
+<input type="text" name="UCRE_tb_unitdeposite" id="UCRE_tb_unitdeposite" style="width:45px" class="UCRE_class_numonly" maxlength=5>
+</td>
+</tr>
+<tr>
+<td>
+<label>START DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="UCRE_db_startdate" id="UCRE_db_startdate" style="width:75px" class="datepickerbox datemandtry">
+</td>
+</tr>
+<tr>
+<td>
+<label>END DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="UCRE_db_enddate" id="UCRE_db_enddate" style="width:75px" class="datepickerbox datemandtry">
+</td>
+</tr>
+<tr>
+<td>
+<label>ACCOUNT NUMBER</label>
+</td>
+<td>
+<input type="text" style="width:130px" name="UCRE_tb_accntnumber" id="UCRE_tb_accntnumber" style="width:110px" class="numonly UCRE_class_numonly" maxlength=15 />
+</td>
+</tr>
+<tr>
+<td>
+<label>ACCOUNT NAME</label>
+</td>
+<td>
+<input type="text" name="UCRE_tb_accntname" id="UCRE_tb_accntname" maxlength="25" class="autosize"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>BANK CODE</label>
+</td>
+<td>
+<input type="text" name="UCRE_tb_bankcode" id="UCRE_tb_bankcode" maxlength=5 class="numonly UCRE_class_numonly" style="width:40px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>BRANCH CODE</label>
+</td>
+<td>
+<input type="text" name="UCRE_tb_branchcode" id="UCRE_tb_branchcode" maxlength=5 class="numonly UCRE_class_numonly" style="width:40px"/>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td style="width:180px">
+<label>BANK ADDRESS</label>
+</td>
+<td>
+<textarea name="UCRE_tb_bankaddrs" id="UCRE_tb_bankaddrs"  class="autosize"></textarea>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td style="width:180px">
+<label>DOOR CODE</label>
+</td>
+<td style="width:280px">
+<input type="text" name="UNIT_tb_doorcode" id="UNIT_tb_doorcode" class="UCRE_class_numonly numonly" maxlength=10 style="width:80px"/>
+</td><td><label id="UCRE_lbl_doorcode" name="UCRE_lbl_doorcode" class="errormsg"></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>WEB LOGIN</label>
+</td>
+<td>
+<input type="text" name="UNIT_tb_weblogin" id="UNIT_tb_weblogin" maxlength="13" class="autosize" style="width:120px"/>
+</td><td><label id="UCRE_lbl_weblogin" name="UCRE_lbl_weblogin" class="errormsg"></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>WEB PASSWORD</label>
+</td>
+<td>
+<input type="text" name="UCRE_tb_webpass" id="UCRE_tb_webpass" style="width:50px" class="UCRE_class_numonly numonly" maxlength=6/>
+</td>
+</tr>
+<tr>
+<td>
+<label>STAMP DUTY DATE</label>
+</td>
+<td>
+<input type="text" name="UCRE_db_stampdutydate" id="UCRE_db_stampdutydate" style="width:75px" class="datepickerbox datenonmandtry"/>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td style="width:180px">
+<label>STAMP DUTY TYPE</label>
+</td>
+<td style="width:280px">
+<select id='UCRE_lb_oldstamptype' name="UCRE_lb_oldstamptype">
+<option>SELECT</option>
+</select>
+</td>
+<td>
+<input type="button" name="UCRE_btn_addstamptype" value="ADD" class="btn" id="UCRE_btn_addstamptype"/>
+<td>
+<td>
+<div id="UCRE_div_errstamp" name="UCRE_div_errstamp" class="errormsg">
+</div>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td style="width:180px">
+<label>STAMP DUTY AMOUNT</label>
+</td>
+<td style="width:280px">
+<input type="text" name="UCRE_tb_stampamount" id="UCRE_tb_stampamount" style="width:60px" class="UCRE_class_numonly numonly"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>COMMENTS</label>
+</td>
+<td>
+<textarea name="UCRE_ta_comments" id="UCRE_ta_comments" ></textarea>
+</td>
+</tr>
+<tr>
+<td>
+<label>EI/NON_EI</label>
+</td>
+<td>
+<input type="checkbox" name="UCRE_cb_nonEI" id="UCRE_cb_nonEI">
+</td>
+</tr>
+<tr>
+<td align="right">
+<input type="button" class="btn" value="SAVE" name="UCRE_btn_submit" id="UCRE_btn_submit" disabled/>
+</td>
+<td align="left">
+<input type="button" class="btn" name="reset" value="RESET" id="UCRE_btn_reset"/>
+</td>
+</tr>
+</table>
+</form>
+</div>
+</body>
+</html>

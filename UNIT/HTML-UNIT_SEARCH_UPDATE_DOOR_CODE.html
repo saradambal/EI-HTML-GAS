@@ -1,0 +1,276 @@
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+***********************************************DOOR CODE:SEARCH/UPDATE*********************************//
+<!--DONE BY:SARADAMBAL
+VER 1.5 -SD:11/07/2014 ED:11/07/2014,TRACKER NO:726,checked sp through form,rename id for doorcode and login (same id for creation to get eilib func)
+VER 1.4 -SD:30/06/2014 ED:30/06/2014,TRACKER NO:726,updated already exists for doorcode,weblogin,implemented script for update button validation
+VER 1.3 -SD:13/06/2014 ED:13/06/2014,TRACKER NO:726,updated failure function
+VER 1.2 -SD:06/06/2014 ED:06/06/2014,TRACKER NO:726,updated new link
+VER 1.1-SD:19/05/2014 ED:19/05/2014,TRACKER NO:726,implemented * for doorcode srch,gave integration link
+VER 1.0-SD:09/04/2014 ED:09/04/2014,TRACKER NO:726,changed title as DOOR CODE:SEARCH/UPDATE,
+VER 0.09-SD:03/03/2014 ED:03/03/2014,TRACKER NO:726,checked sp for using uldid instead of userstamp
+VER 0.08-SD:14/02/2014 ED:14/02/2014,TRACKER NO:726,updated sp for returning flag whether the data updated or not,implemented error msg for that one,updated validation as per migration(login and password can make as null)
+VER 0.07-SD:04/12/2013 ED:05/12/2013,changed error msg for updation,implement readonly for empty field in login details,field not make as null,implement eilib for errormsg and special character 
+VER 0.06-SD:28/12/2013 ED:30/12/2013,changed form alignment tag & userstamp syntax
+VER 0.05-SD:25/11/2013 ED:25/11/2013,updated eilib for active unit,implemented err msg for not having active unit,updated failure function
+VER 0.04-SD:07/11/2013 ED:14/11/2013,remove radio for flex table,changes in doorcode,weblogin & password length,updated errormsg
+VER 0.03-SD:07/10/2013 ED:07/10/2013,implement return function,change head tag links
+VER 0.02-SD:30/09/2013 ED:30/09/2013,updated eilib connection,message box,preloader,removed scriplet,convert blur function for all change function
+VER 0.01-INITIAL VERSION,TRACKER NO:246,SD:03/08/2013,ED:03/08/2013-->
+<html>
+<head>
+<!--COMMON JQUERY LINKS-->
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<script>
+/*----------------------------------------------- FAILURE FUNTION FOR UNIT TERMINATION----------------------------------*/
+function USRC_UPDCODE_onFailure(USRC_UPDCODE_error){
+$(".preloader").hide();
+if(USRC_UPDCODE_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+USRC_UPDCODE_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#USRC_UPDCODE_form_doorcode').replaceWith('<center><label class="dberrormsg">'+USRC_UPDCODE_error+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DOOR CODE:SEARCH/UPDATE",msgcontent:USRC_UPDCODE_error.message}});
+}}
+$(document).ready(function(){
+var USRC_UPDCODE_doorcode_val='';
+var USRC_UPDCODE_weblogin_val='';
+var USRC_UPDCODE_webpass_val='';
+var USRC_UPDCODE_flg_Doorcode=1;
+var USRC_UPDCODE_flg_Login=1;
+/*-----------------------------------------FUNCTION FOR FETCHINGG ERRORMSG & UNIT NO-------------------------------------*/
+$(".preloader").show();
+google.script.run.withSuccessHandler(USRC_UPDCODE_unitno_errSuccess).withFailureHandler(USRC_UPDCODE_onFailure).USRC_UPDCODE_getunitno_err();
+var USRC_UPDCODE_errormsg=[];
+var USRC_UPDCODE_unitno=[];
+var USRC_UPDCODE_login_id='';
+/*-----------------------------------------SUCCESS FUNCTION FOR ERRORMSG & UNIT NO-------------------------------------*/
+function USRC_UPDCODE_unitno_errSuccess(USRC_UPDCODE_response){
+$(".preloader").hide();
+USRC_UPDCODE_errormsg=USRC_UPDCODE_response.USRC_UPDCODE_errorarray;
+USRC_UPDCODE_unitno=USRC_UPDCODE_response.USRC_UPDCODE_unitno;
+if(USRC_UPDCODE_unitno.length==0)
+$('#USRC_UPDCODE_form_doorcode').replaceWith('<p><label class="errormsg"> '+USRC_UPDCODE_errormsg[3]+'</label></p>')
+else{
+var USRC_UPDCODE_options ='<option>SELECT</option>';
+for (var i = 0; i < USRC_UPDCODE_unitno.length; i++) 
+{
+USRC_UPDCODE_options += '<option value="' + USRC_UPDCODE_unitno[i]  + '">' + USRC_UPDCODE_unitno[i] + '</option>';
+}
+$('#USRC_UPDCODE_lb_unitnumber').html(USRC_UPDCODE_options);
+$("#USRC_UPDCODE_form_doorcode").show();
+}}
+/*-------------------------------------------CHANGE EVENT FUNCTION FOR UNIT NUMBER-----------------------------------*/
+$("#USRC_UPDCODE_lb_unitnumber").change(function(){
+$('#USRC_UPDCODE_form_existingUnit').find('input:text').val('');
+$("#USRC_UPDCODE_tble_updtdoor").hide();
+$("#USRC_UPDCODE_tble_doorcode").hide();
+$("#USRC_UPDCODE_div_search").hide();
+$("#USRC_UPDCODE_div_errmsgdooor").text('');
+$("#USRC_UPDCODE_div_errmsgNodooor").text('');
+if($('#USRC_UPDCODE_lb_unitnumber').val()!='SELECT'){
+$(".preloader").show();
+var USRC_UPDCODE_unitnumber=$('#USRC_UPDCODE_lb_unitnumber').val();
+var USRC_UPDCODE_flag='USRC_UPDCODE_flex';
+google.script.run.withSuccessHandler(USRC_UPDCODE_loginSuccess).withFailureHandler(USRC_UPDCODE_onFailure).USRC_UPDCODE_logindetails(USRC_UPDCODE_unitnumber,USRC_UPDCODE_flag);
+}
+else {
+$("#USRC_UPDCODE_tble_doorcode").hide();
+}
+});
+/*------------------------------------------------SUCCESS FUNCTION FOR LOGIN DETAILS-----------------------------------------*/
+function USRC_UPDCODE_loginSuccess(USRC_UPDCODE_response){
+$(".preloader").hide();
+$("#USRC_UPDCODE_tble_doorcode").hide();
+var USRC_UPDCODE_unitnumber=$('#USRC_UPDCODE_lb_unitnumber').val();
+if((USRC_UPDCODE_response.USRC_UPDCODE_id!='')&&(USRC_UPDCODE_response.USRC_UPDCODE_id!=undefined)){
+$('#USRC_UPDCODE_tble_doorcode').empty();
+var USRC_UPDCODE_div_errmsg=USRC_UPDCODE_errormsg[1].replace('[UNIT NO]',USRC_UPDCODE_unitnumber);
+$("#USRC_UPDCODE_div_errmsgdooor").text(USRC_UPDCODE_div_errmsg);
+var tr='</th><th style="width:80px">DOOR CODE</th><th style="width:120px">WEB LOGIN</th><th style="width:45px">WEB PASSWORD</th><th>USERSTAMP</th><th style="width:130px">TIMESTAMP</th>';
+$('#USRC_UPDCODE_tble_doorcode').append(tr);
+var i=0;
+USRC_UPDCODE_login_id=USRC_UPDCODE_response.USRC_UPDCODE_id;
+tr = '<tr id="'+USRC_UPDCODE_response.USRC_UPDCODE_id+'"><td>'+USRC_UPDCODE_response.USRC_UPDCODE_doorcode+'</td><td>'+USRC_UPDCODE_response.USRC_UPDCODE_weblog+'</td><td>'+USRC_UPDCODE_response.USRC_UPDCODE_webpass+'</td><td>'+USRC_UPDCODE_response.USRC_UPDCODE_user+'</td><td>'+USRC_UPDCODE_response.USRC_UPDCODE_time+'</td></tr>';
+$('#USRC_UPDCODE_tble_doorcode').append(tr); 
+$("#USRC_UPDCODE_tble_doorcode").show();
+$("#USRC_UPDCODE_div_search").show();
+}
+else{
+var USRC_UPDCODE_div_errmsg=USRC_UPDCODE_errormsg[2].replace('[UNIT NO]',USRC_UPDCODE_unitnumber);
+$("#USRC_UPDCODE_div_errmsgNodooor").text(USRC_UPDCODE_div_errmsg);
+$("#USRC_UPDCODE_div_errmsgdooor").text('');
+$("#USRC_UPDCODE_div_search").hide();
+}
+if(USRC_UPDCODE_response.USRC_UPDCODE_flg==1){
+$("#USRC_UPDCODE_tble_updtdoor").hide();
+$('#USRC_UPDCODE_form_doorcode').find('input').prop("size","20");
+var USRC_UPDCODE_upd_errmsg=USRC_UPDCODE_errormsg[4].replace('[UNITNO]',USRC_UPDCODE_unitnumber);
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DOOR CODE:SEARCH/UPDATE",msgcontent:USRC_UPDCODE_upd_errmsg}});
+}
+if(USRC_UPDCODE_response.USRC_UPDCODE_flg==0)
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DOOR CODE:SEARCH/UPDATE",msgcontent:USRC_UPDCODE_errormsg[5]}});
+}
+/*---------------------------------------------------CLICK FUNCTION FOR SEARCH BUTTON-------------------------------------*/
+$(document).on('click','#USRC_UPDCODE_btn_search',function(){
+USRC_UPDCODE_flg_Doorcode=1;
+USRC_UPDCODE_flg_Login=1;
+$('#USRC_UPDCODE_tble_updtdoor').empty();
+$("#USRC_UPDCODE_tble_updtdoor").show();
+$('#USRC_UPDCODE_tble_doorcode tr').each(function () {
+var $tds = $(this).find('td'); 
+$('<tr><td><label>DOOR CODE<em id="USRC_UPDCODE_em_code">*</em></label></td><td><input type="text" name="UNIT_tb_doorcode" id="UNIT_tb_doorcode" maxlength=10 class="USRC_UPDCODE_class_login numonly USRC_UPDCODE_class_numsonly autosize" value="'+$tds.eq(0).text()+'" size="10"/></td><td><label id="USRC_UPDCODE_lbl_doorcode" class="errormsg"></label></td></tr><tr><td><label>WEB LOGIN</label></td><td><input type="text" name="UNIT_tb_weblogin" id="UNIT_tb_weblogin" maxlength=13 class="USRC_UPDCODE_class_login autosize" value="'+$tds.eq(1).text()+'" size="16"/></td><td><label id="USRC_UPDCODE_lbl_weblogin" class="errormsg"></label></td></tr><tr><td><label>WEB PASSWORD</label></td><td><input type="text" name="USRC_UPDCODE_tb_webpass" id="USRC_UPDCODE_tb_webpass" maxlength=6 class="USRC_UPDCODE_class_login numonly USRC_UPDCODE_class_numsonly" size="5" value="'+$tds.eq(2).text()+'"/></td></tr><tr><td align="right"><input type="button" class="btn" value="UPDATE" name="USRC_UPDCODE_btn_updatedoorcode" id="USRC_UPDCODE_btn_updatedoorcode" disabled/></td><td align="left"><input type="button" class="btn" value="RESET" name="USRC_UPDCODE_btn_reset" id="USRC_UPDCODE_btn_reset"/></td></tr>').appendTo($("#USRC_UPDCODE_tble_updtdoor"));
+$(".USRC_UPDCODE_class_numsonly").prop("title",USRC_UPDCODE_errormsg[0])
+$("#UNIT_tb_weblogin").doValidation({rule:'general'});
+$('#USRC_UPDCODE_form_doorcode').find('input:text,textarea').removeClass('rdonly');
+USRC_UPDCODE_doorcode_val=$tds.eq(0).text();
+USRC_UPDCODE_weblogin_val=$tds.eq(1).text();
+USRC_UPDCODE_webpass_val=$tds.eq(2).text();
+if($tds.eq(0).text()==''){
+$('#UNIT_tb_doorcode').prop('readonly', true);
+$("#UNIT_tb_doorcode").addClass('rdonly');
+$("#USRC_UPDCODE_em_code").hide();
+}
+if($tds.eq(1).text()==''){
+$('#UNIT_tb_weblogin').prop('readonly', true);
+$("#UNIT_tb_weblogin").addClass('rdonly');
+}
+if($tds.eq(2).text()==''){
+$('#USRC_UPDCODE_tb_webpass').prop('readonly', true);
+$("#USRC_UPDCODE_tb_webpass").addClass('rdonly');
+}});
+$("#USRC_UPDCODE_btn_updatedoorcode").attr("disabled", "disabled");
+/*--------------------------------------VALIDATION FOR DOORCODE WEBPASSWORD-------------------------------------------*/
+$(".numonly").doValidation({rule:'numbersonly',prop:{leadzero:true}});
+});
+/*---------------------------------------------------CHANGE FUNCTION FOR DOORCODE-------------------------------------*/
+$(document).on('change','.USRC_UPDCODE_class_login',function(){
+USRC_UPDCODE_flg_Login=1;USRC_UPDCODE_flg_Doorcode=1;
+if((($(this).attr('id')=='UNIT_tb_doorcode')&&($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length>=6)&&(($(this).val()).trim()!=USRC_UPDCODE_doorcode_val))||(($(this).attr('id')=='UNIT_tb_weblogin')&&($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length>=5)&&(($(this).val()).trim()!=USRC_UPDCODE_weblogin_val))){
+google.script.run.withSuccessHandler(USRC_UPDCODE_doorcodeSuccess).withFailureHandler(USRC_UPDCODE_onFailure).USRC_UPDCODE_ExistsDoorcode($(this).val(),$(this).attr('id'));
+$(".preloader").show();}
+else{
+if(($(this).attr('id')=='UNIT_tb_doorcode')&&($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length<6)&&(($(this).val()).trim()!=USRC_UPDCODE_doorcode_val))
+{
+USRC_UPDCODE_flg_Doorcode=0;
+$('#USRC_UPDCODE_lbl_doorcode').text(USRC_UPDCODE_errormsg[9]);
+$("#UNIT_tb_doorcode").addClass('invalid');
+}
+else if(($(this).attr('id')=='UNIT_tb_weblogin')&&($(this).val()!='')&&(parseInt($(this).val())!=0)&&($(this).val().length<5)&&(($(this).val()).trim()!=USRC_UPDCODE_weblogin_val))
+{
+USRC_UPDCODE_flg_Login=0;
+$('#USRC_UPDCODE_lbl_weblogin').text(USRC_UPDCODE_errormsg[8]);
+$("#UNIT_tb_weblogin").addClass('invalid');
+}
+else
+{
+$(this).removeClass('invalid');
+$('#USRC_UPDCODE_lbl_doorcode,#USRC_UPDCODE_lbl_weblogin').text('');
+}}
+USRC_UPDCODE_func_updValidation();
+});
+function USRC_UPDCODE_doorcodeSuccess(USRC_UPDCODE_doorcoderesponse){
+$(".preloader").hide();
+if(USRC_UPDCODE_doorcoderesponse[0]==0){
+if(USRC_UPDCODE_doorcoderesponse[1]=='UNIT_tb_doorcode'){
+USRC_UPDCODE_flg_Doorcode=0;
+$('#USRC_UPDCODE_lbl_doorcode').text(USRC_UPDCODE_errormsg[7]);
+$("#UNIT_tb_doorcode").addClass('invalid');}
+else if(USRC_UPDCODE_doorcoderesponse[1]=='UNIT_tb_weblogin'){
+USRC_UPDCODE_flg_Login=0;
+$('#USRC_UPDCODE_lbl_weblogin').text(USRC_UPDCODE_errormsg[6]);
+$("#UNIT_tb_weblogin").addClass('invalid');
+}}
+else{
+if(USRC_UPDCODE_doorcoderesponse[1]=='UNIT_tb_doorcode'){
+USRC_UPDCODE_flg_Doorcode=1;
+$('#USRC_UPDCODE_lbl_doorcode').text('');
+$("#UNIT_tb_doorcode").removeClass('invalid');}
+else if(USRC_UPDCODE_doorcoderesponse[1]=='UNIT_tb_weblogin'){
+$('#USRC_UPDCODE_lbl_weblogin').text('');
+USRC_UPDCODE_flg_Login=1;
+$("#UNIT_tb_weblogin").removeClass('invalid');
+}}
+USRC_UPDCODE_func_updValidation();
+}
+/*-------------------------------------------CLICK EVENT FUNCTION FOR UPDATE DOORCODE-----------------------------------*/
+$(document).on('click','#USRC_UPDCODE_btn_updatedoorcode',function(){
+$(".preloader").show();
+var USRC_UPDCODE_doorcode=$("#UNIT_tb_doorcode").val();
+var USRC_UPDCODE_weblogin=$("#UNIT_tb_weblogin").val();
+var USRC_UPDCODE_webpass=$("#USRC_UPDCODE_tb_webpass").val();
+var USRC_UPDCODE_unitnumber=$('#USRC_UPDCODE_lb_unitnumber').val();
+google.script.run.withSuccessHandler(USRC_UPDCODE_loginSuccess).withFailureHandler(USRC_UPDCODE_onFailure).USRC_UPDCODE_updateDoorcode(USRC_UPDCODE_login_id,USRC_UPDCODE_unitnumber,USRC_UPDCODE_doorcode,USRC_UPDCODE_weblogin,USRC_UPDCODE_webpass);
+});
+/*-------------------------------------------COMMON FUNCTION FOR UPDATE VALIDATION-----------------------------------*/
+function USRC_UPDCODE_func_updValidation(){
+if((($("#UNIT_tb_doorcode").val()==USRC_UPDCODE_doorcode_val)&&(($("#UNIT_tb_weblogin").val()).trim()==USRC_UPDCODE_weblogin_val)&&($("#USRC_UPDCODE_tb_webpass").val()==USRC_UPDCODE_webpass_val))||((USRC_UPDCODE_doorcode_val!='')&&($("#UNIT_tb_doorcode").val()==''))||(USRC_UPDCODE_flg_Login==0)||(USRC_UPDCODE_flg_Doorcode==0))
+$("#USRC_UPDCODE_btn_updatedoorcode").attr("disabled", "disabled");
+else
+$("#USRC_UPDCODE_btn_updatedoorcode").removeAttr("disabled");
+}
+/*------------------------------------------CLICK EVENT FUNCTIONF FOR RESET-------------------------------------------------*/
+$(document).on('click','#USRC_UPDCODE_btn_reset',function(){
+$('#USRC_UPDCODE_form_doorcode').find('input:text').val('');
+$("#USRC_UPDCODE_btn_updatedoorcode").attr("disabled", "disabled");
+$('#UNIT_tb_doorcode').attr("size",10)
+$('#UNIT_tb_weblogin').attr("size",16)
+$('#USRC_UPDCODE_tb_webpass').attr("size",6)
+$('#USRC_UPDCODE_lbl_doorcode,#USRC_UPDCODE_lbl_weblogin').text('');
+$("#UNIT_tb_weblogin,#UNIT_tb_doorcode").removeClass('invalid');
+});});
+</script>
+<!--SCRIPT TAG END-->
+</head>
+<body>
+<div class="wrapper"><div class="preloader MaskPanel"><div class="preloader statusarea"><div style="padding-top:90px; text-align:center">
+    			<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+	<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>DOOR CODE:SEARCH/UPDATE</h3><p></div></div>
+			<form class="content" name="USRC_UPDCODE_form_doorcode" id="USRC_UPDCODE_form_doorcode" hidden>
+				<table>
+				<tr>
+					<td>
+						<label>UNIT NUMBER<em>*</em></label>
+					</td>
+					<td>
+						<select id="USRC_UPDCODE_lb_unitnumber" name="USRC_UPDCODE_lb_unitnumber" maxlength="30">
+							<option>SELECT</option>
+						</select>
+					</td>
+				</tr>
+				</table>
+				<div id="USRC_UPDCODE_div_errmsgdooor" name="USRC_UPDCODE_div_errmsgdooor" class="srctitle">
+				</div>
+				<div id="USRC_UPDCODE_div_errmsgNodooor" name="USRC_UPDCODE_div_errmsgdooor" class="errormsg">
+				</div>
+				<table class="srcresult" id="USRC_UPDCODE_tble_doorcode" name="USRC_UPDCODE_tble_doorcode">
+				</table>
+				<div id="USRC_UPDCODE_div_search" hidden>
+					<table>
+					<tr>
+						<td>
+							<input type="button" class="btn" value="SEARCH" name="USRC_UPDCODE_btn_search" id="USRC_UPDCODE_btn_search"/>
+						</td>
+					</tr>
+					</table>
+				</div>
+				<table id="USRC_UPDCODE_tble_updtdoor" hidden>			
+				</table>
+			</form>
+		</div>
+		</body>
+		</html>

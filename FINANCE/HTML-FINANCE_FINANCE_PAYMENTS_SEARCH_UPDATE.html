@@ -1,0 +1,1374 @@
+<!--****************************************PAYMENT SEARCH/UPDATE*********************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.09- SD:11/08/2014 ED:11/08/2014,TRACKER NO 786 Cleared for period search button validation issue.
+//VER 1.08- SD:25/07/2014 ED:25/07/2014,TRACKER NO 786 partial amount hightlighted in payment history spreadsheet.
+//VER 1.07- SD:11/07/2014 ED:11/07/2014,TRACKER NO 786 Cleared paiddate search max date issue and amountrange search validation issue.
+//VER 1.06- SD:30/06/2014 ED:30/06/2014,TRACKER NO 786 added filesharing function and amount box max digits 4 to 5.
+//VER 1.05- SD:18/06/2014 ED:18/06/2014,TRACKER NO 786 Added conn error message and did paiddate validation(set paiddate min date as customer 1st recver date - 1year)
+//VER 1.04- SD:09/06/2014 ED:09/06/2014,TRACKER NO 786 Added commit() command after updating filefolder id in file access table.
+//VER 1.03- SD:05/06/2014 ED:05/06/2014,TRACKER NO 786 Added empty parameter in move to folder function and updated new jquery and css link;
+//VER 1.02- SD:01/06/2014 ED:01/06/2014,TRACKER NO 786 Did button alignments and added preterminate conditions in Updation form.
+//VER 1.01- SD:24/05/2014 ED:24/05/2014,TRACKER NO 786 changed paid date DP format now showing drop down for month and year and set paiddate maxdate is sysdate.
+//VER 1.00- SD:21/05/2014 ED:21/05/2014,TRACKER NO 786 Cleared payment details extract header issue in SS side and SS name also changed removed HTML bofore ss name.
+//VER 0.09- SD:13/05/2014 ED:13/05/2014,TRACKER NO:786 Cleared updation form preloader issue and button validation issues.
+//VER 0.08- SD:23/04/2014 ED:26/03/2014,TRACKER NO:786 Restricted DP manual inputs,clered form title and fromamt and to amt error msg issues.
+//VER 0.07- SD:14/03/2014 ED:14/03/2014,TRACKER NO:673 used payment search dynamic temp table sp and changed forperiod dp format
+//VER 0.06- SD:10/03/2014 ED:11/01/2014,TRACKER NO:673 changed uld id removed repeated queires;
+//VER 0.05- SD:23/01/2014 ED:23/01/2014,TRACKER NO:673 changed proloader path and changed title alignment in ver 0.05
+//VER 0.04- SD:31/12/2013 ED:01/01/2014,TRACKER NO:673 removed  sleep functions and gave unit and customer error messages
+//VER 0.03- SD:17/12/2013 ED:17/12/2013,TRACKER NO:673 gave error msg for no customer in selected unit and forperiod date convertion all r getting from eilib 
+//VER 0.02- SD:13/12/2013 ED:13/12/2013,TRACKER NO:171Added Return function script and Did Paid date vaidation in ver0.02
+//VER 0.01-INITIAL VERSION-SD:13/09/2013 ED:14/09/2013,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<!--GET VALUES FROM SQL TABLE-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+var ErrorControl ={AmountCompare:'InValid'}
+$(document).ready(function() {
+$(document).on('click','#FIN_SRC_UPD_DEL_tbl_htmltable tr td input[type="radio"]',function() {
+$('#FIN_SRC_UPD_DEL_tbl_htmltable tr').removeClass('higlightrow');
+$(this).closest('tr').addClass('higlightrow');
+})
+///////////UNIT SEARCH//////////////
+var errormsg=[];
+$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').hide();
+$('#FIN_SRC_errormessageform').hide();
+$('#FIN_SRC_amounterrormsg').hide();
+$(".preloader").show(); 
+$('#rentalunitsearch_table').hide();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_tble_rentalcustomersearch').hide();
+$('#FIN_SRC_UPD_DEL_tble_rentalforperiodsearch').hide();
+$('#FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch').hide();
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_tble_amountrangetable').hide();
+$('#FIN_SRC_UPD_DEL_customernameselect_LB').hide();
+$('#FIN_SRC_UPD_DEL_customername_LBL').hide();
+$('#rentalupdate_table').hide();
+$('#buttontable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+$('.amtonly').doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+//$(document).doValidation({rule:'fromto',prop:{elem1:'FIN_SRC_UPD_DEL_frompaiddate_DB',elem2:'FIN_SRC_UPD_DEL_topaiddate_DB'}}); 
+$("#FIN_SRC_UPD_DEL_tb_fromamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'FIN_SRC_UPD_DEL_tb_toamount'}});
+$("#FIN_SRC_UPD_DEL_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'FIN_SRC_UPD_DEL_tb_fromamount'}});
+$('#FIN_SRC_UPD_DEL_tb_amount').doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+//////////////COMMON VALUES////////////
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_SRC_getCommonvalues_result).FIN_SRC_commonvalues();
+//*****************TO PAIDDATE****************/
+$('#FIN_SRC_UPD_DEL_topaiddate_DB').datepicker({
+dateFormat: "dd-mm-yy", 
+changeYear: true,
+changeMonth: true
+});
+$('#FIN_SRC_UPD_DEL_topaiddate_DB').datepicker("option","maxDate",new Date());
+
+//***************SET FROM PAIDDATE DATEPICKER***************//
+$("#FIN_SRC_UPD_DEL_frompaiddate_DB").datepicker({
+dateFormat: "dd-mm-yy",
+changeYear: true,
+changeMonth: true});
+$('#FIN_SRC_UPD_DEL_frompaiddate_DB').datepicker("option","maxDate",new Date());
+$(document).on('change','#FIN_SRC_UPD_DEL_frompaiddate_DB',function(){
+var startdate=$('#FIN_SRC_UPD_DEL_frompaiddate_DB').val();
+var FIN_ENTRY_db_chkindate1 = new Date( Date.parse(FormTableDateFormat(startdate)));
+FIN_ENTRY_db_chkindate1.setDate( FIN_ENTRY_db_chkindate1.getDate());  
+var FIN_ENTRY_db_chkindate1 = FIN_ENTRY_db_chkindate1.toDateString(); 
+FIN_ENTRY_db_chkindate1 = new Date( Date.parse( FIN_ENTRY_db_chkindate1));
+$('#FIN_SRC_UPD_DEL_topaiddate_DB').datepicker("option","minDate",FIN_ENTRY_db_chkindate1);
+});
+
+ function FormTableDateFormat(inputdate)
+  {
+    var string = inputdate.split("-");
+    return string[2]+'-'+ string[1]+'-'+string[0];
+  }
+//*****************COMMON VALUES RETURN FUNCTION***********************//
+function FIN_SRC_getCommonvalues_result(FIN_SRC_result)
+{
+var searchoption=[];
+searchoption=FIN_SRC_result.option;
+var unit=[];
+unit=FIN_SRC_result.unit;
+var payment=[];
+payment=FIN_SRC_result.payment;
+errormsg=FIN_SRC_result.error;
+var Records=FIN_SRC_result.Record;
+$('#FIN_SRC_amounterrormsg').text(errormsg[2])
+var FIN_SRC_optionvalue='<option>SELECT</option>';
+for(var i=0;i<searchoption.length;i++)
+{
+var paymentoption=searchoption[i];
+FIN_SRC_optionvalue += '<option value="' + paymentoption.optionid + '">' + paymentoption.optiondata + '</option>';
+}
+$('#FIN_SRC_UPD_DEL_main_LB').html(FIN_SRC_optionvalue);
+var FIN_SRC_unitvalue='<option>SELECT</option>';
+for(var i=0;i<unit.length;i++)
+{
+FIN_SRC_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+}
+$('#FIN_SRC_UPD_DEL_unitsearch_LB').html(FIN_SRC_unitvalue);
+$('#FIN_SRC_UPD_DEL_customerunitsearch_LB').html(FIN_SRC_unitvalue);
+$('#FIN_SRC_UPD_DEL_lb_amountrangesearch').html(FIN_SRC_unitvalue);
+var FIN_SRC_paymentvalue='<option>SELECT</option>';
+for(var i=0;i<payment.length;i++)
+{
+FIN_SRC_paymentvalue += '<option value="' + payment[i] + '">' + payment[i] + '</option>';
+}
+$('#FIN_SRC_UPD_DEL_lb_payment').html(FIN_SRC_paymentvalue);
+$(".preloader").hide();
+if(unit.length==0 || Records==null)
+{
+if(unit.length==0)
+{
+var uniterrormsg='<p><label class="errormsg">'+errormsg[5]+'</label></p>';
+$('#FIN_SRC_errormessagetable').append(uniterrormsg);
+$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').hide();
+$('#FIN_SRC_errormessageform').show();
+}
+if(Records==null)
+{
+var recorderrormsg='<p><label class="errormsg">NO RECORDS IN PAYMENT DETAILS TABLE</label></p>';
+$('#FIN_SRC_errormessagetable').append(recorderrormsg);
+$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').hide();
+$('#FIN_SRC_errormessageform').show();
+}
+}
+else
+{
+$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').show();
+$('#FIN_SRC_errormessageform').hide();
+}
+}
+//////////LISTBOX FUNCTION/////////////
+
+$('#FIN_SRC_UPD_DEL_main_LB').change(function(){
+$('#FIN_SRC_UPD_DEL_customernamelberr_LBL').hide();
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').hide();
+$('#rentalupdate_table').hide();
+$('#buttontable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+$('#FIN_SRC_btn_table').hide();
+ var FIN_SRC_UPD_DEL_selecteditem=$('#FIN_SRC_UPD_DEL_main_LB').val();
+ if(FIN_SRC_UPD_DEL_selecteditem==2)
+ {
+ $('#rentalunitsearch_table').show();
+ $('#FIN_SRC_UPD_DEL_tble_rentalcustomersearch').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalforperiodsearch').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch').hide();
+ $('#rentalupdate_table').hide();
+ $('#buttontable').hide();
+ $('#FIN_SRC_UPD_DEL_tble_amountrangetable').hide();
+ }
+ if(FIN_SRC_UPD_DEL_selecteditem==3)
+ {
+ $('#rentalunitsearch_table').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalcustomersearch').show();
+ $('#FIN_SRC_UPD_DEL_tble_rentalforperiodsearch').hide();
+  $('#FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch').hide();
+  $('#rentalupdate_table').hide();
+  $('#buttontable').hide();
+  $('#FIN_SRC_UPD_DEL_tble_amountrangetable').hide();
+ }
+ if(FIN_SRC_UPD_DEL_selecteditem==4)
+ {
+ $('#rentalunitsearch_table').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalcustomersearch').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalforperiodsearch').show();
+  $('#FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch').hide();
+  $('#rentalupdate_table').hide();
+  $('#buttontable').hide();
+  $('#FIN_SRC_UPD_DEL_tble_amountrangetable').hide();
+ }
+ if(FIN_SRC_UPD_DEL_selecteditem==5)
+ {
+ $('#rentalunitsearch_table').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalcustomersearch').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalforperiodsearch').hide();
+  $('#FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch').show();
+  $('#rentalupdate_table').hide();
+  $('#buttontable').hide();
+  $('#FIN_SRC_UPD_DEL_tble_amountrangetable').hide();
+ }
+ if(FIN_SRC_UPD_DEL_selecteditem=="SELECT")
+ {
+ $('#rentalunitsearch_table').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalcustomersearch').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalforperiodsearch').hide();
+  $('#FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch').hide();
+  $('#rentalupdate_table').hide();
+  $('#buttontable').hide();
+  $('#FIN_SRC_UPD_DEL_tble_amountrangetable').hide();
+ }
+  if(FIN_SRC_UPD_DEL_selecteditem==6)
+ {
+ $('#rentalunitsearch_table').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalcustomersearch').hide();
+ $('#FIN_SRC_UPD_DEL_tble_rentalforperiodsearch').hide();
+  $('#FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch').hide();
+  $('#rentalupdate_table').hide();
+  $('#buttontable').hide();
+  $('#FIN_SRC_UPD_DEL_tble_amountrangetable').show();
+ }
+});
+///////////UNIT SEARCH SUBMIT BUTTON VALIDATION//////////
+$('#rentalunitsearch_table').change(function(){
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+$('#FIN_SRC_btn_table').hide();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+if($("#FIN_SRC_UPD_DEL_unitsearch_LB").val()!="SELECT")
+{
+$("#FIN_SRC_UPD_DEL_btn_unitsearchbutton").removeAttr("disabled");
+}
+else
+{
+$("#FIN_SRC_UPD_DEL_btn_unitsearchbutton").attr("disabled", "disabled");
+}
+});
+////////////CUSTOMER NAME SEARCH SUBMIT BUTTON VALIDATION ////////////
+$('#FIN_SRC_UPD_DEL_tble_rentalcustomersearch').change(function(){
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').hide();
+$('#rentalupdate_table').hide();
+$('#FIN_SRC_btn_table').hide();
+$('#buttontable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+if(($("#FIN_SRC_UPD_DEL_customerunitsearch_LB").val()!="SELECT")&&($("#FIN_SRC_UPD_DEL_customernameselect_LB").val()!="SELECT"))
+{
+$("#FIN_SRC_UPD_DEL_btn_customersearchbutton").removeAttr("disabled");
+}
+else
+{
+$("#FIN_SRC_UPD_DEL_btn_customersearchbutton").attr("disabled", "disabled");
+}
+});
+ 
+////////////FOR PERIOD SEARCH SUBMIT BUTTON VALIDATION //////////// 
+function Forperiod_button_validation()
+//$('#FIN_SRC_UPD_DEL_tble_rentalforperiodsearch').change(function()
+{
+$('#rentalupdate_table').hide();
+$('#FIN_SRC_btn_table').hide();
+$('#buttontable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+var from=new Date(FIN_SRC_forperiodconverttodate($("#FIN_SRC_UPD_DEL_fromforperiod_DB").val()));
+var to=new Date(FIN_SRC_forperiodconverttodate($("#FIN_SRC_UPD_DEL_toforperiod_DB").val()));
+if($("#FIN_SRC_UPD_DEL_fromforperiod_DB").val()!="" && $("#FIN_SRC_UPD_DEL_toforperiod_DB").val()!="" && from<=to)
+{
+$("#FIN_SRC_UPD_DEL_btn_forperiodsearchbutton").removeAttr("disabled");
+}
+else
+{
+$("#FIN_SRC_UPD_DEL_btn_forperiodsearchbutton").attr("disabled", "disabled");
+}
+}
+
+////////////PAIDDATE SEARCH SUBMIT BUTTON VALIDATION //////////// 
+$('#FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch').change(function(){
+$('#rentalupdate_table').hide();
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').hide();
+$('#buttontable').hide();
+$('#FIN_SRC_btn_table').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+if(($("#FIN_SRC_UPD_DEL_frompaiddate_DB").val()!="")&&($("#FIN_SRC_UPD_DEL_topaiddate_DB").val()!=""))
+{
+$("#FIN_SRC_UPD_DEL_btn_paiddatesearchbutton").removeAttr("disabled");
+}
+else
+{
+$("#FIN_SRC_UPD_DEL_btn_paiddatesearchbutton").attr("disabled", "disabled");
+}
+});
+////////////AMOUNT RANGE BUTTON VALIDATION////////
+//$('.amountrange').change(function(){
+$(document).on('change','.amountrange',function(){
+FIN_SRC_amountrangevalidation();
+});
+function FIN_SRC_amountrangevalidation()
+{
+$('#rentalupdate_table').hide();
+$('#FIN_SRC_btn_table').hide();
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').hide();
+$('#buttontable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+var fromperiod=new Date(FIN_SRC_forperiodconverttodate($('#FIN_SRC_UPD_DEL_db_amountfromforperiod').val()));
+var toperiod=new Date(FIN_SRC_forperiodconverttodate($('#FIN_SRC_UPD_DEL_db_amounttoforperiod').val()));
+var FIN_SRC_UPD_DEL_db_amountfromperiod=$('#FIN_SRC_UPD_DEL_db_amountfromforperiod').val();
+var FIN_SRC_UPD_DEL_db_amounttoperiod=$('#FIN_SRC_UPD_DEL_db_amounttoforperiod').val();
+var FIN_SRC_UPD_DEL_tb_fromamount=$('#FIN_SRC_UPD_DEL_tb_fromamount').val();
+var FIN_SRC_UPD_DEL_tb_toamount=$('#FIN_SRC_UPD_DEL_tb_toamount').val();
+var FIN_SRC_UPD_DEL_lb_unit=$('#FIN_SRC_UPD_DEL_lb_amountrangesearch').val();
+if((FIN_SRC_UPD_DEL_tb_fromamount!="")&&(FIN_SRC_UPD_DEL_tb_toamount!=""))
+{
+if(parseFloat(FIN_SRC_UPD_DEL_tb_fromamount)<=parseFloat(FIN_SRC_UPD_DEL_tb_toamount))
+{
+$('#FIN_SRC_amounterrormsg').hide();
+var FIN_SRC_UPD_DEL_amountflag=0;
+}
+else
+{
+$('#FIN_SRC_amounterrormsg').show();
+FIN_SRC_UPD_DEL_amountflag=1;
+}
+}
+else
+{
+$('#FIN_SRC_amounterrormsg').hide();
+var FIN_SRC_UPD_DEL_amountflag=1;
+}
+if((FIN_SRC_UPD_DEL_lb_unit!="SELECT")&&(FIN_SRC_UPD_DEL_db_amountfromperiod!="")&&(FIN_SRC_UPD_DEL_db_amounttoperiod!="")&&(FIN_SRC_UPD_DEL_tb_toamount!="")&&(FIN_SRC_UPD_DEL_tb_toamount!="")&&(FIN_SRC_UPD_DEL_amountflag!=1)&&(fromperiod<=toperiod))
+{
+$("#FIN_SRC_UPD_DEL_btn_amountrangesearchbutton").removeAttr("disabled");
+}
+else
+{
+$("#FIN_SRC_UPD_DEL_btn_amountrangesearchbutton").attr("disabled", "disabled");
+}
+}
+///////////UPDATE BUTTON VALIDATION//////////////////
+$('.FIN_SRC_UPD_DEL_btn_validation').change(function(){
+paymentform_upadation();
+});
+
+function paymentform_upadation()
+{
+if(($("#FIN_SRC_UPD_DEL_payment_TB").val()!="")&& ($('#FIN_SRC_UPD_DEL_lb_leaseperiod').val()!="SELECT") && ($("#FIN_SRC_UPD_DEL_tb_amount").val()!="")&&($("#FIN_SRC_UPD_DEL_db_forperiod").val()!="")&&($("#FIN_SRC_UPD_DEL_db_paiddate").val()!=""))
+{
+$("#FIN_SRC_UPD_DEL_btn_rentalupdate").removeAttr("disabled");
+}
+else
+{
+$("#FIN_SRC_UPD_DEL_btn_rentalupdate").attr("disabled", "disabled");
+}
+}
+
+/////////////////////////////////
+$('#FIN_SRC_UPD_DEL_customerunitsearch_LB').change(function(){ 
+var unit = $(this).val();
+if(unit!="SELECT")
+{
+$(".preloader").show(); 
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(CustomerResponse).FIN_SRC_unitcustomerlist(unit);
+}
+else
+{
+$('#FIN_SRC_UPD_DEL_customernameselect_LB').hide();
+$('#FIN_SRC_UPD_DEL_customername_LBL').hide();
+$("#FIN_SRC_UPD_DEL_btn_customersearchbutton").attr("disabled", "disabled");
+}
+});
+////////////FOR PERIOD DATE PICKER//////////
+ $('#FIN_SRC_UPD_DEL_toforperiod_DB').datepicker( {
+    changeMonth: true,      //provide option to select Month
+    changeYear: true,       //provide option to select year
+    showButtonPanel: true,  // button panel having today and done button
+    dateFormat: 'MM-yy',    //set date format
+    onClose: function(dateText, inst) {
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+            $(this).blur();//remove focus input box
+            
+            Forperiod_button_validation();
+    }
+});
+$("#FIN_SRC_UPD_DEL_toforperiod_DB").focus(function () {
+    $(".ui-datepicker-calendar").hide();
+    $("#ui-datepicker-div").position({
+        my: "center top",
+        at: "center bottom",
+        of: $(this)
+    });
+});
+var CCRE_d = new Date();
+  var CCRE_year = CCRE_d.getFullYear()+2;
+  var changedmonth=new Date(CCRE_d.setFullYear(CCRE_year));
+  $('#FIN_SRC_UPD_DEL_toforperiod_DB').datepicker("option","maxDate",changedmonth);
+ $('#FIN_SRC_UPD_DEL_fromforperiod_DB').datepicker( {
+    changeMonth: true,      //provide option to select Month
+    changeYear: true,       //provide option to select year
+    showButtonPanel: true,  // button panel having today and done button
+    dateFormat: 'MM-yy',    //set date format
+    onClose: function(dateText, inst) {
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+            $(this).blur();//remove focus input box
+            FIN_SRC_forperiodtodate()
+            Forperiod_button_validation();
+    }
+});
+$("#FIN_SRC_UPD_DEL_fromforperiod_DB").focus(function () {
+    $(".ui-datepicker-calendar").hide();
+    $("#ui-datepicker-div").position({
+        my: "center top",
+        at: "center bottom",
+        of: $(this)
+    });
+});    
+var CCRE_d = new Date();
+  var CCRE_year = CCRE_d.getFullYear()+2;
+  var changedmonth=new Date(CCRE_d.setFullYear(CCRE_year));
+  $('#FIN_SRC_UPD_DEL_fromforperiod_DB').datepicker("option","maxDate",changedmonth);
+/////////////AMOUNT RANGE FOR PERIOD DATEPICKER //////////
+$('#FIN_SRC_UPD_DEL_db_amountfromforperiod').datepicker( {
+    changeMonth: true,      //provide option to select Month
+    changeYear: true,       //provide option to select year
+    showButtonPanel: true,  // button panel having today and done button
+    dateFormat: 'MM-yy',    //set date format
+    onClose: function(dateText, inst) {
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+            $(this).blur();//remove focus input box
+            amountrangeforperiodvalidation();
+            FIN_SRC_amountrangevalidation();
+    }
+});
+$("#FIN_SRC_UPD_DEL_db_amountfromforperiod").focus(function () {
+    $(".ui-datepicker-calendar").hide();
+    $("#ui-datepicker-div").position({
+        my: "center top",
+        at: "center bottom",
+        of: $(this)
+    });
+});  
+var CCRE_d = new Date();
+  var CCRE_year = CCRE_d.getFullYear()+2;
+  var changedmonth=new Date(CCRE_d.setFullYear(CCRE_year));
+  $('#FIN_SRC_UPD_DEL_db_amountfromforperiod').datepicker("option","maxDate",changedmonth);
+$('#FIN_SRC_UPD_DEL_db_amounttoforperiod').datepicker( {
+    changeMonth: true,      //provide option to select Month
+    changeYear: true,       //provide option to select year
+    showButtonPanel: true,  // button panel having today and done button
+    dateFormat: 'MM-yy',    //set date format
+    onClose: function(dateText, inst) {
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+            $(this).blur();//remove focus input box
+FIN_SRC_amountrangevalidation();
+    }
+});
+$("#FIN_SRC_UPD_DEL_db_amounttoforperiod").focus(function () {
+    $(".ui-datepicker-calendar").hide();
+    $("#ui-datepicker-div").position({
+        my: "center top",
+        at: "center bottom",
+        of: $(this)
+    });
+});
+var CCRE_d = new Date();
+  var CCRE_year = CCRE_d.getFullYear()+2;
+  var changedmonth=new Date(CCRE_d.setFullYear(CCRE_year));
+  $('#FIN_SRC_UPD_DEL_db_amounttoforperiod').datepicker("option","maxDate",changedmonth);
+/////////////UPDATION FORM DATEPICKER////////////////
+
+ $('#FIN_SRC_UPD_DEL_db_forperiod').datepicker( {
+    changeMonth: true,      //provide option to select Month
+    changeYear: true,       //provide option to select year
+    showButtonPanel: true,  // button panel having today and done button
+    dateFormat: 'MM-yy',    //set date format
+    onClose: function(dateText, inst) 
+    {
+        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+        $(this).datepicker('setDate', new Date(year, month, 1));//here set the date when closing.
+            $(this).blur();//remove focus input box
+            paymentform_upadation();
+    }
+});
+$("#FIN_SRC_UPD_DEL_db_forperiod").focus(function () {
+    $(".ui-datepicker-calendar").hide();
+    $("#ui-datepicker-div").position({
+        my: "center top",
+        at: "center bottom",
+        of: $(this)
+    });
+});          
+$("#FIN_SRC_UPD_DEL_db_paiddate").datepicker({
+ dateFormat: "dd-mm-yy",
+ changeMonth: true,     
+ changeYear: true});
+$('#FIN_SRC_UPD_DEL_db_paiddate').datepicker("option","maxDate",new Date());
+///////CUSTOMER NAME SEARCH CALL FUNCTION/////////////
+$('#FIN_SRC_UPD_DEL_btn_customersearchbutton').click(function(){
+$(".preloader").show(); 
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+var FIN_SRC_UPD_DEL_unit=$('#FIN_SRC_UPD_DEL_customerunitsearch_LB').val();
+var FIN_SRC_UPD_DEL_customer=$('#FIN_SRC_UPD_DEL_customernameselect_LB').val();
+var FIN_SRC_UPD_DEL_lbl_customerlabel=$('#FIN_SRC_UPD_DEL_main_LB').val();
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_searchresponse).FIN_SRC_paymentsearchoptions(FIN_SRC_UPD_DEL_unit,FIN_SRC_UPD_DEL_customer,'empty1','empty2','empty3',FIN_SRC_UPD_DEL_lbl_customerlabel)
+});
+/////////UNIT SEARCH CALL FUNCTION///////////////
+$('#FIN_SRC_UPD_DEL_btn_unitsearchbutton').click(function(){
+$(".preloader").show(); 
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+var FIN_SRC_UPD_DEL_unitvalue=$('#FIN_SRC_UPD_DEL_unitsearch_LB').val();
+var FIN_SRC_UPD_DEL_lbl_unitlabel=$('#FIN_SRC_UPD_DEL_main_LB').val();
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_searchresponse).FIN_SRC_paymentsearchoptions(FIN_SRC_UPD_DEL_unitvalue,'empty1','empty2','empty3','empty4',FIN_SRC_UPD_DEL_lbl_unitlabel)
+});
+//////////////FOR PERIOD SEARCH CALL FUNCTION////////////
+$('#FIN_SRC_UPD_DEL_btn_forperiodsearchbutton').click(function(){
+$(".preloader").show(); 
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+var FIN_SRC_UPD_DEL_periodstartdate=$('#FIN_SRC_UPD_DEL_fromforperiod_DB').val();
+var FIN_SRC_UPD_DEL_periodenddate=$('#FIN_SRC_UPD_DEL_toforperiod_DB').val();
+var FIN_SRC_UPD_DEL_lbl_periodlabel=$('#FIN_SRC_UPD_DEL_main_LB').val();
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_searchresponse).FIN_SRC_paymentsearchoptions(FIN_SRC_UPD_DEL_periodstartdate,FIN_SRC_UPD_DEL_periodenddate,'empty1','empty2','empty3',FIN_SRC_UPD_DEL_lbl_periodlabel)
+});
+//////////PAIDDATE SEARCH CALL FUNCTION/////////////
+$('#FIN_SRC_UPD_DEL_btn_paiddatesearchbutton').click(function(){
+$(".preloader").show(); 
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+var FIN_SRC_UPD_DEL_paiddatestartdate=$('#FIN_SRC_UPD_DEL_frompaiddate_DB').val();
+var FIN_SRC_UPD_DEL_paiddateenddate=$('#FIN_SRC_UPD_DEL_topaiddate_DB').val();
+var FIN_SRC_UPD_DEL_lbl_paiddatelabel=$('#FIN_SRC_UPD_DEL_main_LB').val();
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_searchresponse).FIN_SRC_paymentsearchoptions(FIN_SRC_UPD_DEL_paiddatestartdate,FIN_SRC_UPD_DEL_paiddateenddate,'empty1','empty2','empty3',FIN_SRC_UPD_DEL_lbl_paiddatelabel)
+});
+/////////AMOUNT RANGE SEARCH CALL FUNCTION////////////////
+$('#FIN_SRC_UPD_DEL_btn_amountrangesearchbutton').click(function(){
+$(".preloader").show(); 
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+var FIN_SRC_UPD_DEL_lbl_amountrangelabel=$('#FIN_SRC_UPD_DEL_main_LB').val();
+var FIN_SRC_UPD_DEL_db_amountfromperiod=$('#FIN_SRC_UPD_DEL_db_amountfromforperiod').val();
+var FIN_SRC_UPD_DEL_db_amounttoperiod=$('#FIN_SRC_UPD_DEL_db_amounttoforperiod').val();
+var FIN_SRC_UPD_DEL_tb_fromamount=$('#FIN_SRC_UPD_DEL_tb_fromamount').val();
+var FIN_SRC_UPD_DEL_tb_toamount=$('#FIN_SRC_UPD_DEL_tb_toamount').val();
+var FIN_SRC_UPD_DEL_lb_unit=$('#FIN_SRC_UPD_DEL_lb_amountrangesearch').val();
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_searchresponse).FIN_SRC_paymentsearchoptions(FIN_SRC_UPD_DEL_lb_unit,FIN_SRC_UPD_DEL_db_amountfromperiod,FIN_SRC_UPD_DEL_db_amounttoperiod,FIN_SRC_UPD_DEL_tb_fromamount,FIN_SRC_UPD_DEL_tb_toamount,FIN_SRC_UPD_DEL_lbl_amountrangelabel)
+});
+////////////CUSTOMER LISTBOX LOAD FUNCTION///////////////
+function CustomerResponse(response)
+{
+$('#FIN_SRC_UPD_DEL_customernamelberr_LBL').hide();
+var FIN_SRC_customer_array=[];
+FIN_SRC_customer_array=response;
+var unit=$('#FIN_SRC_UPD_DEL_customerunitsearch_LB').val();
+var FIN_SRC_options ='<option>SELECT</option>';
+if(FIN_SRC_customer_array.length!=0)
+{
+for (var i = 0; i < FIN_SRC_customer_array.length; i++) 
+{
+var customername=FIN_SRC_customer_array[i].replace('_',' ');
+FIN_SRC_options += '<option value="' + FIN_SRC_customer_array[i] + '">' + customername + '</option>';
+}
+$('#FIN_SRC_UPD_DEL_customernameselect_LB').html(FIN_SRC_options);
+$('#FIN_SRC_UPD_DEL_customername_LBL').show()
+$('#FIN_SRC_UPD_DEL_customernameselect_LB').show();
+}
+else
+{
+var cusromererrormsg=errormsg[4].replace("[UNIT NO]",unit);
+$('#FIN_SRC_UPD_DEL_customername_LBL').hide();
+$('#FIN_SRC_UPD_DEL_customernameselect_LB').hide();
+$('#FIN_SRC_UPD_DEL_customernamelberr_LBL').text(cusromererrormsg).show();
+}
+$(".preloader").hide(); 
+}
+///////////HTML TABLE LOAD FUNCTION/////////////////
+var SS_customerExtract_array=[];
+function FIN_searchresponse(unitsearchresult)
+{
+$('#FIN_SRC_UPD_DEL_lbl_error').text("");
+$('#FIN_SRC_UPD_DEL_btn_paymentextract').hide()
+$("#FIN_SRC_UPD_DEL_btn_rentalsearch").attr("disabled", "disabled");
+$("#FIN_SRC_UPD_DEL_btn_rentaldelete").attr("disabled", "disabled");
+var FIN_SRC_unitresult=[];
+FIN_SRC_unitresult=unitsearchresult[0];
+var FIN_SRC_UPD_DEL_label=unitsearchresult[1];
+if(FIN_SRC_unitresult.length > 10){ var px = '600px'}
+else
+{ 
+var x = FIN_SRC_unitresult.length*50;
+if(x <=100){var px = '155px'}
+else{
+var px = x+"px" }
+}
+if(FIN_SRC_unitresult.length == 1) {var px ="150px"}
+$('#FIN_SRC_UPD_DEL_div_htmltable').css('height',px)
+var value=''
+var value1='<thead class="srcresult"><tr><th width="20px"></th><th width="50px">UNIT</th><th width="200px">CUSTOMER</th><th width="60px">PAYMENT AMOUNT</th><th width="60px">DEPOSIT</th><th width="60px">PROCESSING FEE</th><th width="60px">CLEANING FEE</th><th width="60px">DEPOSIT REFUND</th><th width="100px">FOR PERIOD</th><th width="75px">PAID DATE</th><th width="250px">BANKREF COMMENTS</th><th width="150px">USERSTAMP</th><th width="100px">TIMESTAMP</th></tr></thead>'
+$('#FIN_SRC_UPD_DEL_lbl_error').show();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').html(value1);
+if(FIN_SRC_unitresult.length!=0)
+{
+for(var i=0;i<FIN_SRC_unitresult.length;i++)
+{
+var rowid=(i+1);
+var unitvalue=FIN_SRC_unitresult[i];
+var rentalid_recver=unitvalue.RENTALID+'-'+unitvalue.REC_VER+'-'+unitvalue.CUSTOMER_ID;
+if(unitvalue.amountflag!='X')
+{
+value='<tbody><tr><td><input id = '+rowid+' type="radio" name="radiobuttons" value= '+rentalid_recver+' class="FIN_SRC_radiobuttons_table"></td><td>'+unitvalue.UNIT+'</td><td>'+unitvalue.CUSTOMER+'</td><td>'+unitvalue.RENTAL+'</td><td>'+unitvalue.DEPOSIT+'</td><td>'+unitvalue.PROCESS+'</td><td>'+unitvalue.CLEAN+'</td><td>'+unitvalue.REFUND+'</td><td>'+unitvalue.FORPERIOD+'</td><td>'+unitvalue.PAIDDATE+'</td><td>'+unitvalue.COMMENTS+'</td><td>'+unitvalue.USER+'</td><td>'+unitvalue.TIME+'</td></tr>'
+}
+else
+{
+value='<tbody><tr><td><input id = '+rowid+' type="radio" name="radiobuttons" value= '+rentalid_recver+' class="FIN_SRC_radiobuttons_table"></td><td>'+unitvalue.UNIT+'</td><td>'+unitvalue.CUSTOMER+'</td><td><span style="background-color:#FF0000">'+unitvalue.RENTAL+'</span></td><td><span style="background-color:#FF0000">'+unitvalue.DEPOSIT+'</span></td><td><span style="background-color:#FF0000">'+unitvalue.PROCESS+'</span></td><td><span style="background-color:#FF0000">'+unitvalue.CLEAN+'</span></td><td><span style="background-color:#FF0000">'+unitvalue.REFUND+'</span></td><td>'+unitvalue.FORPERIOD+'</td><td>'+unitvalue.PAIDDATE+'</td><td>'+unitvalue.COMMENTS+'</td><td>'+unitvalue.USER+'</td><td>'+unitvalue.TIME+'</td></tr>'
+}
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').append(value);
+}
+}
+if(FIN_SRC_UPD_DEL_label==2)
+{
+var FIN_SRC_UPD_DEL_unitvalue=$('#FIN_SRC_UPD_DEL_unitsearch_LB').val();
+if((FIN_SRC_UPD_DEL_label==2)&&(FIN_SRC_unitresult.length!=0))
+{
+var FIN_SRC_UPD_DEL_errorflag=0;
+var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED UNIT : "+FIN_SRC_UPD_DEL_unitvalue
+$('#FIN_SRC_UPD_DEL_div_htmltable').show();
+}
+else
+{
+FIN_SRC_UPD_DEL_errorflag=1;
+FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED UNIT: "+FIN_SRC_UPD_DEL_unitvalue
+}
+}
+if(FIN_SRC_UPD_DEL_label==3)
+{
+var FIN_SRC_UPD_DEL_unit=$('#FIN_SRC_UPD_DEL_customerunitsearch_LB').val();
+var FIN_SRC_UPD_DEL_customer=$('#FIN_SRC_UPD_DEL_customernameselect_LB').val();
+FIN_SRC_UPD_DEL_customer=FIN_SRC_UPD_DEL_customer.replace('_',' ');
+FIN_SRC_UPD_DEL_errorflag=0;
+if((FIN_SRC_UPD_DEL_label==3)&&(FIN_SRC_unitresult.length!=0))
+{
+SS_customerExtract_array=unitsearchresult[0];
+$('#FIN_SRC_UPD_DEL_btn_paymentextract').show();
+var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED UNIT : "+FIN_SRC_UPD_DEL_unit+" AND CUSTOMER NAME :"+FIN_SRC_UPD_DEL_customer
+$('#FIN_SRC_UPD_DEL_div_htmltable').show();
+}
+else
+{
+FIN_SRC_UPD_DEL_errorflag=1;
+FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED UNIT : "+FIN_SRC_UPD_DEL_unit+" AND CUSTOMER NAME :"+FIN_SRC_UPD_DEL_customer
+}
+}
+if(FIN_SRC_UPD_DEL_label==4)
+{
+var FIN_SRC_UPD_DEL_periodstartdate=$('#FIN_SRC_UPD_DEL_fromforperiod_DB').val();
+var FIN_SRC_UPD_DEL_periodenddate=$('#FIN_SRC_UPD_DEL_toforperiod_DB').val();
+if((FIN_SRC_UPD_DEL_label==4)&&(FIN_SRC_unitresult.length!=0))
+{
+FIN_SRC_UPD_DEL_errorflag=0;
+var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED FOR PERIOD DATE RANGE : "+FIN_SRC_UPD_DEL_periodstartdate+" TO :"+FIN_SRC_UPD_DEL_periodenddate
+$('#FIN_SRC_UPD_DEL_div_htmltable').show();
+}
+else
+{
+FIN_SRC_UPD_DEL_errorflag=1;
+FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED FOR PERIOD DATE RANGE : "+FIN_SRC_UPD_DEL_periodstartdate+" TO :"+FIN_SRC_UPD_DEL_periodenddate
+}
+}
+if((FIN_SRC_UPD_DEL_label==5))
+{
+var FIN_SRC_UPD_DEL_paiddatestartdate=$('#FIN_SRC_UPD_DEL_frompaiddate_DB').val();
+var FIN_SRC_UPD_DEL_paiddateenddate=$('#FIN_SRC_UPD_DEL_topaiddate_DB').val();
+if((FIN_SRC_UPD_DEL_label==5)&&(FIN_SRC_unitresult.length!=0))
+{
+FIN_SRC_UPD_DEL_errorflag=0;
+var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED PAID DATE RANGE : "+FIN_SRC_UPD_DEL_paiddatestartdate+" TO :"+FIN_SRC_UPD_DEL_paiddateenddate
+$('#FIN_SRC_UPD_DEL_div_htmltable').show();
+}
+else
+{
+FIN_SRC_UPD_DEL_errorflag=1;
+FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED PAID DATE RANGE : "+FIN_SRC_UPD_DEL_paiddatestartdate+" TO :"+FIN_SRC_UPD_DEL_paiddateenddate
+}
+}
+if((FIN_SRC_UPD_DEL_label==6))
+{
+var FIN_SRC_UPD_DEL_db_amountfromperiod=$('#FIN_SRC_UPD_DEL_db_amountfromforperiod').val();
+var FIN_SRC_UPD_DEL_db_amounttoperiod=$('#FIN_SRC_UPD_DEL_db_amounttoforperiod').val();
+var FIN_SRC_UPD_DEL_tb_fromamount=$('#FIN_SRC_UPD_DEL_tb_fromamount').val();
+var FIN_SRC_UPD_DEL_tb_toamount=$('#FIN_SRC_UPD_DEL_tb_toamount').val();
+var FIN_SRC_UPD_DEL_lb_unit=$('#FIN_SRC_UPD_DEL_lb_amountrangesearch').val();
+if((FIN_SRC_UPD_DEL_label==6)&&(FIN_SRC_unitresult.length!=0))
+{
+FIN_SRC_UPD_DEL_errorflag=0;
+var FIN_SRC_UPD_DEL_unittableheader="DETAILS OF SELECTED UNIT : "+FIN_SRC_UPD_DEL_lb_unit+" AND FOR PERIOD :"+FIN_SRC_UPD_DEL_db_amountfromperiod+"TO :"+FIN_SRC_UPD_DEL_db_amounttoperiod+" AND AMOUNT :"+FIN_SRC_UPD_DEL_tb_fromamount+" TO :"+FIN_SRC_UPD_DEL_tb_toamount
+$('#FIN_SRC_UPD_DEL_div_htmltable').show();
+}
+else
+{
+FIN_SRC_UPD_DEL_errorflag=1;
+FIN_SRC_UPD_DEL_unittableheader="NO DETAILS OF SELECTED UNIT : "+FIN_SRC_UPD_DEL_lb_unit+" AND FOR PERIOD :"+FIN_SRC_UPD_DEL_lb_unit+" AND FOR PERIOD :"+FIN_SRC_UPD_DEL_db_amountfromperiod+"TO :"+FIN_SRC_UPD_DEL_db_amounttoperiod+" AND AMOUNT :"+FIN_SRC_UPD_DEL_tb_fromamount+" TO :"+FIN_SRC_UPD_DEL_tb_toamount
+}
+}
+if(FIN_SRC_UPD_DEL_errorflag==0)
+{
+$("#FIN_SRC_UPD_DEL_btn_rentalsearch").show();
+$("#FIN_SRC_UPD_DEL_btn_rentaldelete").show();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').show();
+$('#FIN_SRC_UPD_DEL_lbl_error').text(FIN_SRC_UPD_DEL_unittableheader);
+$('#FIN_SRC_UPD_DEL_lbl_error').removeClass("errormsg");
+$('#FIN_SRC_UPD_DEL_lbl_error').addClass("srctitle").show();
+}else
+{
+$("#FIN_SRC_UPD_DEL_btn_rentalsearch").hide();
+$("#FIN_SRC_UPD_DEL_btn_rentaldelete").hide();
+$('#FIN_SRC_UPD_DEL_tbl_htmltable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').text(FIN_SRC_UPD_DEL_unittableheader);
+$('#FIN_SRC_UPD_DEL_lbl_error').removeClass("srctitle");
+$('#FIN_SRC_UPD_DEL_lbl_error').addClass("errormsg").show();
+}
+$('#rentalupdate_table').hide();
+$('#buttontable').hide();
+$('#FIN_SRC_btn_table').show();
+$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').find('input[type=text]').val('');
+$("#FIN_SRC_UPD_DEL_unitsearch_LB")[0].selectedIndex = 0;
+$("#FIN_SRC_UPD_DEL_lb_amountrangesearch")[0].selectedIndex = 0;
+$("#FIN_SRC_UPD_DEL_customerunitsearch_LB")[0].selectedIndex = 0;
+$("#FIN_SRC_UPD_DEL_customernameselect_LB")[0].selectedIndex = 0;
+$("#FIN_SRC_UPD_DEL_customername_LBL").hide();
+$("#FIN_SRC_UPD_DEL_customernameselect_LB").hide();
+$("#FIN_SRC_UPD_DEL_btn_unitsearchbutton").attr("disabled", "disabled");
+$("#FIN_SRC_UPD_DEL_btn_customersearchbutton").attr("disabled", "disabled");
+$("#FIN_SRC_UPD_DEL_btn_forperiodsearchbutton").attr("disabled", "disabled");
+$("#FIN_SRC_UPD_DEL_btn_paiddatesearchbutton").attr("disabled", "disabled");
+$("#FIN_SRC_UPD_DEL_btn_amountrangesearchbutton").attr("disabled", "disabled");
+$(".preloader").hide(); 
+}
+$(document).on('change','.FIN_SRC_radiobuttons_table',function(){
+    $('#rentalupdate_table').hide();
+    $('#buttontable').hide();
+    $("#FIN_SRC_UPD_DEL_btn_rentalsearch").removeAttr("disabled");
+    $("#FIN_SRC_UPD_DEL_btn_rentaldelete").removeAttr("disabled");
+  });
+//////////////UPDATION RECORDS/////////////
+$(document).on('click','#FIN_SRC_UPD_DEL_btn_rentalsearch',function(){
+$('#rentalupdate_table').hide();
+$('#buttontable').hide();
+$(this).closest('tr').find('.colortext').css("color","red")
+var PAYMENT_SRC_id=$("input[name=radiobuttons]:checked").val();
+var paymentidsplit=PAYMENT_SRC_id.split('-');
+$(".preloader").show(); 
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_SRC_RentalupdateresultResponse).FIN_SRC_Paymentupdationdetails(paymentidsplit[0],paymentidsplit[1],paymentidsplit[2]);
+});
+///////////UPDATE FORM LOAD FUNCTION///////////////
+$('#FIN_SRC_UPD_DEL_btn_rentalupdate').click(function(){
+$(".preloader").show(); 
+var id=$('#FIN_SRC_UPD_DEL_tempid').val();
+var unit=$('#FIN_SRC_UPD_DEL_tb_tempunit').val();
+var customer=$('#FIN_SRC_UPD_DEL_tb_tempcustomer').val();
+var lp=$('#FIN_SRC_UPD_DEL_lb_leaseperiod').val();
+var amount=$('#FIN_SRC_UPD_DEL_tb_amount').val();
+var payment=$('#FIN_SRC_UPD_DEL_lb_payment').val();
+var period=$('#FIN_SRC_UPD_DEL_db_forperiod').val();
+var paiddate=$('#FIN_SRC_UPD_DEL_db_paiddate').val();
+var comments=$('#FIN_SRC_UPD_DEL_ta_comments').val();
+var flag=$('#payment_hilighted').is(":checked");
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_SRC_UPD_DEL_updatedeleteconformation).FIN_SRC_paymentupdation(id,unit,customer,lp,payment,amount,period,paiddate,comments,flag);
+});
+/////FOR PERIOD VALIDATION //
+$(document).on('change','.forperiodvalidation',function(){
+$(".preloader").hide();
+var FIN_ENTRY_id=$('#FIN_SRC_UPD_DEL_lb_leaseperiod').val();
+var paymenttype=$('#FIN_SRC_UPD_DEL_lb_payment').val();
+var datas=FIN_ENTRY_id.split('/');
+var startdatepayment=datas[0];
+var enddatepayment=datas[1];
+var id=datas[2];
+payymentformupdation(paymenttype,startdatepayment,enddatepayment)
+if($('#FIN_SRC_UPD_DEL_db_forperiod').val()=="" || $('#FIN_SRC_UPD_DEL_db_forperiod').val()== undefined)
+{
+$("#FIN_SRC_UPD_DEL_btn_rentalupdate").attr("disabled", "disabled");
+}
+$(".preloader").hide(); 
+});
+function payymentformupdation(paymenttype,startdatepayment,enddatepayment)
+{
+var startdateendday=startFormTableDateFormat(startdatepayment);
+if(paymenttype!='SELECT')
+{
+if(paymenttype=='DEPOSIT' || paymenttype=='PROCESSING FEE')
+{
+var paymentflag=1;
+var startdate=startdatepayment;
+var enddate=startdateendday;
+}
+if(paymenttype=='PAYMENT' || paymenttype=='CLEANING FEE')
+{
+ paymentflag=1;
+ startdate=startdatepayment;
+ enddate=enddatepayment;
+}
+if(paymenttype=='DEPOSIT REFUND')
+{
+paymentflag=1;
+var start_datedb=enddatepayment.split('-');
+var startdate=new Date(start_datedb[0],start_datedb[1]-1,0+1);
+var enddate=enddatepayment;
+enddate
+}
+if(paymentflag==1)
+{
+var FIN_ENTRY_db_chkindate1 = new Date( Date.parse(startdate)); 
+FIN_ENTRY_db_chkindate1.setDate( FIN_ENTRY_db_chkindate1.getDate());  
+var FIN_ENTRY_db_chkindate1 = FIN_ENTRY_db_chkindate1.toDateString(); 
+FIN_ENTRY_db_chkindate1 = new Date( Date.parse( FIN_ENTRY_db_chkindate1));
+$('#FIN_SRC_UPD_DEL_db_forperiod').datepicker("option","minDate",FIN_ENTRY_db_chkindate1);
+var FIN_ENTRY_db_chkoutdate1 = new Date( Date.parse(enddate)); 
+FIN_ENTRY_db_chkoutdate1.setDate( FIN_ENTRY_db_chkoutdate1.getDate());  
+var FIN_ENTRY_db_chkoutdate1 = FIN_ENTRY_db_chkoutdate1.toDateString(); 
+FIN_ENTRY_db_chkoutdate1 = new Date( Date.parse( FIN_ENTRY_db_chkoutdate1 )); 
+$('#FIN_SRC_UPD_DEL_db_forperiod').datepicker("option","maxDate",FIN_ENTRY_db_chkoutdate1);
+}
+}
+}
+function startFormTableDateFormat(inputdate){
+var string = inputdate.split("-");
+var newstartdate=new Date(string[0],string[1]-1,string[2]);
+var sd_day=newstartdate.getDate();
+var sd_month=newstartdate.getMonth();
+var sd_year=newstartdate.getFullYear();
+var new_startdate=new Date(sd_year,sd_month+1);
+var s_day=new_startdate.getDate();
+var s_month=new_startdate.getMonth();
+var s_year=new_startdate.getFullYear();
+var new_start_date=new Date(s_year,s_month,s_day-1);
+var fs_day=new_start_date.getDate();
+var fs_month=new_start_date.getMonth()+1;
+var fs_year=new_start_date.getFullYear();
+var finaldate=fs_year+'-'+fs_month+'-'+fs_day;
+return finaldate;
+}
+//////////////PAYMENT ROW DELETE FUNCTION/////////
+$('#FIN_SRC_UPD_DEL_btn_rentaldelete').click(function(){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH/UPDATE/DELETE",msgcontent:errormsg[6],confirmation:true}});
+});
+$(document).on('click','.messageconfirm',function(){
+$(".preloader").show(); 
+var PAYMENT_SRC_id=$("input[name=radiobuttons]:checked").val();
+var paymentidsplit=PAYMENT_SRC_id.split('-');
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_SRC_UPD_DEL_updatedeleteconformation).FIN_SRC_paymentdeletion(paymentidsplit[0]);
+});
+function FIN_SRC_RentalupdateresultResponse(Res)
+{
+ $("#FIN_SRC_UPD_DEL_btn_rentalsearch").attr("disabled", "disabled");
+ $("#FIN_SRC_UPD_DEL_btn_rentaldelete").attr("disabled", "disabled");
+$("#FIN_SRC_UPD_DEL_btn_rentalupdate").attr("disabled", "disabled")
+var response_reccord_array=[];
+response_reccord_array=Res[0];
+var recverdate=[];
+recverdate=Res[1];
+var allrecordverdetails=[];
+allrecordverdetails=Res[2];
+var paiddate_startdate=Res[3];
+var recstartdate=(paiddate_startdate).split('-');
+var recverstartdate=new Date(recstartdate[0]-1,recstartdate[1]-1,recstartdate[2]);
+$('#FIN_SRC_UPD_DEL_db_paiddate').datepicker("option","minDate",recverstartdate);
+
+var FIN_SRC_UPD_DEL_lpvalue='';
+var currentrecver=recverdate[0].recver;
+for (var i = 0; i <allrecordverdetails.length; i++)
+{
+var allrecordver=allrecordverdetails[i];
+var recverdetails=allrecordver.rec_start+'/'+allrecordver.rec_end+'/'+allrecordver.rec_recver;
+var allrecverlist=allrecordver.rec_recver;
+var recversionperiod=allrecordver.lpstartdate+'---'+allrecordver.lpenddate;
+if(allrecverlist==currentrecver)
+{
+FIN_SRC_UPD_DEL_lpvalue +='<option title='+recversionperiod+'  value="'+recverdetails+'" selected>' + allrecverlist + '</option>';
+}
+else
+{
+FIN_SRC_UPD_DEL_lpvalue +='<option title='+recversionperiod+'  value="'+recverdetails+'">' + allrecverlist + '</option>';
+}
+}
+$('#FIN_SRC_UPD_DEL_lb_leaseperiod').html(FIN_SRC_UPD_DEL_lpvalue);
+var startdate=recverdate[0].start;
+var enddate=recverdate[0].end;
+var detailsvalue=response_reccord_array[0];//.split('^');
+var paid_date=(detailsvalue.paymentpaiddate).split('-');
+$('#FIN_SRC_UPD_DEL_tempid').val(detailsvalue.paymentid);
+$('#FIN_SRC_UPD_DEL_tb_unit').val(detailsvalue.paymentunit);
+$('#FIN_SRC_UPD_DEL_tb_tempunit').val(detailsvalue.paymentunit);
+$('#FIN_SRC_UPD_DEL_tb_tempcustomer').val(detailsvalue.customerid);
+var FIN_SRC_UPD_DELcustomerdatavalue=(detailsvalue.paymentcustomer).replace("_"," ");
+var customernamelength=(detailsvalue.paymentcustomer).length;
+$('#FIN_SRC_UPD_DEL_tb_customer').val(FIN_SRC_UPD_DELcustomerdatavalue);
+$('#FIN_SRC_UPD_DEL_tb_customer').attr("size",customernamelength+5);
+$('#FIN_SRC_UPD_DEL_lb_payment').val(detailsvalue.paymenttype);
+$('#FIN_SRC_UPD_DEL_tb_amount').val(detailsvalue.paymentamount);
+var paymentflag=detailsvalue.paymentflag;
+if(paymentflag=='X')
+{
+$('#payment_hilighted').prop('checked',true);
+}
+else
+{
+$('#payment_hilighted').prop('checked',false);
+}
+$('#FIN_SRC_UPD_DEL_db_paiddate').val(paid_date[2]+'-'+paid_date[1]+'-'+paid_date[0]);
+$('#FIN_SRC_UPD_DEL_ta_comments').val(detailsvalue.paymentcomments);
+payymentformupdation(detailsvalue.paymenttype,startdate,enddate);
+$('#FIN_SRC_UPD_DEL_db_forperiod').val(detailsvalue.paymentperiod);
+$('#rentalupdate_table').show();
+$('#buttontable').show();
+$(".preloader").hide(); 
+}
+$('#FIN_SRC_UPD_DEL_lb_leaseperiod').change(function(){
+var lp=$('#FIN_SRC_UPD_DEL_lb_leaseperiod').val();
+$("#FIN_SRC_UPD_DEL_btn_rentalupdate").attr("disabled", "disabled");
+var lpdate=lp.split('/');
+var startdate=lpdate[0];
+var enddate=lpdate[1];
+var CCRE_db_chkindate1 = new Date( Date.parse(startdate)); 
+CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());  
+var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
+CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1));
+$('#FIN_SRC_UPD_DEL_db_forperiod').datepicker("option","minDate",CCRE_db_chkindate1);
+var CCRE_db_chkoutdate1 = new Date( Date.parse(enddate)); 
+CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate());  
+var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
+CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1 )); 
+var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate()
+var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()+1
+var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear()
+var CCRE_finnoticedate=CCRE_chkoutyear+"-"+CCRE_chkoutmonth+"-"+CCRE_chkoutdate;
+CCRE_finnoticedate = new Date( Date.parse( CCRE_finnoticedate ) ); 
+$('#FIN_SRC_UPD_DEL_db_forperiod').datepicker("option","maxDate",CCRE_db_chkoutdate1);
+});
+//////////////UPDATE CONFORMATION///////////////
+function FIN_SRC_UPD_DEL_updatedeleteconformation(updateresponse)
+{
+if(updateresponse=="UPDATION")
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:errormsg[3]}});
+}
+else if(updateresponse==1)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:errormsg[1]}});
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:updateresponse}});
+}
+$('#FIN_SRC_UPD_DEL_div_htmltable').hide();
+$('#rentalupdate_table').hide();
+$('#FIN_SRC_UPD_DEL_btn_paymentextract').hide()
+$('#buttontable').hide();
+$('#FIN_SRC_UPD_DEL_lbl_error').hide();
+$('#FIN_SRC_btn_table').hide();
+$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').find('input[type=text]').val('');
+$("#FIN_SRC_UPD_DEL_unitsearch_LB")[0].selectedIndex = 0;
+$("#FIN_SRC_UPD_DEL_customerunitsearch_LB")[0].selectedIndex = 0;
+$("#FIN_SRC_UPD_DEL_customernameselect_LB")[0].selectedIndex = 0;
+$("#FIN_SRC_UPD_DEL_customername_LBL").hide();
+$("#FIN_SRC_UPD_DEL_customernameselect_LB").hide()
+$(".preloader").hide(); 
+}
+//$('#FIN_SRC_UPD_DEL_db_amountfromforperiod').change(function()
+function amountrangeforperiodvalidation()
+{
+var startdate=FIN_SRC_forperiodconverttodate($('#FIN_SRC_UPD_DEL_db_amountfromforperiod').val());
+var FIN_SRC_UPD_DEL_date1=startdate;
+var FIN_SRC_UPD_DEL_db_chkindate1 = new Date( Date.parse( FIN_SRC_UPD_DEL_date1)); 
+FIN_SRC_UPD_DEL_db_chkindate1.setDate( FIN_SRC_UPD_DEL_db_chkindate1.getDate());  
+var FIN_SRC_UPD_DEL_db_chkindate1 = FIN_SRC_UPD_DEL_db_chkindate1.toDateString(); 
+FIN_SRC_UPD_DEL_db_chkindate1 = new Date( Date.parse( FIN_SRC_UPD_DEL_db_chkindate1));
+$('#FIN_SRC_UPD_DEL_db_amounttoforperiod').datepicker("option","minDate",FIN_SRC_UPD_DEL_db_chkindate1);
+}
+
+//$('#FIN_SRC_UPD_DEL_fromforperiod_DB').change(function(){
+function FIN_SRC_forperiodtodate()
+{
+var startdate=FIN_SRC_forperiodconverttodate($('#FIN_SRC_UPD_DEL_fromforperiod_DB').val());
+var FIN_SRC_UPD_DEL_date1=startdate;
+var FIN_SRC_UPD_DEL_db_chkindate1 = new Date( Date.parse( FIN_SRC_UPD_DEL_date1)); 
+FIN_SRC_UPD_DEL_db_chkindate1.setDate( FIN_SRC_UPD_DEL_db_chkindate1.getDate());  
+var FIN_SRC_UPD_DEL_db_chkindate1 = FIN_SRC_UPD_DEL_db_chkindate1.toDateString(); 
+FIN_SRC_UPD_DEL_db_chkindate1 = new Date( Date.parse( FIN_SRC_UPD_DEL_db_chkindate1));
+$('#FIN_SRC_UPD_DEL_toforperiod_DB').datepicker("option","minDate",FIN_SRC_UPD_DEL_db_chkindate1);
+}
+function FIN_SRC_forperiodconverttodate(searchinput)
+{
+var FIN_SRC_UPD_DEL_fromperiod=searchinput.split('-');
+var FIN_ENTRY_monthlist=['January','February','March','April','May','June','July','August','September','October','November','December'];
+for(var i=0;i<FIN_ENTRY_monthlist.length;i++)
+{
+if(FIN_ENTRY_monthlist[i]==FIN_SRC_UPD_DEL_fromperiod[0])
+{
+var FIN_ENTRY_frommonth=parseInt(i)+1;
+break;
+}
+}
+var dateformat=FIN_SRC_UPD_DEL_fromperiod[1]+'-'+FIN_ENTRY_frommonth+'-'+01
+return dateformat;
+}
+$('#FIN_SRC_UPD_DEL_btn_paymentextract').click(function(){
+$(".preloader").show();
+google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_SRC_UPD_DEL_extractconformation).FIN_SRC_CustomerPaymentDetails(SS_customerExtract_array);
+});
+function FIN_SRC_UPD_DEL_extractconformation()
+{
+$(".preloader").hide();
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:"SELECTED CUSTOMER DETAILS EXTRACTED IN SPREADSHEET"}});
+}
+function FIN_SRC_error_message(FIN_SRC_err)
+{
+if(FIN_SRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+FIN_SRC_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').replaceWith('<center><label class="dberrormsg">'+FIN_SRC_err+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:FIN_SRC_err}});
+}
+$(".preloader").hide(); 
+}
+});
+</script>
+
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>PAYMENT SEARCH AND UPDATE</h3>
+<p>
+</div>
+</div>
+<form id='FIN_SRC_errormessageform'>
+<table id='FIN_SRC_errormessagetable'>
+</table>
+</form>
+<form class="content" id="FIN_SRC_UPD_DEL_rentalsearchmain_form">
+<table>
+<tr>
+<td>
+<label class="fontstyle">PAYMENT SEARCH BY<em>*</em></label>
+</td>
+<td>
+<select id='FIN_SRC_UPD_DEL_main_LB' name="FIN_SRC_UPD_DEL_main_LB">
+<option>SELECT</option>
+</select>
+</tr>
+</table>
+<table cellspacing="5px" id="rentalunitsearch_table">
+<tr>
+<td>
+<label class="srctitle" id="FIN_SRC_UPD_DEL_lbl_unitlabel" name="FIN_SRC_UPD_DEL_lbl_unitlabel"> UNIT SEARCH </label>
+</td>
+</tr>
+<tr>
+<td>
+<label>UNIT<em>*</em></label>
+</td>
+<td>
+<select id='FIN_SRC_UPD_DEL_unitsearch_LB' name="FIN_SRC_UPD_DEL_unitsearch_LB" style="width:75px;height:25px">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_unitsearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_unitsearch()"/>
+</td>
+</tr>
+</table>
+<table cellspacing="5px" id="FIN_SRC_UPD_DEL_tble_rentalcustomersearch">
+<tr>
+<td>
+<label class="srctitle"> CUSTOMER NAME SEARCH </label>
+</td>
+</tr>
+<tr>
+<td>
+<label class="fontstyle">UNIT<em>*</em></label>
+</td>
+<td>
+<select id='FIN_SRC_UPD_DEL_customerunitsearch_LB' name="FIN_SRC_UPD_DEL_customerunitsearch_LB" style="width:75px;height:25px">
+<option>SELECT</option>
+</select>
+</tr>
+<td>
+<label id="FIN_SRC_UPD_DEL_customername_LBL">CUSTOMER NAME<em>*</em></label>
+</td>
+<td>
+<select name="FIN_SRC_UPD_DEL_customernameselect_LB" id="FIN_SRC_UPD_DEL_customernameselect_LB">
+<option>SELECT</option>
+</select>
+</td>
+<tr>
+<td>
+</td>
+<td>
+<label id="FIN_SRC_UPD_DEL_customernamelberr_LBL" class="errormsg" hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_customersearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_customernamesearch()"/>
+</td>
+</tr>
+</table>
+<table cellspacing="5px" id="FIN_SRC_UPD_DEL_tble_rentalforperiodsearch">
+<tr>
+<td>
+<label class="srctitle">FOR PERIOD SEARCH </label>
+</td>
+</tr>
+<tr>
+<td>
+<label>FROM DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_fromforperiod_DB" id="FIN_SRC_UPD_DEL_fromforperiod_DB" class="forperiodvalidate" style="width:105px;height:20px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>TO DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_toforperiod_DB" id="FIN_SRC_UPD_DEL_toforperiod_DB" class="forperiodvalidate" style="width:105px;height:20px"/>
+</td>
+</tr>
+<tr>
+<td>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_forperiodsearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_forperiodsearch()"/>
+</td>
+</tr>
+</table>
+<table cellspacing="5px" id="FIN_SRC_UPD_DEL_tble_rentalpaiddatesearch">
+<tr>
+<td>
+<label class="srctitle"> PAIDDATE SEARCH </label>
+</td>
+</tr>
+<tr>
+<td>
+<label>FROM DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_frompaiddate_DB" id="FIN_SRC_UPD_DEL_frompaiddate_DB" class="datemandtry" style="width:75px;height:20px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>TO DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_topaiddate_DB" id="FIN_SRC_UPD_DEL_topaiddate_DB" class="datemandtry" style="width:75px;height:20px"/>
+</td>
+</tr>
+<tr>
+<td>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_paiddatesearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_paiddatesearch()"/>
+</td>
+</tr>
+</table>
+<table cellspacing="5px" id="FIN_SRC_UPD_DEL_tble_amountrangetable">
+<tr>
+<td>
+<label class="srctitle"> AMOUNT RANGE SEARCH </label>
+</td>
+</tr>
+<tr>
+<td>
+<label>UNIT<em>*</em></label>
+</td>
+<td>
+<select id='FIN_SRC_UPD_DEL_lb_amountrangesearch' name="FIN_SRC_UPD_DEL_lb_amountrangesearch" class="amountrange" style="width:75px;height:25px">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<label>FROM DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_db_amountfromforperiod" id="FIN_SRC_UPD_DEL_db_amountfromforperiod" class="amountrange datemandtry" style="width:105px;height:20px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>TO DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_db_amounttoforperiod" id="FIN_SRC_UPD_DEL_db_amounttoforperiod" class="amountrange datemandtry" style="width:105px;height:20px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>FROM AMOUNT<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_tb_fromamount" id="FIN_SRC_UPD_DEL_tb_fromamount" class="amtonly amountrange" style="width:55px;"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>TO AMOUNT<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_tb_toamount" id="FIN_SRC_UPD_DEL_tb_toamount" class="amtonly amountrange" style="width:55px;"/>
+</td>
+<td>
+<label id="FIN_SRC_amounterrormsg" class="errormsg"></label>
+</td>
+</tr>
+<tr>
+<td>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_amountrangesearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_amountrangesearch()"/>
+</td>
+</tr>
+</table>
+<table id="FIN_SRC_UPD_DEL_tble_header">
+<tr>
+<label align='bottom' name='error' id='FIN_SRC_UPD_DEL_lbl_error' class="srctitle" visible="false"></label>
+</tr>
+</table>
+<div id="FIN_SRC_UPD_DEL_div_htmltable" style="width:2020px; height: 500px; overflow:auto;">
+<table id="FIN_SRC_UPD_DEL_tbl_htmltable" border="1" cellspacing="0" class="srcresult" style="width:2000px">
+</table>
+</div>
+<div id="FIN_SRC_btn_table" hidden>
+<table><tr><td><input type="button" id="FIN_SRC_UPD_DEL_btn_rentalsearch" class="maxbtn" value="SEARCH" disabled/></td>
+<td><input type="button" id="FIN_SRC_UPD_DEL_btn_rentaldelete" class="maxbtn" value="DELETE" disabled/></td>
+<td><input type="button" id="FIN_SRC_UPD_DEL_btn_paymentextract" class="maxbtn" value="EXTRACT" hidden /></td></tr>
+</table>
+</div>
+<table cellspacing="5px" id="rentalupdate_table">
+<tr>
+</tr>
+<tr>
+</tr>
+<tr>
+</tr>
+<tr>
+<td>
+<label class="srctitle">PAYMENT UPDATION FORM </label>
+</td>
+</tr>
+<tr>
+<td>
+<label>UNIT<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_tb_unit" id="FIN_SRC_UPD_DEL_tb_unit" style="width:40px" disabled/>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_tb_tempunit_TB" id="FIN_SRC_UPD_DEL_tb_tempunit" hidden/>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_tempid" id="FIN_SRC_UPD_DEL_tempid" style="width:40px" hidden/>
+</td>
+</tr>
+<tr>
+<td>
+<label>CUSTOMER<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_tb_customer" id="FIN_SRC_UPD_DEL_tb_customer" class="FIN_SRC_UPD_DEL_btn_validation" disabled/>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_tb_tempcustomer" id="FIN_SRC_UPD_DEL_tb_tempcustomer" hidden/>
+</td>
+</tr>
+<tr>
+<td>
+<label>LEASE PERIOD<em>*</em></label>
+</td>
+<td>
+<select name="FIN_SRC_UPD_DEL_lb_leaseperiod" id="FIN_SRC_UPD_DEL_lb_leaseperiod" class="FIN_SRC_UPD_DEL_btn_validation forperiodvalidation">
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<label>PAYMENT TYPE<em>*</em></label>
+</td>
+<td>
+<select id='FIN_SRC_UPD_DEL_lb_payment' name="FIN_SRC_UPD_DEL_lb_payment" class="FIN_SRC_UPD_DEL_btn_validation forperiodvalidation">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<label>AMOUNT<em>*</em></label>
+</td>
+<td>
+<table>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_tb_amount" id="FIN_SRC_UPD_DEL_tb_amount" class="FIN_SRC_UPD_DEL_btn_validation " style="width:60px;"/>
+</td>
+<td>
+<input type="checkbox" class="amountcheckbox FIN_SRC_UPD_DEL_btn_validation" name="checkbox" id="payment_hilighted"/>
+</td>
+</table>
+</tr>
+<tr>
+<td>
+<label>FOR PERIOD<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_db_forperiod" id="FIN_SRC_UPD_DEL_db_forperiod" class="FIN_SRC_UPD_DEL_btn_validation datemandtry" style="width:105px;"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>PAID DATE<em>*</em></label>
+</td>
+<td>
+<input type="text" name="FIN_SRC_UPD_DEL_db_paiddate" id="FIN_SRC_UPD_DEL_db_paiddate" class="FIN_SRC_UPD_DEL_btn_validation datemandtry" style="width:75px;"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>BANKREF COMMENTS</label>
+</td>
+<td>
+<textarea row="2" name="FIN_SRC_UPD_DEL_ta_comments" id="FIN_SRC_UPD_DEL_ta_comments" class="FIN_SRC_UPD_DEL_btn_validation"></textarea>
+</td>
+</tr>
+<tr>
+<table id="buttontable">
+<td>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_rentalupdate" class="maxbtn" value="UPDATE" disabled/>
+</td>
+</table>
+</tr>
+</table>
+</form>
+</body>
+</html>

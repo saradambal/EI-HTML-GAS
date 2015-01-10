@@ -1,0 +1,320 @@
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//*******************************************CONFIGURATION ENTRY*********************************************//
+<!--DONE BY:SARADAMBAL
+VER 1.2-SD:09/06/2014 ED:12/06/2014,TRACKER NO:689,implemented script for commit and failure function,add trim function  
+VER 1.1-SD:07/06/2014 ED:07/06/2014,TRACKER NO:689,updated new drive link
+VER 1.0-SD:28/05/2014 ED:28/05/2014,TRACKER NO:689,implemented dd amt as 3 digit
+VER 0.09-SD:06/03/2014 ED:06/03/2014,TRACKER NO:689,reduced coding and implemented array concept for already exists data
+VER 0.08-SD:11/02/2014 ED:15/02/2014,TRACKER NO:689,implemented eilib function for errormsg and special character for data,implemented script flag for whether the data are inserted or not,again checked all configuration,included one function to retrieve tableid 
+VER 0.07-SD:13/01/2014 ED:20/01/2014,TRACKER NO:689,remove uppercase for folder ids,include uppercase for some other data,creating textbox through jquery not html for data,changed h3 tag
+VER 0.06-SD:28/12/2013 ED:07/01/2014,TRACKER NO:689,changed form alignment tag & userstamp syntax,included hidden textbox for dd amt,done amt validation while save btn validation,included report configuration data
+VER 0.05-SD:10/12/2013 ED:10/12/2013,updated failure function
+VER 0.04-SD:08/11/2013 ED:14/11/2013,updated sub type for deposit deduction,already exists for sub type,remove module name which are not having type,implemented validation for save button,updated primary id instead of using data
+VER 0.03-SD:08/10/2013 ED:08/10/2013,updated head tag links & implement return function
+VER 0.02-SD:28/09/2013 ED:30/09/2013,updated eilib connection,message box,preloader,removed scriplet,change table name for payment,change blur function
+VER 0.01-INITIAL VERSION,TRACKER NO:271,START DATE:31/07/2013,END DATE:21/08/2013 -->
+<html>
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<script>
+/*----------------------------------------------- FAILURE FUNTION----------------------------------*/
+function CONF_ENTRY_onFailure(CONF_ENTRY_err)
+{
+$(".preloader").hide();
+if(CONF_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+CONF_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#CONF_ENTRY_form_Save').replaceWith('<center><label class="dberrormsg">'+CONF_ENTRY_err+'</label></center>');
+}
+else{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION ENTRY",msgcontent:CONF_ENTRY_err.message}});
+}}
+$(document).ready(function(){  
+/*------------------------------------------FUNCTION FOR FETCHING ERROR MSG & MODULE FROM SQL------------------------------------*/
+$(".preloader").show();
+google.script.run.withSuccessHandler(CONF_ENTRY_success_module_err).withFailureHandler(CONF_ENTRY_onFailure).CONF_ENTRY_module_errormsg();
+var CONF_ENTRY_module_arr=[];
+var CONF_ENTRY_errmsg_arr=[];
+var CONF_ENTRY_data_flag=1;
+var CONF_ENTRY_subtype_flag=1;
+var CONF_ENTRY_glb_dataarr=[];
+/*------------------------------------------SUCCESS FUNCTION FOR FETCHING ERROR MSG & MODULE FROM SQL------------------------------------*/
+function CONF_ENTRY_success_module_err(CONF_ENTRY_response){
+$(".preloader").hide();
+CONF_ENTRY_module_arr=CONF_ENTRY_response.CONF_ENTRY_module;
+CONF_ENTRY_errmsg_arr=CONF_ENTRY_response.CONF_ENTRY_errormsg;
+var CONF_ENTRY_options ='<option>SELECT</option>';
+for (var i = 0; i < CONF_ENTRY_module_arr.length; i++) {
+CONF_ENTRY_options += '<option value="' + CONF_ENTRY_module_arr[i].CONF_ENTRY_module_id  + '">' + CONF_ENTRY_module_arr[i].CONF_ENTRY_module_data + '</option>';
+}
+$('#CONF_ENTRY_lb_Profile').html(CONF_ENTRY_options);
+$('#CONF_ENTRY_form_Save').show();
+$('#CONF_ENTRY_btn_Save').hide();
+$('#CONF_ENTRY_btn_Reset').hide();
+}
+var CONF_ENTRY_flagdata='';
+/*-----------------------------------------------------AUTOSIZE VALIDATION FOR DATA------------------------------*/
+$('#CONF_ENTRY_tb_subtype_dd').doValidation({rule:'general',prop:{autosize:true}});
+/*------------------------------------------------------CHANGE EVENT FOR MODULE----------------------------------*/
+$('#CONF_ENTRY_lb_Profile').change(function(){
+var CONF_ENTRY_profileName = $(this).val();
+$('#CONF_ENTRY_form_Save').find('input:text').prop("size","20");
+$('#CONF_ENTRY_lb_Type').hide();
+$('#CONF_ENTRY_lbl_Type').hide();
+$('#CONF_ENTRY_lbl_Data,#CONF_ENTRY_tb_Datadd').hide();
+$('#CONF_ENTRY_tb_Data').hide();
+$('#CONF_ENTRY_btn_Save').hide();
+$('#CONF_ENTRY_btn_Reset').hide();
+$("#CONF_ENTRY_tr_dd").hide();
+$('#CONF_ENTRY_div_uniquedata').text('')
+$('#CONF_ENTRY_div_uniquesubtype').text('');
+$("#CONF_ENTRY_tb_subtype_dd").removeClass('invalid');
+$("#CONF_ENTRY_tb_Data").removeClass('invalid');
+if(CONF_ENTRY_profileName!='SELECT'){
+$(".preloader").show(); 
+$('#CONF_ENTRY_lb_Type').val('SELECT');
+$('#CONF_ENTRY_lbl_Data').hide();
+$('#CONF_ENTRY_tb_Data,#CONF_ENTRY_tb_Datadd').hide();
+$('#CONF_ENTRY_btn_Save').hide();
+$('#CONF_ENTRY_btn_Reset').hide();
+google.script.run.withSuccessHandler(CONF_ENTRY_onSuccess).withFailureHandler(CONF_ENTRY_onFailure).CONF_ENTRY_selectModule(CONF_ENTRY_profileName);
+$('#CONF_ENTRY_lbl_errprofile').replaceWith('<label id="CONF_ENTRY_lbl_Type" name="CONF_ENTRY_lbl_Type" hidden>TYPE<em style="color:red">*</em></label>');
+}});
+/*------------------------------------------SUCCESS FUNCTION WHEN VALUES ARE INSERTED------------------------------------*/
+function CONF_ENTRY_onSuccess(CONF_ENTRY_response){
+$(".preloader").hide(); 
+var CONF_ENTRY_types_array= [];
+CONF_ENTRY_types_array=CONF_ENTRY_response
+if(CONF_ENTRY_types_array.length!=0){
+var options ='<option>SELECT</option>';
+for (var i = 0; i < CONF_ENTRY_types_array.length; i++) {
+options += '<option value="' + CONF_ENTRY_types_array[i].CONF_ENTRY_type_id  + '">' + CONF_ENTRY_types_array[i].CONF_ENTRY_type_data + '</option>';
+}
+$('#CONF_ENTRY_lb_Type').html(options)
+$('#CONF_ENTRY_lbl_Type').show();
+$('#CONF_ENTRY_lb_Type').show();
+}
+/*-------------------------------------------ERROR MESSAGE FOR HAVING NO TYPE FOR MODULE-------------------------------*/
+else{
+var CONF_ENTRY_profileName=$('#CONF_ENTRY_lb_Profile').find('option:selected').text();
+var CONF_ENTRY__errTypeno=CONF_ENTRY_errmsg_arr[1];
+var CONF_ENTRY_errmsgno =CONF_ENTRY__errTypeno.replace('[MODULE NAME]',CONF_ENTRY_profileName);
+$('#CONF_ENTRY_lb_Type').hide();
+$('#CONF_ENTRY_lbl_Type').replaceWith('<label style="color:red;width=300" id="CONF_ENTRY_lbl_errprofile" name="CONF_ENTRY_lbl_errprofile" >'+CONF_ENTRY_errmsgno+'</label>');
+}}
+/*--------------------------------------------CHANGE EVENT FOR TYPE------------------------------------------------------*/ 
+$('#CONF_ENTRY_tb_subtype_dd').blur(function(){
+if($('#CONF_ENTRY_tb_subtype_dd').val().length==0){
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+$('#CONF_ENTRY_div_uniquesubtype').text('');
+$("#CONF_ENTRY_tb_subtype_dd").removeClass('invalid');
+}
+else if($('#CONF_ENTRY_tb_subtype_dd').val()!=''){
+var CONF_ENTRY_flag_dataexistis=1;
+for(var i=0;i<CONF_ENTRY_glb_dataarr.length;i++){
+if($('#CONF_ENTRY_tb_subtype_dd').val()==CONF_ENTRY_glb_dataarr[i]){
+CONF_ENTRY_flag_dataexistis=0;
+break;
+}}
+if(CONF_ENTRY_flag_dataexistis==1){
+CONF_ENTRY_subtype_flag=1;
+$("#CONF_ENTRY_btn_Save").removeAttr("disabled");
+$('#CONF_ENTRY_div_uniquesubtype').text('');
+$("#CONF_ENTRY_tb_subtype_dd").removeClass('invalid');
+}
+else if(CONF_ENTRY_flag_dataexistis==0){
+CONF_ENTRY_subtype_flag=0;
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+var CONF_ENTRY_errmsg =CONF_ENTRY_errmsg_arr[3].replace('[TYPE]',$('#CONF_ENTRY_lb_Type').find('option:selected').text());
+$('#CONF_ENTRY_div_uniquesubtype').text(CONF_ENTRY_errmsg);
+$("#CONF_ENTRY_tb_subtype_dd").addClass('invalid');
+}
+if($("#CONF_ENTRY_lb_Type").val()==42){
+if(($('#CONF_ENTRY_tb_Datadd').val()=='')||(CONF_ENTRY_response_alreadyexist_subtype==false)||($('#CONF_ENTRY_tb_subtype_dd').val()=='')||(CONF_ENTRY_subtype_flag==0)||(CONF_ENTRY_data_flag==0))
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+else
+$("#CONF_ENTRY_btn_Save").removeAttr("disabled");
+}}});
+/*--------------------------------------------CHANGE EVENT FOR TYPE------------------------------------------------------*/ 
+$('#CONF_ENTRY_lb_Type').change(function(){
+var CONF_ENTRY_types = $(this).val();
+$("#CONF_ENTRY_div_updata").html('')
+$('<input type="text" name="CONF_ENTRY_tb_Data" id="CONF_ENTRY_tb_Data">').appendTo($("#CONF_ENTRY_div_updata"));
+$("#CONF_ENTRY_tb_Data,#CONF_ENTRY_tb_Datadd").val('');
+$('#CONF_ENTRY_form_Save').find('input:text').prop("size","20");
+$("#CONF_ENTRY_tb_subtype_dd").val('');
+$('#CONF_ENTRY_lbl_Data').hide();
+$('#CONF_ENTRY_tb_Data').hide();
+$('#CONF_ENTRY_btn_Save').hide();
+$('#CONF_ENTRY_btn_Reset').hide();
+$("#CONF_ENTRY_tb_Datadd").hide();
+$('#CONF_ENTRY_lbl_errprofile').hide();
+$('#CONF_ENTRY_div_uniquedata').text('');
+$('#CONF_ENTRY_div_uniquesubtype').text('');
+$("#CONF_ENTRY_tb_Data").removeClass('invalid');
+$("#CONF_ENTRY_tb_subtype_dd").removeClass('invalid');
+$("#CONF_ENTRY_tr_dd").hide();
+if(CONF_ENTRY_types!='SELECT'){
+var CONF_ENTRY_flag='CONF_ENTRY_flagdata';
+google.script.run.withSuccessHandler(CONF_ENTRY_alreadyexist).withFailureHandler(CONF_ENTRY_onFailure).CONF_ENTRY_save($("#CONF_ENTRY_lb_Profile").val(),$('#CONF_ENTRY_lb_Type').find('option:selected').text(),$('#CONF_ENTRY_tb_Data').val(),CONF_ENTRY_flag,$("#CONF_ENTRY_tb_subtype_dd").val(),$('#CONF_ENTRY_lb_Type').val());
+$(".preloader").show(); 
+}});
+/*--------------------------------------------CHANGE EVENT FOR DATA-------------------------------------------------*/
+$(document).on('blur','#CONF_ENTRY_tb_Data,#CONF_ENTRY_tb_Datadd',function(){
+var CONF_ENTRY_data = $('#CONF_ENTRY_tb_Data').val().trim();
+var CONF_ENTRY_profileName = $('#CONF_ENTRY_lb_Profile').val();
+var CONF_ENTRY_types = $('#CONF_ENTRY_lb_Type').find('option:selected').text();
+var CONF_ENTRY_flag='CONF_ENTRY_flagdata';
+if(($("#CONF_ENTRY_lb_Type").val()==42)&&($('#CONF_ENTRY_tb_Datadd').val()!='')){
+CONF_ENTRY_data=$("#CONF_ENTRY_tb_Datadd").val();
+if(($('#CONF_ENTRY_tb_Datadd').val()=='')||(parseInt($('#CONF_ENTRY_tb_Datadd').val())==0)||($('#CONF_ENTRY_tb_subtype_dd').val()=='')||(CONF_ENTRY_subtype_flag==0))
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+else
+$("#CONF_ENTRY_btn_Save").removeAttr("disabled");
+}
+else if((CONF_ENTRY_data=='')||(CONF_ENTRY_profileName=='SELECT')||(CONF_ENTRY_types=='SELECT'))
+{
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+$('#CONF_ENTRY_div_uniquedata').text('');
+$("#CONF_ENTRY_tb_Data").removeClass('invalid');
+}
+else if(($('#CONF_ENTRY_lb_Type').val()!=42)&&(CONF_ENTRY_data!='')&&(CONF_ENTRY_profileName!='SELECT')&&(CONF_ENTRY_types!='SELECT'))
+{
+var CONF_ENTRY_flag_dataexistis=1;
+for(var i=0;i<CONF_ENTRY_glb_dataarr.length;i++){
+if(CONF_ENTRY_data==CONF_ENTRY_glb_dataarr[i]){
+CONF_ENTRY_flag_dataexistis=0;
+break;
+}}
+if(CONF_ENTRY_flag_dataexistis==1){
+$("#CONF_ENTRY_btn_Save").removeAttr("disabled");
+$('#CONF_ENTRY_div_uniquedata').text('');
+$("#CONF_ENTRY_tb_Data").removeClass('invalid');
+}
+else if(CONF_ENTRY_flag_dataexistis==0){
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+var CONF_ENTRY_errmsg =CONF_ENTRY_errmsg_arr[2].replace('[TYPE]',$('#CONF_ENTRY_lb_Type').find('option:selected').text());
+$('#CONF_ENTRY_div_uniquedata').text(CONF_ENTRY_errmsg);
+$("#CONF_ENTRY_tb_Data").addClass('invalid');
+}}});
+/*------------------------------------------SUCCESS FUNCTION FOR CHECK UNIQUE DATA-------------------------------------------*/
+function CONF_ENTRY_alreadyexist(CONF_ENTRY_response){
+$(".preloader").hide();
+var CONF_ENTRY_types = $('#CONF_ENTRY_lb_Type').val();
+CONF_ENTRY_glb_dataarr=CONF_ENTRY_response;
+$("#CONF_ENTRY_tb_Data").val('');
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+$('#CONF_ENTRY_lbl_Data').show();
+$('#CONF_ENTRY_btn_Save').show();
+$('#CONF_ENTRY_btn_Reset').show();
+if(CONF_ENTRY_types==42){
+$("#CONF_ENTRY_tr_dd").show();
+$("#CONF_ENTRY_tb_Data").hide();
+$("#CONF_ENTRY_tb_Datadd").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}}).show();
+}
+else if(($("#CONF_ENTRY_lb_Type").val()==12)||($("#CONF_ENTRY_lb_Type").val()==5)||($("#CONF_ENTRY_lb_Type").val()==6)||($("#CONF_ENTRY_lb_Type").val()==47)||($("#CONF_ENTRY_lb_Type").val()==7)||($("#CONF_ENTRY_lb_Type").val()==29)||($("#CONF_ENTRY_lb_Type").val()==49)||($("#CONF_ENTRY_lb_Type").val()==45)||($("#CONF_ENTRY_lb_Type").val()==46)||($("#CONF_ENTRY_lb_Type").val()==44)||($("#CONF_ENTRY_lb_Type").val()==48)||($("#CONF_ENTRY_lb_Type").val()==30))
+$("#CONF_ENTRY_tb_Data").doValidation({rule:'general',prop:{uppercase:false,autosize:true}}).show();
+else
+$("#CONF_ENTRY_tb_Data").doValidation({rule:'general',prop:{uppercase:true,autosize:true}}).show();
+}
+/*------------------------------------------CLICK EVENT FOR SAVE BUTTON------------------------------------------------*/
+$('#CONF_ENTRY_btn_Save').click(function(){
+$(".preloader").show(); 
+var CONF_ENTRY_profileName = $('#CONF_ENTRY_lb_Profile').val();
+var CONF_ENTRY_types = $('#CONF_ENTRY_lb_Type').find('option:selected').text();
+var CONF_ENTRY_data = $('#CONF_ENTRY_tb_Data').val();
+if($("#CONF_ENTRY_lb_Type").val()==42)
+CONF_ENTRY_data=$("#CONF_ENTRY_tb_Datadd").val();
+var CONF_ENTRY_flag='CONF_ENTRY_flagsave';
+google.script.run.withSuccessHandler(CONF_ENTRY_successSave).withFailureHandler(CONF_ENTRY_onFailure).CONF_ENTRY_save(CONF_ENTRY_profileName,CONF_ENTRY_types,CONF_ENTRY_data,CONF_ENTRY_flag,$("#CONF_ENTRY_tb_subtype_dd").val(),$('#CONF_ENTRY_lb_Type').val());
+});
+/*-------------------------------------------CLICK EVENT FOR RESET BUTTON---------------------------------------------*/
+$('#CONF_ENTRY_btn_Reset').click(function(){
+$('#CONF_ENTRY_tb_Data,#CONF_ENTRY_tb_Datadd').val('');
+$('#CONF_ENTRY_tb_subtype_dd').val('');
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+$('#CONF_ENTRY_div_uniquedata').text('');
+$('#CONF_ENTRY_div_uniquesubtype').text('');
+$('#CONF_ENTRY_lbl_errprofile').hide();
+$("#CONF_ENTRY_tb_Data").removeClass('invalid');
+$("#CONF_ENTRY_tb_subtype_dd").removeClass('invalid');
+$('#CONF_ENTRY_form_Save').find('input:text').prop("size","20");//set 
+});
+/*----------------------------------------------SUCCESS FUNCTION FOR SAVE BUTTON-------------------------------------*/
+function CONF_ENTRY_successSave(CONF_ENTRY_response){
+if((CONF_ENTRY_response!=false)&&(CONF_ENTRY_response!=undefined))
+{
+var CONF_ENTRY_profileName = $('#CONF_ENTRY_lb_Profile').find('option:selected').text();
+var CONF_ENTRY_savemsg=CONF_ENTRY_errmsg_arr[0];
+var CONF_ENTRY_errmsg =CONF_ENTRY_savemsg.replace('[MODULE NAME]',CONF_ENTRY_profileName);
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION ENTRY",msgcontent:CONF_ENTRY_errmsg}});
+document.getElementById("CONF_ENTRY_lb_Profile").value='SELECT';
+$("#CONF_ENTRY_btn_Save").attr("disabled", "disabled");
+$('#CONF_ENTRY_lbl_Type').hide();
+$('#CONF_ENTRY_lb_Type').hide();
+$('#CONF_ENTRY_lbl_Data').hide();
+$('#CONF_ENTRY_tb_Data,#CONF_ENTRY_tb_Datadd').hide();
+$('#CONF_ENTRY_btn_Save').hide();
+$('#CONF_ENTRY_btn_Reset').hide();
+$('#CONF_ENTRY_div_uniquedata').text('');
+$('#CONF_ENTRY_div_uniquesubtype').text('');
+$('#CONF_ENTRY_tr_dd').hide();
+$("#CONF_ENTRY_tb_Data").removeClass('invalid');
+$("#CONF_ENTRY_tb_subtype_dd").removeClass('invalid');
+$('#CONF_ENTRY_form_Save').find('input:text').prop("size","20");
+}
+else{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION ENTRY",msgcontent:CONF_ENTRY_errmsg_arr[4]}});
+}
+$(".preloader").hide(); 
+}
+});//END DOCUMENT READY FUNCTION
+</script>
+</head>
+<body> 
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+<div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>CONFIGURATION ENTRY</h3><p></div></div>
+<form class="content" name="CONF_ENTRY_form_Save" id="CONF_ENTRY_form_Save" hidden>
+<table id="CONF_ENTRY_tble_Save" name="CONF_ENTRY_tble_Save">
+<tr>
+<td style="width:150px"><label>MODULE NAME<em>*</em></label></td>
+<td><select id='CONF_ENTRY_lb_Profile' name='CONF_ENTRY_lb_Profile' value="SELECT"><option>SELECT</option></select></td></tr>
+<tr>
+<td><label id="CONF_ENTRY_lbl_Type" name="CONF_ENTRY_lbl_Type" hidden>TYPE<em >*</em></label></td>
+<td ><select id='CONF_ENTRY_lb_Type' name='CONF_ENTRY_lb_Type' hidden >
+<option>SELECT</option>
+</select></td>
+</tr>
+<tr id="CONF_ENTRY_tr_dd" hidden>
+<td><label>SUB TYPE<em>*</em></label></td><td><input type="text" id="CONF_ENTRY_tb_subtype_dd" maxlength=200 name="CONF_ENTRY_tb_subtype_dd" class="autosize"></td>
+<td><div id="CONF_ENTRY_div_uniquesubtype" name="CONF_ENTRY_div_uniquesubtype" class="errormsg"></div></td>
+</tr>
+<tr>
+<td><label name='CONF_ENTRY_lbl_Data' id='CONF_ENTRY_lbl_Data' hidden>DATA<em>*</em></label></td>
+<td><div id="CONF_ENTRY_div_updata"></div>
+<div><input type="text" name="CONF_ENTRY_tb_Datadd" id="CONF_ENTRY_tb_Datadd" style="width:60px" hidden /></div></td>
+<td><div id="CONF_ENTRY_div_uniquedata" name="CONF_ENTRY_div_uniquedata" class="errormsg"></div></td>
+</tr>
+<tr>
+<td align="right"><input type="button" class="btn"  disabled="" name="CONF_ENTRY_btn_Save" id="CONF_ENTRY_btn_Save"  value="SAVE"  hidden/></td>
+<td align="left"><input type="button" class="btn" name="CONF_ENTRY_btn_Reset" id="CONF_ENTRY_btn_Reset" value="RESET"  hidden/></td>
+</tr>
+</table>
+</form>
+</div>
+</body>
+</html>

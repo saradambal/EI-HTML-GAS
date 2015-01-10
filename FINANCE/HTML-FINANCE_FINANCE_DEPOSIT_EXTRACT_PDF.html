@@ -1,0 +1,677 @@
+<!--//*******************************************FILE DESCRIPTION*********************************************
+//*******************************************DEPOSIT DEDUCTION EXTRACTS********************************************
+DONE BY SARADAMBAL M
+VER 1.5 -SD:08/07/2014 ED:10/07/2014;TRACKER NO: 517//updated err msg ,if any sheet err,removed hypen for duplicate customer,sorted lp expcept for group LP,hide cb for single lp
+VER 1.4 -SD:27/06/2014 ED:30/06/2014;TRACKER NO: 517//use single sheet for extraction,implemented script for wrap the text for rent row,removed script for getting sending email sheet
+VER 1.3 -SD:25/06/2014 ED:25/06/2014;TRACKER NO: 517//implemented err msg ,if no permission to access SS
+VER 1.2 -SD:14/06/2014 ED:14/06/2014;TRACKER NO: 517//updated failure function
+VER 1.1 -SD:07/06/2014 ED:07/06/2014;TRACKER NO: 517//updated new drive link,cleared issue while getting getrange,updated err msg
+VER 1.0 -SD:19/05/2014 ED:20/05/2014;TRACKER NO: 517//put docslist and driveapp ,now comment the driveapp,put radio btn for customer name with id and without id.put err msg for sheet not available to extract
+VER 0.09 -SD:17/04/2014 ED:20/04/2014;TRACKER NO: 517//put radio button for duplicate customer
+VER 0.08 -SD:28/03/2014 ED:28/03/2014;TRACKER NO: 517//cleared issue for userproperty and getproperty,changed sheetname,implemented folderid instead of getting ss id
+DONE BY:ELANGO S
+VER 0.07 -SD:28/01/2014 ED:29/01/2014;TRACKER NO: 517 //GETTING THE ERROR MESSAGE GETTING FROM THE  EILIB FUNCTION.
+VER 0.06 -SD:02/01/2014 ED:03/01/2014;TRACKER NO: 517 //CHANGE THE EILIB CONNECTION
+VER 0.05 -SD:26/12/2013 ED:26/12/2013;TRACKER NO: 517 //CHANGE THE HEADING TAG AND UNIQUE FUNCTION INSTEAD OD ARRAYLIB//
+VER 0.04 -SD:13/12/2013 ED:13/12/2013;TRACKER NO: 517 //CHANGE AS DOCLIST TO DRIVE APP IN THIS  SCRIPT//
+VER 0.03 -SD:13/12/2013 ED:13/12/2013;TRACKER NO: 517 //CHANGE THE SCRIPT NAME//
+VER 0.02 -SD:13/12/2013 ED:13/12/2013;TRACKER NO: 517 //REMOVE THE UNWANTED COMMENT LINES// 
+VER 0.01 - INITIAL VERSION-SD:20/8/2013 ED:4/12/2013;TRACKER NO: 517
+**********************************************************************************************************/
+STARTING OF HTML ELEMENT FOR CREATING FORM -->
+<html>
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!--SCRIPT TAG START-->
+<script>
+//LOADING THE MONTH LISTBOX....................... 
+$(document).ready(function() {
+$(".preloader").show(); 
+var srtemailarray=[];
+var montharray=[];
+var DDE_errorAarray;
+var DDE_tableerrorarray=[];
+var DDE_glb_samename=[];
+var DDE_flg_checkbox=1;
+google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_loadgetmonthh).DDE_getmonth();
+$('#DDE_lb_customerselect').hide();
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+$('#DDE_lbl_customerid').hide();
+$('#maintable').hide();
+$('#DDE_lbl_unit').hide();
+$('#DDE_lb_unitselect').hide();
+$('#DDE_LBL_Emaillable').hide();
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_lbl_month').hide();
+$('#DDE_lb_monthselect').hide();
+$('#DDE_startdate').hide();
+$('#em').hide();
+$('#DDE_enddate').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+//CHANGE FUNCTION FOR MONTH SELECTION
+$('#DDE_lb_monthselect').change(function(){ 
+$(".preloader").show(); 
+var month = $(this).val();
+if(month=="SELECT")
+{$(".preloader").hide(); 
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+$('#em').hide();
+$('#DDE_lb_customerselect').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+$('#DDE_lbl_customerid').hide();
+$('#DDE_radiotable').hide();
+$('#DDE_recvertable').hide();
+$('#DDE_lb_unitselect').hide();
+$('#DDE_lbl_unit').hide();
+}else
+{
+google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_getunit).DDE_getsheetunit(month);
+$('#DDE_lb_customerselect').hide();
+$('#DDE_lbl_customerid').hide();
+$('#DDE_radiotable').hide();
+$('#DDE_recvertable').hide();
+$('#em').hide();
+$('#DDE_lb_unitselect').hide();
+$('#DDE_lbl_unit').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+}});
+//SHOWS THE CUSTOMER LISTBOX..................
+$('#DDE_lb_unitselect').change(function(){ 
+$(".preloader").show(); 
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+var unit = $(this).val();
+if(unit=="SELECT")
+{$(".preloader").hide(); 
+$('#em').hide();
+$('#DDE_lb_customerselect').hide();
+$('#DDE_radiotable').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+$('#DDE_lbl_customerid').hide();
+$('#DDE_radiotable').hide();
+$('#DDE_recvertable').hide();
+}else
+{
+var month=$('#DDE_lb_monthselect').val();
+google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_custname).DDE_customername(unit,month);
+$('#DDE_lb_customerselect').hide();
+$('#DDE_radiotable').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+$('#DDE_lbl_customerid').hide();
+$('#DDE_radiotable').hide();
+$('#DDE_recvertable').hide();
+}});
+//SHOWS THE  REC_VER ,START DATE AND END DATE..............
+$('#DDE_lb_customerselect').change(function(){ 
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+var name = $(this).val();
+if(name=="SELECT")
+{$(".preloader").hide(); 
+$('#DDE_recvertable tr').remove();
+$('#DDE_radiotable').hide();
+$('#DDE_recvertable').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+}else
+{
+$('#DDE_radiotable').show();
+$('#DDE_radiotable').empty();
+var DDE_flag_radio_custname=0;
+var DDE_unit=$('#DDE_lb_unitselect').val();
+var DDE_month=$('#DDE_lb_monthselect').val();
+for(var c=0;c<DDE_glb_samename.length;c++){
+var DDE_split_nameid=DDE_glb_samename[c].split('_');
+//RADIO BTN FOR DUPLICATE CUSTOMER
+if(DDE_split_nameid[1]!='' && DDE_split_nameid[1]!=undefined && DDE_split_nameid[0]==name){
+DDE_flag_radio_custname=1;
+var DDE_customernameid=DDE_glb_samename[c].replace('_',' ');
+var DDE_td='<tr><td><input type="radio" id="DDE_customer_id_name'+c+'" name="DDE_customer_id_name" class="DDE_class_customeridname" value="'+DDE_glb_samename[c]+'" >'+DDE_customernameid+'</td></tr>'
+$(DDE_td).appendTo($("#DDE_radiotable"));
+}}
+if(DDE_flag_radio_custname==1){
+for(var c=0;c<DDE_glb_samename.length;c++){
+if(DDE_glb_samename[c]==name){
+DDE_flag_radio_custname=1;
+var DDE_customername_id=DDE_glb_samename[c].replace('_',' ');
+var DDE_td='<tr><td><input type="radio" id="DDE_customer_id_name'+c+'" name="DDE_customer_id_name" class="DDE_class_customeridname" value="'+DDE_glb_samename[c]+'" >'+DDE_customername_id+'</td></tr>'
+$(DDE_td).appendTo($("#DDE_radiotable"));
+}}}
+if(DDE_flag_radio_custname==0){
+$(".preloader").show(); 
+google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_getdatebox).DDE_getcustid(name,DDE_unit,DDE_month);
+$('#DDE_radiotable').hide();
+}
+$('#DDE_recvertable tr').remove();
+$('#DDE_recvertable').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+}});
+//CLICK FUNCTION FOR RADIO BTN FOR DUPLICATE CUSTOMER
+$(document).on('click','.DDE_class_customeridname',function(){
+$(".preloader").show(); 
+var DDE_unit=$('#DDE_lb_unitselect').val();
+var DDE_month=$('#DDE_lb_monthselect').val();
+var DDE_name=$(this).val();
+$('#DDE_recvertable tr').remove();
+$('#DDE_recvertable').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_getrecver).DDE_Dep_Exct_recversionfun(DDE_name.split(' ')[2],DDE_unit,DDE_month,DDE_name);
+});
+//RESET ALL THE ELEMENT  AND RETURN  TO ORIGAN STAGE.................. 
+$('#DDE_btn_rbutton').click(function(){ 
+$('#DDE_lb_customerselect').hide();
+$('#DDE_lbl_customerid').hide();
+$('#DDE_lbl_unit').hide();
+$('#em').hide();
+$('#DDE_radiotable').hide();
+$('#DDE_recvertable').hide();
+$('#DDE_lb_unitselect').hide();
+$('#DDE_LBL_Emaillable').hide();
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_startdate').hide();
+$('#DDE_enddate').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+$("select#DDE_lb_monthselect")[0].selectedIndex = 0;
+});
+//CONFORMATION MESSAGE IS  SHOWS AFTER CLICK THE SUBMIT BUTTON................
+$('#DDE_btn_sbutton').click(function(){
+$(".preloader").show(); 
+google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_clearandshowmsg).DDE_Dep_Exct_submit(document.getElementById('DDE_form'));
+});
+function DDE_clearandshowmsg(success)
+{$(".preloader").hide(); 
+if(success=='DDC_flag_nosheet')
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_errorAarray[11]}});
+else{
+$('#em').hide();
+$('#DDE_lb_customerselect').hide();
+$('#DDE_lbl_customerid').hide();
+var unit=$('#DDE_lb_customerselect').val();
+var save=DDE_errorAarray[7];
+var savemsg = save.replace('[PROFILE]', unit); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:savemsg}});
+$('#DDE_lbl_unit').hide();
+$('#DDE_radiotable').hide();
+$('#DDE_recvertable').hide();
+$('#DDE_lb_unitselect').hide();
+$('#DDE_LBL_Emaillable').hide();
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_startdate').hide();
+$('#DDE_enddate').hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+$("#DDE_lb_monthselect")[0].selectedIndex = 0;
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+}}
+//LOAD THE MONTH IN THE MONTH LISTBOX FROM  THE SHEET................
+function DDE_loadgetmonthh(month)
+{
+$(".preloader").hide(); 
+DDE_errorAarray=month.DDE_errorAarray;
+if(month.DDE_flag_noss=='DDE_flag_noss'){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_errorAarray[12]}});
+}
+else{
+montharray=month.montharray;
+DDE_tableerrorarray=month.DDE_tableerrorarray;
+srtemailarray=month.srtemailarray;
+if(((month.srtemailarray).length!=0)&&(montharray.length!=0 && montharray!=undefined && montharray.length!=""))
+{
+$('#DDE_form_staffdaily').show();
+$('#DDE_table_errormsg tr').remove().hide();
+if(montharray.length!=0 && montharray!=undefined && montharray.length!="")
+{
+var options =' <lable></lable>';
+for (var i = 0; i < montharray.length; i++) {
+options += '<option value="' + montharray[i] + '">' + montharray[i] + '</option>';
+}
+$('#DDE_lb_monthselect').append(options);
+$('#DDE_lb_monthselect').show();
+$('#DDE_lbl_month').show();
+$('#DDE_lbl_sedate').hide();
+}
+}
+else 
+{
+if(montharray.length==0 && montharray==undefined && montharray.length=="")
+{
+$('#DDE_table_errormsg').show();
+$('#DDE_form').hide();
+var uniterrormsg='<p><label class="errormsg">' +DDE_errorAarray[10] + '</label></p>';
+$('#DDE_table_errormsg').append(uniterrormsg);
+}
+if((month.srtemailarray).length==0)
+{
+$('#DDE_table_errormsg').show();
+$('#DDE_form').hide();
+var DDE_tableerrg=DDE_errorAarray[9];
+var DDE_tableerrgchg = DDE_tableerrg.replace('[PROFILE]', 'DEPOSITE DEDUCTION'); 
+var uniterrormsg='<p><label class="errormsg">' +DDE_tableerrgchg + '</label></p>';
+$('#DDE_table_errormsg').append(uniterrormsg);
+}
+}
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+$('#maintable').show();
+}}
+//LOAD THE UNITNO FROM THE SHEET IN TO UNIT LISTBOX.................
+function DDE_getunit(unit)
+{$(".preloader").hide(); 
+$("select[id$=DDE_lb_unitselect] > option").remove();
+var unitarray=[];
+unitarray=unit;
+var options =' <option>SELECT</option>';
+for (var i = 0; i < unitarray.length; i++) {
+options += '<option value="' + unitarray[i] + '">' + unitarray[i] + '</option>';
+}
+$('#DDE_lb_unitselect').append(options);
+$('#DDE_lb_unitselect').show();
+$('#DDE_lbl_unit').show();
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+}
+//LOAD THE CUSTOMER NAME FROM SHEET TO CUSTOMER LISTBOX..................
+function DDE_unique(a) {
+var result = [];
+$.each(a, function(i, e) {
+if ($.inArray(e, result) == -1) result.push(e);
+});
+return result;
+}
+function DDE_custname(response){
+$(".preloader").hide(); 
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+var myArray= [];
+myArray=DDE_unique(response[0]);
+DDE_glb_samename=response[1];
+myArray=myArray.sort();
+$("select[id$=DDE_lb_customerselect] > option").remove();
+var options =' <option>SELECT</option>';
+for (var i = 0; i < myArray.length; i++) {
+options += '<option value="' + myArray[i] + '">' + myArray[i] + '</option>';
+}
+$('#DDE_lb_customerselect').html(options);
+$('#DDE_lb_customerselect').show();
+$('#DDE_lbl_customerid').show();
+$('#em').show();
+$("#DDE_lb_customerselect")[0].selectedIndex = 0;
+}
+//SHOWS THE RADIOBUTTON  IF  WE HAVE  SAME CUSTOMER NAME WITH  DIFFERENT  CUSTID..........    
+function DDE_getdatebox(getid)
+{
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+$('#DDE_btn_sbutton').attr("disabled", "disabled");
+var DDE_unit=$('#DDE_lb_unitselect').val();
+var DDE_month=$('#DDE_lb_monthselect').val();
+var name=$('#DDE_lb_customerselect').val();
+google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_getrecver).DDE_Dep_Exct_recversionfun(getid,DDE_unit,DDE_month,name);
+}
+//GET THE REC_VER ,START DATE AND END DATE  FOR SELECTED  CUSTOMER NAME..............
+function DDE_radiobtnid()
+{$(".preloader").hide(); 
+var getid=$("input[name=DDE_radio_idradiobtn]:checked").val();
+var DDE_unit=$('#DDE_lb_unitselect').val();
+var DDE_month=$('#DDE_lb_monthselect').val();
+var name=$('#DDE_lb_customerselect').val();
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+$('#DDE_emailtable tr').remove();
+$('#DDE_emailtable').hide();
+$('#DDE_recvertable tr').remove();      
+$('#DDE_recvertable').hide();
+google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_getrecver).DDE_Dep_Exct_recversionfun(getid,DDE_unit,DDE_month,name);
+}
+//LOAD THE REC_VER, START DATE AND END DATE  IN THE FORM.................
+function DDE_getrecver(recver)
+{$(".preloader").hide(); 
+$("#DDE_btn_sbutton").hide();
+$("#DDE_btn_rbutton").hide();
+$('#DDE_tb_recdate').val('');
+var unique_recver= [];
+var recv= [];
+var sdate= [];
+var edate= [];
+var pdate= [];
+unique_recver=recver.unique_recver;
+var recverlenght = unique_recver.length;
+var checkvalue=[];
+$('#DDE_recvertable').show();
+var sedatelab='<label></label>'
+sedatelab='<tr><td style="width:160px"></td><td><label id="DDE_startdate"> START DATE </label></td><td><label id="DDE_enddate"> END DATE </label></td></tr>';
+$('#DDE_recvertable').append(sedatelab);
+for(var k=1;k<=recverlenght;k++)
+{
+DDE_flg_checkbox=1;
+var  y = (k-1);
+var version = unique_recver[y][0].key;
+var version = version.replace( 'REC_VER', 'LEAST_PERIOD');
+var splitversion=version.split('_');
+var leastperiodtext=splitversion[0]+' '+splitversion[1];
+var rbutton ="Dep_Exct_rbutton/"+k;
+checkvalue.push(rbutton)
+var recver='<label></label>'
+var z =k+3; 
+var sdateid ="Dep_Exct_sdatetb"+k;
+var edateid ="Dep_Exct_edatetb"+k;
+var errid="errid"+k;
+var checkvalid="checkid"+k;
+var sd=unique_recver[y][0].startdate;
+var ed=unique_recver[y][0].enddate;
+var sdatetb='<label></label>'
+var edatetb='<label></label>'
+if((sd=="01-01-1970")&&(ed=="01-01-1970"))
+{
+var sdateclear=" ";
+var edateclear=" ";
+recver = '<tr><td><input class="checkbox submitvalidate" type="checkbox" name="DDE_chk_checkboxinc" id="'+checkvalid+'" value='+version+'  />' +leastperiodtext + '</td><td><input type="text" disabled name='+sdateid+' id='+sdateid+' value='+sdateclear+'style="width:70px;"/></td><td><input type="text" disabled name='+edateid+' id='+edateid+' value='+edateclear+'style="width:70px;" /></td><td><label id='+errid+' hidden class="errormsg" ></label></td></tr>';
+$('#DDE_recvertable').append(recver);
+}
+else
+if((sd=="01-01-1970")&&(ed!="01-01-1970")||(sd!="01-01-1970")&&(ed=="01-01-1970"))
+{
+if((sd=="01-01-1970")&&(ed!="01-01-1970"))
+{
+var sdateclear=" ";
+recver = '<tr><td><input class="checkbox submitvalidate" type="checkbox" name="DDE_chk_checkboxinc" id="'+checkvalid+'" value="'+version+'" />' + leastperiodtext + '</td><td><input type="text"  disabled name='+sdateid+' id='+sdateid+' value='+sdateclear+' style="width:70px;"/></td><td><input type="text"  disabled name='+edateid+' id='+edateid+' value='+ed+' style="width:70px;"/></td><td><label id='+errid+' hidden class="errormsg"></label></td></tr>';
+$('#DDE_recvertable').append(recver);
+}
+if((sd!="01-01-1970")&&(ed=="01-01-1970"))
+{
+var edateclear=" ";
+recver = '<tr><td><input class="checkbox submitvalidate" type="checkbox" name="DDE_chk_checkboxinc" id="'+checkvalid+'" value="'+version+'"/>' + leastperiodtext + '</td><td><input type="text" disabled name='+sdateid+' id='+sdateid+' value='+sd+' style="width:70px;"/></td><td><input type="text" disabled name='+edateid+' id='+edateid+' value='+edateclear+' style="width:70px;"/></td><td><label id='+errid+' hidden class="errormsg"></label></td></tr>';
+$('#DDE_recvertable').append(recver);
+}
+}
+if((sd!="01-01-1970")&&(ed!="01-01-1970"))
+{
+recver = '<tr><td><input class="checkbox submitvalidate" type="checkbox" name="DDE_chk_checkboxinc" id="'+checkvalid+'" value="'+version+'" />' +leastperiodtext + '</td><td><input type="text"  disabled name='+sdateid+' id='+sdateid+' value='+sd+' style="width:70px;"/></td><td><input type="text"  disabled name='+edateid+' id='+edateid+' value='+ed+' style="width:70px;"/></td><td><em><label id='+errid+' hidden class="errormsg"></label><em></td></tr>';
+$('#DDE_recvertable').append(recver);
+}
+}
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_LBL_Emaillable').hide();
+$('#DDE_emailtable').hide();
+var email='<label></label>'
+email='<tr><td style="width:160px"><label id="DDE_LBL_Emaillable"> EMAIL ADDRESS <em>*</em></label></td><td></td><td><select id="DDE_LB_Emaillist" name="DDE_LB_Emaillist" class="submitvalidate" ></select></td></tr>'
+$('#DDE_emailtable').append(email);
+var options =' <option>SELECT</option>';
+for (var i = 0; i < srtemailarray.length; i++) {
+options += '<option value="' + srtemailarray[i] + '">' + srtemailarray[i] + '</option>';
+}
+$('#DDE_LB_Emaillist').html(options);
+if(recverlenght==1){
+$('#DDE_LB_Emaillist').show();
+$('#DDE_LBL_Emaillable').show();
+$('#DDE_emailtable').show();
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+$('.checkbox').hide();
+$('#'+checkvalid).hide();
+$('#DDE_tb_recdate').val(version);
+DDE_flg_checkbox=0;
+}
+}
+//SHOWS THE ERROR MESSAGE WHEN WE HAVE DEFAULT DATE................
+$(document).on('click','.checkbox',function()
+{
+var idckb= $(this).val();
+var checkid =$(this).attr('id');
+var cc_check=$("input[name=DDE_chk_checkboxinc]:checked").is(":checked");
+var email=$("#DDE_LB_Emaillist").val();
+var checkid =$(this).attr('id');
+var dd=$("#DDE_LB_Emaillist").val();
+var checkidly=checkid.replace( /^\D+/g, '');
+var sdateid ="Dep_Exct_sdatetb"+checkidly;
+var edateid ="Dep_Exct_edatetb"+checkidly;
+var sd=$("#"+sdateid).val();
+var ed=$("#"+edateid).val();
+var errid="errid"+checkidly;
+if($("#"+checkid).is(":checked")==true)
+{
+if((cc_check==false))
+{
+$("select#DDE_LB_Emaillist")[0].selectedIndex = 0;
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_LBL_Emaillable').hide();
+$('#DDE_emailtable').hide();
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+}
+if((cc_check==true)&&sd!="" && ed!="")
+{
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+$('#DDE_LB_Emaillist').show();
+$('#DDE_LBL_Emaillable').show();
+$('#DDE_emailtable').show();
+}
+var checkid=checkid.replace( /^\D+/g, '');
+var sdateid ="Dep_Exct_sdatetb"+checkid;
+var edateid ="Dep_Exct_edatetb"+checkid;
+var sd=$("#"+sdateid).val();
+var ed=$("#"+edateid).val();
+var errid="errid"+checkid;
+var cc_check=$("input[name=DDE_chk_checkboxinc]:checked").is(":checked");
+var sedatetb='<label></label>'
+if((sd=="")||(ed==""))
+{
+if(cc_check==true)
+{
+if((sd=="")&&(ed==""))
+{
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+$('#'+errid).text(DDE_errorAarray[0]).show();
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_LBL_Emaillable').hide();
+}
+else
+if((sd=="")&&(ed!="")||(sd!="")&&(ed==""))
+{
+if((sd=="")&&(ed!=""))
+{
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+$('#'+errid).text(DDE_errorAarray[2]).show();
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_LBL_Emaillable').hide();
+}
+if((sd!="")&&(ed==""))
+{
+$('#'+errid).text(DDE_errorAarray[1]).show();
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_LBL_Emaillable').hide();
+}
+}
+if(((sd==""&&ed=="")||((sd!=""&&ed=="")||(sd==""&&ed!=""))))
+{
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+}
+}
+else
+{
+if((cc_check==false)||(email=="SELECT"))
+{
+$("#DDE_btn_sbutton").attr("disabled", "disabled");
+}else
+{
+$("#DDE_btn_sbutton").removeAttr("disabled");
+}
+$('#'+errid).hide();
+}
+}
+}
+else
+{
+$('#'+errid).hide();
+var STDLY_INPUT_table = document.getElementById('DDE_recvertable');
+var STDLY_INPUT_table_rowlength=STDLY_INPUT_table.rows.length;
+var getid=[];
+$('input:checkbox[name=DDE_chk_checkboxinc]:checked').each(function() {
+var checkgetid=$(this).attr('id');
+getid.push(checkgetid.replace( /^\D+/g, '')) 
+});
+var count=0;
+for(var i=0;i<getid.length;i++)
+{
+var sdateid ="Dep_Exct_sdatetb"+getid[i];
+var edateid ="Dep_Exct_edatetb"+getid[i];
+var sd=$("#"+sdateid).val();
+var ed=$("#"+edateid).val();
+if(sd!="" && ed!="")
+{
+var sdateid ="Dep_Exct_sdatetb"+checkid;
+var edateid ="Dep_Exct_edatetb"+checkid;
+count=count+1;
+}
+}
+if(count==(getid.length))
+{
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+$('#DDE_LB_Emaillist').show();
+$('#DDE_LBL_Emaillable').show();
+$('#DDE_emailtable').show();
+}
+else
+{
+$('#DDE_btn_sbutton').hide();
+$('#DDE_btn_rbutton').hide();
+$('#DDE_LB_Emaillist').hide();
+$('#DDE_LBL_Emaillable').hide();
+$('#DDE_emailtable').hide();
+}
+}
+});
+//SUBMIT BUTTOM VALIDATION  ....................
+$(document).on("change",'.submitvalidate', function (){
+var checkid =$(this).attr('id');
+var dd=$("#DDE_LB_Emaillist").val();
+var checkid=checkid.replace( /^\D+/g, '');
+if(DDE_flg_checkbox==0)
+checkid=1;
+var sdateid ="Dep_Exct_sdatetb"+checkid;
+var edateid ="Dep_Exct_edatetb"+checkid;
+var sd=$("#"+sdateid).val();
+var ed=$("#"+edateid).val();
+if(($("#DDE_LB_Emaillist").val()=="SELECT")||($("#DDE_lb_unitselect").val()=="SELECT")||(($('input:checkbox[name=DDE_chk_checkboxinc]').is(':checked')==false)&&(checkid>1))||($("#DDE_lb_customerselect").val()=="SELECT" ||sd==""||ed==""))
+{
+$('#DDE_btn_sbutton').attr("disabled", "disabled");
+}
+else
+{
+$("#DDE_btn_sbutton").show();
+$("#DDE_btn_rbutton").show();
+$('#DDE_btn_sbutton').removeAttr("disabled");
+}
+});
+//FAILURE FUNCTION
+function DDE_onFailuremsg(DDE_err)
+{
+$(".preloader").hide(); 
+if(DDE_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+DDE_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#DDE_form').replaceWith('<center><label class="dberrormsg">'+DDE_err+'</label></center>');
+}
+else{
+if(DDE_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
+{
+DDE_err=DDE_errorAarray[13];
+}
+else {
+var DDE_err=DDE_err.toString();
+var match=DDE_err.search("Cannot find method getRange");
+var matchClass=DDE_err.search("class");
+if((match>-1)||(matchClass>-1))
+DDE_err=DDE_errorAarray[14];
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_err}});
+}}}
+});
+</script>
+</head>
+<!-- CREATING ELEMENTS FOR FORMS -->
+<body bgcolor="#00FF00" >
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+<div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>DEPOSIT DEDUCTION EXTRACTS</h3><p></div></div>
+<form id="DDE_form_errormsg">
+<table id="DDE_table_errormsg">
+</table>
+</form>
+<form class="content" action="" id="DDE_form" name="DDE_form"  >
+<table id='maintable'>
+<tr>
+<td style="width:160px"><label id='DDE_lbl_month' > SELECT A MONTH <em>*</em></label></td>
+<td><select id='DDE_lb_monthselect' name="DDE_lb_monthselect">
+<option>SELECT</option>
+</select>
+</td></tr>
+<tr>
+<td><label id='DDE_lbl_unit'> SELECT A UNIT <em>*</em></label></td>
+<td><select id='DDE_lb_unitselect' name="DDE_lb_unitselect"  >
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td><label id='DDE_lbl_customerid'> CUSTOMER NAME </label><em id='em'#>*</em></td>
+<td><select id='DDE_lb_customerselect' name="DDE_lb_customerselect">
+<option>SELECT</option>
+</select>
+</td></tr>
+<tr><td></td><td><table id='DDE_radiotable'>
+</table></td></tr></table>
+<table id='DDE_recvertable'>
+</table>
+<table id='DDE_emailtable'>
+</table>
+<table>
+<tr><td style="width:160px" align="right"><input type='button'  id="DDE_btn_sbutton" value='EXTRACT' class='maxbtn' disabled/></td>
+<td align="left"><input type='button'  id="DDE_btn_rbutton" value='RESET' class='maxbtn'/></td>
+<td><label class="errormsg" id='DDE_lbl_sedate'></label></td>
+<td><label id='DDE_sdate'></label></td>
+<td><label id='DDE_edate'> </label></td></tr>
+<tr><td><input type='hidden' id="DDE_tb_recdate" name="DDE_tb_recdate"></td></tr>
+</table>
+</form>
+</div>
+</body>
+</html>

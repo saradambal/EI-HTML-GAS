@@ -1,0 +1,201 @@
+<!--***********************************************TRIGGER **********************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 2.05-SD:03/09/2014,ED:03/09/2014 TRACKER NO:changed old records select query and did exception mail part corrections and added one parameter in temp table drop call query.
+//VER 2.04-SD:02/09/2014,ED:02/09/2014 TRACKER NO:updated maintainance mail id.
+//VER 2.03-SD:02/09/2014,ED:02/09/2014 TRACKER NO:771,added condition if old bal amt is empty means 0 in updation part;
+//VER 2.02-SD:01/09/2014,ED:01/09/2014 TRACKER NO:771,added condition if old bal amt is empty means 0;
+//VER 2.01-SD:27/08/2014,ED:27/08/2014 TRACKER NO:771,Removed some repeated queries and script lines and i called trigger del function before conformation mail and after exception mail.
+//VER 2.00-SD:26/08/2014,ED:26/08/2014 TRACKER NO:771,Updated getEffective user timestamp in all trigger script and tested.
+//VER 1.09-SD:25/08/2014,ED:25/08/2014 TRACKER NO:771,changed trigger del function position in script and changed getScriptTriggers() to getProjectTriggers();
+//VER 1.08-SD:22/08/2014 ED:22/08/2014 TRACKER NO:771,Updated new jquery and css links and implemented rollback and commit in csv updation script.
+//VER 1.07-SD:14/08/2014,ED:14/08/2014 TRACKER NO:771,Added instance name and schema name in temp table drop trigger mail sub and body.
+//VER 1.06-SD:07/08/2014,ED:07/08/2014 TRACKER NO:771,Cleared email template date replace issue.
+//VER 1.05-SD:06/08/2014,ED:06/07/2014 TRACKER NO:771,set flag if temptable don't have any records means mail not send
+//VER 1.04-SD:23/07/2014,ED:23/07/2014 TRACKER NO:771,updated temp table trigger script in trigger form.
+//VER 1.03-SD:23/07/2014,ED:23/07/2014 TRACKER NO:771,updated new termination script.
+//VER 1.02-SD:11/07/2014,ED:11/07/2014 TRACKER NO:771,Did new CR in csv updation script and erm leeds trigger added
+//VER 1.01-SD:18/06/2014 ED:23/06/2014,TRACKER NO:771,Cnanged csv updation script,now ll accept any format asc or desc csv file.
+//VER 1.00-SD:06/06/2014 ED:06/06/2014,TRACKER NO:771,changed preloader and jquery,css links.
+//VER 0.09-SD:29/05/2014,ED:29/05/2014 TRACKER NO:771,added new trigger script after changing dynamic temp tables and changed table names.
+//VER 0.08-SD:21/04/2014,ED:22/04/2014 TRACKER NO:771,Did New CR in Active customer list trigger.
+//VER 0.07-SD:17/04/2014,ED:18/04/2014 TRACKER NO:771,Did New CR in CSV updation SCRipt and changed table name in payment reminders script.
+//VER 0.06-SD:27/03/2014,ED:27/03/2014 TRACKER NO:771,Added menu script in Trigger form.
+//VER 0.05-SD:21/0302014,ED:22/03/2014 TRACKER NO:744,Added purge doc function in trigger creation form.and termination function also.
+//VER 0.04-SD:11/-2/2014,ED:11/03/2014 TRACKER NO:744,Changed ULD_ID in csv updation script.
+//VER 0.03-SD:14/02/2014,ED:15/02/2014 TRACKER NO:744 Did new CR:removed radio buttons and used toggle buttons in trigger form.
+//VER 0.02-SD:07/02/2014,ED:10/02/2014 TRACKER NO:  ,Did all CR(mail format changes and CSV records sorting in csv file format and added new date column in mail html table and merge same date in single cell,etc..)
+//VER 0.01-INITIAL VERSION, SD:02/01/2014 ED:04/01/2014,TRACKER NO:171
+//*********************************************************************************************************//
+-->
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+</head>
+<!--HEAD TAG END-->
+<!--SCRIPT TAG START-->
+<script>
+$(document).ready(function() {
+$(".preloader").show();
+$('#CSV_trigger_form').hide();
+$('#edit-status').hide();
+$('#switchonoff').hide();
+$('#statusbutton').hide();
+$('input:checkbox[name=onoffswitch]').attr('checked',false);
+/************INITIAL LOAD FUNCTION*******************************/
+google.script.run.withSuccessHandler(CONFIG_getCommonvalues_result).CONFIG_commonvalues();
+function CONFIG_getCommonvalues_result(CONFIG_result)
+{
+var triggeroption=[];
+triggeroption=CONFIG_result;
+var CONFIG_optionvalue='<option>SELECT</option>';
+for(var i=0;i<triggeroption.length;i++)
+{
+var trigger_option=triggeroption[i];
+var triggerid=trigger_option.tcid+'/'+trigger_option.tcdata;
+CONFIG_optionvalue += '<option value="' + trigger_option.tcdata + '">' + trigger_option.tcdata + '</option>';
+}
+$('#CSV_TRIGGER_lb_triggernames').html(CONFIG_optionvalue);
+$('#CSV_trigger_form').show();
+$(".preloader").hide();
+}
+$(".toggle-btn:not('.noscript') input[type=radio]").addClass("visuallyhidden");
+$(".toggle-btn:not('.noscript') input[type=radio]").change(function() {
+    if( $(this).attr("name") ) {
+        $(this).parent().addClass("success").siblings().removeClass("success")
+    } else {
+        $(this).parent().toggleClass("success");
+    }
+});
+/********************TRIGGER RADIO BUTTON CREATION*****************************/
+$('#CSV_TRIGGER_lb_triggernames').change(function(){ 
+$('#CSV_TRIGGER_lbl_conformation_message').hide();
+$('#CSV_TRIGGER_radio tr').remove();
+var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+if(CSV_TRIGGER_selectedtrigger!="SELECT")
+{
+$('#CSV_TRIGGER_lbl_header').text(CSV_TRIGGER_selectedtrigger).show();
+$('input:checkbox[name=onoffswitch]').attr('checked',false);
+$('#switchonoff').show();
+$('#statusbutton').show();
+$('#CSV_TRIGGER_btn_search').show();
+$('#edit-status').show();
+}
+else
+{
+$('#CSV_TRIGGER_lbl_header').text('');
+$('#buttondiv').hide();
+}
+});
+$(document).on('click','#myonoffswitch',function(){
+var buttonstatus=$("input[name='onoffswitch']:checked").val();
+var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+if(buttonstatus=='on')
+{
+google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_ON');
+}
+else
+{
+google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_OFF');
+}
+});
+$(document).on('click','#CSV_TRIGGERON_btn_search',function(){
+$('#CSV_TRIGGER_lbl_conformation_message').hide();
+var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_ON');
+});
+$(document).on('click','#CSV_TRIGGEROFF_btn_search',function(){
+$('#CSV_TRIGGER_lbl_conformation_message').hide();
+var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_OFF');
+});
+$(document).on('click','#statusbutton',function(){
+$('#CSV_TRIGGER_lbl_conformation_message').hide();
+var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_STATUS');
+})
+/**********************TRIGGER RESPONSE **************************/
+function TRIGGER_response(response)
+{
+if(response==0)
+{
+ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER ALREADY ON, DO NOT OFF THE TRIGGER SWITCH WHILE TRIGGER ALREADY RUNNING, PLZ CHK STATUS IF REQUIRED."}});
+}
+else if(response==1)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS DELETED SUCCESSFULLY"}});
+}
+else if(response==2)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS ON"}});
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS OFF"}});
+}
+$(".preloader").hide();
+}
+});
+</script>
+<body bgcolor="#E6E6FA">
+<div>
+<?!=include('HTML-MENU') ?>
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>TRIGGER
+</h3>
+<p>
+</div>
+</div>
+<form method="post" class="content" action="" id="CSV_trigger_form" name="CSV_trigger_form">
+     <table cellspacing="20px"style="width=200px;">
+	 <tr><td><label id="body">TRIGGER NAME</label><em>*</em></td>
+	 <td><select id="CSV_TRIGGER_lb_triggernames"  name="CSV_TRIGGER_lb_triggernames">
+	 <option>SELECT</option>
+     </select>
+	 </td>
+	 </tr>
+     <tr><td><table id="CSV_TRIGGER_tble_header" ><tr><td><label align='bottom' name='error' id='CSV_TRIGGER_lbl_header' class="srctitle" visible="false" ></label></tr></table>
+     <tr><table><tr>
+     <td ><div id="switchonoff" class="onoffswitch">
+     <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+     <label class="onoffswitch-label" for="myonoffswitch">
+     <div class="onoffswitch-inner"></div>
+     <div class="onoffswitch-switch"></div>
+     </label>
+     </div></td><td width='30px'><label  hidden> *********  </label></td><td><div><input id="statusbutton" type="button" value="STATUS"></div></td></tr></table>
+    </tr>
+     <tr><table id="CSV_TRIGGER_lbl_tble_header" ><tr><label align='bottom' name='error' id='CSV_TRIGGER_lbl_conformation_message' class="srctitle" visible="false" ></label></tr></table>
+     </tr>
+     </table>
+     </form>
+     </div>
+     </body>
+	 </html>
+	 

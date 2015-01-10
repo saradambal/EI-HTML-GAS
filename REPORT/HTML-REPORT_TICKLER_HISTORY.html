@@ -1,0 +1,242 @@
+<!--*********************************************GLOBAL DECLARATION******************************************-->
+<!--**********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//***********************************************TICKLER HISTORY**********************************************//
+//DONE BY:LALITHA
+//VER 1.2-SD:14/07/2014 ED:15/07/2014,TRACKER NO:694,Changed failure funct,Inbetween record put comma,Select query ordered by timestamp desc,sp changed:added unsigned zero for unit nos
+//VER 1.1-SD:07/06/2014 ED:07/06/2014,TRACKER NO:694,Changed jquery link 
+//VER 1.0-SD:05/06/2014 ED:05/06/2014,Updated TimeZone Format
+//VER 0.09-SD:05/06/2014 ED:05/06/2014,Increased flex table height 
+//VER 0.08-SD:22/05/2014 ED:26/05/2014,Checked the sp again wth(splitted dynamic sp nd single quotes in cmmnts),Increased the flex tble height,Showned more records in flex tble,aftr drop query put return functn
+//VER 0.07-SD:14/05/2014 ED:16/05/2014,Implemented dynamic sp,Changed return functn,put space in between frst nd last cust name,updated wrapping for new value nd width in shown flex table,After flex tble shown removed the cust name in txtbx,updated width for txtbx
+//VER 0.06-SD:17/04/2014 ED:17/04/2014,added preloader in beginning form loading,atlast put return functn 
+//VER 0.05-SD:17/03/2014 ED:03/04/2014,Sp changed for Loaded nly customer domain,added customer name header in tickler history,updated wrapping nd width in shown flex table
+//VER 0.04-SD:04/03/2014 ED:04/03/2014,updated div fr flex table
+//VER 0.03-SD:21/02/2014 ED:21/02/2014,implemented sp to shown the data in flex table,hide the err msg nd disable the button while key press function,changed div for flex table,shown empty space in flex table null field part 
+//VER 0.02-SD:04/02/2014 ED:04/02/2014,implemented eilib for err msg,nd h3 tag
+//VER 0.01-INITIAL VERSION, SD:02/01/2013 ED:07/01/2014,TRACKER NO:694
+//************************************************************************************************************//
+<!--HTML TAG START-->
+<html>
+<!--HEAD TAG START-->
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!--SCRIPT TAG START-->
+<script>
+//FAILURE FUNCTION
+function TH_onFailure(TH_error) 
+{
+$(".preloader").hide();
+if(TH_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+TH_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#TH_form_customername').replaceWith('<center><label class="dberrormsg">'+TH_error+'</label></center>');
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TICKLER HISTORY",msgcontent:TH_error.message}});
+}
+}
+var TH_srch_result_array=[];
+//DOCUMENT READY FUNCTION START
+$(document).ready(function(){
+google.script.run.withSuccessHandler(TH_get_errresult).withFailureHandler(TH_onFailure).TH_get_err();
+$(".preloader").show();
+google.script.run.withSuccessHandler(TH_customername_autocompleteresult).withFailureHandler(TH_onFailure).TH_customername_autocomplete();
+var TH_errorMsg_array=[];
+//SUCCESS FUNCTION FOR GET ERROR MESSAGE
+function TH_get_errresult(TH_get_errresult_response)
+{
+$(".preloader").hide();
+TH_errorMsg_array=TH_get_errresult_response.TH_errormsg;
+$('#TH_lbl_notmatch').text(TH_errorMsg_array[2]);
+}
+//FUNCTION TO HIGHLIGHT SEARCH TEXT
+function TH_highlightSearchText() {
+$.ui.autocomplete.prototype._renderItem=function(ul,item) {
+var re = new RegExp(this.term, "i") ;
+var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
+return $( "<li></li>" )
+.data( "item.autocomplete", item )
+.append( "<a>" + t + "</a>" )
+.appendTo( ul );
+};
+}
+//FUNCTION TO AUTOCOMPLETE SEARCH TEXT
+var TH_customername=[];
+function TH_customername_autocompleteresult(ressponse)
+{
+TH_customername=ressponse;
+$("#TH_ta_customername").val("");
+$(".preloader").hide();
+}
+//KEY PRESS FUNCTION
+$("#TH_ta_customername").keypress(function(){
+$('#TH_div_headernodata').hide();
+$('#TH_lbl_notmatch').hide();
+$('#TH_tble_htmltable').hide();
+$('#TH_div_header').hide();
+$("#TH_btn_search_customername").attr("disabled","disabled");
+TH_chkflag=0;
+TH_highlightSearchText();
+$("#TH_ta_customername").autocomplete({
+source:TH_customername,
+select:TH_AutoCompleteSelectHandler
+});
+});
+//CHANGE FUNCTION FOR CUSTOMER NAME
+var TH_chkflag;
+$(document).on('change','.custnameresultsvalidate',function(){
+if(TH_chkflag==1){
+$('#TH_lbl_notmatch').hide();
+}
+else
+{
+$('#TH_lbl_notmatch').show();
+$('#TH_div_headernodata').hide();
+$('#TH_tble_htmltable').hide();
+$('#TH_div_header').hide();
+$("#TH_btn_search_customername").attr("disabled","disabled");
+}
+if($('#TH_ta_customername').val()=="")
+{
+$('#TH_lbl_notmatch').hide();
+$('#TH_div_header').hide();
+$('#TH_div_headernodata').hide();
+}
+});
+//FUNCTION TO GET SELECTED VALUE
+function TH_AutoCompleteSelectHandler(event,ui) {
+TH_chkflag=1;
+$('#TH_lbl_notmatch').hide();
+$('#TH_btn_search_customername').removeAttr("disabled");
+}
+//CLICK EVENT FUNCTION FOR CUSTOMER NAME
+$('#TH_btn_search_customername').click(function(){
+$(".preloader").show();
+$('#TH_btn_search_customername').removeAttr("disabled");
+$('#TH_div_headernodata').hide();
+$('#TH_div_header').hide();
+$('#TH_tble_htmltable').hide();
+var TH_customername=$('#TH_ta_customername').val();
+google.script.run.withSuccessHandler(TH_srch_result).withFailureHandler(TH_onFailure).TH_flextabel_getdatas(TH_customername);
+});
+//SUCCESS FUNCTION FOR FLEX TABLE DATA
+function TH_srch_result(TH_response)
+{
+$(".preloader").hide();
+var TH_customername=$("#TH_ta_customername").val();
+$('#TH_ta_customername').val('');
+TH_srch_result_array=TH_response
+TH_customername=TH_customername.replace("_"," ")
+//ERROR MESSAGE FOR NO DATA
+if(TH_response.length==0)
+{
+$('#TH_div_header').hide();
+$('#TH_tble_htmltable').hide();
+$('#TH_btn_search_customername').attr("disabled", "disabled");
+var TH_errmsg=TH_errorMsg_array[0].replace('[FIRST NAME + LAST NAME]',TH_customername);
+$('#TH_div_headernodata').text(TH_errmsg).show();
+}
+else
+{
+//ERROR MESSAGE FOR HAVING DATA
+if(TH_srch_result_array.length > 10){ var px = '1500px'}
+else
+{ 
+var x = TH_srch_result_array.length*50+50;
+if(x <=100){var px = '500px'}
+else{
+var px = x+"500px" }
+}
+$('#TH_div_flexdata_result').css('height',px)
+TH_srch_result_array=TH_response
+var TH_value='';
+var TH_header='<tr><th style="width:600px">HISTORY</th><th style="width:200px">USERSTAMP</th><th style="width:150px">TIMESTAMP</th></tr>'
+$('#TH_tble_htmltable').html(TH_header);
+for(var i=0;i<TH_srch_result_array.length;i++)
+{
+var TH_values=TH_srch_result_array[i]
+var TH_arrrow=TH_values.oldvalue;
+var TH_arrnewrow=TH_values.newvalue;
+var TH_arrchk=[];
+var TH_arrnewchk=[];
+TH_arrchk=(TH_arrrow).split(',')
+TH_arrnewchk=(TH_arrnewrow).split(',')
+var TH_arroldvalue='';
+var TH_arrnewvalue='';
+for(var j=0;j<TH_arrchk.length;j++)
+{
+if(j==0)
+{
+TH_arroldvalue=TH_arrchk[j];
+}
+else
+{
+TH_arroldvalue +=' , '+TH_arrchk[j];
+}
+}
+for(var k=0;k<TH_arrnewchk.length;k++)
+{
+if(k==0)
+{
+TH_arrnewvalue=TH_arrnewchk[k];
+}
+else
+{
+TH_arrnewvalue +=' , '+TH_arrnewchk[k];
+}
+}
+TH_value ='<tr><td>'+'CUSTOMER ID:'+''+TH_values.customerid+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'CUSTOMER NAME:'+''+TH_values.customerfirstname+' '+TH_values.customerlastname+'<br>'+'UPDATION/DELETION  :'+''+TH_values.upddel+'<br>'+'TABLE NAME:'+''+TH_values.tablename+'<br><br>'+'OLD VALUE:'+TH_arroldvalue+'<br><br><br>'+'NEW VALUE:'+TH_arrnewvalue+'</td><td>'+TH_values.userstamp+'</td><td>'+TH_values.timestamp+'</td></tr>'
+$('#TH_tble_htmltable').append(TH_value);
+}
+var TH_errmsg=TH_errorMsg_array[1].replace('[CUSTOMER NAME]',TH_customername);
+$('#TH_div_header').text(TH_errmsg).show();
+$('#TH_tble_htmltable').show();
+}
+$('#TH_btn_search_customername').attr("disabled", "disabled");
+}
+});
+//DOCUMENT READY FUNCTION END
+</script>
+<!--SCRIPT TAG END-->
+</head>
+<!--HEAD TAG END-->
+<!--BODY TAG START-->
+<body>
+<div class="wrapper">
+<div class="preloader MaskPanel"><div class="preloader statusarea"><div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>TICKLER HISTORY</h3><p></div></div>
+<form class="content" name="TH_form_customername" id="TH_form_customername">
+<table border=0>
+<tr>
+<td><label name="TH_lbl_customername" id="TH_lbl_customername">CUSTOMER NAME</label></td> 
+<td><input type="text" class="autosize custnameresultsvalidate" name="TH_ta_customername" id="TH_ta_customername" style="width:400px"/></td>
+<td><div><label id="TH_lbl_notmatch" name="TH_lbl_notmatch" class="errormsg" hidden></label></div></td></tr>
+<tr><td></td><td><input type="button" name="TH_btn_search_customername" class='btn' value="SEARCH" id="TH_btn_search_customername" disabled/></td><tr>
+</table>
+<td><div class="srctitle" name="TH_div_header" id="TH_div_header" hidden></div></td>
+<td><div class="errormsg" name="TH_div_headernodata" id="TH_div_headernodata" hidden></div></td>
+<div id ="TH_div_flexdata_result" style="height:1200px;width:1025px;overflow:auto;">
+<table id="TH_tble_htmltable" border="1" cellspacing="0" class="srcresult" style="width:1000px">  
+</table>
+</div>
+</form>
+</div>
+</body>
+<!--BODY TAG END-->
+</html>
+<!--HTML TAG END-->

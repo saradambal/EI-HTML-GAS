@@ -1,0 +1,329 @@
+<!--*********************************************************************************************************//-->
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+<!--***********************************************CHARTS***********************************************//-->
+<!--DONE BY:SARADAMBAL
+VER 0.08-INITIAL VERSION,TRACKER NO:585,SD:03/07/2014,ED:03/07/2014,checked biz net revenue sp and implemented script for adding header 
+VER 0.07-INITIAL VERSION,TRACKER NO:585,SD:19/06/2014,ED:19/06/2014,Updated failure function
+VER 0.06-INITIAL VERSION,TRACKER NO:585,SD:07/06/2014,ED:07/06/2014,Updated new link
+VER 0.05-INITIAL VERSION,TRACKER NO:585,SD:31/05/2014,ED:31/05/2014 give class name for dp,cleared personal net revenue issue(show net instead of gross)
+VER 0.04-INITIAL VERSION,TRACKER NO:585,SD:14/05/2014,ED:21/05/2014 CHECKED TEMP TABLE SP THROUGH FORM,cleared issue for chart and data table for second time coming
+VER 0.03-INITIAL VERSION,TRACKER NO:585,SD:08/05/2014,ED:08/05/2014 ADDED RETURN FUNCTION
+VER 0.02-INITIAL VERSION,TRACKER NO:585,SD:21/02/2014,ED:25/02/2014 add the google api for chart and data table
+VER 0.01-INITIAL VERSION,TRACKER NO:585,SD:03/12/2013,ED:05/09/2013-->
+<html>
+<head>
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<style type="text/css">
+.ui-datepicker-calendar {
+display: none;
+}
+</style>
+<script type="text/javascript">
+/*----------------------------------------------- FAILURE FUNTION FOR UNIT TERMINATION----------------------------------*/
+function CHART_onFailure(CHART_error){
+$(".preloader").hide();
+if(CHART_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+{
+CHART_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+$('#CHART_form_chart').replaceWith('<center><label class="dberrormsg">'+CHART_error+'</label></center>');
+}
+else{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHARTS",msgcontent:CHART_error}});
+}} 
+/*------------------------------------------------FUNCTION TO GET COLUMN CHART AND LINE CHART-----------------------------*/
+function drawChart(twoarr,CHART_errormsg,CHART_linebar) {
+var data = google.visualization.arrayToDataTable(twoarr);
+var options = {
+title: CHART_errormsg
+};
+if((CHART_linebar==10)||(CHART_linebar==22)||(CHART_linebar==27)||(CHART_linebar==18)||(CHART_linebar==16)){
+var chart = new google.visualization.LineChart(document.getElementById('CHART_div'));}
+else{
+var chart = new google.visualization.ColumnChart(document.getElementById('CHART_div'));}
+chart.draw(data, options);
+}
+/*------------------------------------------------FUNCTION TO DATA TABLE FOR CHART-----------------------------*/
+function drawTable(twodim,arr1,arr2){
+var data = new google.visualization.DataTable();
+for(var i=0;i<twodim[0].length;i++){
+data.addColumn(arr1[i],arr2[i]);    }
+data.addRows(twodim);
+var table = new google.visualization.Table(document.getElementById('CHART_table'));
+table.draw(data, {showRowNumber: true});
+} 
+/*---------------------------------READY FUNCTION--------------------------------------------*/
+$(document).ready(function(){
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+google.load('visualization', '1', {packages:['table']});
+google.setOnLoadCallback(drawTable);
+var CHART_flag_fromdate='';
+var CHART_flag_chart=0;
+/*------------------------------------SUCCESS FUNCTION FOR CHART-------------------------------------*/
+function CHART_success_chartexpense(CHART_response_chart){
+$("#CHART_div_errmsg_chart,#CHART_div,#CHART_table").empty();
+$(".preloader").hide();
+var twodim=CHART_response_chart.CHART_obj_flexarr;
+/*----------------------------------------------ERROR MSG-----------------------------------------------*/
+if(twodim.length==1)
+var CHART_errmsg=CHART_arr_errormsg[1]
+else
+var CHART_errmsg=CHART_arr_errormsg[0]
+var CHART_unitno=$('#CHART_lb_unitno').val();
+var CHART_frmdate=$('#CHART_db_frmrange').val();
+var CHART_todate=$('#CHART_db_torange').val();
+var CHART_errormsg=CHART_errmsg.replace('[TYPE]',$('#CHART_lb_srchdata').find('option:selected').text());
+if((CHART_frmdate==undefined)&&(CHART_todate==undefined)){
+CHART_todate='';
+var CHART_errormsg=CHART_errormsg.replace('TO','');
+CHART_frmdate=$('#CHART_db_month').val()
+}
+if(CHART_unitno==undefined)
+CHART_unitno='ALL UNIT'
+if(($('#CHART_lb_unitno').val()==undefined)&&($('#CHART_radio_allunit').val()==undefined))
+CHART_unitno='';
+var CHART_errormsg=CHART_errormsg.replace('[UNITNO]',CHART_unitno);
+var CHART_errormsg=CHART_errormsg.replace('[FROM]',CHART_frmdate);
+var CHART_errormsg=CHART_errormsg.replace('[TO]',CHART_todate);
+var CHART_errormsg=CHART_errormsg.replace('[DATE]',CHART_frmdate+'-'+CHART_todate);
+if(($('#CHART_lb_srchdata').val()==10)||($('#CHART_lb_srchdata').val()==22)||($('#CHART_lb_srchdata').val()==27)||($('#CHART_lb_srchdata').val()==18)||($('#CHART_lb_srchdata').val()==16))
+var CHART_errormsg=CHART_errormsg.replace('BAR','LINE');
+if(twodim.length==1){
+$("#CHART_div_errmsg_chart").text(CHART_errormsg)
+}
+else if(twodim.length>1){
+CHART_flag_chart=1;
+var CHART_flag_gross=[];
+var CHART_flag_net=[];
+if(($('#CHART_lb_srchdata').val()==17)||($('#CHART_lb_srchdata').val()==16)||($('#CHART_lb_srchdata').val()==18)||($('#CHART_lb_srchdata').val()==14)){
+var CHART_getsecondposition=new Array(twodim.length);   
+for(var y=0;y<twodim.length;y++){
+CHART_getsecondposition[y]=new Array(2);
+CHART_getsecondposition[y][0]=twodim[y][0];
+CHART_getsecondposition[y][1]=twodim[y][3];
+//CHECK COND FOR NET !=0
+if(CHART_getsecondposition[y][1]==0)
+CHART_flag_net[y]=y
+if(($('#CHART_lb_srchdata').val()==18)||($('#CHART_lb_srchdata').val()==16)){
+CHART_getsecondposition[y][2]=twodim[y][1];
+//CHECK COND FOR GROSS !=0
+if(CHART_getsecondposition[y][2]==0)
+CHART_flag_gross[y]=y
+}}}
+else{
+CHART_flag_chart=1;
+CHART_getsecondposition=twodim;}
+if(($('#CHART_lb_srchdata').val()==16)||($('#CHART_lb_srchdata').val()==18)){
+if((CHART_getsecondposition.length == CHART_flag_net.length)&&(CHART_getsecondposition.length == CHART_flag_gross.length)){
+$('#CHART_div').empty();
+$('#CHART_div').width(0);$('#CHART_div').height(0);
+CHART_flag_chart=0;
+}}
+else if(($('#CHART_lb_srchdata').val()==17)&&(CHART_getsecondposition.length == CHART_flag_net.length)){
+CHART_flag_chart=0;
+$('#CHART_div').empty();
+$('#CHART_div').width(0);$('#CHART_div').height(0);
+}
+if(CHART_flag_chart==1){
+$('#CHART_div').width(1000);$('#CHART_div').height(700);
+drawChart(CHART_getsecondposition,CHART_errormsg,$('#CHART_lb_srchdata').val());
+}
+var arr1=[];
+arr1[0]='string';
+for(var j=1;j<twodim[0].length;j++){
+arr1[j]='number';   }
+var CHART_flexarr=new Array(twodim.length-1);
+for(var y=0;y<twodim.length-1;y++){
+CHART_flexarr[y]=new Array(2);
+CHART_flexarr[y]=twodim[y+1]
+}
+if(CHART_flag_chart==1){
+drawTable(CHART_flexarr,arr1,twodim[0]);
+}
+else{
+var CHART_errormsg=CHART_arr_errormsg[1].replace('[UNITNO] [TYPE] BAR CHART FOR THE PERIOD [DATE]',CHART_errormsg);
+$("#CHART_div_errmsg_chart").text(CHART_errormsg)
+}
+}}
+var CHART_arr_errormsg=[];
+var CHART_arr_unitno=[];
+var CHART_db_dataId=null,CHART_srch_type=null,CHART_arr_srch_data=null,CHART_sel_srchtype='';
+var CHART_sel_unitno ='<option>SELECT</option>';
+google.script.run.withSuccessHandler(CHART_success_srchtype_err).withFailureHandler(CHART_onFailure).CHART_func_srchtype_errmsg()
+/*------------------------------------FUNCTION TO LOAD ERROR MSG AND SRCH TYPE----------------------*/
+function CHART_success_srchtype_err(CHART_response_srchtype){
+CHART_arr_errormsg=CHART_response_srchtype.CHART_obj_errmsg;
+CHART_srch_type=CHART_response_srchtype.CHART_obj_srchtype;
+CHART_arr_unitno=CHART_response_srchtype.CHART_obj_unitno;
+$('#CHART_lb_srchtype,#CHART_lbl_chartname').hide();
+var CHART_srch_data='<option value="">SELECT</option>'
+if(CHART_arr_unitno.length==0)
+$('#CHART_form_chart').replaceWith('<p><label class="errormsg"> '+USRC_errormsg_arr[34]+'</label></p>')
+else{
+for (var i = 0; i < CHART_arr_unitno.length; i++)
+{
+CHART_sel_unitno += '<option value="' + CHART_arr_unitno[i] + '">'+ CHART_arr_unitno[i]+' </option>';
+} 
+for(var i = 0; i < CHART_srch_type.length; i++){
+CHART_srch_data += '<option value="' + CHART_srch_type[i].CHART_key+ '">'+ CHART_srch_type[i].CHART_value+' </option>';
+}
+$('#CHART_lb_srchtype').html(CHART_srch_data).show();
+$('#CHART_lbl_chartname').show();
+}}
+/*------------------------------------CHANGE FUNCTION FOR SEARCH TYPE---------------------------------------------*/
+$(document).on('change','#CHART_lb_srchtype',function(){
+$(".preloader").show();
+$("#CHART_tble_allperunit,#CHART_tble_selmonth_range,#CHART_div_errmsg_chart,#CHART_tble_unit").html('')
+$('#CHART_table,#CHART_div').empty();
+var CHART_val_srchtype =$(this).val();
+if(CHART_val_srchtype!='')
+google.script.run.withSuccessHandler(CHART_success_srchdata).withFailureHandler(CHART_onFailure).CHART_func_srchopt_type(CHART_val_srchtype)
+});
+/*---------------------------------------------SUCCESS FUNCTION FOR CHART SEARCH DATA--------------------*/
+function CHART_success_srchdata(CHART_response_srchdata){
+$(".preloader").hide();
+CHART_arr_srch_data=CHART_response_srchdata;
+$("#CHART_tr_srchdata").html('')
+var CHART_srchdata_options ='<option value="">SELECT</option>';
+for (var i = 0; i <CHART_arr_srch_data.length; i++) {
+CHART_srchdata_options +='<option value="'+CHART_arr_srch_data[i].CHART_key +'">' + CHART_arr_srch_data[i].CHART_value+'</option>';
+}
+$('<td>SUB CHART<em></em></td><td><select id="CHART_lb_srchdata" name="CHART_lb_srchdata">'+CHART_srchdata_options+'</select></td>').appendTo($("#CHART_tr_srchdata"));
+}
+/*------------------------------------CHANGE FUNCTION FOR SEARCH DATA---------------------------------------------*/
+$(document).on('change','#CHART_lb_srchdata',function(){
+$("#CHART_tble_allperunit,#CHART_tble_selmonth_range,#CHART_table,#CHART_div,#CHART_tble_unit,#CHART_div_errmsg_chart").html('')
+var CHART_val_srchdata =$(this).val();
+(CHART_val_srchdata==9||CHART_val_srchdata==11||CHART_val_srchdata==12||CHART_val_srchdata==13||CHART_val_srchdata==14||CHART_val_srchdata==15||CHART_val_srchdata==18)?CHART_func_allperunit():"";
+(CHART_val_srchdata==10||CHART_val_srchdata==16||CHART_val_srchdata==27||CHART_val_srchdata==22)?CHART_func_daterange():"";
+(CHART_val_srchdata==19||CHART_val_srchdata==21||CHART_val_srchdata==20||CHART_val_srchdata==23||CHART_val_srchdata==24||CHART_val_srchdata==25||CHART_val_srchdata==26||CHART_val_srchdata==17)?CHART_func_permon_daterange():"";
+});
+function CHART_func_allperunit(){
+$('<tr><td style="width:180px"><label>CHART TYPE</label></td><td><input type="radio" id="CHART_radio_perunit" name="CHART_radio_perallunit" class="CHART_class_unit"></td><td><label>PER UNIT</label></td><td><input type="radio" id="CHART_radio_allunit" name="CHART_radio_perallunit" class="CHART_class_unit"></td><td><label>ALL UNIT</label></td></tr>').appendTo($("#CHART_tble_allperunit"));
+}
+function CHART_func_daterange(){
+if($("#CHART_lb_srchdata").val()==10||$("#CHART_lb_srchdata").val()==16||$("#CHART_lb_srchdata").val()==27||$("#CHART_lb_srchdata").val()==22)
+$('<tr id="CHART_div_fromrangeperiod"><td style="width:150px"></td></tr><tr id="CHART_div_torangeperiod"><td style="width:180px"></td></tr>').appendTo($("#CHART_tble_selmonth_range"));
+$('<td style="width:50px"><label>FROM</label></td><td><input type="text" id="CHART_db_frmrange" name="CHART_db_frmrange" style="width:110px" class="CHART_class_srchvalid date-picker datemandtry"></td></td>').appendTo($("#CHART_div_fromrangeperiod"));
+$('<td style="width:50px"><label>TO</label></td><td><input type="text" id="CHART_db_torange" name="CHART_db_torange" style="width:110px" class="date-picker datemandtry"></td></td>').appendTo($("#CHART_div_torangeperiod"));
+CHART_datepicker();
+}
+var CHART_monthBefore='';var CHART_yearBefore='';
+/*--------------------------------------------DATE PICKER FUNCTION------------------------------------------*/
+function CHART_datepicker(){
+$(function() {$('.date-picker').datepicker({
+changeMonth: true, changeYear: true,showButtonPanel: true,dateFormat: 'MM-yy', minDate: new Date(2005, 0,1), maxDate:  new Date(),
+onClose: function(dateText, inst) { 
+$("#CHART_div,#CHART_div_errmsg_chart").empty();
+CHART_flag_fromdate=$("#CHART_db_frmrange").val()
+var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+$(this).datepicker('setDate', new Date(year, month, 1));
+if($(this).attr('id')=='CHART_db_frmrange'){
+CHART_monthBefore=month;CHART_yearBefore=year;
+}
+CHART_db_dataId = $('input:radio[name=CHART_radio_perallunit]:checked').attr('id');
+if(CHART_db_dataId=='CHART_radio_perunit')
+var CHART_flag_daterange='CHART_flag_daterange_unit'
+else if(CHART_db_dataId=='CHART_radio_allunit')
+var CHART_flag_daterange='CHART_flag_daterange_allunit'
+else
+CHART_flag_daterange='CHART_flag_daterange_allunit'
+if(($("#CHART_db_frmrange").val()!='')&&($("#CHART_db_frmrange").val()!=undefined)&&($("#CHART_db_torange").val()!=undefined)&&($("#CHART_db_torange").val()!='')){
+$(".preloader").show();
+google.script.run.withSuccessHandler(CHART_success_chartexpense).withFailureHandler(CHART_onFailure).CHART_func_expense_perunit($("#CHART_lb_unitno").val(),$("#CHART_db_frmrange").val(),$("#CHART_db_torange").val(),$("#CHART_lb_srchdata").val(),CHART_flag_daterange)
+}
+if(($("#CHART_db_month").val()!='')&&($("#CHART_db_month").val()!=undefined)){
+$(".preloader").show();
+google.script.run.withSuccessHandler(CHART_success_chartexpense).withFailureHandler(CHART_onFailure).CHART_func_expense_perunit($("#CHART_lb_unitno").val(),$("#CHART_db_month").val(),$("#CHART_db_month").val(),$("#CHART_lb_srchdata").val(),CHART_flag_daterange)
+}},
+beforeShow : function(selected) {
+$("#CHART_db_torange").datepicker("option","minDate", new Date(CHART_yearBefore, CHART_monthBefore ,1));
+}});});}
+/*----------------------------------------FUNCTION TO APPEND SELECT MONTH-----------------------------------------------*/
+function CHART_func_permon_daterange(){
+$('<tr><td style="width:180px"><label>SELECT MONTH</label></td><td><input type="radio" id="CHART_radio_selmonth" name="CHART_radio_monperiod" class="CHART_class_periodrange_month"><label>MONTH</label></td><td><div id="CHART_div_selmonth"></div></td></tr><tr><td></td><td><input type="radio" id="CHART_radio_periodrange" name="CHART_radio_monperiod" class="CHART_class_periodrange_month"><label>PERIOD RANGE</label></td><td id="CHART_div_fromrangeperiod"></td></tr><tr><td></td><td></td><td id="CHART_div_torangeperiod"></td></tr>').appendTo($("#CHART_tble_selmonth_range"));
+}
+function CHART_func_permonth(){
+$('<tr><td style="width:180px"><label>SELECT MONTH</label></td><td><input type="text" id="CHART_db_month" name="CHART_db_month" class="date-picker datemandtry" style="width:110px"></td></tr>').appendTo($("#CHART_div_selmonth"));;
+CHART_datepicker();
+}
+/*------------------------------------CHANGE FUNCTION FOR UNIT NO---------------------------------------------*/
+$(document).on('change','#CHT_UEXP_lb_unitno',function(){
+$("#CHT_UEXP_tble_selmonth_range").empty();
+$("#CHT_UEXP_tble_monthrangeperiod").empty();
+$("#CHART_table,#CHART_div,#CHART_div_errmsg_chart").empty();
+CHART_func_permon_daterange();
+});
+/*-------------------------------------CLICK FUNCTION FOR PER UNIT & ALL UNIT-----------------------*/
+$(document).on('click','.CHART_class_unit',function(){
+var CHART_unit=  $(this).attr('id');
+$("#CHART_tble_selmonth_range").empty();
+$("#CHART_table,#CHART_div,#CHART_div_errmsg_chart").empty();
+$("#CHART_tble_unit").html('')
+if(CHART_unit=='CHART_radio_perunit'){
+var CHART_tr_unit ='<tr><td style="width:180px"><label id="CHART_lbl_unitno">UNIT NO</label></td><td><select id="CHART_lb_unitno" name="CHART_lb_unitno">'+CHART_sel_unitno+'</select></td></tr>';
+$(CHART_tr_unit).appendTo($("#CHART_tble_unit"));
+}
+else if(CHART_unit=='CHART_radio_allunit'){
+CHART_func_permon_daterange();
+}});
+/*------------------------------------CHANGE FUNCTION FOR UNIT NO---------------------------------------------*/
+$(document).on('change','#CHART_lb_unitno',function(){
+$("#CHART_tble_selmonth_range").empty();
+$("#CHART_table,#CHART_div,#CHART_div_errmsg_chart").empty();
+CHART_func_permon_daterange();
+});
+/*------------------------------COMMON FUNCTION TO CALL SELECT MONTH & DATE RANGE----------------------*/
+function CHART_func_datebox(){
+var CHART_tr_unit='';
+CHART_tr_unit +='<tr><td style="width:180px"><label>SELECT MONTH</label></td><td><input type="radio" id="CHART_radio_selmonth" name="CHART_radio_monperiod" class="CHART_class_periodrange_month"><label>MONTH</label></td></tr><tr><td></td><td><input type="radio" id="CHART_radio_periodrange" name="CHART_radio_monperiod" class="CHART_class_periodrange_month"><label>PERIOD RANGE</label></td></tr>';
+$(CHART_tr_unit).appendTo($("#CHART_tble_selmonth_range"));}
+/*-------------------------------------CLICK FUNCTION FOR MONTH & PERIOD RANGE-----------------------*/
+$(document).on('click','.CHART_class_periodrange_month',function(){
+var CHART_monperrange=  $(this).attr('id');
+$("#CHART_table,#CHART_div,#CHART_div_errmsg_chart,#CHART_div_selmonth,#CHART_div_fromrangeperiod,#CHART_div_torangeperiod").empty();
+if(CHART_monperrange=='CHART_radio_selmonth')
+CHART_func_permonth();
+else if(CHART_monperrange=='CHART_radio_periodrange')
+CHART_func_daterange();
+});
+/*-------------------------------------COMMON FUNCTION FOR SELECT MONTH---------------------------------------*/
+function CHART_func_selectmonth(){
+$('<tr><td><label class="srctitle">SELECT A OPTION</label></td></tr><tr><td><input type="radio" id="URT_SRC_radio_rejoin" name="URT_SRC_radio_rejoin_srcupd" class="URT_SRC_class_rejoin_srcupd"><label>REJOIN</label></td></tr><tr><td><input type="radio" id="URT_SRC_radio_optsrcupd" name="URT_SRC_radio_rejoin_srcupd" class="URT_SRC_class_rejoin_srcupd"><label>SEARCH/UPDATE</label></td></tr>').appendTo($("#URT_SRC_tble_srchupd"));
+}});
+</script>
+<!--SCRIPT TAG END-->
+</head>
+<body>
+<div class="wrapper">
+<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>CHART</h3><p></div></div>
+<form class="content" name="CHART_form_chart" id="CHART_form_chart">  
+<table id="CHART_tble_srchtype"><tr><td style="width:180px"><label id="CHART_lbl_chartname" hidden>CHART NAME<em></em></label></td><td><select id="CHART_lb_srchtype" name="CHART_lb_srchtype" hidden></select></td></tr>
+<tr id="CHART_tr_srchdata"></tr></table>
+<table id="CHART_tble_allperunit"></table>
+<table id="CHART_tble_unit"></table>
+<table id="CHART_tble_selmonth_range"></table>
+<table id="CHART_tble_selmonth"></table>
+<table id="CHART_tble_monthrangeperiod"></table>
+<div id="CHART_div_errmsg_chart" class="errormsg"></div>
+<div id="CHART_div" style="width: 1000px; height: 700px;"></div>
+<div id='CHART_table'  style="width: 1000px; height: 700px;"></div>  
+</form>
+</div>
+</body>
+</html>

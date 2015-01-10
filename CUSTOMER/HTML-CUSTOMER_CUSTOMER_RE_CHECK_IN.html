@@ -1,0 +1,1863 @@
+<!--//***************************************CUSTOMER RECHECK IN******************************************//
+<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:KUMAR
+//VER 1.05- SD:03/07/2014 ED:03/07/2014,TRACKER NO:681-changed processing fee amount text box max digits 5 to 4.
+//VER 1.04- SD:17/06/2014 ED:17/06/2014,TRACKER NO:681-Updated error msg if calendar or inv or contract doc id wrong means and updated new email id validation script And ep date and passport date validation.
+//VER 1.03- SD:05/06/2014 ED:05/06/2014,TRACKER NO:681-updated new common jquery link and set max date for epdate and passport date.
+//VER 1.02- SD:24/05/2014 ED:24/05/2013.TRACKER NO:681-Changed Customer SD getting from Customer Configuration table.
+//VER 1.00- SD:22/03/2014 ED:22/03/2014.TRACKER NO:681-Removed extra return functions in Return function script and Did passportdate and ep date validation.
+//VER 0.09- SD:04/03/2014 ED:06/03/2014.TRACKER NO:681-Did new CR checkin date should  less than 6 months and checkout should hide if checkin date is null.and changed ULD_ID in creation form.
+// and Removed endtime gs cal function and used array concept,Changed userperties to PropertiesService in invoice and contract
+//VER 0.08- SD:22-02-2014 ED:22/02/2014,TRACKER NO:681-Updated comments in gs file.
+//VER 0.07- SD:06/02/2014 ED:06/02/2014,TRACKER NO:681-did all personal details and company details showing in recheckin form.
+//VER 0.06- SD:02/02/2014 ED:04/02/2014,TRACKER NO:681-Did new CR(error msg geting from eilib and creation form issues cleared in recheckin alos like validation etc..)
+//VER 0.05- SD:29/12/2013 ED:29/12/2013,TRACKER NO:681-Removed multiple conn and delivered in ver 0.05
+//VER 0.04- SD:17/12/2013 ED:17/17/2013,TRACKER NO:681-Fixed header issue in ver 0.04
+//VER 0.03- SD:09/12/2013 ED:13/12/2013,TRACKER NO:317-Did new CR in ver0.03
+//VER 0.02- SD:03/12/2013 ED:03/12/2013,TRACKER NO:317Added Return function script in ver0.02
+//VER 0.01-INITIAL VERSION-SD:31/07/2013 ED:04/09/2013,TRACKER NO:317
+//*********************************************************************************************************//
+-->
+<html>
+<head>
+<!--TO SUPPORT DATE PICKER CSS-->
+<!-----------------------------COMMON JQUERY LINKS START-------------------------->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+<!--TO SUPPORT FORM CSS-->
+<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+</head>
+<script>
+$(document).ready(function() {
+  $('#customerrecheckin_head').hide();
+  $("#recheckinheader").show();
+  var errormsg=[];
+  var activeunit=[];
+  var email=[];
+  var unit_startenddate=[];
+  var CRCHK_cardArray= [];
+  var CRCHK_cardslbl_array=[];
+  var accesscard_array=[];
+  var CustomerSD;
+  $('.preloader').show();
+  /******************************FORM VALIDATION CLASSES******************************/
+  $(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+  $(".nameautoextend").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+  $('#CRCHK_tb_custmailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
+  $(".number").doValidation({rule:'numbersonly'});
+  $(".amount").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
+  $(".amount1").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+  $(".processamount1").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+  $(".alphanumer").doValidation({rule:'alphanumeric'});
+  $("#CRCHK_tb_intmobile").doValidation({rule:'numbersonly',prop:{realpart:15,leadzero:true}});
+  $("#CRCHK_tb_companypostalcode").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
+  google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_getCommonvalues_result).CRCHK_customerrecheckin_commonvalues('nounit');
+  var time=[];
+  function CRCHK_getCommonvalues_result(CRCHK_result)
+  {
+    CustomerSD=CRCHK_result.CustomerSD;
+    var unit=[];
+    unit=CRCHK_result.unit;
+    activeunit=CRCHK_result.activeunit;
+    var nation=[];
+    nation=CRCHK_result.nation;
+    errormsg=CRCHK_result.error;
+    var ccoption=[];
+    ccoption=CRCHK_result.ccoption;
+    email=CRCHK_result.email;
+    time=CRCHK_result.time;
+    var prorated=[];
+    prorated=CRCHK_result.prorated;
+    var unitarray=[];
+    for(var k=0;k<unit.length;k++)
+    {
+    unitarray.push(unit[k].unit);
+    }
+    unitarray=unique(unitarray);
+    var CRCHK_unitvalue='<option>SELECT</option>';
+    for(var i=0;i<unitarray.length;i++)
+    {
+      CRCHK_unitvalue += '<option value="' + unitarray[i]+ '">' + unitarray[i] + '</option>';
+    }
+    $('#CRCHK_lb_unitselectmain').html(CRCHK_unitvalue);
+    $('#CRCHK_lb_unitselectmain').show();
+    $('#CRCHK_lbl_unitselectmain').show();
+    var CRCHK_activeunitvalue='<option>SELECT</option>';
+    for(var i=0;i<activeunit.length;i++)
+    {
+      CRCHK_activeunitvalue += '<option value="' + activeunit[i] + '">' + activeunit[i] + '</option>';
+    }
+    $('#CRCHK_lb_unitselect').html(CRCHK_activeunitvalue);
+    var CRCHK_nationvalue='<option>SELECT</option>';
+    for(var i=0;i<nation.length;i++)
+    {
+      CRCHK_nationvalue += '<option value="' + nation[i] + '">' + nation[i] + '</option>';
+    }
+    $('#CRCHK_lb_nationselect').html(CRCHK_nationvalue);
+    var CRCHK_timevalue='<option>SELECT</option>';
+    for(var i=0;i<time.length;i++)
+    {
+      CRCHK_timevalue += '<option value="' + time[i] + '">' + time[i] + '</option>';
+    }
+    $('#CRCHK_lb_startselect').html(CRCHK_timevalue);
+    $('#CRCHK_lb_endselect').html(CRCHK_timevalue);
+    var CRCHK_emailvalue='<option>SELECT</option>';
+    for(var i=0;i<email.length;i++)
+    {
+      CRCHK_emailvalue += '<option value="' + email[i] + '">' + email[i] + '</option>';
+    }
+    $('#CRCHK_lb_mailselect').html(CRCHK_emailvalue);
+    var CRCHK_ccoptionvalue='<option>SELECT</option>';
+    for(var i=0;i<ccoption.length;i++)
+    {
+      CRCHK_ccoptionvalue += '<option value="' + ccoption[i].optionid + '">' + ccoption[i].optionname + '</option>';
+    }
+    $('#CRCHK_lb_ccoptionselect').html(CRCHK_ccoptionvalue);
+    $('#CRCHK_tb_firstname').prop('title',errormsg[0])
+    $('#CRCHK_tb_lastname').prop('title',errormsg[0])
+    $('#CRCHK_tb_companypostalcode').prop('title',errormsg[1]);
+    $('#CRCHK_tb_intmobile').prop('title',errormsg[1]);
+    $('#CRCHK_tb_mobile').prop('title',errormsg[1]);
+    $('#CRCHK_tb_office').prop('title',errormsg[1]);
+    $('#CRCHK_tb_noticeno').prop('title',errormsg[1]);
+    $('#CRCHK_tb_quarterlyfee').prop('title',errormsg[1]);
+    $('#CRCHK_tb_aicon_fixed').prop('title',errormsg[1]);
+    $('#CRCHK_tb_electricity').prop('title',errormsg[1]);
+    $('#CRCHK_tb_drycleaning').prop('title',errormsg[1]);
+    $('#CRCHK_tb_cleaning').prop('title',errormsg[1]);
+    $('#CRCHK_tb_deposit').prop('title',errormsg[1]);
+    $('#CRCHK_tb_process').prop('title',errormsg[1]);
+    $('#CRCHK_tb_rent').prop('title',errormsg[1]);
+    $('#CRCHK_lbl_prorated').text(prorated[0]);
+    $('#CRCHK_lbl_emailiderrormsg').text(errormsg[6]);
+    $('#CRCHK_lbl_checkouterrormsg').text(errormsg[10]);
+    $('#CRCHK_lbl_waived').text(prorated[1]);
+    $('#CRCHK_lbl_mobileerrormsg').text(errormsg[12])
+    $('#CRCHK_lbl_intlmobileerrormsg').text(errormsg[12])
+    $('#CRCHK_lbl_officeerrormsg').text(errormsg[12])
+    $('#CRCHK_lbl_passporterrormsg').text(errormsg[13])
+    $('#CRCHK_lbl_epnoerrormsg').text(errormsg[14])
+    $('#CRCHK_lbl_postalerrormsg').text(errormsg[15])
+    $('#CRCHK_lbl_renterrormsg').text(errormsg[16])
+    $('#CRCHK_lbl_depositerrormsg').text(errormsg[17])
+    $('#CRCHK_lbl_processerrormsg').text(errormsg[18])
+    $('#CRCHK_lbl_electcaperrormsg').text(errormsg[19])
+    $('#CRCHK_lbl_passportdateerrormsg').text(errormsg[21]);
+    $('#CRCHK_lbl_epnodateerrormsg').text(errormsg[22]);
+    $('#CRCHK_lbl_pportdateerrormsg').text(errormsg[26]);
+    $('#CRCHK_lbl_ep_dateerrormsg').text(errormsg[25]);
+    
+    if(unit.length!=0)
+    {
+      $('#CRCHK_errormessagetable tr').remove().hide();
+      $('#customerrecheckin_head').show();
+      $("#recheckinheader").show();
+      $('#CRCHK_recheckinForm').hide();
+    }
+    else
+    {
+      $('#customerrecheckin_head').hide();
+      var uniterrormsg='<p><label class="errormsg">'+errormsg[9]+'</label></p>';
+      $('#CRCHK_errormessagetable').append(uniterrormsg);
+      $('#CRCHK_recheckinForm').hide();
+    }
+    $(".preloader").hide(); 
+  }
+  
+  /******************************CUSTOMER FORM SUBMIT BUTTON VALIDATION******************************/
+  $(document).on('change','.formvalidation',function(){
+//  $('.formvalidation').change(function(){
+    /******POSATAL CODE************/
+    var postalcode=$('#CRCHK_tb_companypostalcode').val();
+    if(postalcode!=""){if(postalcode.length>=5){var postalflag=1;$('#CRCHK_lbl_postalerrormsg').hide();$('#CRCHK_tb_companypostalcode').removeClass('invalid');}else{postalflag=0;$('#CRCHK_lbl_postalerrormsg').show();$('#CRCHK_tb_companypostalcode').addClass('invalid');}}else{$('#CRCHK_lbl_postalerrormsg').hide();postalflag=1;$('#CRCHK_tb_companypostalcode').removeClass('invalid');}
+    /******MOBILE NO************/
+    var mobileno=$('#CRCHK_tb_mobile').val();
+    if(mobileno!=""){if(mobileno.length>=6){var mobileflag=1;$('#CRCHK_lbl_mobileerrormsg').hide();$('#CRCHK_tb_mobile').removeClass('invalid');}else{mobileflag=0;$('#CRCHK_lbl_mobileerrormsg').show();$('#CRCHK_tb_mobile').addClass('invalid');}}else{$('#CRCHK_lbl_mobileerrormsg').hide();mobileflag=1;$('#CRCHK_tb_mobile').removeClass('invalid');}
+    /******INTL MOBILE NO************/
+    var intlmobileno=$('#CRCHK_tb_intmobile').val();
+    if(intlmobileno!=""){if(intlmobileno.length>=6){var intlmobileflag=1;$('#CRCHK_lbl_intlmobileerrormsg').hide();$('#CRCHK_tb_intmobile').removeClass('invalid');}else{intlmobileflag=0;$('#CRCHK_lbl_intlmobileerrormsg').show();$('#CRCHK_tb_intmobile').addClass('invalid');}}else{$('#CRCHK_lbl_intlmobileerrormsg').hide();intlmobileflag=1;$('#CRCHK_tb_intmobile').removeClass('invalid');};
+    /******OFFICE NO************/
+    var officeno=$('#CRCHK_tb_office').val();
+    if(officeno!=""){if(officeno.length>=6){var officenoflag=1;$('#CRCHK_lbl_officeerrormsg').hide();$('#CRCHK_tb_office').removeClass('invalid');}else{officenoflag=0;$('#CRCHK_lbl_officeerrormsg').show();$('#CRCHK_tb_office').addClass('invalid');}}else{$('#CRCHK_lbl_officeerrormsg').hide();officenoflag=1;$('#CRCHK_tb_office').removeClass('invalid');}
+    /******PASSPORT NO************/
+    var passportno=$('#CRCHK_tb_passportno').val();
+    if(passportno!=""){if(passportno.length>=6){var passportnoflag=1;$('#CRCHK_lbl_passporterrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid');$('#CRCHK_tb_passportno').val($("#CRCHK_tb_passportno").val().toUpperCase())}else{passportnoflag=0;$('#CRCHK_lbl_passporterrormsg').show();$('#CRCHK_tb_passportno').removeClass('invalid');}}else{$('#CRCHK_lbl_passporterrormsg').hide();passportnoflag=1;$('#CRCHK_tb_passportno').removeClass('invalid');}
+    /******EP NO************/
+    var epno=$('#CRCHK_tb_epno').val();
+    if(epno!=""){if(epno.length>=6){var epnoflag=1;$('#CRCHK_lbl_epnoerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid');$('#CRCHK_tb_epno').val($("#CRCHK_tb_epno").val().toUpperCase())}else{epnoflag=0;$('#CRCHK_lbl_epnoerrormsg').show();$('#CRCHK_tb_epno').removeClass('invalid'); }}else{$('#CRCHK_lbl_epnoerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid');epnoflag=1;}
+    /******DEPOSIT ************/
+    var deposit=$('#CRCHK_tb_deposit').val();
+    if(deposit!=""){var depositamount=deposit.split('.');if(depositamount[0].length>=3){var depositflag=1;$('#CRCHK_lbl_depositerrormsg').hide();$('#CRCHK_tb_deposit').removeClass('invalid');}else{depositflag=0;$('#CRCHK_lbl_depositerrormsg').show();$('#CRCHK_tb_deposit').addClass('invalid');}}else{$('#CRCHK_lbl_depositerrormsg').hide();depositflag=1;$('#CRCHK_tb_deposit').removeClass('invalid');}
+    /******PROCESS************/
+    var process=$('#CRCHK_tb_process').val();
+    if(process!=""){var processamount=process.split('.');if(processamount[0].length>=3){var processflag=1;$('#CRCHK_lbl_processerrormsg').hide();$('#CRCHK_tb_process').removeClass('invalid');}else{processflag=0;$('#CRCHK_lbl_processerrormsg').show();$('#CRCHK_tb_process').addClass('invalid');}}else{$('#CRCHK_lbl_processerrormsg').hide();$('#CRCHK_tb_process').removeClass('invalid');processflag=1;}
+    /******RENT************/
+    var rent=$('#CRCHK_tb_rent').val();
+    if(rent!=""){var rentamount=rent.split('.');if(rentamount[0].length>=3){var rentflag=1;$('#CRCHK_lbl_renterrormsg').hide();$('#CRCHK_tb_rent').removeClass('invalid');}else{rentflag=0;$('#CRCHK_lbl_renterrormsg').show();$('#CRCHK_tb_rent').addClass('invalid');}}else{$('#CRCHK_lbl_renterrormsg').hide();$('#CRCHK_tb_rent').removeClass('invalid');rentflag=1;}
+    /******ELECTRICITY CAP************/
+    var electricity=$('#CRCHK_tb_electricity').val();
+    if(electricity!=""){var electamount=electricity.split('.');if(electamount[0].length>=2){var electflag=1;$('#CRCHK_lbl_electcaperrormsg').hide();$('#CRCHK_tb_electricity').removeClass('invalid');}else{electflag=0;$('#CRCHK_lbl_electcaperrormsg').show();$('#CRCHK_tb_electricity').addClass('invalid');}}else{$('#CRCHK_lbl_electcaperrormsg').hide();$('#CRCHK_tb_electricity').removeClass('invalid');electflag=1;}
+   if($('#CRCHK_db_passportdate').val()=="" && $('#CRCHK_tb_passportno').val()=="") { var passportflag=1;$('#CRCHK_lbl_passportdateerrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid'); } else { if($('#CRCHK_db_passportdate').val()!="" && $('#CRCHK_tb_passportno').val()==""){passportflag=0;$('#CRCHK_lbl_passportdateerrormsg').show();$('#CRCHK_tb_passportno').addClass('invalid');} else {passportflag=1;$('#CRCHK_lbl_passportdateerrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid');} }
+   if($('#CRCHK_db_epdate').val()=="" && $('#CRCHK_tb_epno').val()=="") { var epflag=1;$('#CRCHK_lbl_epnodateerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid') } else { if($('#CRCHK_db_epdate').val()!="" && $('#CRCHK_tb_epno').val()==""){epflag=0;$('#CRCHK_lbl_epnodateerrormsg').show();$('#CRCHK_tb_epno').addClass('invalid');} else {epflag=1;$('#CRCHK_lbl_epnodateerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid')} }
+   var CRCHK_emailid=$("#CRCHK_tb_custmailid").val();
+    if(CRCHK_emailid.length>0)
+    {
+      var CRCHK_atpos=CRCHK_emailid.indexOf("@");
+      var CRCHK_dotpos=CRCHK_emailid.lastIndexOf(".");
+       if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(CRCHK_emailid) || "" == CRCHK_emailid)&&(CRCHK_atpos-1!=CRCHK_emailid.indexOf(".")))
+      {
+        $('#CRCHK_lbl_emailiderrormsg').hide();
+        var CRCHK_emailchk="valid";
+        $('#CRCHK_tb_custmailid').removeClass('invalid');
+        $('#CRCHK_tb_custmailid').val(CRCHK_emailid.toLowerCase());
+      }
+      else
+      {
+        $('#CRCHK_lbl_emailiderrormsg').show();
+        CRCHK_emailchk="invalid"
+        $('#CRCHK_tb_custmailid').addClass('invalid');
+      }
+    }
+    else
+    {
+      $('#CRCHK_lbl_emailiderrormsg').hide();
+      $('#CRCHK_tb_custmailid').removeClass('invalid');
+    }
+var pp_date=$('#CRCHK_db_passportdate').val();
+var end_date=$("#CRCHK_db_enddate").val();
+var ep_date=$('#CRCHK_db_epdate').val();
+if(pp_date!="" && end_date!="")
+{
+var newpp_date=FormnewDateFormat(pp_date);
+var newend_date=FormnewDateFormat(end_date);
+if(newpp_date>newend_date)
+{var ppdateflag=1;}
+else
+{ppdateflag=0;}
+}
+else{ppdateflag=1;}
+if(ep_date!="" && end_date!="")
+{
+var newep_date=FormnewDateFormat(ep_date);
+var newend_date=FormnewDateFormat(end_date);
+if(newep_date>newend_date)
+{var epdateflag=1;}
+else
+{epdateflag=0;}
+}
+else
+{epdateflag=1}
+    if($("#CRCHK_tb_firstname").val()!="" && $("#CRCHK_tb_lastname").val()!="" && $("#CRCHK_lb_startselect").val()!="SELECT"&&$("#CRCHK_lb_unitselect").val()!="SELECT"&& $("#CRCHK_lb_roomselect").val()!="SELECT"&&$("#CRCHK_lb_endselect").val()!="SELECT"
+    && $("#CRCHK_lb_ccoptionselect").val()!="SELECT"&& $("#CRCHK_lb_mailselect").val()!="SELECT"&& $("#CRCHK_tb_rent").val()!=""&& $("#CRCHK_db_startdate").val()!=""&& $("#CRCHK_db_enddate").val()!=""&&(CRCHK_emailchk=="valid")&& mobileflag==1 && intlmobileflag==1 && officenoflag==1&& passportnoflag==1 && epnoflag==1 && processflag==1&& depositflag==1 && rentflag==1 && postalflag==1 &&electflag==1 && passportflag==1 && epflag==1 && ppdateflag==1 && epdateflag==1)
+    {
+    if(($("input[name='radio']:checked").val()=='null')||(($("input[name='radio']:checked").val()=='cardnum')&&($("input[name='checkbox']:checked").val()!="")&&($("input[name='checkbox']:checked").val()!=undefined)))
+    {
+     if($("input[name='radio']:checked").val()=='cardnum')
+      {
+      var CRCHK_cardflag=0;
+       for(var card=0;card<CRCHK_cardslbl_array.length;card++)
+       {
+       if($('#CRCHK_lb_cardlistselect'+card).val()==$("#CRCHK_tb_firstname").val()+" "+$("#CRCHK_tb_lastname").val())
+       {
+       CRCHK_cardflag=1;
+       }
+       else
+       {
+       $("#CRCHK_savebutton").attr("disabled", "disabled");
+       }
+       }
+       if(CRCHK_cardflag==1)
+       {
+       $("#CRCHK_savebutton").removeAttr("disabled");
+       }
+       }
+       else
+       {
+       $("#CRCHK_savebutton").removeAttr("disabled");
+       }
+       }
+      else
+      {
+        $("#CRCHK_savebutton").attr("disabled", "disabled");
+      }
+    }
+    else
+    {
+      $("#CRCHK_savebutton").attr("disabled", "disabled");
+    }
+  });
+  $('#CRCHK_lb_customerselect').hide();
+  $('#CRCHK_lbl_customername').hide();
+  $('#CRCHK_lbl_noticeerroemsg').hide();
+  $('#CRCHK_lbl_emailiderrormsg').hide();
+  
+  /***************************PASSPORT DATE VALIDATION***********************************************/
+$(document).on('change','.passportdatevalidation',function(){
+var pp_date=$('#CRCHK_db_passportdate').val();
+var end_date=$("#CRCHK_db_enddate").val();
+if(pp_date!="" && end_date!="")
+{
+var newpp_date=FormnewDateFormat(pp_date);
+var newend_date=FormnewDateFormat(end_date);
+if(newpp_date>newend_date)
+{
+$('#CRCHK_lbl_pportdateerrormsg').hide();
+$('#CRCHK_db_passportdate').removeClass('invalid');
+}
+else
+{
+$('#CRCHK_lbl_pportdateerrormsg').show();
+$('#CRCHK_db_passportdate').addClass('invalid');
+}
+}
+});
+/***************************EPDATE VALIDATION***********************************************/
+$(document).on('change','.epdatevalidation',function(){
+var ep_date=$('#CRCHK_db_epdate').val();
+var end_date=$("#CRCHK_db_enddate").val();
+if(ep_date!="" && end_date!="")
+{
+var newpp_date=FormnewDateFormat(ep_date);
+var newend_date=FormnewDateFormat(end_date);
+if(newpp_date>newend_date)
+{
+$('#CRCHK_lbl_ep_dateerrormsg').hide();
+$('#CRCHK_db_epdate').removeClass('invalid');
+}
+else
+{
+$('#CRCHK_lbl_ep_dateerrormsg').show();
+$('#CRCHK_db_epdate').addClass('invalid');
+}
+}
+});
+function FormnewDateFormat(inputdate)
+  {
+    var string = inputdate.split("-");
+    var newdate=new Date(string[2],string[1]-1,string[0])
+    return newdate;
+  }
+  
+  /******************************CALL ROOM TYPE FUNCTION FOR SELECTED UNIT******************************/
+  $('.CRCHK_class_customernamechange').change(function(){ 
+  $("#CRCHK_savebutton").attr("disabled", "disabled");
+    var CRCHK_unit = $('#CRCHK_lb_unitselect').val();
+    $('#CRCHK_checkindatelabel').hide();
+    $('#CRCHK_db_startdate').hide().val('');
+    $('#CRCHK_checkoutdatelabel').hide();
+    $('#CRCHK_db_enddate').hide().val('');
+    $('#CRCHK_lbl_startto').hide();
+    $('#CRCHK_lb_startselect').hide();
+    $('#CRCHK_lb_startselect1').hide();
+    $("#CRCHK_lb_startselect")[0].selectedIndex = 0;
+    $("#CRCHK_lb_startselect1")[0].selectedIndex = 0;
+    $('#CRCHK_lbl_endto').hide();
+    $('#CRCHK_lb_endselect').hide();
+    $('#CRCHK_lb_endselect1').hide();
+    $("#CRCHK_lb_endselect")[0].selectedIndex = 0;
+    $("#CRCHK_lb_endselect1")[0].selectedIndex = 0;
+    var CRCHK_nullparam="";
+    if(CRCHK_unit!="SELECT")
+    {
+      $(".preloader").show(); 
+      google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_roomtypeResponse).CRCHK_Roomtype(CRCHK_unit,CRCHK_nullparam);
+    }
+    else
+    {
+    $('#CRCHK_lb_roomselect').hide();
+    $('#CRF_cardradio').hide();
+    $('#CRF_nullradio').hide();
+    $('#CRCHK_lbl_roomtype').hide();
+    $('#CRCHK_tble_cardtable').hide();
+    $('#CRCHK_checkindatelabel').hide();
+    $('#CRCHK_db_startdate').hide();
+    $('#CRCHK_checkoutlabel').hide();
+    $('#CRCHK_db_enddate').hide();
+    $('#CRCHK_lbl_endto').hide();
+    $('#CRCHK_lb_endselect').hide();
+    $('#CRCHK_lb_endselect1').hide();
+    $("#CRCHK_lb_endselect").hide();
+    $('#CRCHK_lbl_startto').hide();
+    $('#CRCHK_lb_startselect').hide();
+    $('#CRCHK_lb_startselect1').hide();
+    $("#CRCHK_lb_startselect").hide();
+    }
+  });
+  
+  /******************************CARD NUMBER CALL FUNCTION******************************/
+  $(function () {
+    $("#radio").buttonset();
+    $("input[name='radio']").on("click", function () {
+      var CRCHK_radio_name = $("input[name='radio']:checked").val();
+      if(CRCHK_radio_name=='cardnum')
+      {
+        var CRCHK_unit = $('#CRCHK_lb_unitselect').val();
+        var CRCHK_firstname=$('#CRCHK_tb_firstname').val();
+        var CRCHK_lastname=$('#CRCHK_tb_lastname').val();
+        if((CRCHK_firstname!="")&&(CRCHK_lastname!=""))
+        {
+          $(".preloader").show(); 
+          google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_cardnumberresponse).CRCHK_CardNumber(CRCHK_unit,CRCHK_firstname,CRCHK_lastname);
+        }
+        else
+        {
+          var CRCHK_value='<tr><td><label></label></td><td><label></label></td><td><label></label></td><td><label class="font_color" style="width=250;">ENTER CUSTOMER NAME</label></td></tr>';
+          $('#CRCHK_tble_cardtable').append(CRCHK_value);
+          $('#CRCHK_tble_cardtable').show();
+        }
+      }
+      else
+      {
+        $("#CRCHK_tble_cardtable tr").remove();
+        $('#CRCHK_tble_cardtable').hide();
+        $('#CRCHK_lbl_error').hide();
+      }
+    });
+    
+  });
+  
+  /******************************CALL STARTDATE ENDTIME FUNCTION******************************/
+  $('#CRCHK_db_startdate').change(function(){
+    if($('#CRCHK_db_startdate').val()!="")
+    {
+      $('#CRCHK_lb_startselect').show();
+      $('#CRCHK_db_enddate').show().val('');
+      $("#CRCHK_checkoutdatelabel").show();
+    }
+    else
+    {
+    $('#CRCHK_lb_startselect').hide();
+    $("#CRCHK_lb_startselect")[0].selectedIndex = 0;
+    $('#CRCHK_db_enddate').hide();
+    $('#CRCHK_db_startdate').show().val('');
+    $("#CRCHK_checkoutdatelabel").hide();
+    $('#CRCHK_lb_endselect1').hide();
+    $('#CRCHK_lb_endselect').hide();
+    $('#CRCHK_lbl_endto').hide();
+    $('#CRCHK_lb_startselect1').hide();
+    $('#CRCHK_lb_startselect').hide();
+    $('#CRCHK_lbl_startto').hide();
+    }
+  });
+  function CCRE_startendtimevalues(endtime)
+{
+var timearray=[];
+  for(var i=0;i<time.length;i++)
+  {
+    if(endtime==time[i])
+    {
+      var endtime_status=i;
+      break;
+    }
+  } 
+  if(endtime=="23:30")
+  {
+    timearray.push("23:59");
+  }
+  else if(endtime=="23:00")
+  {
+    timearray.push("23:30");
+    timearray.push("23:59");
+  }
+  else
+  {
+    var length=endtime_status+2;
+    for(var j=endtime_status+1;j<=length;j++)
+    {
+      timearray.push(time[j]);
+    }
+  }
+  return timearray;
+}
+
+  $('#CRCHK_lb_startselect').change(function(){ 
+    var CRCHK_start = $(this).val();
+    var timearray=CCRE_startendtimevalues(CRCHK_start);
+    if(CRCHK_start!="SELECT")
+    {
+      var CRCHK_options ='';
+    for (var i = 0; i < timearray.length; i++) 
+    {
+      CRCHK_options += '<option value="' + timearray[i] + '">' + timearray[i] + '</option>';
+    }
+    $('#CRCHK_lb_startselect1').html(CRCHK_options);
+    $('#CRCHK_lbl_startto').show();
+    $('#CRCHK_lb_startselect1').show();
+    }
+    else
+    {
+      $('#CRCHK_lb_startselect1').hide();
+      $('#CRCHK_lbl_startto').hide();
+    }
+  });
+  
+  /******************************ENDDATE TIME******************************/
+  $('#CRCHK_db_enddate').change(function(){
+    if($('#CRCHK_db_enddate').val()!="")
+    {
+      $('#CRCHK_lb_endselect').show();
+//      $("#CRCHK_lb_endselect")[0].selectedIndex = 0;
+    }
+    else
+    {
+      $('#CRCHK_lb_endselect').hide();
+      $("#CRCHK_lb_endselect")[0].selectedIndex = 0;
+    }
+  });
+  $('#CRCHK_lb_endselect').change(function(){ 
+    var CRCHK_end = $(this).val();
+    var timearray=CCRE_startendtimevalues(CRCHK_end);
+    if(CRCHK_end!="SELECT")
+    {
+      var CRCHK_options ='';
+    for (var i = 0; i < timearray.length; i++) 
+    {
+      CRCHK_options += '<option value="' + timearray[i] + '">' + timearray[i] + '</option>';
+    }
+    $('#CRCHK_lb_endselect1').html(CRCHK_options);
+    $('#CRCHK_lbl_endto').show();
+    $('#CRCHK_lb_endselect1').show();
+    }
+    else
+    {
+      $('#CRCHK_lb_endselect1').hide();
+      $('#CRCHK_lbl_endto').hide();
+    }
+  });
+  
+  /******************************SET DOB DATEPICKER******************************/
+  var CRCHK_d = new Date();
+  var CRCHK_year = CRCHK_d.getFullYear() - 18;
+  CRCHK_d.setFullYear(CRCHK_year);
+  $('#CRCHK_db_BirthDate').datepicker({
+    dateFormat: 'dd-mm-yy',
+    changeYear: true,
+    changeMonth: true,
+    yearRange: '1920:' + CRCHK_year + '',
+    defaultDate: CRCHK_d});
+  
+  $('#CRCHK_db_BirthDate').change(function(){
+  });
+  
+  /******************************CALL TERMINATED CUSTOMER LIST FOR SELECTED UNIT******************************/
+  $('#CRCHK_lb_unitselectmain').change(function(){ 
+    var CRCHK_unit = $('#CRCHK_lb_unitselectmain').val();
+    $("#CRCHK_savebutton").attr("disabled", "disabled");
+    $('#CRCHK_roometypeerror').hide();
+    if(CRCHK_unit!="SELECT")
+    {
+      $(".preloader").show(); 
+      $('#CRCHK_lb_customerselect').hide();
+      $('#CRCHK_lbl_customername').hide();
+      $('#CRCHK_tble_radiotable tr').remove();
+      $('#CRCHK_recheckinForm').hide();
+      google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_unitResponse).CRCHK_Customer(CRCHK_unit);
+    }
+    else
+    {
+      $('#CRCHK_lb_customerselect').hide();
+      $('#CRCHK_lbl_customername').hide();
+      $('#CRCHK_tble_radiotable tr').remove();
+      $('#CRCHK_recheckinForm').hide();
+      $('#CRCHK_db_startdate').hide();
+      $("#CRCHK_checkindatelabel").hide();
+      $('#CRCHK_lb_startselect1').hide();
+      $('#CRCHK_lb_startselect').hide();
+      $('#CRCHK_lbl_startto').hide();
+      $('#CRCHK_lb_endselect1').hide();
+      $('#CRCHK_lb_endselect').hide();
+      $('#CRCHK_lbl_endto').hide();
+      $('#CRCHK_db_enddate').hide();
+      $("#CRCHK_checkindatelabel").hide();
+      $('#CRCHK_db_startdate').hide();
+      $("#CRCHK_checkoutdatelabel").hide();
+      $("#CCRE_lb_startselect")[0].selectedIndex = 0;
+      $("#CCRE_lb_startselect1")[0].selectedIndex = 0;
+      $("#CCRE_lb_endselect")[0].selectedIndex = 0;
+      $("#CCRE_lb_endselect1")[0].selectedIndex = 0;
+    }
+  });
+ 
+ function FormTableDateFormat(inputdate){
+    var string = inputdate.split("-");
+    return string[2]+'-'+ string[1]+'-'+string[0];
+  }
+  /******************************CHECK RENT AMOUNT PRORATED BASED ON  STARTDATE AND ENDDATE******************************/
+  $('#CRCHK_db_enddate').change(function(){ 
+    var CRCHK_date1 = $('#CRCHK_db_startdate').val();
+    var CRCHK_date2 = $('#CRCHK_db_enddate').val();
+    if((CRCHK_date2!=""))
+    {
+      var CCRE_db_chkindate1 = new Date(Date.parse(FormTableDateFormat(CRCHK_date1))); 
+      CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate() + 1 );  
+      var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
+      CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) ); 
+      $('#CRCHK_db_noticedate').datepicker("option","minDate",CCRE_db_chkindate1);
+      var CCRE_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(CRCHK_date2)) ); 
+      CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate()-1);  
+      var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
+      CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1 )); 
+      var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate()
+      var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()+1
+      var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear()
+      var CCRE_finnoticedate=CCRE_chkoutyear+"-"+CCRE_chkoutmonth+"-"+CCRE_chkoutdate;
+      CCRE_finnoticedate = new Date( Date.parse( CCRE_finnoticedate ) ); 
+      $('#CRCHK_db_noticedate').datepicker("option","maxDate",CCRE_db_chkoutdate1);
+      if(new Date(CCRE_finnoticedate)<=new Date(FormTableDateFormat(CRCHK_date1)))
+      {
+        $('#CRCHK_db_noticedate').val("");
+      }
+    }
+  });
+  
+  /******************************prorated******************************/
+  $('.prorated').change(function(){ 
+    var CRCHK_date1 = $('#CRCHK_db_startdate').val();
+    var CRCHK_date2 = $('#CRCHK_db_enddate').val();
+    var rent=$('#CRCHK_tb_rent').val();
+    if(CRCHK_date1!="" && CRCHK_date2!="" && rent!="")
+    {
+      google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_proratedResponse).CRCHK_prorated(CRCHK_date1,CRCHK_date2);
+    }
+    else
+    {
+     $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr('checked',false);
+     $('input:checkbox[name=CRCHK_rentprorated_tempcheckbox2]').attr('checked',false);
+     $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr("disabled",'disabled');
+    }
+  });
+  
+  /******************************SET PASSPORTDATE,EPDATE,NOTICEDATE DATEPICKER******************************/
+  $( "#datepicker" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+  $( "#CRCHK_db_passportdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+  $( "#CRCHK_db_epdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+  $( "#CRCHK_db_noticedate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+  var date1 = new Date();
+  var day=date1.getDate();
+  date1.setDate( day + 1 );        
+  var newDate = date1.toDateString(); 
+  newDate = new Date( Date.parse( newDate ) ); 
+  var passCCRE_d = new Date();
+  var CCRE_passyear = passCCRE_d.getFullYear()+10;
+  var pass_changedmonth=new Date(passCCRE_d.setFullYear(CCRE_passyear));
+  $('#CRCHK_db_passportdate').datepicker("option","minDate",newDate);
+  $('#CRCHK_db_passportdate').datepicker("option","maxDate",pass_changedmonth);
+  var epCCRE_d = new Date();
+   var CCRE_epyear = epCCRE_d.getFullYear()+3;
+   var ep_changedmonth=new Date(epCCRE_d.setFullYear(CCRE_epyear));
+  $('#CRCHK_db_epdate').datepicker("option","minDate",newDate);
+  $('#CRCHK_db_epdate').datepicker("option","maxDate",ep_changedmonth); 
+  /////////SET CHECKIN DATE AND CHECKOUTDATE/////////////////
+  $('#CRCHK_db_enddate').datepicker({
+    dateFormat: 'dd-mm-yy',
+    changeYear: true,
+    changeMonth: true 
+  });
+  
+  $("#CRCHK_db_startdate").datepicker({
+  dateFormat: "dd-mm-yy", 
+  changeYear: true,
+  changeMonth: true
+  });
+  
+/**********************ENDDATE VALIDATION***********************************/
+$(".startdatevalidate").change(function(){
+var startdate=$('#CRCHK_db_startdate').val()
+var currentdate=new Date( Date.parse( FormTableDateFormat(startdate)) )
+if(new Date()<=currentdate){
+var date1 = $('#CRCHK_db_startdate').datepicker('getDate');           
+var date = new Date( Date.parse( date1 ) ); 
+date.setDate(date.getDate() + 1);        
+var newDate = date.toDateString(); 
+newDate = new Date( Date.parse( newDate ));                      
+$('#CRCHK_db_enddate').datepicker("option","minDate",newDate);
+   var enddateunit=unit_startenddate[1].split('-');
+   var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]);
+   $('#CRCHK_db_enddate').datepicker("option","maxDate",unitenddate);
+}
+else
+{
+   var CCRE_date1 = new Date();
+   var CCRE_day=CCRE_date1.getDate();
+   CCRE_date1.setDate( CCRE_day + 1 );        
+   var newDate = CCRE_date1.toDateString(); 
+   newDate = new Date( Date.parse( newDate )); 
+   $('#CRCHK_db_enddate').datepicker("option","minDate",newDate);
+   var enddateunit=unit_startenddate[1].split('-');
+   var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
+   $('#CRCHK_db_enddate').datepicker("option","maxDate",unitenddate);
+}
+});
+   
+  
+  /******************************FUNCTION FOR AIRCON FEE RADIO BUTTON VALIDATION******************************/
+  $(function () {
+    $("#radio").buttonset();
+    $("input[name='aircon']").on("change", function () {
+      var CRCHK_radio_name = $("input[name='aircon']:checked").val();
+      if(CRCHK_radio_name=='quarterlyfee')
+      {
+        $("#CRCHK_tb_quarterlyfee").show().val('');
+        $("#CRCHK_tb_aircon_fixed").hide().val('');
+      }
+      if(CRCHK_radio_name=='fixedairconfee')
+      {
+        $("#CRCHK_tb_quarterlyfee").hide().val('');
+        $("#CRCHK_tb_aircon_fixed").show().val('');
+      }
+    });
+  });
+  
+  /******************************CHECK PROCESS AMOUNT WAIVED R NOT******************************/
+  $('#CRCHK_tb_process').change(function(){ 
+    var CRCHK_process = $(this).val();
+    if(CRCHK_process!="")
+    {
+      $('input:checkbox[name=CRF_checkbox1]').removeAttr("disabled");
+    }
+    else
+    {
+      $('input:checkbox[name=CRF_checkbox1]').attr("disabled",'disabled');
+      $('input:checkbox[name=CRF_checkbox1]').attr('checked',false);
+    }
+  });
+  var CRCHK_myArray= [];
+  ////////FUNCTION FOR UNIT NUMBER RETURN VALUES******************************/
+  function CRCHK_unitResponse(response)
+  {
+    CRCHK_myArray=response;
+    var CRCHK_options='';
+    if(CRCHK_myArray.length!=0)
+    {
+    var uniquearray=[];
+      for (var j = 0; j < CRCHK_myArray.length; j++)
+      {
+      var CRCHK_myarray=CRCHK_myArray[j].name;
+      uniquearray.push(CRCHK_myarray);
+      }
+      uniquearray=unique(uniquearray);
+      CRCHK_options ='<option>SELECT</option>';
+      for (var i = 0; i < uniquearray.length; i++)
+      {
+      var customername=uniquearray[i].replace("_",' ');
+      CRCHK_options += '<option value="' + uniquearray[i]+ '">' + customername + '</option>';
+      }
+      $('#CRCHK_lb_customerselect').html(CRCHK_options);
+      $('#CRCHK_lb_customerselect').show();
+      $('#CRCHK_lbl_customername').show();
+      $('#CRCHK_roometypeerror').hide();
+    }
+    else
+    {
+      var CRCHK_unit=$('#CRCHK_lb_unitselectmain').val();
+      var CRCHK_message=errormsg[8].replace("[UNIT NO]",CRCHK_unit);
+      var CRCHK_errormessage='<tr><td ><label id="CRCHK_roometypeerror" class="errormsg">'+CRCHK_message+'</label></td></tr>'
+      $('#CRCHK_headertable').after('<p>'+CRCHK_errormessage+'<p>');
+      $('#CRCHK_db_startdate').hide();
+      $("#CRCHK_checkindatelabel").hide();
+      $('#CRCHK_lb_startselect1').hide();
+      $('#CRCHK_lb_startselect').hide();
+      $('#CRCHK_lbl_startto').hide();
+      $('#CRCHK_lb_endselect1').hide();
+      $('#CRCHK_lb_endselect').hide();
+      $('#CRCHK_lbl_endto').hide();
+      $('#CRCHK_db_enddate').hide();
+      $("#CRCHK_checkoutdatelabel").hide();
+    }
+    $(".preloader").hide(); 
+  }
+  /*************UNIQUE FUNCTION*********************/  
+function unique(a) {
+var result = [];
+$.each(a, function(i, e) {
+if ($.inArray(e, result) == -1) result.push(e);
+});
+return result;
+}
+  /******************************FUNCTION FOR SELECTED UNIT AND CUSTOMER RETURN VALUES******************************/
+$(document).on('change','.customernameselect',function(){
+    $(".preloader").show();
+    Recheckin_reset();
+    var customername=$('#CRCHK_lb_customerselect').val();
+    var CRCHK_namearray=[];
+    for(var k=0;k<CRCHK_myArray.length;k++)
+    {
+    if(CRCHK_myArray[k].name==customername)
+    {
+    CRCHK_namearray.push(CRCHK_myArray[k]);
+    }
+    }
+    if(CRCHK_namearray.length!=1)
+    {
+      $("#CRCHK_tble_radiotable tr").remove();
+      for (var i=0;i<CRCHK_namearray.length;i++) 
+      {
+        var CRCHK_radio_customername=((CRCHK_namearray[i].name).replace('_',' '))+' '+CRCHK_namearray[i].customerid;
+        var radioname=CRCHK_namearray[i].customerid+'-'+CRCHK_namearray[i].recver;
+        var CRCHK_value ='<tr><td></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" value='+radioname+' id="customerarray'+i+'" name="custid" class="CRCHK_radioshowlist" />' + CRCHK_radio_customername + '</td></tr>';
+        $('#CRCHK_tble_radiotable').append(CRCHK_value);
+      }
+      $(".preloader").hide(); 
+    }
+    else
+    {
+      $("#CRCHK_tble_radiotable tr").remove();
+      var CRCHK_id=CRCHK_namearray[0].customerid;
+      var CRCHK_recver=CRCHK_namearray[0].recver;
+      google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_formdata).CRCHK_olddetails(CRCHK_id,CRCHK_recver)
+    }
+  });
+  /******************************RETURN VALUES OF CARD NUMBER FUNCTION******************************/
+  function CRCHK_cardnumberresponse(card)
+  {
+    accesscard_array=card;
+    CRCHK_cardArray=card[0];
+    CRCHK_cardslbl_array=card[1];
+    if(CRCHK_cardArray.length!=0)
+    {
+      $("#CRCHK_tble_cardtable tr").remove();
+      for (var i=0;i<CRCHK_cardArray.length;i++) 
+      {
+        var CRCHK_value ='<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" value='+CRCHK_cardArray[i]+' id="CRCHK_lb_cardnumberarray'+i+'" name="checkbox" class="CRCHK_showlist" />' + CRCHK_cardArray[i] + '</td><td><select id="CRCHK_lb_cardlistselect'+i+'" name="CRCHK_lb_cardlistselect" visibility: hidden; class="CRCHK_showlist" style="height:25px" ><option>Select</option></select></td><td><input type="text" id="CRCHK_tb_cardlisttext'+i+'" name="temptext" style="visibility:hidden;"/></td></tr>';
+        $('#CRCHK_tble_cardtable').append(CRCHK_value);
+        $('#CRCHK_tble_cardtable').show();
+      }
+      for(var i=0;i<CRCHK_cardArray.length;i++){
+        var CRCHK_options ='<option>SELECT</option>'
+        for(var j=0;j<CRCHK_cardslbl_array.length;j++)
+        {
+          CRCHK_options += '<option value="' + CRCHK_cardslbl_array[j] + '">' + CRCHK_cardslbl_array[j] + '</option>';
+        }
+        $('#CRCHK_lb_cardlistselect'+i).html(CRCHK_options);
+      }
+    }
+    else
+    {
+      $("#CRCHK_savebutton").attr("disabled", "disabled");
+      var errormessage=errormsg[4];
+      CRCHK_value='<tr><td><label></label></td><td><label></label></td><td><label></label></td><td><label class="errormsg" >'+errormessage+'</label></td></tr>';
+      $('#CRCHK_tble_cardtable').append(CRCHK_value);
+      $('#CRCHK_tble_cardtable').show();
+    }
+    $(".preloader").hide(); 
+  }
+  /******************************prorated******************************/
+  $(document).on('change','.proratedcheck',function(){
+    var CCRE_radio_name =$('#proratedvalue').is(":checked");
+    if(CCRE_radio_name==false)
+    {
+      $('#tempproratedvalue').prop('checked',false);
+    }
+    else
+    {
+      $('#tempproratedvalue').prop('checked',true);
+    }
+  });
+ 
+  /******************************CALL FUNCTION TO GET DETAILS OF SELETED CUSTOMER******************************/
+  $(document).on('change','.CRCHK_radioshowlist',function(){
+    $(".preloader").show(); 
+    var CRCHK_id=($("input[name=custid]:checked").val()).split('-');
+    google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_formdata).CRCHK_olddetails(CRCHK_id[0],CRCHK_id[1])
+  });
+  /******************************RETURN VALUES FOR SELECTED CUSTOMER FULL DETAILS******************************/
+  function CRCHK_formdata(details)
+  {
+    $(".preloader").show(); 
+    if((email.length!=0)&&(activeunit.length!=0))
+    {
+      var CRCHK_detailsarray=[];
+      CRCHK_detailsarray=details[0];
+      var pre_recver_enddate=details[1];
+      var detailsvalue=CRCHK_detailsarray[0];
+      $('#CRCHK_tb_firstname').attr("size",(detailsvalue.firstname).length);
+      $('#CRCHK_tb_firstname').val(detailsvalue.firstname);
+      $('#CRCHK_tb_lastname').attr("size",(detailsvalue.lastname).length);
+      $('#CRCHK_tb_lastname').val(detailsvalue.lastname);
+      $('#CRCHK_tb_comanyname').val(detailsvalue.company);
+      $('#CRCHK_tb_comanyname').attr("size",(detailsvalue.company).length+2);
+      $('#CRCHK_tb_companyaddress').val(detailsvalue.address);
+      $('#CRCHK_tb_companyaddress').attr("size",(detailsvalue.address).length+2);
+      $('#CRCHK_tb_companypostalcode').val(detailsvalue.postal);
+      $('#CRCHK_tb_office').val(detailsvalue.office);
+      $('#CRCHK_tb_mobile').val(detailsvalue.mobile);
+      $('#CRCHK_tb_intmobile').val(detailsvalue.intmobile);
+      $('#CRCHK_tb_passportno').val(detailsvalue.passportno);
+      $('#CRCHK_tb_passportno').attr("size",(detailsvalue.passportno).length);
+      $('#CRCHK_tb_epno').val(detailsvalue.epno);
+      $('#CRCHK_tb_epno').attr("size",(detailsvalue.epno).length);
+      if(detailsvalue.passportno!="")
+      {
+        $('#CRCHK_db_passportdate').val(FormTableDateFormat(detailsvalue.passportdate));
+      }
+      if(detailsvalue.dob!="")
+      {
+        $('#CRCHK_db_BirthDate').val(FormTableDateFormat(detailsvalue.dob));
+      }
+       if(detailsvalue.passportdate!="")
+      {
+        $('#CRCHK_db_passportdate').val(FormTableDateFormat(detailsvalue.passportdate));
+      }
+       if(detailsvalue.epdate!="")
+      {
+        $('#CRCHK_db_epdate').val(FormTableDateFormat(detailsvalue.epdate));
+      }
+      $('#CRCHK_tb_custmailid').val(detailsvalue.mailid);
+      $('#CRCHK_tb_custmailid').attr("size",(detailsvalue.mailid).length);
+      $('#CRCHK_lb_nationselect').val(detailsvalue.nationality);
+      $('#CRF_id').val(detailsvalue.customerid);
+      $('#CRCHK_ta_comments').val(detailsvalue.comments);
+      var CRCHK_date1=pre_recver_enddate;
+      var CRCHK_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(CRCHK_date1))); 
+      CRCHK_db_chkindate1.setDate( CRCHK_db_chkindate1.getDate()+1);  
+      var CRCHK_db_chkindate1 = CRCHK_db_chkindate1.toDateString(); 
+      CRCHK_db_chkindate1 = new Date( Date.parse( CRCHK_db_chkindate1 ) );
+       var CCRE_db_chkoutdate1 = new Date(); 
+       var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate();
+       var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()-CustomerSD;
+       var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear();
+       var CCRE_finnoticedate = new Date(CCRE_chkoutyear,CCRE_chkoutmonth,CCRE_chkoutdate);
+      if(CRCHK_db_chkindate1<CCRE_finnoticedate  && CCRE_finnoticedate>=CRCHK_db_chkindate1)
+      {
+      $('#CRCHK_db_startdate').datepicker("option","minDate",CCRE_finnoticedate);
+      }
+      else
+      {
+      $('#CRCHK_db_startdate').datepicker("option","minDate",CRCHK_db_chkindate1);
+      }
+      $('#CRCHK_lb_roomselect').hide();
+      $('#CRCHK_lbl_roomtype').hide();
+      $('#CRF_cardradio').hide();
+      $('#CRF_nullradio').hide();
+      $('#CRCHK_tble_cardtable').hide();
+      $('#CRCHK_tb_quarterlyfee').hide();
+      $('#CRCHK_tb_aircon_fixed').hide();
+      $('#CRCHK_lb_startselect1').hide();
+      $('#CRCHK_lb_startselect').hide();
+      $('#CRCHK_lbl_startto').hide();
+      $('#CRCHK_lb_endselect1').hide();
+      $('#CRCHK_lb_endselect').hide();
+      $('#CRCHK_lbl_endto').hide();
+      $('#CRCHK_lbl_postalerrormsg').hide();
+      $('#CRCHK_lbl_mobileerrormsg').hide();
+      $('#CRCHK_lbl_intlmobileerrormsg').hide();
+      $('#CRCHK_lbl_officeerrormsg').hide();
+      $('#CRCHK_lbl_renterrormsg').hide();
+      $('#CRCHK_lbl_depositerrormsg').hide();
+      $('#CRCHK_lbl_processerrormsg').hide();
+      $('#CRCHK_lbl_electcaperrormsg').hide();
+      $('#CRCHK_lbl_passporterrormsg').hide();
+      $('#CRCHK_lbl_epnoerrormsg').hide();
+      $('#CRCHK_tb_companypostalcode').removeClass('invalid');
+      $('#CRCHK_tb_mobile').removeClass('invalid');
+      $('#CRCHK_tb_intmobile').removeClass('invalid');
+      $('#CRCHK_tb_office').removeClass('invalid');
+      $('#CRCHK_tb_rent').removeClass('invalid');
+      $('#CRCHK_tb_rent').removeClass('invalid');
+      $('#CRCHK_tb_process').removeClass('invalid');
+      $('#CRCHK_tb_deposit').removeClass('invalid');
+      $('#CRCHK_tb_passportno').removeClass('invalid');
+      $('#CRCHK_tb_epno').removeClass('invalid');
+      $('#CRCHK_tb_electricity').removeClass('invalid');
+      $('#CRCHK_tb_custmailid').removeClass('invalid');
+      $('#CRCHK_recheckinForm').show();
+    }
+    else
+    {
+      if(activeunit.length==0)
+      {
+        var uniterrormsg='<p><label class="errormsg">'+errormsg[11]+'</label></p>';
+        $('#CRCHK_recheckinerrormessagetable').append(uniterrormsg);
+        $('#CRCHK_recheckinForm').hide();
+        $('#CRCHK_recheckinerrormessagetable').show();
+      }
+      if(email.length==0)
+      {
+        var emailerrormsg='<p><label class="errormsg">'+errormsg[2]+'</label></p>';
+        $('#CRCHK_recheckinerrormessagetable').append(emailerrormsg);
+        $('#recheckin-form').hide();
+        $('#CRCHK_recheckinerrormessagetable').show();  
+      }
+    }
+    $('#CRCHK_db_startdate').hide();
+    $('#CRCHK_checkindatelabel').hide();
+    $('#CRCHK_db_enddate').hide();
+    $('#CRCHK_checkoutdatelabel').hide();
+    $(".preloader").hide(); 
+  }
+  /******************************RETURN VALUES OF ROOM TYPE FUNCTION******************************/
+  function CRCHK_roomtypeResponse(response)
+  {
+    $('#roometypeerror').hide();
+    var CRCHK_myArray= [];
+    CRCHK_myArray=response[0];
+    unit_startenddate=response[1];
+    var startdateunit=unit_startenddate[1].split('-');
+    var unitstartdate=new Date(startdateunit[2],startdateunit[1]-1,startdateunit[0]);
+    $('#CRCHK_db_startdate').datepicker("option","maxDate",unitstartdate);
+    var CRCHK_options='';
+    if(CRCHK_myArray.length==0)
+    {
+      $('#CRCHK_lb_roomselect').hide();
+      $('#CRCHK_lbl_roomtype').hide();
+      $('#CRF_cardradio').hide();
+      $('#CRF_nullradio').hide();
+      $('#CRCHK_tble_cardtable').hide();
+      $("#CRCHK_savebutton").attr("disabled", "disabled");
+      var CRCHK_unit=$('#CRCHK_lb_unitselect').val();
+      var CRCHK_message=errormsg[3].replace("[UNIT NO]",CRCHK_unit);
+      var CRCHK_errormessage='<tr><td ><label id="roometypeerror" class="errormsg">'+CRCHK_message+'</label></td></tr>'
+      $('#CRCHK_lb_roomselect').after('<p>'+CRCHK_errormessage+'<p>');
+       $('#CRCHK_db_startdate').hide();
+      $("#CRCHK_checkindatelabel").hide();
+      $('#CRCHK_lb_startselect1').hide();
+      $('#CRCHK_lb_startselect').hide();
+      $('#CRCHK_lbl_startto').hide();
+      $('#CRCHK_lb_endselect1').hide();
+      $('#CRCHK_lb_endselect').hide();
+      $('#CRCHK_lbl_endto').hide();
+      $('#CRCHK_db_enddate').hide();
+      $("#CRCHK_checkindatelabel").hide();
+      $('#CRCHK_db_startdate').hide();
+      $("#CRCHK_checkoutdatelabel").hide();
+    }
+    else
+    {
+      CRCHK_options ='<option>SELECT</option>';
+      for (var i = 0; i < CRCHK_myArray.length; i++) 
+      {
+        CRCHK_options += '<option value="' + CRCHK_myArray[i] + '">' + CRCHK_myArray[i] + '</option>';
+      }
+      $('input:radio[name=radio]').attr('checked',false);
+      $('#CRCHK_lb_roomselect').html(CRCHK_options);
+      $('#CRF_cardradio').show();
+      $('#CRF_nullradio').show();
+      $('#CRCHK_lb_roomselect').show();
+      $('#CRCHK_lbl_roomtype').show();
+      $('#CRCHK_tble_cardtable').show();
+      $('#CRCHK_tble_cardtable tr').remove();
+      $('#roometypeerror').hide();
+      $("#CRCHK_checkoutdatelabel").hide();
+      $('#CRCHK_db_enddate').hide();
+      $("#CRCHK_checkindatelabel").show();
+      $('#CRCHK_db_startdate').show();
+    }
+    $(".preloader").hide(); 
+  }
+  /******************************PRORATED RESPONSE FUNCTION******************************/
+  function CRCHK_proratedResponse(response)
+  {
+    if(response!=true)
+    {
+      $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr('checked',false);
+      $('input:checkbox[name=CRCHK_rentprorated_tempcheckbox2]').attr('checked',false);
+      $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr("disabled",'disabled');
+    }
+    else
+    {
+      $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr('checked',true);
+      $('input:checkbox[name=CRCHK_rentprorated_tempcheckbox2]').attr('checked',true);
+      $('input:checkbox[name=CRCHK_rentprorated_checkbox]').removeAttr("disabled");
+    }
+  }
+  /******************************ACCESSCARD RETURN FUNCTION******************************/
+  $(document).on('change','.CRCHK_showlist',function()
+                 {
+                   var CRCHK_cardlist=[];
+                   var f=0;var CRCHK_cardcount=0;var CRCHK_selectedcards=0;
+                   var CRCHK_cc_cardarray_length=CRCHK_cardArray.length;
+                   
+                   for(var i=0;i<CRCHK_cc_cardarray_length;i++)
+                   {
+                     var CRCHK_cc_check=$('#CRCHK_lb_cardnumberarray'+i).is(":checked");
+                     if(CRCHK_cc_check==true)
+                     {
+                       $('#CRCHK_lb_cardlistselect'+i).removeAttr('disabled');
+                       var CRCHK_selectcardno=$('#CRCHK_lb_cardnumberarray'+i).val();
+                       var CRCHK_card_cardlist_box=$('#CRCHK_lb_cardlistselect'+i).val();
+                       if(CRCHK_card_cardlist_box!="SELECT"){
+                         $('#CRCHK_lb_cardlistselect'+i).attr("disabled","disabled");
+                         $('#CRCHK_tb_cardlisttext'+i).val(CRCHK_selectcardno+'/'+CRCHK_card_cardlist_box);
+                         CRCHK_cardlist.push(CRCHK_card_cardlist_box);
+                       }
+                       else
+                       {
+                         CRCHK_selectedcards++;
+                       }
+                       CRCHK_cardcount++;
+                     }
+                   }
+                   var CRCHK_cardsortedlist=[];
+                   //difference between two arrays
+                   var CRCHK_cardsortedlist=CRCHK_card_diffArray(CRCHK_cardslbl_array,CRCHK_cardlist);
+                   for(var j=0;j<CRCHK_cc_cardarray_length;j++)
+                   {
+                     var CRCHK_cc_check=$('#CRCHK_lb_cardnumberarray'+j).is(":checked");
+                     var CRCHK_card_cardlist_box=$('#CRCHK_lb_cardlistselect'+j).val();
+                     if(CRCHK_card_cardlist_box=="SELECT")
+                     {
+                       $('#CRCHK_lb_cardlistselect'+j).empty();
+                       var CRCHK_options ='<option>SELECT</option>'
+                       
+                       for(var l=0;l<CRCHK_cardsortedlist.length;l++)
+                       {
+                         CRCHK_options += '<option value="' + CRCHK_cardsortedlist[l] + '">' + CRCHK_cardsortedlist[l] + '</option>';
+                         
+                       }
+                       $('#CRCHK_lb_cardlistselect'+j).html(CRCHK_options);
+                       
+                       $('#CRCHK_lb_cardlistselect'+j).attr("enabled","enabled")
+                     }
+                     if(CRCHK_cc_check==true)
+                     {
+                       $('#CRCHK_lb_cardlistselect'+j).show();
+                       $('#CRCHK_lb_cardlistselect'+j).attr("enabled","enabled")
+                     }
+                     else
+                     {
+                       $('#CRCHK_lb_cardlistselect'+j)[0].selectedIndex = 0;
+                       $('#CRCHK_lb_cardlistselect'+j).hide();
+                       $('#CRCHK_tb_cardlisttext'+j).val('');
+                     }
+                   }
+                   if(CRCHK_cardcount==4)
+                   {
+                     for(var i=0;i<CRCHK_cc_cardarray_length;i++)
+                     {
+                       var CRCHK_cc_check=$('#CRCHK_lb_cardnumberarray'+i).is(":checked");
+                       if(CRCHK_cc_check==false)
+                       {
+                         $('#CRCHK_lb_cardnumberarray'+i).attr("disabled","disabled");
+                       }
+                     }
+                   }
+                   else
+                   {
+                     if(CRCHK_selectedcards==0)
+                     {
+                       for(var i=0;i<CRCHK_cc_cardarray_length;i++)
+                       {
+                         var CRCHK_cc_check=$('#CRCHK_lb_cardnumberarray'+i).is(":checked");
+                         if(CRCHK_cc_check==false)
+                         {
+                           $('#CRCHK_lb_cardnumberarray'+i).removeAttr("disabled","disabled");
+                         }
+                       }
+                     }
+                     else
+                     {
+                       for(var y=0;y<CRCHK_cc_cardarray_length;y++)
+                       {
+                         var CRCHK_cc_check=$('#CRCHK_lb_cardnumberarray'+y).is(":checked");
+                         if(CRCHK_cc_check==false)
+                         {
+                           $('#CRCHK_lb_cardnumberarray'+y).attr("disabled","disabled");
+                         }
+                       }
+                     }
+                   }
+                   CRCHK_submit_validate(accesscard_array)
+                 });
+  /******************************ACCESSCARD SUBMIT BUTTON VALIDATION******************************/
+  function CRCHK_submit_validate(card)
+  {
+    var CRCHK_fname=$('#CRCHK_tb_firstname').val();
+    var CRCHK_lname=$('#CRCHK_tb_lastname').val();
+    var CRCHK_cardArray=[];
+    var CRCHK_g_array=[];
+    CRCHK_cardArray=card[1];
+    CRCHK_g_array=card[0]
+    var CRCHK_cararray_length=CRCHK_cardArray.length;
+    var CRCHK_gcardlen=CRCHK_g_array.length;
+    var CRCHK_printarray=[];
+    var CRCHK_false_flag=0;
+    var CRCHK_true_flag=0;
+    for(var k=0;k<CRCHK_cararray_length;k++)
+    {
+      var CRCHK_access_card= $('#CRCHK_lb_cardnumberarray'+k).is(":checked");
+      if(CRCHK_access_card==true)
+      {
+        CRCHK_true_flag++;
+      }
+      else
+      {
+        CRCHK_false_flag++;
+      }
+    }
+    if(CRCHK_true_flag==0||CRCHK_lname=="")
+    {
+      $('#CRCHK_savebutton').attr("disabled","disabled");
+      $('#CRCHK_lbl_error').hide();
+    }
+    else
+    {
+      if($("#CRCHK_lb_startselect").val()!="SELECT"&&$("#CRCHK_lb_endselect").val()!="SELECT"&& $("#CRCHK_lb_ccoptionselect").val()!="SELECT"&& $("#CRCHK_lb_mailselect").val()!="SELECT"&& $("#CRF_rent").val()!=""&& $("#CRCHK_db_startdate").val()!=""&& $("#CRCHK_db_enddate").val()!="")
+      {
+        $('#CRCHK_savebutton').removeAttr('disabled');
+      }
+      $('#CRCHK_lbl_error').hide();
+      
+      var CRCHK_custname="";
+      if(CRCHK_fname!=""&&CRCHK_lname!="")
+      {
+        CRCHK_custname=(CRCHK_fname+" "+CRCHK_lname).toUpperCase();
+      }
+      var CRCHK_flag=0;var CRCHK_flag1=0;var CRCHK_flag2=0;var CRCHK_flag3=0;
+      if(CRCHK_cararray_length>0)
+      {
+        for(var i=0;i<CRCHK_cararray_length;i++)
+        {
+          var CRCHK_card_cardlist_box=$('#CRCHK_lb_cardlistselect'+i).val();
+          if(CRCHK_card_cardlist_box=="SELECT"){CRCHK_flag3=1;}
+          var CRCHK_cc_check=$('#CRCHK_lb_cardnumberarray'+i).is(":checked");
+          if(CRCHK_cc_check==true)
+          {
+            CRCHK_flag1=1;
+            if(CRCHK_custname!="")
+            {
+              if(CRCHK_card_cardlist_box.match(CRCHK_custname))
+              {
+                CRCHK_flag=1;
+              }
+            }
+            if(CRCHK_card_cardlist_box=="SELECT")
+            {
+              CRCHK_flag2=1;
+            }
+          }
+        }
+        if(CRCHK_flag1==1)
+        {
+          if(CRCHK_flag==0)
+          {
+            $('#CRCHK_lbl_error').text(errormsg[5])
+            $('#CRCHK_lbl_error').show();
+            $('#CRCHK_savebutton').attr("disabled","disabled");
+          }
+          else
+          {
+            $('#CRCHK_lbl_error').text("");
+          }
+          if(CRCHK_flag2==1){
+            $('#CRCHK_savebutton').attr("disabled","disabled");
+          }
+        }
+        else
+        {
+          $('#CRCHK_lbl_error').text("");
+        }
+        if(CRCHK_flag1!=1)
+        {
+          $('#CRCHK_savebutton').attr("disabled","disabled");
+        }
+      }
+    }
+    $(".preloader").hide(); 
+  }
+  function Recheckin_reset()
+  {
+  $('#CRCHK_tble_cardtable tr').remove();
+   $('#CRCHK_savebutton').attr("disabled","disabled");
+    $('#waivedvalue').prop('disabled',true);
+    $('#proratedvalue').attr('disabled');
+    $("#CRCHK_lb_unitselect")[0].selectedIndex = 0;
+    $("#CRCHK_lb_startselect")[0].selectedIndex = 0;
+    $("#CRCHK_lb_endselect")[0].selectedIndex = 0;
+    $("#CRCHK_lb_ccoptionselect")[0].selectedIndex = 0;
+    $("#CRCHK_lb_mailselect")[0].selectedIndex = 0;
+     $("#CRCHK_lb_nationselect")[0].selectedIndex = 0;
+    $('#CRCHK_ta_comments').val('');
+    $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr('checked',false);
+    $('input:checkbox[name=CRCHK_rentprorated_tempcheckbox2]').attr('checked',false);
+    $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr("disabled",'disabled');
+    $('#waivedvalue').attr('disabled');
+    $('input:checkbox[name=CRF_checkbox1]').attr("checked",false);
+    $('input:checkbox[name=CRF_checkbox1]').attr("disabled",'disabled');
+    $('#CRCHK_lbl_emailiderrormsg').hide();
+    $('#CRCHK_lbl_noticeerroemsg').hide();
+    $("#CRCHK_tb_fixed_aircon").attr('checked',false);
+    $("#CRCHK_tb_quarter").attr('checked', false);
+    $('#CRCHK_lbl_postalerrormsg').hide();
+    $('#CRCHK_lbl_mobileerrormsg').hide();
+    $('#CRCHK_lbl_intlmobileerrormsg').hide();
+    $('#CRCHK_lbl_officeerrormsg').hide();
+    $('#CRCHK_lbl_renterrormsg').hide();
+    $('#CRCHK_lbl_depositerrormsg').hide();
+    $('#CRCHK_lbl_processerrormsg').hide();
+    $('#CRCHK_lbl_electcaperrormsg').hide();
+    $('#CRCHK_lbl_passporterrormsg').hide();
+    $('#CRCHK_lbl_epnoerrormsg').hide();
+    $('#CRCHK_tb_companypostalcode').removeClass('invalid');
+    $('#CRCHK_tb_mobile').removeClass('invalid');
+    $('#CRCHK_tb_intmobile').removeClass('invalid');
+    $('#CRCHK_tb_office').removeClass('invalid');
+    $('#CRCHK_tb_rent').removeClass('invalid');
+    $('#CRCHK_tb_rent').removeClass('invalid');
+    $('#CRCHK_tb_process').removeClass('invalid');
+    $('#CRCHK_tb_deposit').removeClass('invalid');
+    $('#CRCHK_tb_passportno').removeClass('invalid');
+    $('#CRCHK_tb_epno').removeClass('invalid');
+    $('#CRCHK_tb_electricity').removeClass('invalid');
+    $('#CRCHK_tb_custmailid').removeClass('invalid');
+    $('#CRCHK_db_startdate').hide();
+    $("#CRCHK_checkindatelabel").hide();
+    $('#CRCHK_lb_startselect1').hide();
+    $('#CRCHK_lb_startselect').hide();
+    $('#CRCHK_lbl_startto').hide();
+    $('#CRCHK_lb_endselect1').hide();
+    $('#CRCHK_lb_endselect').hide();
+    $('#CRCHK_lbl_endto').hide();
+    $('#CRCHK_db_enddate').hide();
+    $("#CRCHK_checkoutdatelabel").hide();
+    $('#CRCHK_recheckinForm').hide();
+  }
+  /******************************CUSTOMER RECHECKIN CONFORMATION RETURN******************************/
+  function CRCHEK_conformation(response)
+  {
+    if(response[0]==1)
+    {
+    $('#customerrecheckin_form').find('input[type=text]').val('');
+    $('#CRCHK_lb_unitselectmain')[0].selectedIndex = 0;
+    $('#CRCHK_lb_customerselect').hide();
+    $('#CRCHK_lbl_customername').hide();
+    Recheckin_reset();
+    var unit=[];
+    unit=response[1];
+    var unitarray=[];
+    for(var k=0;k<unit.length;k++)
+    {
+    unitarray.push(unit[k].unit);
+    }
+    unitarray=unique(unitarray);
+    var CRCHK_unitvalue='<option>SELECT</option>';
+    for(var i=0;i<unitarray.length;i++)
+    {
+      CRCHK_unitvalue += '<option value="' + unitarray[i]+ '">' + unitarray[i] + '</option>';
+    }
+    $('#CRCHK_lb_unitselectmain').html(CRCHK_unitvalue);
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[7]}});
+    }
+    else
+    {
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[20]}});
+    }
+    $(".preloader").hide(); 
+  }
+  $('#CRCHK_savebutton').click(function(){
+    $(".preloader").show(); 
+    google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHEK_conformation).CRCHK_processFormSubmit(document.getElementById('customerrecheckin_form'));
+  });
+  function CRCHK_card_diffArray(a, b)
+  {
+    var seen = [], diff = [];
+    for ( var i = 0; i < b.length; i++)
+      seen[b[i]] = true;
+    for ( var i = 0; i < a.length; i++)
+      if (!seen[a[i]])
+        diff.push(a[i]);
+    return diff;
+  }
+  function CRCHK_error_message(CRCHK_err)
+  {
+  if(CRCHK_err=='TypeError: Cannot call method "createEvent" of undefined.')
+  {
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[23]}});
+  }
+  else if(CRCHK_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
+  {
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[24]}});
+  }
+  else if(CRCHK_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+  {
+  CRCHK_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+  $('#customerrecheckin_form').replaceWith('<center><label class="dberrormsg">'+CRCHK_err+'</label></center>');
+  }
+  else
+  {
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:CRCHK_err}});
+  }
+  $(".preloader").hide();
+  }
+  });
+</script>
+<body bgcolor="#E6E6FA">
+<div class="wrapper">
+<div class="preloader MaskPanel">
+<div class="preloader statusarea">
+<div style="padding-top:90px; text-align:center">
+<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+</div>
+</div>
+</div>
+<div class="title" id="fhead">
+<div style="padding-left:500px; text-align:left;">
+<p>
+<h3>CUSTOMER RECHECKIN
+</h3>
+<p>
+</div>
+</div>
+<form id='CRCHK_errormessageform'>
+<table id='CRCHK_errormessagetable'>
+</table>
+</form >
+<form class="content" id="customerrecheckin_form" name="customerrecheckin_form">
+<table cellspacing="5px" id="CRCHK_headertable">
+<tr>
+<td width="250px">
+<label id="CRCHK_lbl_unitselectmain" hidden>UNIT NUMBER<em>*</em></label>
+</td>
+<td>
+<select id='CRCHK_lb_unitselectmain' name="CRCHK_lb_unitselectmain" class="customernamechange" hidden>
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<label id="CRCHK_lbl_customername">CUSTOMER NAME<em>*</em></label>
+</td>
+<td>
+<select id='CRCHK_lb_customerselect' name="CRF_customerselect_LB" class="customernameselect">
+</select>
+</tr>
+</table>
+<div id="CRCHK_recheckinForm" hidden>
+<table cellspacing="5px">
+<tr>
+<td>
+<label>FIRST NAME<em>*</em></label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_firstname" maxlength="50" class="CRCHK_class_customernamechange autosize formvalidation" id="CRCHK_tb_firstname"/>
+</td>
+<td>
+<input required type="text" name="CRF_id" id="CRF_id" style="visibility:hidden;"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>LAST NAME<em>*</em></label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_lastname" id="CRCHK_tb_lastname" maxlength="50" class="autosize CCRE_class_customernamechange formvalidation"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>COMPANY NAME</label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_comanyname" id="CRCHK_tb_comanyname" maxlength="50" class="nameautoextend formvalidation"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>COMPANY ADDRESS</label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_companyaddress" id="CRCHK_tb_companyaddress" maxlength="50" class="nameautoextend formvalidation"/>
+</td>
+</tr>
+<tr>
+<td width="250px">
+<label>COMPANY POSTAL CODE</label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_companypostalcode" id="CRCHK_tb_companypostalcode" style="width:60px;" class="formvalidation" maxlength="6"/>
+</td>
+<td>
+<label id="CRCHK_lbl_postalerrormsg" class="errormsg" hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>E-MAIL ID<em>*</em></label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_custmailid" id="CRCHK_tb_custmailid" class="formvalidation"/>
+</td>
+<td>
+<label id="CRCHK_lbl_emailiderrormsg" class="errormsg"></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>MOBILE</label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_mobile" id="CRCHK_tb_mobile" style="width:70px;" maxlength="8" class="numonlynozero formvalidation"/>
+</td>
+<td>
+<label id="CRCHK_lbl_mobileerrormsg" class="errormsg" hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>INT'L MOBILE</label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_intmobile" id="CRCHK_tb_intmobile" style="width:110px;" class="formvalidation" maxlength="15"/>
+</td>
+<td>
+<label id="CRCHK_lbl_intlmobileerrormsg" class="errormsg" hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>OFFICE NO</label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_office" id="CRCHK_tb_office" style="width:70px;" maxlength="8" class="numonlynozero formvalidation"/>
+</td>
+<td>
+<label id="CRCHK_lbl_officeerrormsg" class="errormsg" hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<label> DATE OF BIRTH</label>
+</td>
+<td>
+<input type="text" class="datenonmandtry formvalidation" name="CRCHK_db_BirthDate" id="CRCHK_db_BirthDate" style="width:75px"/>
+</td>
+</tr>
+<tr>
+<td>
+<label> NATIONALITY<em>*</em></label>
+</td>
+<td>
+<select id='CRCHK_lb_nationselect' name="CRCHK_lb_nationselect">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<label>PASSPORT NO</label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_passportno" id="CRCHK_tb_passportno" class="alnumonlyzero formvalidation" maxlength="15"/>
+</td>
+<td>
+<label id="CRCHK_lbl_passporterrormsg" class="errormsg" hidden></label>
+</td>
+<td>
+<label id="CRCHK_lbl_passportdateerrormsg" class="errormsg"hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>PASSPORT EXPIRY DATE</label>
+</td>
+<td>
+<input type="text" name="CRCHK_db_passportdate" id="CRCHK_db_passportdate" style="width:75px;" class="passportdatevalidation formvalidation datenonmandtry"/>
+</td>
+<td>
+<label id="CRCHK_lbl_pportdateerrormsg" class="errormsg" hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>EP NUMBER</label>
+</td>
+<td>
+<input type="text" name="CRCHK_tb_epno" id="CRCHK_tb_epno" class="alnumonlynozero formvalidation" maxlength="15"/>
+</td>
+<td>
+<label id="CRCHK_lbl_epnoerrormsg" class="errormsg" hidden></label>
+</td>
+<td>
+<label id="CRCHK_lbl_epnodateerrormsg" class="errormsg" hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>EP EXPIRY DATE</label>
+</td>
+<td>
+<input type="text" name="CRCHK_db_epdate" id="CRCHK_db_epdate" style="width:75px;" class="epdatevalidation formvalidation datenonmandtry"/>
+</td>
+<td>
+<label id="CRCHK_lbl_ep_dateerrormsg" class="errormsg" hidden></label>
+</td>
+</tr>
+<tr>
+<td>
+<label>UNIT NUMBER<em>*</em></label>
+</td>
+<td>
+<select id='CRCHK_lb_unitselect' name="CRCHK_lb_unitselect" class="CRCHK_class_customernamechange formvalidation">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<label id="CRCHK_lbl_roomtype">ROOM TYPE<em>*</em></label>
+</td>
+<td>
+<select id='CRCHK_lb_roomselect' name="CRCHK_lb_roomselect" class="formvalidation">
+</select>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+<table id="CRF_cardradio">
+<tr>
+<td>
+<input type="radio" name="radio" id="CRCHK_radio_cardnumbers" value="cardnum" onblur="radiobutton" class="formvalidation">CARD NUMBER
+</td>
+<td>
+<label></label><label align='bottom' name='error' id='CRCHK_lbl_error' visible="false" class="errormsg"></label>
+</td>
+</tr>
+</table>
+</tr>
+<td>
+</td>
+<td>
+<table id="CRCHK_tble_cardtable">
+</table>
+</td>
+</table>
+<table>
+<tr>
+<td>
+</td>
+<td>
+<table id="CRF_nullradio">
+<tr>
+<td>
+&nbsp;<input type="radio" name="radio" value="null" id="CRCHK_radio_null" onblur="radiobutton" class="formvalidation">NULL
+</td>
+</tr>
+</table>
+</tr>
+<tr>
+<td>
+<label id="CRCHK_checkindatelabel" hidden>CHECKIN DATE<em>*</em></label>
+</td>
+<td>
+<table>
+<td>
+<input type="text" name="CRCHK_db_startdate" id="CRCHK_db_startdate" class="prorated startdatevalidate formvalidation datemandtry" style="width:75px;height:20px" />
+</td>
+<td>
+<select id='CRCHK_lb_startselect' name="CRCHK_lb_startselect" style="width:75px;height:20px" class="formvalidation" hidden>
+<option>SELECT</option>
+</select>
+</td>
+<td>
+<label class="fontstyle" id="CRCHK_lbl_startto" style="width:25px;">To</label>
+</td>
+<td>
+<select id='CRCHK_lb_startselect1' name="CRCHK_lb_startselect1" style="width:75px;height:20px">
+<option>SELECT</option>
+</select>
+</td>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<label id="CRCHK_checkoutdatelabel">CHECKOUT DATE<em>*</em></label>
+</td>
+<td>
+<table>
+<tr>
+<td>
+<input type="text" name="CRCHK_db_enddate" id="CRCHK_db_enddate" class="epdatevalidation passportdatevalidation prorated formvalidation datemandtry" style="width:75px;height:20px"/>
+</td>
+<td>
+<select id='CRCHK_lb_endselect' name="CRCHK_lb_endselect" style="width:75px;height:20px" class="formvalidation" hidden>
+<option>SELECT</option>
+</select>
+</td>
+<td>
+<label id="CRCHK_lbl_endto" style="width:25px;">To</label>
+</td>
+<td>
+<select id='CRCHK_lb_endselect1' name="CRCHK_lb_endselect1" style="width:75px;height:20px">
+</select>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<label>NOTICE PERIOD</label>
+</td>
+<td>
+&nbsp;<input type="text" name="CRCHK_tb_noticeno" id="CRCHK_tb_noticeno" maxlength="1" class="number formvalidation" style="width:25px;"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>NOTICE PERIOD DATE</label>
+</td>
+<td>
+&nbsp;<input type="text" name="CRCHK_db_noticedate" id="CRCHK_db_noticedate" style="width:75px;" class="formvalidation datenonmandtry"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>SELECT AIRCON FEE</label>
+</td>
+<td>
+&nbsp;<input type="radio" name="aircon" value="quarterlyfee">QUARTERLY SERVICE FEE <input type="text" name="CRCHK_tb_quarterlyfee" id="CRCHK_tb_quarterlyfee" maxlength="6" class="amount formvalidation" style="width:50px;"/>
+</td>
+</tr>
+<tr>
+<td>
+<label></label>
+</td>
+<td>
+&nbsp;<input type="radio" name="aircon" value="fixedairconfee">FIXED AIRCON FEE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="CRCHK_tb_aircon_fixed" id="CRCHK_tb_aircon_fixed" maxlength="6" style="width:50px;" class="amount formvalidation"/>
+</td>
+</tr>
+<tr>
+<td>
+<label>ELECTRICITY CAPPED</label>
+</td>
+<td>
+<table>
+<td>
+<input type="text" name="CRCHK_tb_electricity" id="CRCHK_tb_electricity" maxlength="6" style="width:50px;" class="amount formvalidation"/>
+</td>
+<td>
+<p class="errormsg">
+</p>
+</td>
+<td>
+<label id="CRCHK_lbl_electcaperrormsg" class="errormsg formvalidation" hidden></label>
+</td>
+</table>
+</tr>
+<tr>
+<td width="250px">
+<label>CURTAIN DRY CLEANING FEE</label>
+</td>
+<td>
+&nbsp;<input type="text" name="CRCHK_tb_drycleaning" id="CRCHK_tb_drycleaning" maxlength="6" style="width:50px;" class="amount formvalidation"/>
+</td>
+<td>
+<p class="errormsg">
+</p>
+</td>
+</tr>
+<tr>
+<td>
+<label>CHECKOUT CLEANING FEE</label>
+</td>
+<td>
+&nbsp;<input type="text" name="CRCHK_tb_cleaning" id="CRCHK_tb_cleaning" maxlength="6" style="width:50px;" class="amount formvalidation"/>
+</td>
+<td>
+<p class="errormsg">
+</p>
+</td>
+</tr>
+<tr>
+<td>
+<label>DEPOSIT</label>
+</td>
+<td>
+<table>
+<td>
+<input type="text" name="CRCHK_tb_deposit" id="CRCHK_tb_deposit" maxlength="7" style="width:60px;" class="amount1 formvalidation"/>
+</td>
+<td>
+<p class="errormsg">
+</p>
+</td>
+<td>
+<label id="CRCHK_lbl_depositerrormsg" class="errormsg" hidden></label>
+</td>
+</table>
+</tr>
+<tr>
+<td>
+<label>RENT<em>*</em></label>
+</td>
+<td>
+<table>
+<td>
+<input type="text" name="CRCHK_tb_rent" id="CRCHK_tb_rent" maxlength="7" style="width:60px;" class="prorated amount1 formvalidation"/>
+</td>
+<td>
+<input type="checkbox" name="CRCHK_rentprorated_checkbox" id="proratedvalue" class="proratedcheck formvalidation" value="prorated" disabled/><label id="CRCHK_lbl_prorated"></label>
+</td>
+<td>
+<input type="checkbox" name="CRCHK_rentprorated_tempcheckbox2" id="tempproratedvalue" value="tempprorated" hidden/>
+</td>
+<td>
+<label id="CRCHK_lbl_renterrormsg" class="errormsg" hidden></label>
+</td>
+</table>
+</tr>
+<tr>
+<td>
+<label>PROCESSING COST</label>
+</td>
+<td>
+<table>
+<td>
+<input type="text" name="CRCHK_tb_process" id="CRCHK_tb_process" maxlength="7" style="width:60px;" class="processamount1 formvalidation"/>
+</td>
+<td>
+<input type="checkbox" name="CRF_checkbox1" id="waivedvalue" value="waived" disabled/><label id="CRCHK_lbl_waived"></label>
+</td>
+<td>
+<label id="CRCHK_lbl_processerrormsg" class="errormsg" hidden></label>
+</td>
+</table>
+</tr>
+<tr>
+<td>
+<label>SELECT THE OPTION<em>*</em></label>
+</td>
+<td>
+<select id='CRCHK_lb_ccoptionselect' name="CRCHK_lb_ccoptionselect" class="formvalidation">
+<option>SELECT</option>
+</select>
+</tr>
+<tr>
+<td>
+<label>E-MAIL ID<em>*</em></label>
+</td>
+<td>
+<select id='CRCHK_lb_mailselect' name="CRCHK_lb_mailselect" class='required formvalidation'>
+</select>
+</tr>
+<tr>
+<td>
+<label>COMMENTS</label>
+<td>
+<textarea name="CRCHK_ta_comments" id="CRCHK_ta_comments" class="formvalidation"></textarea>
+</td>
+</tr>
+<table cellspacing="5px">
+<tr>
+<td width="120px">
+</td>
+<td>
+<input type="button" class="btn" value="CREATE" id="CRCHK_savebutton" disabled/>
+</td>
+<td>
+<input type="button" class="btn" name="reset" id="RECHECKINreset" onclick="RECHECKINreset()" value="RESET"/>
+</td>
+</tr>
+</table>
+</table>
+</div>
+</form>
+</body>
+</html>
