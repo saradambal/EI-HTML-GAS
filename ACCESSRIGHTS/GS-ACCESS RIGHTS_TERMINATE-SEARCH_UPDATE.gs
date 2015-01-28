@@ -1,5 +1,9 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************ACCESS RIGHTS_TERMINATE-SEARCH/UPDATE***********************************************//
+//DONE BY PUNI
+//VER 1.0-SD:24/09/2014 ED:26/09/2014;TRACKER NO 465;1.trimmed script fr the repeatd functions,2.corrected validation in search /update option,3.corrected search update query,4.implemented rollback n commit,5.changed driveapp to docslist to remove editors,6.changed preloader n msgbox position,7.changed new lib links,8.added AG fr textarea
+//DONE BY SAFI,SARADA
+//VER 0.09-SD:21/07/2014 ED:21/07/2014;TRACKER NO 465;UPDATED DRIVEAPP AS DOCSLIST FOR SHARING/UNSHARING DOCS
 //VER 0.08-SD:05/07/2014 ED:05/07/2014;TRACKER NO:465;UPDATED CUSTOMER MSG AND SHARED TEMPLATE FOLDER 
 //VER 0.07-SD:11/06/2014 ED:12/06/2014:TRACKER NO:465;UPDATED FAILURE HANDLER AND IMPLEMENT SUPER ADMIN NOT TO TERMINATE
 //VER 0.06-SD:06/06/2014 ED:06/06/2014;TRACKER NO:465;CHANGED JQUERY LINK
@@ -10,7 +14,7 @@
 //VER 0.01-INITIAL VERSION,TRACKER NO:465,SD:03/12/2013,ED:10/12/2013-sarada
 //*********************************************************************************************************//
 try
-{     
+{ 
   /*---------------------------------FUNCTION TO FETCH ERROR MSG & LOAD LOGIN ID----------------------*/
   function URT_SRC_errormsg_loginid(URT_SRC_source){
     var URT_SRC_conn =eilib.db_GetConnection();
@@ -61,65 +65,66 @@ try
   }
   /*-------------------------------------------FUNCTION TO TERMINATE LOGIN DETAILS-----------------------------*/
   function URT_SRC_func_terminate(URT_SRC_emailid,URT_SRC_enddate,URT_SRC_reason,URT_SRC_flg_terminate){ 
-    var URT_SRC_enddate= eilib.SqlDateFormat(URT_SRC_enddate);
-    var URT_SRC_conn =eilib.db_GetConnection();
-    var URT_SRC_stmt_terminate = URT_SRC_conn.createStatement();
-    var URT_SRC_select_terminate="SELECT UA_ID,UA_REASON FROM USER_ACCESS where ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_emailid+"') AND UA_REC_VER=(SELECT MAX(UA_REC_VER) FROM USER_ACCESS where ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_emailid+"'))";
-    var URT_SRC_rs_terminate=URT_SRC_stmt_terminate.executeQuery(URT_SRC_select_terminate);
-    while(URT_SRC_rs_terminate.next())
-    {
-      var URT_SRC_userpro_id=URT_SRC_rs_terminate.getString(1);
-      var URT_SRC_old_reason=URT_SRC_rs_terminate.getString(2);
-    }
-    URT_SRC_rs_terminate.close();URT_SRC_stmt_terminate.close();
-    var URT_SRC_stmt_terminateupd = URT_SRC_conn.createStatement();
-    var URT_SRC_insert_terminate ="CALL SP_LOGIN_TERMINATE_SAVE('"+URT_SRC_emailid+"','"+URT_SRC_enddate+"','"+URT_SRC_reason+"','"+UserStamp+"',@TERM_FLAG)";
-    URT_SRC_stmt_terminateupd.execute(URT_SRC_insert_terminate);
-    URT_SRC_stmt_terminateupd.close();
-    /*---------------------------------UNSHARE THE FILE & FOLDER---------------------------------------------*/    
-    var URT_SRC_stmt_file = URT_SRC_conn.createStatement();
-    var URT_SRC_arr_file=[];
-    var URT_SRC_select_file="SELECT * FROM FILE_PROFILE FP,USER_FILE_DETAILS UFD,USER_ACCESS UA,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_LOGINID='"+URT_SRC_emailid+"'  AND ULD.ULD_ID=UA.ULD_ID AND UA.RC_ID=UFD.RC_ID AND UA.UA_REC_VER=(select max(UA_REC_VER) from USER_ACCESS UA,USER_LOGIN_DETAILS ULD where ULD.ULD_ID=UA.ULD_ID and ULD_LOGINID='"+URT_SRC_emailid+"' and UA_JOIN is  null) AND FP.FP_ID=UFD.FP_ID";
-    var URT_SRC_rs_file=URT_SRC_stmt_file.executeQuery(URT_SRC_select_file);
-    while(URT_SRC_rs_file.next())
-    {
-      var URT_SRC_arr_fileid=URT_SRC_rs_file.getString("FP_FILE_ID")
-      if(URT_SRC_arr_fileid!=null){
-        URT_SRC_arr_file.push(URT_SRC_arr_fileid)
-      }
-      if(URT_SRC_arr_fileid==null||URT_SRC_arr_fileid!=null){
-        URT_SRC_arr_file.push(URT_SRC_rs_file.getString("FP_FOLDER_ID"))      
-      }
-    }
-    URT_SRC_rs_file.close();
-    URT_SRC_stmt_file.close();
-    URT_SRC_arr_file=eilib.unique(URT_SRC_arr_file);
-    for(var k=0;k<URT_SRC_arr_file.length;k++) {      
-      var editors=DriveApp.getFileById(URT_SRC_arr_file[k]).getEditors();
-      for(var i=0;i<editors.length;i++)
+    try{
+      URSRC_sharedocflag=0,URSRC_sharecalflag=0,URSRC_sharesiteflag=0;
+      var URT_SRC_enddate= eilib.SqlDateFormat(URT_SRC_enddate);
+      var URT_SRC_conn =eilib.db_GetConnection();
+      URT_SRC_conn.setAutoCommit(false);
+      var URT_SRC_stmt_terminate = URT_SRC_conn.createStatement();
+      var URT_SRC_select_terminate="SELECT UA_ID,UA_REASON FROM USER_ACCESS where ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_emailid+"') AND UA_REC_VER=(SELECT MAX(UA_REC_VER) FROM USER_ACCESS where ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_emailid+"'))";
+      var URT_SRC_rs_terminate=URT_SRC_stmt_terminate.executeQuery(URT_SRC_select_terminate);
+      while(URT_SRC_rs_terminate.next())
       {
-        if(editors[i].getEmail()==URT_SRC_emailid){ 
-          DriveApp.getFileById(URT_SRC_arr_file[k]).removeEditor(URT_SRC_emailid);
-        }}     
-      var viewers=DriveApp.getFileById(URT_SRC_arr_file[k]).getViewers();
-      for(var i=0;i<viewers.length;i++)
-      {
-        if(viewers[i].getEmail()==URT_SRC_emailid){
-          DriveApp.getFileById(URT_SRC_arr_file[k]).removeViewer(URT_SRC_emailid);
-        }
+        var URT_SRC_userpro_id=URT_SRC_rs_terminate.getString(1);
+        var URT_SRC_old_reason=URT_SRC_rs_terminate.getString(2);
       }
+      URT_SRC_rs_terminate.close();URT_SRC_stmt_terminate.close();
+      var URT_SRC_stmt_terminateupd = URT_SRC_conn.createStatement();
+      var URT_SRC_insert_terminate ="CALL SP_LOGIN_TERMINATE_SAVE('"+URT_SRC_emailid+"','"+URT_SRC_enddate+"','"+URT_SRC_reason+"','"+UserStamp+"',@TERM_FLAG,@TEMPTBL_OUT_LOGINID)";
+      URT_SRC_stmt_terminateupd.execute(URT_SRC_insert_terminate);
+      URT_SRC_stmt_terminateupd.close();
+      var URT_SRC_sucess_flag=0;
+      var URT_SRC_return_flag_stmt=URT_SRC_conn.createStatement();
+      var URT_SRC_getresult= URT_SRC_return_flag_stmt.executeQuery("SELECT @TERM_FLAG,@TEMPTBL_OUT_LOGINID");
+      while(URT_SRC_getresult.next()){
+        var URT_SRC_sucess_flag=URT_SRC_getresult.getString(1);
+        var URT_SRC_terminatetemplogidtbl=URT_SRC_getresult.getString(2);
+      }
+      if(URT_SRC_sucess_flag==1)
+      {
+        /*---------------------------------UNSHARE THE FILE & FOLDER---------------------------------------------*/   
+        URSRC_sharedocflag=URSRC_unshareDocuments(URT_SRC_conn,"",URT_SRC_emailid)
+        //********************** UNSHARE CALENDAR     
+        URSRC_sharecalflag=USRC_shareUnSharecalender(URT_SRC_conn,URT_SRC_emailid,'none')
+        //*************UNSHARE SITE
+        var sitermoveflag=URSRC_removeViewer(URT_SRC_conn,URT_SRC_emailid);
+      }
+      var URT_SRC_success_flag=[];
+      URT_SRC_success_flag=[URT_SRC_flg_terminate,URT_SRC_sucess_flag];
+      URT_SRC_conn.commit();
+      if(URT_SRC_terminatetemplogidtbl!=null&&URT_SRC_terminatetemplogidtbl!=undefined){
+        eilib.DropTempTable(URT_SRC_conn,URT_SRC_terminatetemplogidtbl);}
+      URT_SRC_conn.close();
+      return URT_SRC_success_flag; 
+    }catch(err)
+    {
+      Logger.log("SCRIPT EXCEPTION:"+err)
+      URT_SRC_conn.rollback();
+      if(URT_SRC_terminatetemplogidtbl!=null&&URT_SRC_terminatetemplogidtbl!=undefined){
+        eilib.DropTempTable(URT_SRC_conn,URT_SRC_terminatetemplogidtbl);}
+      //********************** RESHARE CALENDAR 
+      if(URSRC_sharecalflag==1){
+        USRC_shareUnSharecalender(URT_SRC_conn,URT_SRC_emailid,'writer');}
+      //********************** RESHARE SITE
+      if(sitermoveflag==1){
+        URSRC_addViewer(URT_SRC_conn,URT_SRC_emailid);}
+      //************RESHARE DOCS
+      if(URSRC_sharedocflag==1){
+        URSRC_shareDocuments(URT_SRC_conn,"",URT_SRC_emailid)};
+      URT_SRC_conn.commit();
+      URT_SRC_conn.close();
+      return Logger.getLog();
     }
-    var URT_SRC_return_flag_stmt=URT_SRC_conn.createStatement();
-    var URT_SRC_getresult= URT_SRC_return_flag_stmt.executeQuery("SELECT @TERM_FLAG");
-    while(URT_SRC_getresult.next()){
-      var URT_SRC_sucess_flag=URT_SRC_getresult.getString("@TERM_FLAG");
-    }    
-    ShareUnshareCalender(URT_SRC_emailid,'none')
-    URSRC_removeViewer(URT_SRC_emailid);
-    var URT_SRC_success_flag=[];
-    URT_SRC_success_flag=[URT_SRC_flg_terminate,URT_SRC_sucess_flag]   
-    URT_SRC_conn.close();
-    return URT_SRC_success_flag;     
   }
   /*-------------------------------------------FUNCTION TO TERMINATE LOGIN DETAILS-----------------------------*/
   function URT_SRC_func_enddate(URT_SRC_lb_loginid,URT_SRC_recdver,URT_SRC_flag_srcupd,URT_SRC_flg_reverlen) { 
@@ -156,97 +161,84 @@ try
       var URT_SRC_result={"URT_SRC_obj_joindate":URT_SRC_joindate,"URT_SRC_obj_endate":URT_SRC_enddate,"URT_SRC_obj_reason":URT_SRC_reason,"URT_SRC_obj_srcupd":URT_SRC_flag_srcupd}
       return URT_SRC_result;
     URT_SRC_conn.close();  }
+  var URSRC_sharedocflag=0,URSRC_sharecalflag=0,URSRC_sharesiteflag=0;
+  
   /*-------------------------------------------FUNCTION TO REJOIN LOGIN DETAILS-----------------------------*/
   function URT_SRC_func_rejoin(URT_SRC_upd_emailid,URT_SRC_upd_rejoindate,URT_SRC_upd_customrole,URT_SRC_flg_rejoin) { 
-    var URT_SRC_conn =eilib.db_GetConnection();
-    var URT_SRC_upd_rejoindate= eilib.SqlDateFormat(URT_SRC_upd_rejoindate);
-    var URT_SRC_stmt_rejoin_id = URT_SRC_conn.createStatement();
-    URT_SRC_upd_customrole=URT_SRC_upd_customrole.replace("_"," ")
-    var URT_SRC_select_rejoin_id="SELECT UA_ID,RC_ID,MAX(UA.UA_REC_VER),ULD_ID FROM USER_ACCESS UA WHERE UA.ULD_ID =(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_upd_emailid+"')";
-    var URT_SRC_rs_rejoin_id=URT_SRC_stmt_rejoin_id.executeQuery(URT_SRC_select_rejoin_id);
-    while(URT_SRC_rs_rejoin_id.next())
-    {
-      var URT_SRC_autoinc_id=URT_SRC_rs_rejoin_id.getInt(1);
-      var URT_SRC_userpro_maxrec=URT_SRC_rs_rejoin_id.getInt(3);
-      var URT_SRC_userpro_uldid=URT_SRC_rs_rejoin_id.getString(4);
-    }
-    URT_SRC_rs_rejoin_id.close();URT_SRC_stmt_rejoin_id.close();
-    var URT_SRC_stmt_rc_id = URT_SRC_conn.createStatement();
-    var URT_SRC_select_rc_id="SELECT RC_ID FROM ROLE_CREATION where RC_NAME='"+URT_SRC_upd_customrole+"'";
-    var URT_SRC_rs_rc_id=URT_SRC_stmt_rc_id.executeQuery(URT_SRC_select_rc_id);
-    while(URT_SRC_rs_rc_id.next()){
-      var URT_SRC_rc_id=URT_SRC_rs_rc_id.getString("RC_ID")
-      }
-    var URT_SRC_stmt_rejoin = URT_SRC_conn.createStatement();
-    var URT_SRC_select_rejoin="CALL SP_LOGIN_CREATION_INSERT('"+URT_SRC_upd_emailid+"','"+URT_SRC_upd_customrole+"','"+URT_SRC_upd_rejoindate+"','"+UserStamp+"',@UR_FLAG)";
-    URT_SRC_stmt_rejoin.execute(URT_SRC_select_rejoin);
-    URT_SRC_stmt_rejoin.close();
-    ShareUnshareCalender(URT_SRC_upd_emailid,'writer');
-    URSRC_addViewer(URT_SRC_upd_emailid)
-    var URT_SRC_stmt_file = URT_SRC_conn.createStatement();
-    var URT_SRC_arr_file=[];  
-    var URSRC_folderid_array=[];
-    var URSRC_fileid=[];
-    var URT_SRC_select_file='SELECT * from USER_FILE_DETAILS UFD,FILE_PROFILE  FP where UFD.RC_ID=(select RC_ID from ROLE_CREATION where RC_NAME="'+URT_SRC_upd_customrole+'") and UFD.FP_ID=FP.FP_ID'
-    var URT_SRC_rs_file=URT_SRC_stmt_file.executeQuery(URT_SRC_select_file);
-    while(URT_SRC_rs_file.next())
-    {
-      var URT_SRC_arr_fileid=URT_SRC_rs_file.getString("FP_FILE_ID")
-      var folderid=URT_SRC_rs_file.getString("FP_FOLDER_ID");
-      if(URT_SRC_arr_fileid!=null){
-        URT_SRC_arr_file.push(URT_SRC_arr_fileid)
-        URSRC_folderid_array.push(folderid)
-        URSRC_fileid.push(URT_SRC_arr_fileid)
-      }
-      if(URT_SRC_arr_fileid==null||URT_SRC_arr_fileid!=null){
-        URT_SRC_arr_file.push(URT_SRC_rs_file.getString("FP_FOLDER_ID"))      
-      }}
-    URSRC_folderid_array=eilib.unique(URSRC_folderid_array);
-    URT_SRC_arr_file=eilib.unique(URT_SRC_arr_file);
-    URT_SRC_rs_file.close();URT_SRC_stmt_file.close();
-    for(var k=0;k<URT_SRC_arr_file.length;k++) {      
-      DriveApp.getFileById(URT_SRC_arr_file[k]).addEditor(URT_SRC_upd_emailid);
-    }    
-    var allid_array=[]
-    if(URSRC_folderid_array.length!=0){
-      var folder=URSRC_folderid_array[0];
-      var all_files=DriveApp.getFolderById(folder).getFiles();
-      while(all_files.hasNext()){        
-        var id=all_files.next().getId();
-        allid_array.push(id)     
-      }
-    }
-    var j=0;
-    var URSRC_new_diff_array=[]
-    if(URSRC_fileid.length!=0){
-      for(var i=0; i<=allid_array.length-1;i++)
+    try{
+      URSRC_sharedocflag=0,URSRC_sharecalflag=0,URSRC_sharesiteflag=0;
+      var URT_SRC_temptable;
+      var URT_SRC_conn =eilib.db_GetConnection();
+      URT_SRC_conn.setAutoCommit(false);
+      var URT_SRC_upd_rejoindate= eilib.SqlDateFormat(URT_SRC_upd_rejoindate);
+      var URT_SRC_stmt_rejoin_id = URT_SRC_conn.createStatement();
+      URT_SRC_upd_customrole=URT_SRC_upd_customrole.replace("_"," ")
+      var URT_SRC_select_rejoin_id="SELECT UA_ID,RC_ID,MAX(UA.UA_REC_VER),ULD_ID FROM USER_ACCESS UA WHERE UA.ULD_ID =(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_upd_emailid+"')";
+      var URT_SRC_rs_rejoin_id=URT_SRC_stmt_rejoin_id.executeQuery(URT_SRC_select_rejoin_id);
+      while(URT_SRC_rs_rejoin_id.next())
       {
-        if(URSRC_fileid.indexOf(allid_array[i])==-1)
-        {
-          URSRC_new_diff_array[j]=allid_array[i];
-          j++;
-        }         
+        var URT_SRC_autoinc_id=URT_SRC_rs_rejoin_id.getInt(1);
+        var URT_SRC_userpro_maxrec=URT_SRC_rs_rejoin_id.getInt(3);
+        var URT_SRC_userpro_uldid=URT_SRC_rs_rejoin_id.getString(4);
       }
-      for(var k=0;k< URSRC_new_diff_array.length;k++){
-        var foldereditors=DriveApp.getFileById(URSRC_new_diff_array[k]).getEditors()        
-        for(var l=0;l<foldereditors.length;l++){ 
-          if(foldereditors[l].getEmail()=='')continue;              
-          if(URT_SRC_upd_emailid==foldereditors[l].getEmail())
-          var remov_Folder=DriveApp.getFileById(URSRC_new_diff_array[k]).removeEditor(URT_SRC_upd_emailid); 
+      URT_SRC_rs_rejoin_id.close();URT_SRC_stmt_rejoin_id.close();
+      var URT_SRC_stmt_rc_id = URT_SRC_conn.createStatement();
+      var URT_SRC_select_rc_id="SELECT RC_ID FROM ROLE_CREATION where RC_NAME='"+URT_SRC_upd_customrole+"'";
+      var URT_SRC_rs_rc_id=URT_SRC_stmt_rc_id.executeQuery(URT_SRC_select_rc_id);
+      while(URT_SRC_rs_rc_id.next()){
+        var URT_SRC_rc_id=URT_SRC_rs_rc_id.getString("RC_ID")
         }
-      } 
-    }    
-    var URT_SRC_return_flag_stmt=URT_SRC_conn.createStatement();
-    var URT_SRC_getresult= URT_SRC_return_flag_stmt.executeQuery("SELECT @UR_FLAG");
-    while(URT_SRC_getresult.next()){
-      var URT_SRC_sucess_flag=URT_SRC_getresult.getString("@UR_FLAG");
+      var URT_SRC_stmt_rejoin = URT_SRC_conn.createStatement();
+      var URT_SRC_select_rejoin="CALL SP_LOGIN_CREATION_INSERT('"+URT_SRC_upd_emailid+"','"+URT_SRC_upd_customrole+"','"+URT_SRC_upd_rejoindate+"','"+UserStamp+"',@TEMPTABLE,@LOGIN_CREATIONFLAG)";
+      URT_SRC_stmt_rejoin.execute(URT_SRC_select_rejoin);
+      URT_SRC_stmt_rejoin.close();   
+      var URT_SRC_stmt_lgncreflag=URT_SRC_conn.createStatement();
+      var URT_SRC_flag_lgncreselect="SELECT @TEMPTABLE,@LOGIN_CREATIONFLAG";
+      var URT_SRC_flag_lgncrers=URT_SRC_stmt_lgncreflag.executeQuery(URT_SRC_flag_lgncreselect);
+      while(URT_SRC_flag_lgncrers.next())
+      {
+        URT_SRC_temptable=URT_SRC_flag_lgncrers.getString("@TEMPTABLE");
+        var URT_SRC_flag_lgncreinsert=URT_SRC_flag_lgncrers.getString("@LOGIN_CREATIONFLAG");
+      }
+      URT_SRC_flag_lgncrers.close();
+      URT_SRC_stmt_lgncreflag.close();
+      if(URT_SRC_flag_lgncreinsert==1){
+        URSRC_sharedocflag=URSRC_shareDocuments(URT_SRC_conn,URT_SRC_upd_customrole,URT_SRC_upd_emailid)
+        URSRC_sharesiteflag=URSRC_addViewer(URT_SRC_conn,URT_SRC_upd_emailid) 
+        URSRC_sharecalflag=USRC_shareUnSharecalender(URT_SRC_conn,URT_SRC_upd_emailid,'writer');
+      }
+      if(URT_SRC_temptable!='null'){
+        eilib.DropTempTable(URT_SRC_conn,URT_SRC_temptable)}
+      URT_SRC_conn.commit();
+      URT_SRC_conn.close();
+      var URT_SRC_success_flag=[];
+      URT_SRC_success_flag=[URT_SRC_flg_rejoin,URT_SRC_flag_lgncreinsert]
+      return URT_SRC_success_flag;  
+    }catch(err)
+    {
+      Logger.log("SCRIPT EXCEPTION:"+err)
+      URT_SRC_conn.rollback();
+      if(URT_SRC_temptable!='null'){
+        eilib.DropTempTable(URT_SRC_conn,URT_SRC_temptable)
+      }
+      if(URSRC_sharedocflag==1)
+      {
+        URSRC_unshareDocuments(URT_SRC_conn,URT_SRC_upd_customrole,URT_SRC_upd_emailid)
+      }
+      if(URSRC_sharesiteflag==1)
+      {
+        URSRC_removeViewer(URT_SRC_conn,URT_SRC_upd_emailid)
+      }
+      if(URSRC_sharecalflag==1)
+      {
+        USRC_shareUnSharecalender(URT_SRC_conn,URT_SRC_upd_emailid,'none');
+      }
+      URT_SRC_conn.commit();
+      URT_SRC_conn.close();
+      return Logger.getLog();
     }
-    var URT_SRC_success_flag=[];
-    URT_SRC_success_flag=[URT_SRC_flg_rejoin,URT_SRC_sucess_flag]
-    URT_SRC_conn.close();
-    return URT_SRC_success_flag;    
   } 
-  /*-------------------------------------------FUNCTION TO TERMINATE LOGIN DETAILS-----------------------------*/
+  /*-------------------------------------------FUNCTION TO GET LOGIN ID REC VER-----------------------------*/
   function URT_SRC_func_recordversion(URT_SRC_lb_loginid_rec,URT_SRC_flag_recver) { 
     var URT_SRC_conn =eilib.db_GetConnection();
     var URT_SRC_stmt_rec = URT_SRC_conn.createStatement();
@@ -266,14 +258,22 @@ try
       var URT_SRC_upd_val={"URT_SRC_obj_recordversion":URT_SRC_recordversion,"URT_SRC_obj_srcupd":URT_SRC_flag_recver}
       }  
     return URT_SRC_upd_val;
-    URT_SRC_conn.close();  }
+    URT_SRC_conn.close();  
+  }
   /*-------------------------------------------FUNCTION TO UPDATE LOGIN DETAILS-----------------------------*/
   function URT_SRC_func_update(URT_SRC_upd_loginid,URT_SRC_upd_recver,URT_SRC_upd_edate,URT_SRC_upd_reason,URT_SRC_flg_updation,URT_SRC_oldval_edate,URT_SRC_oldval_rson) { 
     var URT_SRC_conn =eilib.db_GetConnection();  
     var URT_SRC_stmt_terminate = URT_SRC_conn.createStatement();
     var URT_SRC_upd_enddate= eilib.SqlDateFormat(URT_SRC_upd_edate);
     var URT_SRC_sucess_flag=0;
-    var URT_SRC_update_terminate =" UPDATE USER_ACCESS SET UA_END_DATE='"+URT_SRC_upd_enddate+"',UA_REASON='"+URT_SRC_upd_reason+"',UA_USERSTAMP='"+UserStamp+"' WHERE ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_upd_loginid+"') AND UA_REC_VER="+URT_SRC_upd_recver+"";
+    if (URT_SRC_upd_recver==null)
+    {
+      var URT_SRC_update_terminate =" UPDATE USER_ACCESS SET UA_END_DATE='"+URT_SRC_upd_enddate+"',UA_REASON='"+URT_SRC_upd_reason+"',UA_USERSTAMP='"+UserStamp+"' WHERE ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_upd_loginid+"') AND UA_REC_VER=1";
+    }
+    else
+    {
+      var URT_SRC_update_terminate =" UPDATE USER_ACCESS SET UA_END_DATE='"+URT_SRC_upd_enddate+"',UA_REASON='"+URT_SRC_upd_reason+"',UA_USERSTAMP='"+UserStamp+"' WHERE ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_upd_loginid+"') AND UA_REC_VER="+URT_SRC_upd_recver+"";
+    }
     URT_SRC_stmt_terminate.execute(URT_SRC_update_terminate);
     URT_SRC_sucess_flag=1;
     URT_SRC_stmt_terminate.close();
@@ -282,46 +282,6 @@ try
     URT_SRC_conn.close();
     return URT_SRC_success_flag;    
   }    
-  function ShareUnshareCalender(URSRC_loginid,roles){
-    var URSRC_conn = eilib.db_GetConnection(); 
-    var URSRC_calenderid_stmt = URSRC_conn.createStatement();
-    var URSRC_select_calenderid='SELECT CCN_DATA from CUSTOMER_CONFIGURATION where CGN_ID=75'
-    var URSRC_select_calenderid_rs=URSRC_calenderid_stmt.executeQuery(URSRC_select_calenderid);
-    while(URSRC_select_calenderid_rs.next()){    
-      var calendarId=URSRC_select_calenderid_rs.getString("CCN_DATA")
-      }
-    var acl = {
-      scope: {
-        type: 'user',
-        value:URSRC_loginid
-      },
-      role: roles
-    };
-    Calendar.Acl.insert(acl, calendarId);    
-  }   
-  function URT_SRC_getSite(){  
-    var URSRC_conn = eilib.db_GetConnection(); 
-    var sitelink
-    var URSRC_getsitee_stmt=URSRC_conn.createStatement();
-    var URSRC_select_site="SELECT * FROM USER_RIGHTS_CONFIGURATION WHERE CGN_ID =68"
-    var URSRC_getsite_rs=URSRC_getsitee_stmt.executeQuery(URSRC_select_site)
-    while(URSRC_getsite_rs.next()){
-      sitelink=SitesApp.getSiteByUrl(URSRC_getsite_rs.getString("URC_DATA"))
-    }
-    return sitelink
-  } 
-  function URSRC_removeViewer(URT_SRC_emailid){  
-    var URSRC_conn = eilib.db_GetConnection();  
-    var site=URT_SRC_getSite();
-    site.removeViewer(URT_SRC_emailid);  
-    URSRC_conn.close();
-  }  
-  function URSRC_addViewer(URT_SRC_emailid){  
-    var URSRC_conn = eilib.db_GetConnection();  
-    var site=URT_SRC_getSite();
-    site.addViewer(URT_SRC_emailid);  
-    URSRC_conn.close();
-  }
 }
 catch(err)
 {

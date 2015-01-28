@@ -1,6 +1,8 @@
 // ***************************************MODEL ENTRY*************************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.01- SD:19/09/2014 ED:19/09/2014,TRACKER NO:678,Implemented preloader and msgbox position script
+//ver 1.00- SD:22/08/2014 ED:22/08/2014,TRACKER NO:678:Updated jquery and css links 
 //VER 0.09- SD:19/06/2014 ED:19/06/2014,TRACKER NO:678 Added conn failure message.
 //VER 0.08- SD:09/06/2014 ED:09/06/2014,TRACKER NO:678,Added commit() command after inserting record.
 //VER 0.07- SD:06/06/2014 ED:06/06/2014,TRACKER NO:678,changed preloader and jquery,css links.

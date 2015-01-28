@@ -1,41 +1,56 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************ACCESS CARD SEARCH AND UPDATE***************************************************//
+//DONE BY:PUNI
+VER 1.0-SD:09/10/2014 ED:09/10/2014;TRACKER NO:781;1.added script to hide preloader after menu n form loads,2.Changed preloader n msgbox position
+//DONE BY:SARADAMBAL.M
+VER 0.09-SD:27/08/2014 ED:27/08/2014;TRACKER NO:781;UPDATED NEW LINKS,AUTOGROW,CHECKED TICKLER PART
 //DONE BY:SAFIYULLAH.M
 VER 0.08-SD:09/06/2014 ED:09/06/2014;TRACKER NO:781;UPDATED SQL ENHANCEMENT and updated reset function 
 VER 0.07-SD:06/06/2014 ED:06/06/2014;TRACKER NO:781;CHANGED JQUERY LINK
-  VER 0.06- SD:05/05/2013 ED:07/05/2013;TRACKER NO:781-UPDATED SCRIPT COMMENTS ONLY ALSO WILL UPDATE AND TERMINATED CUSTOMER NOT TO SHOW.
-  VER 0.05 - SD:07/03/2014 ED:07/03/2014;TRACKER NO: 530-implement error msg getting from eilib,implement array concept.
-  VER 0.04 - SD:28/12/2013 ED:28/12/2013;TRACKER NO: 530-include style for header msg and change identifier
-  VER 0.03 - SD:02/12/2013 ED:09/12/2013;TRACKER NO: 530-Updated Coding(Removed Doget function)
-  VER 0.02 - SD:05/11/2013 ED:30/11/2013;TRACKER NO: 530-Tickler Table Updation
-  VER 0.01 - INITIAL VERSION-SD:04/09/2013 ED:21/09/2013;TRACKER NO: 530
+VER 0.06- SD:05/05/2013 ED:07/05/2013;TRACKER NO:781-UPDATED SCRIPT COMMENTS ONLY ALSO WILL UPDATE AND TERMINATED CUSTOMER NOT TO SHOW.
+VER 0.05 - SD:07/03/2014 ED:07/03/2014;TRACKER NO: 530-implement error msg getting from eilib,implement array concept.
+VER 0.04 - SD:28/12/2013 ED:28/12/2013;TRACKER NO: 530-include style for header msg and change identifier
+VER 0.03 - SD:02/12/2013 ED:09/12/2013;TRACKER NO: 530-Updated Coding(Removed Doget function)
+VER 0.02 - SD:05/11/2013 ED:30/11/2013;TRACKER NO: 530-Tickler Table Updation
+VER 0.01 - INITIAL VERSION-SD:04/09/2013 ED:21/09/2013;TRACKER NO: 530
 //*********************************************************************************************************//
 -->
 <!--HTML TAG START-->
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
 var CACS_SRC_errorAarray=[];
 var CACS_SRC_allcust_details=[];
 var CACS_SRC_reason_array=[];
 var CACS_SRC_cust_id;
 $(".preloader").show();
+$('textarea').autogrow({onInitialize: true});
 //********************FUNCTION TO LOAD INITIAL VALUES**********************//
 google.script.run.withFailureHandler(CACS_SRC_error).withSuccessHandler(CACS_SRC_load_initial_values).CACS_SRC_get_initial_values()
 $('#CACS_SRC_lb_selectname').hide();
@@ -96,6 +111,7 @@ $('#CACS_SRC_lbl_errmsg').hide()
 });
 //***************GET CARD NUMBER FOR SELECTED CUSTOMER NAME
 $('#CACS_SRC_lb_selectname').change(function(){
+$('textarea').height(20);
 var CACS_SRC_custname=$(this).val();
 var CACS_SRC_unit = $('#CACS_SRC_lb_unitno').val();
 if(CACS_SRC_custname=='SELECT')
@@ -170,7 +186,6 @@ $('#CACS_SRC_lb_select_lost_cardno').html(CACS_SRC_custcard_options)
 }
 //****************FUNCTION TO LOAD INITIAL VALUES******************8//
 function CACS_SRC_load_initial_values(CACS_SRC_initial_values){
-$(".preloader").hide();
 CACS_SRC_errorAarray=CACS_SRC_initial_values[0].CACS_SRC_error_msg;
 CACS_SRC_allcust_details=CACS_SRC_initial_values[0].CACS_SRC_allcustdetails;
 CACS_SRC_reason_array=CACS_SRC_initial_values[0].CACS_SRC_reason;
@@ -196,6 +211,10 @@ for (var i = 0; i < CACS_SRC_reason_array.length; i++) {
 CACS_SRC_reason_options += '<option value="' + CACS_SRC_reason_array[i] + '">' + CACS_SRC_reason_array[i] + '</option>';
 }
 $('#CACS_SRC_lb_select_reason').html(CACS_SRC_reason_options)
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 function unique(a) {
 var result = [];
@@ -247,7 +266,7 @@ error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
 $('#CACS_SRC_form_searchform').replaceWith('<center><label class="dberrormsg">'+error+'</label></center>');
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS CARD SEARCH AND UPDATE",msgcontent:error}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS CARD SEARCH AND UPDATE",msgcontent:error,position:{top:150,left:500}}});
 }
 }
 $('.submit_validate').change(function(){
@@ -261,6 +280,8 @@ $('#CACS_SRC_btn_updatebutton').attr('disabled','disabled');
 }
 });
 $('#CACS_SRC_btn_updatebutton').click(function(){
+var  newPos= adjustPosition($(this).position(),100,310);
+resetPreloader(newPos);
 $(".preloader").show();
 google.script.run.withFailureHandler(CACS_SRC_error).withSuccessHandler(CACS_SRC_clear).CACS_SRC_saveform(document.getElementById('CACS_SRC_form_searchform'))
 });
@@ -339,10 +360,10 @@ $('#CACS_SRC_tble_unitnotable').show()
 CACS_SRC_allcust_details=final_result[1];
 var return_flag=final_result[0]
 if(return_flag==1){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS CARD SEARCH AND UPDATE",msgcontent:CACS_SRC_errorAarray[1]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS CARD SEARCH AND UPDATE",msgcontent:CACS_SRC_errorAarray[1],position:{top:150,left:500}}});
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS CARD SEARCH AND UPDATE",msgcontent:CACS_SRC_errorAarray[2]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS CARD SEARCH AND UPDATE",msgcontent:CACS_SRC_errorAarray[2],position:{top:150,left:500}}});
 }
 }
 //FUNCTION TO CONVERT DATE FORMAT

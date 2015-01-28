@@ -1,15 +1,19 @@
-//*******************************************FILE DESCRIPTION*********************************************//
-//***********************************************CHARTS***********************************************//-->
-//DONE BY:SARADAMBAL
-//VER 0.08-INITIAL VERSION,TRACKER NO:585,SD:03/07/2014,ED:03/07/2014,checked biz net revenue sp and implemented script for adding header 
-//VER 0.07-INITIAL VERSION,TRACKER NO:585,SD:19/06/2014,ED:19/06/2014,Updated failure function
-//VER 0.06-INITIAL VERSION,TRACKER NO:585,SD:07/06/2014,ED:07/06/2014,Updated new link
-//VER 0.05-INITIAL VERSION,TRACKER NO:585,SD:31/05/2014,ED:31/05/2014 give class name for dp,cleared personal net revenue issue(show net instead of gross)
-//VER 0.04-INITIAL VERSION,TRACKER NO:585,SD:14/05/2014,ED:21/05/2014 CHECKED TEMP TABLE SP THROUGH FORM,cleared issue for chart and data table for second time coming
-//VER 0.03-INITIAL VERSION,TRACKER NO:585,SD:08/05/2014,ED:08/05/2014 ADDED RETURN FUNCTION
-//VER 0.02-INITIAL VERSION,TRACKER NO:585,SD:21/02/2014,ED:25/02/2014 add the google api for chart and data table
-//VER 0.01-INITIAL VERSION,TRACKER NO:585,SD:03/12/2013,ED:05/09/2013
-//*********************************************************************************************************//
+//<!--*********************************************************************************************************//-->
+//<!--//*******************************************FILE DESCRIPTION*********************************************//
+//<!--***********************************************CHARTS***********************************************//-->
+//<!--DONE BY:PUNI
+//VER 1.1- TRACKER NO:585,SD:06/10/2014,ED:06/10/2014,corrected some preloader n msgbox position
+//<!--DONE BY:SARADAMBAL
+//VER 1.0- TRACKER NO:585,SD:20/09/2014 ED:20/09/2014,implemented script for preloader,msgbox 
+//VER 0.09-TRACKER NO:585,SD:14/08/2014 ED:14/08/2014,updated new links,cheked sp after changed in decimal (10,2)
+//VER 0.08-TRACKER NO:585,SD:03/07/2014,ED:03/07/2014,checked biz net revenue sp and implemented script for adding header 
+//VER 0.07-TRACKER NO:585,SD:19/06/2014,ED:19/06/2014,Updated failure function
+//VER 0.06-TRACKER NO:585,SD:07/06/2014,ED:07/06/2014,Updated new link
+//VER 0.05-TRACKER NO:585,SD:31/05/2014,ED:31/05/2014 give class name for dp,cleared personal net revenue issue(show net instead of gross)
+//VER 0.04-TRACKER NO:585,SD:14/05/2014,ED:21/05/2014 CHECKED TEMP TABLE SP THROUGH FORM,cleared issue for chart and data table for second time coming
+//VER 0.03-TRACKER NO:585,SD:08/05/2014,ED:08/05/2014 ADDED RETURN FUNCTION
+//VER 0.02-TRACKER NO:585,SD:21/02/2014,ED:25/02/2014 add the google api for chart and data table
+//VER 0.01-INITIAL VERSION,TRACKER NO:585,SD:03/12/2013,ED:05/09/2013-->
 try
 {
   /*-----------------------------------FUNCTION TO GET SEARCH TYPE,DATA,UNIT NO & ERROR MSG---------------------*/
@@ -83,7 +87,7 @@ try
       }}   
     /*----------------------------------------CALLING SP AND SELECT QUERY TO GET DATAS--------------------------------------------*/
     var CHART_select_reportconf= "CALL "+CHART_dateamt_unitno[CHART_srchdata][3]+"";
-    var CHART_stmt_data = CHART_conn.createStatement();  Logger.log(CHART_select_reportconf)
+    var CHART_stmt_data = CHART_conn.createStatement(); 
     CHART_stmt_data.execute(CHART_select_reportconf);    
     CHART_stmt_data.close();
     var CHART_stmt_temptble = CHART_conn.createStatement();
@@ -108,7 +112,7 @@ try
       CHART_flex_twodimens_arr.push(CHART_flex_arr);
     }  
     CHART_rs_unit.close();CHART_stmt_sel.close();
-    var CHART_res_invoice_exp={"CHART_obj_flexarr":CHART_flex_twodimens_arr}
+    var CHART_res_invoice_exp={"CHART_obj_flexarr":CHART_flex_twodimens_arr};
     var CHART_temp_stmt= CHART_conn.createStatement();
     CHART_temp_stmt.execute("DROP TABLE "+CHART_temptblename+"");
     CHART_temp_stmt.close();

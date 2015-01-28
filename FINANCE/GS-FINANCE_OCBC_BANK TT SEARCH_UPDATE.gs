@@ -1,7 +1,11 @@
-//***************************************BANK TT SEARCH/UPDATE********************************************//
+//*****************************************************BANK TT SEARCH/UPDATE*********************************//
 //*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.08- SD:07/10/2014 ED:07/10/2014,TRACKER NO:675,Corrected preloader n msgbox position
 //DONE BY:KUMAR
-//VER 1.05- SD:23/07/2014 ED:23/07/2014,TRACKER NO:674,showing all customer name in customer list for selected unit and all units.
+//VER 1.07- SD:19/09/2014 ED:19/09/2014,TRACKER NO:675,Implemented preloader and msgbox position script
+//VER 1.06-SD:22/08/2014 ED:22/08/2014,TRACKER NO:675,Updated new jquery and css links and did rollback and commit.
+//VER 1.05- SD:23/07/2014 ED:23/07/2014,TRACKER NO:675,showing all customer name in customer list for selected unit and all units.
 //VER 1.04- SD:15/07/2014 ED:15/07/2014,TRACKER NO:675,droped temp tables in script side.
 //VER 1.03- SD:21/06/2014 ED:21/06/2014,TRACKER NO:675,SET min and max date for banktt DP(MIN DATE AS old banktt date-1 YEAR AND MAX DATE AS SYSDATE) AND implemented connection error message.
 //VER 1.02- SD:06/06/2014 ED:06/06/2014,TRACKER NO:675,changed preloader and jquery,css links.
@@ -19,6 +23,7 @@
 //*********************************************************************************************************//
 try
 {
+  var BANKTT_SRCconn;
   function BANKTT_SRC_Customer(unit)
   {
     var BANKTT_SRCcustomername_array=[];
@@ -250,7 +255,15 @@ try
     return BANKTT_SRC_SEARCHRESULTS_ARRAY;
     BANKTT_SRC_conn.close();
   }
-  function BANKTT_SRC_processFormUpdate(updationrecords)
+  
+}
+catch(err)
+{
+}
+/****************BANK TT UPDATION*********************/
+function BANKTT_SRC_processFormUpdate(updationrecords)
+{
+  try
   {
     var id=updationrecords.BANKTT_SRC_tb_id;
     var unit=updationrecords.BANKTT_SRC_tb_tempunit;
@@ -336,6 +349,7 @@ try
     else if(created!=' '){configdatas=status+','+created}
     else{configdatas=status}
     var BANKTT_SRC_conn =eilib.db_GetConnection();
+    BANKTT_SRCconn=BANKTT_SRC_conn;
     var BANKTT_SRC_updatestmt=BANKTT_SRC_conn.createStatement();
     var BANKTT_SRC_updatequery="CALL SP_BANK_TT_UPDATE("+id+",'"+configdatas+"',"+modelname+",'"+date+"',"+amount+","+accountname+","+accountno+","+bankcode+","+branchcode+",'"+bankaddress+"',"+swiftcode+",'"+custref+"','"+invdetails+"',"+debiteddate+",'"+comments+"','"+UserStamp+"',@BANK_SUCCESSFLAG)";
     BANKTT_SRC_updatestmt.execute(BANKTT_SRC_updatequery);
@@ -380,10 +394,12 @@ try
       var advancedArgs={cc:bankttmailid[1],name:displayname,htmlBody:message};
       MailApp.sendEmail(banktttomailid,emailsubject,message ,advancedArgs);
     }
-    return returnflag;
+    BANKTT_SRC_conn.commit();
     BANKTT_SRC_conn.close();
+    return returnflag;
   }
-}
-catch(err)
-{
+  catch(err)
+  {
+    BANKTT_SRCconn.rollback(); 
+  }
 }

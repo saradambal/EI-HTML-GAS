@@ -1,7 +1,11 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************************BIZ EXPENSE DETAIL:SEARCH/UPDATE/DELETE********************************************//
+//<!--DONE BY:PUNI
+//VER 1.1-SD:21/10/2014 ED:21/10/2014,TRACKER NO:469,1.corrected starhub biz detail internet start date search issue flex table header message,2.added change blur validator for date search validation function
+//VER 1.0-SD:10/10/2014 ED:10/10/2014,TRACKER NO:469,1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position,3.changed gs save part function to take updation if max rv comts n prev rv details updated r else insertion for all types of expense
 //DONE BY:SARADAMBAL
-//VER 0.08 -SD:21/06/2014 ED:21/06/2014,TRACKER NO:469,updated class for comments to trim the values,updated failure function and commit, and err msg if any issue in calendar ,removed arr concept for already exists data and implement script for already exist from db
+//VER 0.09 -SD:21/08/2014 ED:21/08/2014,TRACKER NO:469,updated new links,implemented autogrow,rollback if any issue in calendar or sp,checked sp,updated sp for deletion 
+//VER 0.08 -SD:21/06/2014 ED:21/06/2014,TRACKER NO:469,updated class for comments to trim the values,updated failure function, and err msg if any issue in calendar ,removed arr concept for already exists data and implement script for already exist from db
 //VER 0.07 -SD:07/06/2014 ED:07/06/2014,TRACKER NO:469,updated new link
 //VER 0.06-SD:10/03/2014 ED:10/03/2014,TRACKER NO:469,changed preloader for int
 //VER 0.05-SD:06/03/2014 ED:08/03/2014,TRACKER NO:469,implemented array concept to reduced query and using twodimension to reduced coding,removed eilib function for aircon serviced by ,using array to check the already exists data
@@ -536,205 +540,6 @@ try{
     BTDTL_SEARCH_conn.close();
     return BTDTL_SEARCH_result;
   }
-  /*----------------------------------------------------------------FUNCTION FOR UPDATION-------------------------------------------------------*/
-  function BTDTL_SEARCH_updatForm(BTDTL_SEARCH_form_bizdetail,BTDTL_SEARCH_cable_sdate,BTDTL_SEARCH_cable_edate,BTDTL_SEARCH_internet_sdate,BTDTL_SEARCH_internet_edate,BTDTL_SEARCH_radiovalue,BTDTL_SEARCH_sh_arr)
-  {
-    var BTDTL_SEARCH_conn= eilib.db_GetConnection();
-    BTDTL_SEARCH_conn.setAutoCommit(false);
-    var BTDTL_SEARCH_searchvalue=PropertiesService.getUserProperties().getProperty('BTDTL_SEARCH_value')
-    var BTDTL_SEARCH_searchdatevalue=PropertiesService.getUserProperties().getProperty('BTDTL_SEARCH_datevalue')
-    var BTDTL_SEARCH_upd_expense_aircon=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_radio_expense;
-    var BTDTL_SEARCH_upd_ariconname=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_update_airconname;
-    var BTDTL_SEARCH_expensetypes =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_lb_expense_type;
-    var BTDTL_SEARCH_searchoption =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_lb_searchoptions;
-    var BTDTL_SEARCH_unitno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_unitno;
-    var BTDTL_SEARCH_aircon_servicedby=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_lb_oldaircon;
-    var BTDTL_SEARCH_aircon_comments=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_airconcomments;
-    var BTDTL_SEARCH_carpark_carno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_carno;
-    var BTDTL_SEARCH_carpark_comments =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_carparkcomments;
-    var BTDTL_SEARCH_electricity_comments =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_electricitycomments;
-    var BTDTL_SEARCH_digital_voiceno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_digital_voiceno;
-    var BTDTL_SEARCH_digital_acctno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_digitalacctno;
-    var BTDTL_SEARCH_digital_comments =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_digitalcomments;
-    var BTDTL_SEARCH_starhub_acctno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_starhub_acctno;
-    var BTDTL_SEARCH_starhub_appldate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_starhubappldate;
-    var BTDTL_SEARCH_starhub_cablestartdate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_cablestartdate;
-    var BTDTL_SEARCH_starhub_cableenddate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_cableenddate;
-    var BTDTL_SEARCH_starhub_internetstartdate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_internetstartdate;
-    var BTDTL_SEARCH_starhub_internetenddate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_internetenddate;
-    var BTDTL_SEARCH_starhub_ssid =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_ssid;
-    var BTDTL_SEARCH_starhub_pwd =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_pwd;
-    var BTDTL_SEARCH_starhub_cableboxno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_cableboxno;
-    var BTDTL_SEARCH_starhub_modemno=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_modemno;
-    var BTDTL_SEARCH_starhub_basicgroup =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_basicgroup;
-    var BTDTL_SEARCH_starhub_addtnl=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_addtnl;
-    var BTDTL_SEARCH_starhub_comments =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_starhubcomments;  
-    var BTDTL_SEARCH_stmt =BTDTL_SEARCH_conn.createStatement();
-    if(BTDTL_SEARCH_searchoption!=100)
-      var BTDTL_SEARCH_beforeprimaryid=BTDTL_SEARCH_getmaxprimaryid(BTDTL_SEARCH_expensetypes)
-      if(BTDTL_SEARCH_searchoption==100){//AIRCON SERVICED BY
-        var BTDTL_SEARCH_insert="UPDATE EXPENSE_AIRCON_SERVICE_BY SET EASB_DATA='"+BTDTL_SEARCH_upd_ariconname+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE EASB_ID="+BTDTL_SEARCH_upd_expense_aircon+"";}
-    else{  
-      if((BTDTL_SEARCH_starhub_appldate=="")||(BTDTL_SEARCH_starhub_appldate==undefined))
-      BTDTL_SEARCH_starhub_appldate=null;  
-      else
-      {
-        BTDTL_SEARCH_starhub_appldate=eilib.SqlDateFormat(BTDTL_SEARCH_starhub_appldate)
-        BTDTL_SEARCH_starhub_appldate="'"+BTDTL_SEARCH_starhub_appldate+"'";
-      }  
-      if((BTDTL_SEARCH_starhub_cablestartdate=="")||(BTDTL_SEARCH_starhub_cablestartdate==undefined))
-      BTDTL_SEARCH_starhub_cablestartdate=null;  
-      else
-      {
-        var BTDTL_SEARCH_starhub_cablestartdate_shtime=BTDTL_SEARCH_starhub_cablestartdate;
-        var BTDTL_SEARCH_starhub_cablestartdate = eilib.SqlDateFormat(BTDTL_SEARCH_starhub_cablestartdate)
-        BTDTL_SEARCH_starhub_cablestartdate="'"+BTDTL_SEARCH_starhub_cablestartdate+"'";
-      }
-      if((BTDTL_SEARCH_starhub_cableenddate=="")||(BTDTL_SEARCH_starhub_cableenddate==undefined))
-      BTDTL_SEARCH_starhub_cableenddate=null;  
-      else
-      {
-        var BTDTL_SEARCH_starhub_cableenddate_shtime=BTDTL_SEARCH_starhub_cableenddate;
-        var BTDTL_SEARCH_starhub_cableenddate = eilib.SqlDateFormat(BTDTL_SEARCH_starhub_cableenddate)
-        BTDTL_SEARCH_starhub_cableenddate="'"+BTDTL_SEARCH_starhub_cableenddate+"'";
-      }   
-      if((BTDTL_SEARCH_starhub_internetstartdate=="")||(BTDTL_SEARCH_starhub_internetstartdate==undefined))
-      BTDTL_SEARCH_starhub_internetstartdate=null;  
-      else
-      {
-        var BTDTL_SEARCH_starhub_internetstartdate_shtime=BTDTL_SEARCH_starhub_internetstartdate;
-        var BTDTL_SEARCH_starhub_internetstartdate = eilib.SqlDateFormat(BTDTL_SEARCH_starhub_internetstartdate)
-        BTDTL_SEARCH_starhub_internetstartdate="'"+BTDTL_SEARCH_starhub_internetstartdate+"'";
-      } 
-      if((BTDTL_SEARCH_starhub_internetenddate=="")||(BTDTL_SEARCH_starhub_internetenddate==undefined))
-      BTDTL_SEARCH_starhub_internetenddate=null;  
-      else
-      {
-        var BTDTL_SEARCH_starhub_internetenddate_shtime=BTDTL_SEARCH_starhub_internetenddate;
-        var BTDTL_SEARCH_starhub_internetenddate = eilib.SqlDateFormat(BTDTL_SEARCH_starhub_internetenddate)
-        BTDTL_SEARCH_starhub_internetenddate="'"+BTDTL_SEARCH_starhub_internetenddate+"'";
-      } 
-      var BTDTL_SEARCH_unitid =BTDTL_SEARCH_radiovalue.split('_')
-      var BTDTL_SEARCH_stmt_rec =BTDTL_SEARCH_conn.createStatement();
-      var BTDTL_SEARCH_detailData=BTDTL_SEARCH_func_twodimen(BTDTL_SEARCH_expensetypes)
-      var BTDTL_SEARCH_select_recordversion = "SELECT MAX("+BTDTL_SEARCH_detailData[3]+") AS "+BTDTL_SEARCH_detailData[3]+" FROM "+BTDTL_SEARCH_detailData[1]+" WHERE UNIT_ID="+BTDTL_SEARCH_unitid[1]+"";
-      var BTDTL_SEARCH_recordversion_rs = BTDTL_SEARCH_stmt_rec.executeQuery(BTDTL_SEARCH_select_recordversion);
-      if(BTDTL_SEARCH_recordversion_rs.next())
-      {
-        var BTDTL_SEARCH_recordversion = BTDTL_SEARCH_recordversion_rs.getString(BTDTL_SEARCH_detailData[3]);
-      } 
-      BTDTL_SEARCH_recordversion_rs.close();BTDTL_SEARCH_stmt_rec.close();
-      if(BTDTL_SEARCH_recordversion==null)
-        var BTDTL_SEARCH_recordversion=1;         
-      else     
-        var BTDTL_SEARCH_recordversion = parseInt(BTDTL_SEARCH_recordversion)+1;
-      if(BTDTL_SEARCH_expensetypes==16)//AIRCON SERVICES
-      {   
-        if(BTDTL_SEARCH_aircon_comments=="")//COMMENTS
-        {  BTDTL_SEARCH_aircon_comments=null;}else{
-          BTDTL_SEARCH_aircon_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_aircon_comments)+'"';}
-        var BTDTL_SEARCH_insert = "INSERT INTO EXPENSE_DETAIL_AIRCON_SERVICE(UNIT_ID,EASB_ID,EDAS_REC_VER,EDAS_COMMENTS,ULD_ID)VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_aircon_servicedby+","+BTDTL_SEARCH_recordversion+","+BTDTL_SEARCH_aircon_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))"
-      }      
-      else if(BTDTL_SEARCH_expensetypes==17)//CARPARK
-      { 
-        if(BTDTL_SEARCH_carpark_comments=="")//COMMENTS
-        {  BTDTL_SEARCH_carpark_comments=null;}else{
-          BTDTL_SEARCH_carpark_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_carpark_comments)+'"';}
-        var BTDTL_SEARCH_insert = "INSERT INTO EXPENSE_DETAIL_CARPARK (UNIT_ID,EDCP_REC_VER,EDCP_CAR_NO,EDCP_COMMENTS,ULD_ID) VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_recordversion+",'"+BTDTL_SEARCH_carpark_carno+"',"+BTDTL_SEARCH_carpark_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))"
-      }    
-      else if(BTDTL_SEARCH_expensetypes==15)//DIGITAL VOICE
-      {
-        var BTDTL_SEARCH_invoiceto =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_upd_digital_invoiceto;
-        if((BTDTL_SEARCH_invoiceto=='SELECT')||(BTDTL_SEARCH_invoiceto==''))
-        BTDTL_SEARCH_invoiceto=null;
-        if(BTDTL_SEARCH_carpark_comments=="")//COMMENTS
-        {  BTDTL_SEARCH_digital_comments=null;}else{
-          BTDTL_SEARCH_digital_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_digital_comments)+'"';}
-        var BTDTL_SEARCH_insert = "INSERT INTO EXPENSE_DETAIL_DIGITAL_VOICE(UNIT_ID,ECN_ID,EDDV_REC_VER,EDDV_DIGITAL_VOICE_NO,EDDV_DIGITAL_ACCOUNT_NO,EDDV_COMMENTS,ULD_ID)VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_invoiceto+",'"+BTDTL_SEARCH_recordversion+"','"+BTDTL_SEARCH_digital_voiceno+"','"+BTDTL_SEARCH_digital_acctno+"',"+BTDTL_SEARCH_digital_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";
-      }
-      else if(BTDTL_SEARCH_expensetypes==13)//ELECTRICITY
-      {    
-        var BTDTL_SEARCH_invoiceto =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_upd_elec_invoiceto;
-        if(BTDTL_SEARCH_electricity_comments=="")//COMMENTS
-        {  BTDTL_SEARCH_electricity_comments=null;}else{
-          BTDTL_SEARCH_electricity_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_electricity_comments)+'"';}
-        var BTDTL_SEARCH_insert="INSERT INTO EXPENSE_DETAIL_ELECTRICITY(UNIT_ID,ECN_ID,EDE_REC_VER,EDE_COMMENTS,ULD_ID)VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_invoiceto+","+BTDTL_SEARCH_recordversion+","+BTDTL_SEARCH_electricity_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";
-      }
-      else if(BTDTL_SEARCH_expensetypes==14)//STARHUB
-      {
-        var BTDTL_SEARCH_invoiceto =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_lb_upd_starhub_invoiceto;
-        if((BTDTL_SEARCH_invoiceto=='SELECT')||(BTDTL_SEARCH_invoiceto==''))
-        BTDTL_SEARCH_invoiceto=null;
-        if(BTDTL_SEARCH_starhub_ssid=="")//SSID
-        {  BTDTL_SEARCH_starhub_ssid=null;}else{
-          BTDTL_SEARCH_starhub_ssid='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_ssid)+'"';}
-        if(BTDTL_SEARCH_starhub_pwd=="")//PSWD
-        {  BTDTL_SEARCH_starhub_pwd=null;}else{
-          BTDTL_SEARCH_starhub_pwd='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_pwd)+'"';}
-        if(BTDTL_SEARCH_starhub_cableboxno=="")//CABLE SLNO
-        {  BTDTL_SEARCH_starhub_cableboxno=null;}else{
-          BTDTL_SEARCH_starhub_cableboxno='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_cableboxno)+'"';}
-        if(BTDTL_SEARCH_starhub_modemno=="")//MODEM SLNO
-        {  BTDTL_SEARCH_starhub_modemno=null;}else{
-          BTDTL_SEARCH_starhub_modemno='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_modemno)+'"';}
-        if(BTDTL_SEARCH_starhub_basicgroup=="")//BASIC GROUP 
-        {  BTDTL_SEARCH_starhub_basicgroup=null;}else{
-          BTDTL_SEARCH_starhub_basicgroup='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_basicgroup)+'"';}  
-        if(BTDTL_SEARCH_starhub_addtnl=="")//ADDLN 
-        {  BTDTL_SEARCH_starhub_addtnl=null;}else{
-          BTDTL_SEARCH_starhub_addtnl='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_addtnl)+'"';}       
-        if(BTDTL_SEARCH_starhub_comments=="")//COMMENTS 
-        {  BTDTL_SEARCH_starhub_comments=null;}else{
-          BTDTL_SEARCH_starhub_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_comments)+'"';}    
-        var BTDTL_SEARCH_insert="INSERT INTO EXPENSE_DETAIL_STARHUB(UNIT_ID,ECN_ID,EDSH_REC_VER,EDSH_ACCOUNT_NO,EDSH_APPL_DATE,EDSH_CABLE_START_DATE,EDSH_CABLE_END_DATE,EDSH_INTERNET_START_DATE,EDSH_INTERNET_END_DATE,EDSH_SSID,EDSH_PWD,EDSH_CABLE_BOX_SERIAL_NO,EDSH_MODEM_SERIAL_NO,EDSH_BASIC_GROUP,EDSH_ADDTNL_CH,EDSH_COMMENTS,ULD_ID)VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_invoiceto+","+BTDTL_SEARCH_recordversion+",'"+BTDTL_SEARCH_starhub_acctno+"',"+BTDTL_SEARCH_starhub_appldate+","+BTDTL_SEARCH_starhub_cablestartdate+","+BTDTL_SEARCH_starhub_cableenddate+","+BTDTL_SEARCH_starhub_internetstartdate+","+BTDTL_SEARCH_starhub_internetenddate+","+BTDTL_SEARCH_starhub_ssid+","+BTDTL_SEARCH_starhub_pwd+", "+BTDTL_SEARCH_starhub_cableboxno+","+BTDTL_SEARCH_starhub_modemno+","+BTDTL_SEARCH_starhub_basicgroup+","+BTDTL_SEARCH_starhub_addtnl+","+BTDTL_SEARCH_starhub_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";       
-        var BTDTL_SEARCH_sh_starttime=BTDTL_SEARCH_sh_arr[0];
-        var BTDTL_SEARCH_sh_endtime=BTDTL_SEARCH_sh_arr[1];
-        if((BTDTL_SEARCH_starhub_cablestartdate_shtime!='')&&(BTDTL_SEARCH_starhub_cableenddate_shtime!='')&&(BTDTL_SEARCH_starhub_cablestartdate_shtime!=undefined)&&(BTDTL_SEARCH_starhub_cableenddate_shtime!=undefined))
-        {     
-          var calenderIDcode=eilib.CUST_getCalenderId(BTDTL_SEARCH_conn);
-          if((BTDTL_SEARCH_cable_sdate!='')&&(BTDTL_SEARCH_cable_edate!='')){
-            eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_unitno,calenderIDcode,BTDTL_SEARCH_cable_sdate,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_cable_edate,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'STARHUB')
-          }
-          eilib.StarHubUnit_CreateCalEvent(calenderIDcode,BTDTL_SEARCH_starhub_cablestartdate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_starhub_cableenddate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'STARHUB',BTDTL_SEARCH_unitno,BTDTL_SEARCH_starhub_acctno,'CABLE START DATE','CABLE END DATE','','')
-        } 
-        if((BTDTL_SEARCH_starhub_internetstartdate_shtime!='')&&(BTDTL_SEARCH_starhub_internetenddate_shtime!='')&&(BTDTL_SEARCH_starhub_internetstartdate_shtime!=undefined)&&(BTDTL_SEARCH_starhub_internetenddate_shtime!=undefined))
-        {       
-          var calenderIDcode=eilib.CUST_getCalenderId(BTDTL_SEARCH_conn);
-          if((BTDTL_SEARCH_internet_sdate!='')&&(BTDTL_SEARCH_internet_edate!='')){
-            eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_unitno,calenderIDcode,BTDTL_SEARCH_internet_sdate,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_internet_edate,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'STARHUB')
-          }
-          eilib.StarHubUnit_CreateCalEvent(calenderIDcode,BTDTL_SEARCH_starhub_internetstartdate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_starhub_internetenddate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'STARHUB',BTDTL_SEARCH_unitno,BTDTL_SEARCH_starhub_acctno,'INTERNET START DATE','INTERNET END DATE','','')
-        } 
-      } }
-    BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
-    BTDTL_SEARCH_stmt.close();
-    BTDTL_SEARCH_conn.commit();
-    if(BTDTL_SEARCH_searchoption!=100){
-      var BTDTL_SEARCH_afterprimaryid=BTDTL_SEARCH_getmaxprimaryid(BTDTL_SEARCH_expensetypes)
-      if(BTDTL_SEARCH_afterprimaryid[0]>BTDTL_SEARCH_beforeprimaryid[0])
-        var BTDTL_SEARCH_flag_update='BTDTL_SEARCH_flag_update'
-        else
-          var BTDTL_SEARCH_flag_update='BTDTL_SEARCH_flag_notupdate';
-    }
-    var BTDTL_SEARCH_refresh=[];
-    if(BTDTL_SEARCH_expensetypes==16){
-      if(BTDTL_SEARCH_searchoption==100)
-        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_searchoption,BTDTL_SEARCH_expensetypes,'BTDTL_SEARCH_flag_aircon_update');
-      else
-        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_flex_aircon(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update);}
-    else if(BTDTL_SEARCH_expensetypes==17)
-      var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_carpark(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update);
-    else if(BTDTL_SEARCH_expensetypes==13)
-      var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_electricity(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update);
-    else if(BTDTL_SEARCH_expensetypes==15)
-      var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_digital(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update);
-    else if(BTDTL_SEARCH_expensetypes==14)
-      var BTDTL_SEARCH_refresh = BTDTL_SEARCH_show_starhub(BTDTL_SEARCH_searchdatevalue,BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update)
-      if((BTDTL_SEARCH_refresh.BTDTL_SEARCH_id.length==0) &&(BTDTL_SEARCH_searchoptions!=101)&&(BTDTL_SEARCH_searchoptions!=103)&&(BTDTL_SEARCH_searchoptions!=108)&&(BTDTL_SEARCH_searchoptions!=104)&&(BTDTL_SEARCH_searchoptions!=110)&&(BTDTL_SEARCH_searchoptions!=112)&&(BTDTL_SEARCH_searchoptions!=122))
-      var BTDTL_SEARCH_refresh= BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_searchoption,BTDTL_SEARCH_expensetypes,'BTDTL_SEARCH_update_listbox');
-    BTDTL_SEARCH_conn.close();
-    return BTDTL_SEARCH_refresh;  
-  }
   /*-------------------------------------FUNCTION FOR RADIO BUTTON CLICK-------------------------------*/
   function BTDTL_SEARCH_radio_delete(BTDTL_SEARCH_expenseid,BTDTL_SEARCH_expensetypes,BTDTL_SEARCH_searchoptions)
   {  
@@ -748,65 +553,92 @@ try{
     return BTDTL_SEARCH_flag_delete;}
   /*------------------------------------------------------------------FUNCTION FOR DELETION----------------------------------------------------------------------------*/
   function BTDTL_SEARCH_delete(BTDTL_SEARCH_expenseid,BTDTL_SEARCH_expensetypes,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_obj,BTDTL_SEARCH_sh_arr){
-    var BTDTL_SEARCH_conn =eilib.db_GetConnection();
-    var BTDTL_SEARCH_flag_delete=true;
-    var BTDTL_SEARCH_searchvalue=PropertiesService.getUserProperties().getProperty('BTDTL_SEARCH_value')
-    var BTDTL_SEARCH_searchdatevalue=PropertiesService.getUserProperties().getProperty('BTDTL_SEARCH_datevalue')
-    BTDTL_SEARCH_expenseid=BTDTL_SEARCH_expenseid.split('_')
-    if(BTDTL_SEARCH_searchoptions==100)
-      var BTDTL_SEARCH_arryid=BTDTL_SEARCH_searchoptions
-      var BTDTL_SEARCH_postid=BTDTL_SEARCH_func_twodimen(BTDTL_SEARCH_expensetypes)
-      var BTDTL_SEARCH_deleteflag=eilib.DeleteRecord(BTDTL_SEARCH_conn,BTDTL_SEARCH_postid[2],BTDTL_SEARCH_expenseid[0]);
-    if(BTDTL_SEARCH_deleteflag==1)
-      var BTDTL_SEARCH_flag_del='BTDTL_SEARCH_flag_delete';
-    else
-      var BTDTL_SEARCH_flag_del=0; 
-    var calenderIDcode=eilib.CUST_getCalenderId(BTDTL_SEARCH_conn);
-    if((BTDTL_SEARCH_obj.BTDTL_SEARCH_objfive!='')&&(BTDTL_SEARCH_obj.BTDTL_SEARCH_objsix!='')){
-      eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_obj.BTDTL_SEARCH_objfirst,calenderIDcode,BTDTL_SEARCH_obj.BTDTL_SEARCH_objfive,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],BTDTL_SEARCH_obj.BTDTL_SEARCH_objsix,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1])
-    }
-    if((BTDTL_SEARCH_obj.BTDTL_SEARCH_objseven!='')&&(BTDTL_SEARCH_obj.BTDTL_SEARCH_objeight!='')){
-      eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_obj.BTDTL_SEARCH_objfirst,calenderIDcode,BTDTL_SEARCH_obj.BTDTL_SEARCH_objseven,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],BTDTL_SEARCH_obj.BTDTL_SEARCH_objeight,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1])
-    }
-    var BTDTL_SEARCH_refresh=[];
-    if(BTDTL_SEARCH_expensetypes==16){
+    try{
+      var BTDTL_SEARCH_conn =eilib.db_GetConnection();
+      var BTDTL_SEARCH_stmt_rec =BTDTL_SEARCH_conn.createStatement();
+      var BTDTL_SEARCH_flag_cal=0;
+      BTDTL_SEARCH_expenseid=BTDTL_SEARCH_expenseid.split('_');
+      var calenderIDcode=eilib.CUST_getCalenderId(BTDTL_SEARCH_conn);    
+      if(BTDTL_SEARCH_expensetypes==14){
+        var BTDTL_SEARCH_select_recordversion = "SELECT EDSH_REC_VER FROM EXPENSE_DETAIL_STARHUB WHERE EDSH_ID="+BTDTL_SEARCH_expenseid[0]+"  AND EDSH_REC_VER=(SELECT MAX(EDSH_REC_VER) FROM EXPENSE_DETAIL_STARHUB WHERE UNIT_ID="+BTDTL_SEARCH_expenseid[1]+")";
+        var BTDTL_SEARCH_recordversion_rs = BTDTL_SEARCH_stmt_rec.executeQuery(BTDTL_SEARCH_select_recordversion);
+        if(BTDTL_SEARCH_recordversion_rs.next())
+        {BTDTL_SEARCH_flag_cal=1;       
+        }
+        BTDTL_SEARCH_recordversion_rs.close();BTDTL_SEARCH_stmt_rec.close();}
+      var BTDTL_SEARCH_flag_delete=true;
+      var BTDTL_SEARCH_searchvalue=PropertiesService.getUserProperties().getProperty('BTDTL_SEARCH_value')
+      var BTDTL_SEARCH_searchdatevalue=PropertiesService.getUserProperties().getProperty('BTDTL_SEARCH_datevalue')
       if(BTDTL_SEARCH_searchoptions==100)
-        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_expensetypes,BTDTL_SEARCH_flag_del);
-      else
-        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_flex_aircon(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del);}
-    else if(BTDTL_SEARCH_expensetypes==17)
-      var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_carpark(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del);
-    else if(BTDTL_SEARCH_expensetypes==13)
-      var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_electricity(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del);
-    else if(BTDTL_SEARCH_expensetypes==15)
-      var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_digital(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del);
-    else if(BTDTL_SEARCH_expensetypes==14)
-      var BTDTL_SEARCH_refresh = BTDTL_SEARCH_show_starhub(BTDTL_SEARCH_searchdatevalue,BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del)
-      if((BTDTL_SEARCH_refresh.BTDTL_SEARCH_id.length==0) &&(BTDTL_SEARCH_searchoptions!=101)&&(BTDTL_SEARCH_searchoptions!=103)&&(BTDTL_SEARCH_searchoptions!=108)&&(BTDTL_SEARCH_searchoptions!=104)&&(BTDTL_SEARCH_searchoptions!=110)&&(BTDTL_SEARCH_searchoptions!=112)&&(BTDTL_SEARCH_searchoptions!=122)){
-        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_expensetypes,'BTDTL_SEARCH_flag_delete');
+        var BTDTL_SEARCH_arryid=BTDTL_SEARCH_searchoptions;
+      var BTDTL_SEARCH_postid=BTDTL_SEARCH_func_twodimen(BTDTL_SEARCH_expensetypes);
+      if(BTDTL_SEARCH_expensetypes==14){
+        var BTDTL_SEARCH_deleteflag=0;
+        BTDTL_SEARCH_conn.setAutoCommit(false);
+        var deletestmt=BTDTL_SEARCH_conn.createStatement();
+        deletestmt.execute("CALL SP_BIZ_DETAIL_STARHUB_DELETION("+BTDTL_SEARCH_postid[2]+","+BTDTL_SEARCH_expenseid[0]+",'"+UserStamp+"')");
+        deletestmt.close();
+        var BTDTL_SEARCH_deleteflag=1;
       }
-    BTDTL_SEARCH_conn.close();  
-    return BTDTL_SEARCH_refresh;  
+      else
+        var BTDTL_SEARCH_deleteflag=eilib.DeleteRecord(BTDTL_SEARCH_conn,BTDTL_SEARCH_postid[2],BTDTL_SEARCH_expenseid[0]);
+      if(BTDTL_SEARCH_deleteflag==1)
+        var BTDTL_SEARCH_flag_del='BTDTL_SEARCH_flag_delete';
+      else
+        var BTDTL_SEARCH_flag_del=0; 
+      var BTDTL_SEARCH_flag_cable=0;var BTDTL_SEARCH_flag_starhub=0; 
+      if(BTDTL_SEARCH_flag_cal==1){
+        if((BTDTL_SEARCH_obj.BTDTL_SEARCH_objfive!='')&&(BTDTL_SEARCH_obj.BTDTL_SEARCH_objsix!='')){
+          var BTDTL_SEARCH_flag_cable=0;
+          eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_obj.BTDTL_SEARCH_objfirst,calenderIDcode,BTDTL_SEARCH_obj.BTDTL_SEARCH_objfive,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],BTDTL_SEARCH_obj.BTDTL_SEARCH_objsix,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],'CABLE')
+          var BTDTL_SEARCH_flag_cable=1;
+        }
+        if((BTDTL_SEARCH_obj.BTDTL_SEARCH_objseven!='')&&(BTDTL_SEARCH_obj.BTDTL_SEARCH_objeight!='')){
+          var BTDTL_SEARCH_flag_starhub=0; 
+          eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_obj.BTDTL_SEARCH_objfirst,calenderIDcode,BTDTL_SEARCH_obj.BTDTL_SEARCH_objseven,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],BTDTL_SEARCH_obj.BTDTL_SEARCH_objeight,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],'STARHUB')
+          var BTDTL_SEARCH_flag_starhub=1; 
+        }}
+      BTDTL_SEARCH_conn.commit();
+      var BTDTL_SEARCH_refresh=[];
+      if(BTDTL_SEARCH_expensetypes==16){
+        if(BTDTL_SEARCH_searchoptions==100)
+          var BTDTL_SEARCH_refresh= BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_expensetypes,BTDTL_SEARCH_flag_del);
+        else
+          var BTDTL_SEARCH_refresh= BTDTL_SEARCH_flex_aircon(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del);}
+      else if(BTDTL_SEARCH_expensetypes==17)
+        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_carpark(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del);
+      else if(BTDTL_SEARCH_expensetypes==13)
+        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_electricity(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del);
+      else if(BTDTL_SEARCH_expensetypes==15)
+        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_digital(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del);
+      else if(BTDTL_SEARCH_expensetypes==14)
+        var BTDTL_SEARCH_refresh = BTDTL_SEARCH_show_starhub(BTDTL_SEARCH_searchdatevalue,BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_flag_del)
+        if((BTDTL_SEARCH_refresh.BTDTL_SEARCH_id.length==0) &&(BTDTL_SEARCH_searchoptions!=101)&&(BTDTL_SEARCH_searchoptions!=103)&&(BTDTL_SEARCH_searchoptions!=108)&&(BTDTL_SEARCH_searchoptions!=104)&&(BTDTL_SEARCH_searchoptions!=110)&&(BTDTL_SEARCH_searchoptions!=112)&&(BTDTL_SEARCH_searchoptions!=122)){
+          var BTDTL_SEARCH_refresh= BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_searchoptions,BTDTL_SEARCH_expensetypes,'BTDTL_SEARCH_flag_delete');
+        }
+      return BTDTL_SEARCH_refresh;  
+    }
+    catch(err){   
+      BTDTL_SEARCH_conn.rollback();   
+      if(BTDTL_SEARCH_flag_cal==1){
+        if((BTDTL_SEARCH_obj.BTDTL_SEARCH_objfive!='')&&(BTDTL_SEARCH_obj.BTDTL_SEARCH_objsix!='')&&(BTDTL_SEARCH_flag_cable==1)){
+          eilib.StarHubUnit_CreateCalEvent(calenderIDcode,BTDTL_SEARCH_obj.BTDTL_SEARCH_objfive,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],BTDTL_SEARCH_obj.BTDTL_SEARCH_objsix,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],'STARHUB',BTDTL_SEARCH_obj.BTDTL_SEARCH_objfirst,BTDTL_SEARCH_obj.BTDTL_SEARCH_objthird,'CABLE START DATE','CABLE END DATE','','')
+        }
+        if((BTDTL_SEARCH_obj.BTDTL_SEARCH_objseven!='')&&(BTDTL_SEARCH_obj.BTDTL_SEARCH_objeight!='')&&(BTDTL_SEARCH_flag_starhub==1)){
+          eilib.StarHubUnit_CreateCalEvent(calenderIDcode,BTDTL_SEARCH_obj.BTDTL_SEARCH_objseven,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],BTDTL_SEARCH_obj.BTDTL_SEARCH_objeight,BTDTL_SEARCH_sh_arr[0],BTDTL_SEARCH_sh_arr[1],'STARHUB',BTDTL_SEARCH_obj.BTDTL_SEARCH_objfirst,BTDTL_SEARCH_obj.BTDTL_SEARCH_objthird,'INTERNET START DATE','INTERNET END DATE','','')
+        }}
+      BTDTL_SEARCH_conn.close();
+      Logger.log("SCRIPT ERROR:"+err)
+      return Logger.getLog();
+    }
   }
   /*-------------------------------------------------FUNCTION FOR TOWDIMENSION ARRAY TO GET DETAILS--------------------------------------*/
   function BTDTL_SEARCH_func_twodimen(BTDTL_SEARCH_profile_names)
   {
-    var BTDTL_SEARCH_twodimen={100:['EASB_ID','EXPENSE_AIRCON_SERVICE_BY',45,'EDAS_REC_VER'],16:['EDAS_ID','EXPENSE_DETAIL_AIRCON_SERVICE',49,'EDAS_REC_VER'],17:['EDCP_ID','EXPENSE_DETAIL_CARPARK',50,'EDCP_REC_VER'],15:['EDDV_ID','EXPENSE_DETAIL_DIGITAL_VOICE',48,'EDDV_REC_VER'],
-                               13:['EDE_ID','EXPENSE_DETAIL_ELECTRICITY',47,'EDE_REC_VER'],14:['EDSH_ID','EXPENSE_DETAIL_STARHUB',46,'EDSH_REC_VER']                                     
+    var BTDTL_SEARCH_twodimen={100:['EDAS_ID','EXPENSE_AIRCON_SERVICE_BY',45,'EDAS_REC_VER'],16:['EDAS_ID','EXPENSE_DETAIL_AIRCON_SERVICE',49,'EDAS_REC_VER','EDAS_REC_VER'],17:['EDCP_ID','EXPENSE_DETAIL_CARPARK',50,'EDCP_REC_VER','EDCP_REC_VER'],15:['EDDV_ID','EXPENSE_DETAIL_DIGITAL_VOICE',48,'EDDV_REC_VER','EDDV_REC_VER'],
+                               13:['EDE_ID','EXPENSE_DETAIL_ELECTRICITY',47,'EDE_REC_VER','EDE_REC_VER'],14:['EDSH_ID','EXPENSE_DETAIL_STARHUB',46,'EDSH_REC_VER','EDSH_REC_VER,EDSH_CABLE_START_DATE,EDSH_CABLE_END_DATE,EDSH_INTERNET_START_DATE,EDSH_INTERNET_END_DATE,EDSH_ACCOUNT_NO']                                     
                               }
-    return [BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][0],BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][1],BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][2],BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][3]];    
-  }
-  /*--------------------------------------FUNCTION TO CHECK WHETHER THE DATA INSERTED OR NOT---------------------------------------*/
-  function BTDTL_SEARCH_getmaxprimaryid(BTDTL_SEARCH_profile_names){
-    var BTDTL_SEARCH_conn =eilib.db_GetConnection();
-    var BTDTL_SEARCH_detailData=BTDTL_SEARCH_func_twodimen(BTDTL_SEARCH_profile_names)
-    var BTDTL_SEARCH_stmt_primaryid = BTDTL_SEARCH_conn.createStatement();
-    var BTDTL_SEARCH_select="SELECT MAX("+BTDTL_SEARCH_detailData[0]+") AS PRIMARY_ID FROM "+BTDTL_SEARCH_detailData[1]+"";
-    var BTDTL_SEARCH_rs_primaryid=BTDTL_SEARCH_stmt_primaryid.executeQuery(BTDTL_SEARCH_select);
-    while(BTDTL_SEARCH_rs_primaryid.next())
-      var BTDTL_SEARCH_primaryid=BTDTL_SEARCH_rs_primaryid.getString("PRIMARY_ID");
-    BTDTL_SEARCH_rs_primaryid.close();BTDTL_SEARCH_stmt_primaryid.close();    
-    return [BTDTL_SEARCH_primaryid];        
+    return [BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][0],BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][1],BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][2],BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][3],BTDTL_SEARCH_twodimen[BTDTL_SEARCH_profile_names][4]];    
   }
   /*------------------------------------CODING TO CHECK AIRCONSERVICE BY IN TABLE------------------------------------------------------*/
   function BTDTL_SEARCH_airconservicedby_check(BTDTL_SEARCH_alreadyexists)
@@ -815,7 +647,363 @@ try{
     var BTDTL_SEARCH_flag=eilib.Check_ExistsAirconservicedby(BTDTL_SEARCH_conn,BTDTL_SEARCH_alreadyexists)
     return BTDTL_SEARCH_flag;
     BTDTL_SEARCH_conn.close();
-  }}
+  }
+  /*----------------------------------------------------------------FUNCTION FOR UPDATION-------------------------------------------------------*/
+  function BTDTL_SEARCH_updatForm(BTDTL_SEARCH_form_bizdetail,BTDTL_SEARCH_cable_sdate,BTDTL_SEARCH_cable_edate,BTDTL_SEARCH_internet_sdate,BTDTL_SEARCH_internet_edate,BTDTL_SEARCH_radiovalue,BTDTL_SEARCH_sh_arr)
+  {
+    try
+    {
+      var BTDTL_SEARCH_searchvalue=PropertiesService.getUserProperties().getProperty('BTDTL_SEARCH_value')
+      var BTDTL_SEARCH_searchdatevalue=PropertiesService.getUserProperties().getProperty('BTDTL_SEARCH_datevalue')
+      var BTDTL_SEARCH_upd_expense_aircon=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_radio_expense;
+      var BTDTL_SEARCH_upd_ariconname=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_update_airconname;
+      var BTDTL_SEARCH_expensetypes =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_lb_expense_type;
+      var BTDTL_SEARCH_searchoption =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_lb_searchoptions;
+      var BTDTL_SEARCH_unitno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_unitno;
+      var BTDTL_SEARCH_aircon_servicedby=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_lb_oldaircon;
+      var BTDTL_SEARCH_aircon_comments=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_airconcomments;
+      var BTDTL_SEARCH_carpark_carno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_carno;
+      var BTDTL_SEARCH_carpark_comments =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_carparkcomments;
+      var BTDTL_SEARCH_electricity_comments =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_electricitycomments;
+      var BTDTL_SEARCH_digital_voiceno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_digital_voiceno;
+      var BTDTL_SEARCH_digital_acctno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_digitalacctno;
+      var BTDTL_SEARCH_digital_comments =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_digitalcomments;
+      var BTDTL_SEARCH_starhub_acctno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_starhub_acctno;
+      var BTDTL_SEARCH_starhub_appldate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_starhubappldate;
+      var BTDTL_SEARCH_starhub_cablestartdate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_cablestartdate;
+      var BTDTL_SEARCH_starhub_cableenddate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_cableenddate;
+      var BTDTL_SEARCH_starhub_internetstartdate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_internetstartdate;
+      var BTDTL_SEARCH_starhub_internetenddate =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_db_upd_internetenddate;
+      var BTDTL_SEARCH_starhub_ssid =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_ssid;
+      var BTDTL_SEARCH_starhub_pwd =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_pwd;
+      var BTDTL_SEARCH_starhub_cableboxno =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_cableboxno;
+      var BTDTL_SEARCH_starhub_modemno=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_tb_upd_modemno;
+      var BTDTL_SEARCH_starhub_basicgroup =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_basicgroup;
+      var BTDTL_SEARCH_starhub_addtnl=BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_addtnl;
+      var BTDTL_SEARCH_starhub_comments =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_ta_upd_starhubcomments; 
+      var BTDTL_SEARCH_invoiceto =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_upd_digital_invoiceto;
+      var BTDTL_SEARCH_conn= eilib.db_GetConnection();
+      BTDTL_SEARCH_conn.setAutoCommit(false);
+      var BTDTL_SEARCH_stmt= BTDTL_SEARCH_conn.createStatement();
+      if(BTDTL_SEARCH_searchoption==100){//AIRCON SERVICED BY
+        var BTDTL_SEARCH_insert="UPDATE EXPENSE_AIRCON_SERVICE_BY SET EASB_DATA='"+BTDTL_SEARCH_upd_ariconname+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE EASB_ID="+BTDTL_SEARCH_upd_expense_aircon+"";
+        BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
+      }
+      else{  
+        if((BTDTL_SEARCH_starhub_appldate=="")||(BTDTL_SEARCH_starhub_appldate==undefined))
+        {
+          BTDTL_SEARCH_starhub_appldate=null; 
+          var BTDTL_SEARCH_starhub_tbleappldate=BTDTL_SEARCH_starhub_appldate;
+        }
+        else
+        {
+          BTDTL_SEARCH_starhub_appldate=eilib.SqlDateFormat(BTDTL_SEARCH_starhub_appldate)
+          var BTDTL_SEARCH_starhub_tbleappldate=BTDTL_SEARCH_starhub_appldate
+          BTDTL_SEARCH_starhub_appldate="'"+BTDTL_SEARCH_starhub_appldate+"'";
+        }  
+        if((BTDTL_SEARCH_starhub_cablestartdate=="")||(BTDTL_SEARCH_starhub_cablestartdate==undefined))
+        {
+          BTDTL_SEARCH_starhub_cablestartdate=null;
+          var BTDTL_SEARCH_starhub_tblecablestartdate=BTDTL_SEARCH_starhub_cablestartdate;}
+        
+        else
+        {
+          var BTDTL_SEARCH_starhub_cablestartdate_shtime=BTDTL_SEARCH_starhub_cablestartdate;
+          var BTDTL_SEARCH_starhub_cablestartdate = eilib.SqlDateFormat(BTDTL_SEARCH_starhub_cablestartdate)
+          var BTDTL_SEARCH_starhub_tblecablestartdate=BTDTL_SEARCH_starhub_cablestartdate;
+          BTDTL_SEARCH_starhub_cablestartdate="'"+BTDTL_SEARCH_starhub_cablestartdate+"'";
+        }
+        if((BTDTL_SEARCH_starhub_cableenddate=="")||(BTDTL_SEARCH_starhub_cableenddate==undefined)){
+          BTDTL_SEARCH_starhub_cableenddate=null;
+          var BTDTL_SEARCH_starhub_tblecableenddate=BTDTL_SEARCH_starhub_cableenddate;}
+        
+        else
+        {
+          var BTDTL_SEARCH_starhub_cableenddate_shtime=BTDTL_SEARCH_starhub_cableenddate;
+          var BTDTL_SEARCH_starhub_cableenddate = eilib.SqlDateFormat(BTDTL_SEARCH_starhub_cableenddate)
+          var BTDTL_SEARCH_starhub_tblecableenddate=BTDTL_SEARCH_starhub_cableenddate;
+          
+          BTDTL_SEARCH_starhub_cableenddate="'"+BTDTL_SEARCH_starhub_cableenddate+"'";
+        }   
+        if((BTDTL_SEARCH_starhub_internetstartdate=="")||(BTDTL_SEARCH_starhub_internetstartdate==undefined)){
+          BTDTL_SEARCH_starhub_internetstartdate=null;  
+          var BTDTL_SEARCH_starhub_tbleinternetstartdate=BTDTL_SEARCH_starhub_internetstartdate;}
+        else
+        {
+          var BTDTL_SEARCH_starhub_internetstartdate_shtime=BTDTL_SEARCH_starhub_internetstartdate;
+          var BTDTL_SEARCH_starhub_internetstartdate = eilib.SqlDateFormat(BTDTL_SEARCH_starhub_internetstartdate);
+          var BTDTL_SEARCH_starhub_tbleinternetstartdate=BTDTL_SEARCH_starhub_internetstartdate;
+          BTDTL_SEARCH_starhub_internetstartdate="'"+BTDTL_SEARCH_starhub_internetstartdate+"'";
+        } 
+        if((BTDTL_SEARCH_starhub_internetenddate=="")||(BTDTL_SEARCH_starhub_internetenddate==undefined)){
+          BTDTL_SEARCH_starhub_internetenddate=null;  
+          var BTDTL_SEARCH_starhub_tbleinternetenddate=BTDTL_SEARCH_starhub_internetenddate;}
+        else
+        {
+          var BTDTL_SEARCH_starhub_internetenddate_shtime=BTDTL_SEARCH_starhub_internetenddate;
+          var BTDTL_SEARCH_starhub_internetenddate = eilib.SqlDateFormat(BTDTL_SEARCH_starhub_internetenddate)
+          var BTDTL_SEARCH_starhub_tbleinternetenddate=BTDTL_SEARCH_starhub_internetenddate;
+          
+          BTDTL_SEARCH_starhub_internetenddate="'"+BTDTL_SEARCH_starhub_internetenddate+"'";
+        } 
+        var BTDTL_SEARCH_unitid =BTDTL_SEARCH_radiovalue.split('_');  
+        var BTDTL_SEARCH_selectrecrv=null;
+        var BTDTL_SEARCH_detailData=BTDTL_SEARCH_func_twodimen(BTDTL_SEARCH_expensetypes);
+        var BTDTL_SEARCH_stmt_rec =BTDTL_SEARCH_conn.createStatement();
+        var BTDTL_SEARCH_checkrvquery = "SELECT "+BTDTL_SEARCH_detailData[3]+" FROM "+BTDTL_SEARCH_detailData[1]+" WHERE "+BTDTL_SEARCH_detailData[0]+"="+BTDTL_SEARCH_upd_expense_aircon.split("_")[0]+"";
+        var BTDTL_SEARCH_recordversion_rs = BTDTL_SEARCH_stmt_rec.executeQuery(BTDTL_SEARCH_checkrvquery);
+        if(BTDTL_SEARCH_recordversion_rs.next())
+        {
+          var BTDTL_SEARCH_selectrecrv=BTDTL_SEARCH_recordversion_rs.getString(1);
+        }
+        BTDTL_SEARCH_recordversion_rs.close();
+        BTDTL_SEARCH_stmt_rec.close();
+        var BTDTL_SEARCH_insertflag=0;
+        var BTDTL_SEARCH_recordversion=null;
+        var BTDTL_SEARCH_stmt_rec =BTDTL_SEARCH_conn.createStatement();
+        var BTDTL_SEARCH_select_recordversion = "SELECT * FROM "+BTDTL_SEARCH_detailData[1]+" WHERE UNIT_ID="+BTDTL_SEARCH_unitid[1]+" AND "+BTDTL_SEARCH_detailData[3]+"=(SELECT MAX("+BTDTL_SEARCH_detailData[3]+") FROM "+BTDTL_SEARCH_detailData[1]+" WHERE UNIT_ID="+BTDTL_SEARCH_unitid[1]+")";
+        var BTDTL_SEARCH_recordversion_rs = BTDTL_SEARCH_stmt_rec.executeQuery(BTDTL_SEARCH_select_recordversion);
+        if(BTDTL_SEARCH_recordversion_rs.next())
+        {
+          var BTDTL_SEARCH_recordversion = BTDTL_SEARCH_recordversion_rs.getString(BTDTL_SEARCH_detailData[3]);
+          var BTDTL_SEARCH_oldrecordversion=BTDTL_SEARCH_recordversion;
+          if(BTDTL_SEARCH_expensetypes==16){//AIRCON SERVICES
+            var BTDTL_SEARCH_oldairconservby = BTDTL_SEARCH_recordversion_rs.getString("EASB_ID");
+            if(BTDTL_SEARCH_aircon_servicedby!=BTDTL_SEARCH_oldairconservby&&BTDTL_SEARCH_selectrecrv==BTDTL_SEARCH_recordversion){BTDTL_SEARCH_insertflag=1;}
+            else{BTDTL_SEARCH_oldrecordversion=BTDTL_SEARCH_selectrecrv}
+          }
+          if(BTDTL_SEARCH_expensetypes==17){//CAR PARK
+            var BTDTL_SEARCH_oldcarno = BTDTL_SEARCH_recordversion_rs.getString("EDCP_CAR_NO");
+            if(BTDTL_SEARCH_oldcarno!=BTDTL_SEARCH_carpark_carno&&BTDTL_SEARCH_selectrecrv==BTDTL_SEARCH_recordversion){BTDTL_SEARCH_insertflag=1;}
+            else{BTDTL_SEARCH_oldrecordversion=BTDTL_SEARCH_selectrecrv}
+          }
+          if(BTDTL_SEARCH_expensetypes==15){//DIGITAL VOICE
+            var BTDTL_SEARCH_oldinvoiceto= BTDTL_SEARCH_recordversion_rs.getString("ECN_ID");
+            if((BTDTL_SEARCH_invoiceto=='SELECT')||(BTDTL_SEARCH_invoiceto==''))
+            BTDTL_SEARCH_invoiceto=null;
+            var BTDTL_SEARCH_olddigvoiceno= BTDTL_SEARCH_recordversion_rs.getString("EDDV_DIGITAL_VOICE_NO");
+            var BTDTL_SEARCH_olddigacntno= BTDTL_SEARCH_recordversion_rs.getString("EDDV_DIGITAL_ACCOUNT_NO");
+            if((BTDTL_SEARCH_oldinvoiceto!=BTDTL_SEARCH_invoiceto||BTDTL_SEARCH_olddigvoiceno!=BTDTL_SEARCH_digital_voiceno||BTDTL_SEARCH_olddigacntno!=BTDTL_SEARCH_digital_acctno)&&BTDTL_SEARCH_selectrecrv==BTDTL_SEARCH_recordversion){BTDTL_SEARCH_insertflag=1;}
+            else{BTDTL_SEARCH_oldrecordversion=BTDTL_SEARCH_selectrecrv}
+          }
+          if(BTDTL_SEARCH_expensetypes==13){//ELECTRICITY
+            var BTDTL_SEARCH_oldinvoiceto = BTDTL_SEARCH_recordversion_rs.getString("ECN_ID");
+            var BTDTL_SEARCH_invoiceto =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_upd_elec_invoiceto;
+            if(BTDTL_SEARCH_oldinvoiceto!=BTDTL_SEARCH_invoiceto&&BTDTL_SEARCH_selectrecrv==BTDTL_SEARCH_recordversion){BTDTL_SEARCH_insertflag=1;}
+            else{BTDTL_SEARCH_oldrecordversion=BTDTL_SEARCH_selectrecrv}
+          }
+          if(BTDTL_SEARCH_expensetypes==14){//STARHUB
+            var BTDTL_SEARCH_invoiceto =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_lb_upd_starhub_invoiceto;
+            if((BTDTL_SEARCH_invoiceto=='SELECT')||(BTDTL_SEARCH_invoiceto==''))
+            BTDTL_SEARCH_invoiceto=null;
+            if(BTDTL_SEARCH_starhub_ssid=="")//SSID
+            {  BTDTL_SEARCH_starhub_ssid=null;
+             var BTDTL_SEARCH_tblestarhub_ssid=BTDTL_SEARCH_starhub_ssid }else{
+               var BTDTL_SEARCH_tblestarhub_ssid=BTDTL_SEARCH_starhub_ssid 
+               BTDTL_SEARCH_starhub_ssid='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_ssid)+'"';}
+            if(BTDTL_SEARCH_starhub_pwd=="")//PSWD
+            {  BTDTL_SEARCH_starhub_pwd=null;
+             var BTDTL_SEARCH_tblestarhub_pwd=BTDTL_SEARCH_starhub_pwd
+             }else{
+               var BTDTL_SEARCH_tblestarhub_pwd=BTDTL_SEARCH_starhub_pwd
+               BTDTL_SEARCH_starhub_pwd='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_pwd)+'"';}
+            if(BTDTL_SEARCH_starhub_cableboxno=="")//CABLE SLNO
+            {  BTDTL_SEARCH_starhub_cableboxno=null;
+             var BTDTL_SEARCH_tblestarhub_cableboxno=BTDTL_SEARCH_starhub_cableboxno}else{
+               var BTDTL_SEARCH_tblestarhub_cableboxno=BTDTL_SEARCH_starhub_cableboxno
+               BTDTL_SEARCH_starhub_cableboxno='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_cableboxno)+'"';}
+            if(BTDTL_SEARCH_starhub_modemno=="")//MODEM SLNO
+            {  BTDTL_SEARCH_starhub_modemno=null;
+             var BTDTL_SEARCH_tblestarhub_modemno=BTDTL_SEARCH_starhub_modemno}else{
+               var BTDTL_SEARCH_tblestarhub_modemno=BTDTL_SEARCH_starhub_modemno
+               BTDTL_SEARCH_starhub_modemno='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_modemno)+'"';}
+            if(BTDTL_SEARCH_starhub_basicgroup=="")//BASIC GROUP 
+            {  BTDTL_SEARCH_starhub_basicgroup=null;
+             var BTDTL_SEARCH_tblestarhub_basicgroup=BTDTL_SEARCH_starhub_basicgroup}else{
+               var BTDTL_SEARCH_tblestarhub_basicgroup=BTDTL_SEARCH_starhub_basicgroup
+               BTDTL_SEARCH_starhub_basicgroup='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_basicgroup)+'"';}  
+            if(BTDTL_SEARCH_starhub_addtnl=="")//ADDLN 
+            {  BTDTL_SEARCH_starhub_addtnl=null;
+             var BTDTL_SEARCH_tblestarhub_addtnl=BTDTL_SEARCH_starhub_addtnl}else{
+               var BTDTL_SEARCH_tblestarhub_addtnl=BTDTL_SEARCH_starhub_addtnl
+               BTDTL_SEARCH_starhub_addtnl='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_addtnl)+'"';}            
+            var BTDTL_SEARCH_oldinvoiceto= BTDTL_SEARCH_recordversion_rs.getString("ECN_ID");
+            var BTDTL_SEARCH_oldappldate =BTDTL_SEARCH_recordversion_rs.getString("EDSH_APPL_DATE");
+            var BTDTL_SEARCH_cablesdate =BTDTL_SEARCH_recordversion_rs.getString("EDSH_CABLE_START_DATE");
+            var BTDTL_SEARCH_cableedate =BTDTL_SEARCH_recordversion_rs.getString("EDSH_CABLE_END_DATE");
+            var BTDTL_SEARCH_internetsdate = BTDTL_SEARCH_recordversion_rs.getString("EDSH_INTERNET_START_DATE");
+            var BTDTL_SEARCH_internetedate = BTDTL_SEARCH_recordversion_rs.getString("EDSH_INTERNET_END_DATE");
+            var BTDTL_SEARCH_accountno = BTDTL_SEARCH_recordversion_rs.getString("EDSH_ACCOUNT_NO");
+            var BTDTL_SEARCH_oldedshid = BTDTL_SEARCH_recordversion_rs.getString("EDSH_SSID");
+            var BTDTL_SEARCH_oldpwd = BTDTL_SEARCH_recordversion_rs.getString("EDSH_PWD");
+            var BTDTL_SEARCH_oldcableserno = BTDTL_SEARCH_recordversion_rs.getString("EDSH_CABLE_BOX_SERIAL_NO");
+            var BTDTL_SEARCH_oldmodemserno = BTDTL_SEARCH_recordversion_rs.getString("EDSH_MODEM_SERIAL_NO");
+            var BTDTL_SEARCH_oldbasicgroup= BTDTL_SEARCH_recordversion_rs.getString("EDSH_BASIC_GROUP");
+            var BTDTL_SEARCH_oldadtnlchanel = BTDTL_SEARCH_recordversion_rs.getString("EDSH_ADDTNL_CH");     
+            if((BTDTL_SEARCH_starhub_acctno!=BTDTL_SEARCH_accountno||BTDTL_SEARCH_oldinvoiceto!=BTDTL_SEARCH_invoiceto||BTDTL_SEARCH_oldappldate!=BTDTL_SEARCH_starhub_tbleappldate||BTDTL_SEARCH_cablesdate!=BTDTL_SEARCH_starhub_tblecablestartdate
+                ||BTDTL_SEARCH_cableedate!=BTDTL_SEARCH_starhub_tblecableenddate
+                ||BTDTL_SEARCH_internetsdate!=BTDTL_SEARCH_starhub_tbleinternetstartdate||BTDTL_SEARCH_internetedate!=BTDTL_SEARCH_starhub_tbleinternetenddate
+                ||BTDTL_SEARCH_oldedshid!=BTDTL_SEARCH_tblestarhub_ssid||BTDTL_SEARCH_oldpwd!=BTDTL_SEARCH_tblestarhub_pwd
+                ||BTDTL_SEARCH_tblestarhub_cableboxno!=BTDTL_SEARCH_oldcableserno||BTDTL_SEARCH_oldmodemserno!=BTDTL_SEARCH_tblestarhub_modemno||
+                BTDTL_SEARCH_tblestarhub_basicgroup!=BTDTL_SEARCH_oldbasicgroup||BTDTL_SEARCH_tblestarhub_addtnl!=BTDTL_SEARCH_oldadtnlchanel)
+               &&BTDTL_SEARCH_selectrecrv==BTDTL_SEARCH_recordversion){
+              BTDTL_SEARCH_insertflag=1;}
+            else{BTDTL_SEARCH_oldrecordversion=BTDTL_SEARCH_selectrecrv
+                }
+          }
+        }
+        BTDTL_SEARCH_recordversion_rs.close();BTDTL_SEARCH_stmt_rec.close();
+        if(BTDTL_SEARCH_recordversion==null)
+          var BTDTL_SEARCH_recordversion=1;         
+        else     
+          var BTDTL_SEARCH_recordversion = parseInt(BTDTL_SEARCH_recordversion)+1;
+        var BTDTL_SEARCH_stmt= BTDTL_SEARCH_conn.createStatement();
+        if(BTDTL_SEARCH_expensetypes==16)//AIRCON SERVICES
+        {   
+          if(BTDTL_SEARCH_aircon_comments=="")//COMMENTS
+          {  BTDTL_SEARCH_aircon_comments=null;}else{
+            BTDTL_SEARCH_aircon_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_aircon_comments)+'"';}
+          if(BTDTL_SEARCH_insertflag==1||BTDTL_SEARCH_recordversion==1)
+          {
+            var BTDTL_SEARCH_insert = "INSERT INTO EXPENSE_DETAIL_AIRCON_SERVICE(UNIT_ID,EASB_ID,EDAS_REC_VER,EDAS_COMMENTS,ULD_ID)VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_aircon_servicedby+","+BTDTL_SEARCH_recordversion+","+BTDTL_SEARCH_aircon_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))"
+          }
+          else{
+            var BTDTL_SEARCH_insert="UPDATE EXPENSE_DETAIL_AIRCON_SERVICE SET EDAS_COMMENTS="+BTDTL_SEARCH_aircon_comments+",EASB_ID="+BTDTL_SEARCH_aircon_servicedby+",ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE UNIT_ID="+BTDTL_SEARCH_unitid[1]+" AND EDAS_REC_VER="+BTDTL_SEARCH_oldrecordversion+"";
+          }
+          BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
+        }      
+        else if(BTDTL_SEARCH_expensetypes==17)//CARPARK
+        { 
+          if(BTDTL_SEARCH_carpark_comments=="")//COMMENTS
+          {  BTDTL_SEARCH_carpark_comments=null;}else{
+            BTDTL_SEARCH_carpark_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_carpark_comments)+'"';}
+          if(BTDTL_SEARCH_insertflag==1||BTDTL_SEARCH_recordversion==1)
+          {
+            var BTDTL_SEARCH_insert = "INSERT INTO EXPENSE_DETAIL_CARPARK (UNIT_ID,EDCP_REC_VER,EDCP_CAR_NO,EDCP_COMMENTS,ULD_ID) VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_recordversion+",'"+BTDTL_SEARCH_carpark_carno+"',"+BTDTL_SEARCH_carpark_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))"
+          }
+          else{
+            var BTDTL_SEARCH_insert="UPDATE EXPENSE_DETAIL_CARPARK SET EDCP_COMMENTS="+BTDTL_SEARCH_carpark_comments+",EDCP_CAR_NO='"+BTDTL_SEARCH_carpark_carno+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE UNIT_ID="+BTDTL_SEARCH_unitid[1]+" AND EDCP_REC_VER="+BTDTL_SEARCH_oldrecordversion+"";
+          }
+          BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
+        }    
+        else if(BTDTL_SEARCH_expensetypes==15)//DIGITAL VOICE
+        {         
+          if(BTDTL_SEARCH_carpark_comments=="")//COMMENTS
+          {  BTDTL_SEARCH_digital_comments=null;}else{
+            BTDTL_SEARCH_digital_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_digital_comments)+'"';}
+          if(BTDTL_SEARCH_insertflag==1||BTDTL_SEARCH_recordversion==1)
+          {
+            var BTDTL_SEARCH_insert = "INSERT INTO EXPENSE_DETAIL_DIGITAL_VOICE(UNIT_ID,ECN_ID,EDDV_REC_VER,EDDV_DIGITAL_VOICE_NO,EDDV_DIGITAL_ACCOUNT_NO,EDDV_COMMENTS,ULD_ID)VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_invoiceto+",'"+BTDTL_SEARCH_recordversion+"','"+BTDTL_SEARCH_digital_voiceno+"','"+BTDTL_SEARCH_digital_acctno+"',"+BTDTL_SEARCH_digital_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";
+          }
+          else
+          {
+            var BTDTL_SEARCH_insert="UPDATE EXPENSE_DETAIL_DIGITAL_VOICE SET EDDV_COMMENTS="+BTDTL_SEARCH_digital_comments+",EDDV_DIGITAL_ACCOUNT_NO='"+BTDTL_SEARCH_digital_acctno+"',EDDV_DIGITAL_VOICE_NO='"+BTDTL_SEARCH_digital_voiceno+"',ECN_ID="+BTDTL_SEARCH_invoiceto+",ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE UNIT_ID="+BTDTL_SEARCH_unitid[1]+" AND EDDV_REC_VER="+BTDTL_SEARCH_oldrecordversion+"";
+          }
+          BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
+        }
+        else if(BTDTL_SEARCH_expensetypes==13)//ELECTRICITY
+        {    
+          if(BTDTL_SEARCH_electricity_comments=="")//COMMENTS
+          {  BTDTL_SEARCH_electricity_comments=null;}else{
+            BTDTL_SEARCH_electricity_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_electricity_comments)+'"';}
+          if(BTDTL_SEARCH_insertflag==1||BTDTL_SEARCH_recordversion==1)
+          {
+            var BTDTL_SEARCH_insert="INSERT INTO EXPENSE_DETAIL_ELECTRICITY(UNIT_ID,ECN_ID,EDE_REC_VER,EDE_COMMENTS,ULD_ID)VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_invoiceto+","+BTDTL_SEARCH_recordversion+","+BTDTL_SEARCH_electricity_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";
+          }
+          else
+          {
+            var BTDTL_SEARCH_insert="UPDATE EXPENSE_DETAIL_ELECTRICITY SET EDE_COMMENTS="+BTDTL_SEARCH_electricity_comments+",ECN_ID='"+BTDTL_SEARCH_invoiceto+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE UNIT_ID="+BTDTL_SEARCH_unitid[1]+" AND EDE_REC_VER="+BTDTL_SEARCH_oldrecordversion+"";
+          }
+          BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
+        }
+        else if(BTDTL_SEARCH_expensetypes==14)//STARHUB
+        {
+          if(BTDTL_SEARCH_starhub_comments=="")//COMMENTS 
+          {  BTDTL_SEARCH_starhub_comments=null;}else{
+            BTDTL_SEARCH_starhub_comments='"'+eilib.ConvertSpclCharString(BTDTL_SEARCH_starhub_comments)+'"';} 
+          if(BTDTL_SEARCH_insertflag==1||BTDTL_SEARCH_recordversion==1)
+          {
+            var BTDTL_SEARCH_insert="INSERT INTO EXPENSE_DETAIL_STARHUB(UNIT_ID,ECN_ID,EDSH_REC_VER,EDSH_ACCOUNT_NO,EDSH_APPL_DATE,EDSH_CABLE_START_DATE,EDSH_CABLE_END_DATE,EDSH_INTERNET_START_DATE,EDSH_INTERNET_END_DATE,EDSH_SSID,EDSH_PWD,EDSH_CABLE_BOX_SERIAL_NO,EDSH_MODEM_SERIAL_NO,EDSH_BASIC_GROUP,EDSH_ADDTNL_CH,EDSH_COMMENTS,ULD_ID)VALUES("+BTDTL_SEARCH_unitid[1]+","+BTDTL_SEARCH_invoiceto+","+BTDTL_SEARCH_recordversion+",'"+BTDTL_SEARCH_starhub_acctno+"',"+BTDTL_SEARCH_starhub_appldate+","+BTDTL_SEARCH_starhub_cablestartdate+","+BTDTL_SEARCH_starhub_cableenddate+","+BTDTL_SEARCH_starhub_internetstartdate+","+BTDTL_SEARCH_starhub_internetenddate+","+BTDTL_SEARCH_starhub_ssid+","+BTDTL_SEARCH_starhub_pwd+", "+BTDTL_SEARCH_starhub_cableboxno+","+BTDTL_SEARCH_starhub_modemno+","+BTDTL_SEARCH_starhub_basicgroup+","+BTDTL_SEARCH_starhub_addtnl+","+BTDTL_SEARCH_starhub_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";       
+          }
+          else
+          {
+            var BTDTL_SEARCH_insert="UPDATE EXPENSE_DETAIL_STARHUB SET EDSH_COMMENTS="+BTDTL_SEARCH_starhub_comments+",EDSH_ACCOUNT_NO='"+BTDTL_SEARCH_starhub_acctno+"',EDSH_APPL_DATE="+BTDTL_SEARCH_starhub_appldate+",EDSH_CABLE_START_DATE="+BTDTL_SEARCH_starhub_cablestartdate+",EDSH_CABLE_END_DATE="+BTDTL_SEARCH_starhub_cableenddate+",EDSH_INTERNET_START_DATE="+BTDTL_SEARCH_starhub_internetstartdate+",EDSH_INTERNET_END_DATE="+BTDTL_SEARCH_starhub_internetenddate+",EDSH_SSID="+BTDTL_SEARCH_starhub_ssid+",EDSH_PWD="+BTDTL_SEARCH_starhub_pwd+",EDSH_CABLE_BOX_SERIAL_NO="+BTDTL_SEARCH_starhub_cableboxno+",EDSH_MODEM_SERIAL_NO="+BTDTL_SEARCH_starhub_modemno+",EDSH_BASIC_GROUP="+BTDTL_SEARCH_starhub_basicgroup+",EDSH_ADDTNL_CH="+BTDTL_SEARCH_starhub_addtnl+",ECN_ID="+BTDTL_SEARCH_invoiceto+",ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE UNIT_ID="+BTDTL_SEARCH_unitid[1]+" AND EDSH_REC_VER="+BTDTL_SEARCH_oldrecordversion+"";
+          }
+          BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
+          if(BTDTL_SEARCH_insertflag==1||BTDTL_SEARCH_recordversion==1)
+          {
+            var BTDTL_SEARCH_sh_starttime=BTDTL_SEARCH_sh_arr[0];
+            var BTDTL_SEARCH_sh_endtime=BTDTL_SEARCH_sh_arr[1];
+            var calenderIDcode=eilib.CUST_getCalenderId(BTDTL_SEARCH_conn);    
+            if((BTDTL_SEARCH_cableedate!='')&&(BTDTL_SEARCH_cablesdate!='')&&(BTDTL_SEARCH_cableedate!=null)&&(BTDTL_SEARCH_cablesdate!=null)){
+              var BTDTL_SEARCH_cablesd = eilib.SqlDateFormat(BTDTL_SEARCH_cablesdate);       
+              var BTDTL_SEARCH_cableed = eilib.SqlDateFormat(BTDTL_SEARCH_cableedate);
+              eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_unitno,calenderIDcode,BTDTL_SEARCH_cablesd,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_cableed,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'CABLE')
+            }
+            if((BTDTL_SEARCH_starhub_cablestartdate_shtime!='')&&(BTDTL_SEARCH_starhub_cableenddate_shtime!='')&&(BTDTL_SEARCH_starhub_cablestartdate_shtime!=undefined)&&(BTDTL_SEARCH_starhub_cableenddate_shtime!=undefined))
+            {   
+              eilib.StarHubUnit_CreateCalEvent(calenderIDcode,BTDTL_SEARCH_starhub_cablestartdate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_starhub_cableenddate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'STARHUB',BTDTL_SEARCH_unitno,BTDTL_SEARCH_starhub_acctno,'CABLE START DATE','CABLE END DATE','','')
+            } 
+            if((BTDTL_SEARCH_internetsdate!='')&&(BTDTL_SEARCH_internetedate!='')&&(BTDTL_SEARCH_internetsdate!=null)&&(BTDTL_SEARCH_internetedate!=null)){
+              var BTDTL_SEARCH_internetsd = eilib.SqlDateFormat(BTDTL_SEARCH_internetsdate);       
+              var BTDTL_SEARCH_interneted = eilib.SqlDateFormat(BTDTL_SEARCH_internetedate);
+              eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_unitno,calenderIDcode,BTDTL_SEARCH_internetsd,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_interneted,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'INTERNET')
+            }
+            if((BTDTL_SEARCH_starhub_internetstartdate_shtime!='')&&(BTDTL_SEARCH_starhub_internetenddate_shtime!='')&&(BTDTL_SEARCH_starhub_internetstartdate_shtime!=undefined)&&(BTDTL_SEARCH_starhub_internetenddate_shtime!=undefined))
+            {               
+              eilib.StarHubUnit_CreateCalEvent(calenderIDcode,BTDTL_SEARCH_starhub_internetstartdate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_starhub_internetenddate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'STARHUB',BTDTL_SEARCH_unitno,BTDTL_SEARCH_starhub_acctno,'INTERNET START DATE','INTERNET END DATE','','')
+            }
+          }
+        } }
+      
+      BTDTL_SEARCH_stmt.close();
+      BTDTL_SEARCH_conn.commit();
+      var BTDTL_SEARCH_flag_update='BTDTL_SEARCH_flag_update'
+      var BTDTL_SEARCH_refresh=[];
+      if(BTDTL_SEARCH_expensetypes==16){
+        if(BTDTL_SEARCH_searchoption==100)
+          var BTDTL_SEARCH_refresh= BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_searchoption,BTDTL_SEARCH_expensetypes,'BTDTL_SEARCH_flag_aircon_update');
+        else
+          var BTDTL_SEARCH_refresh= BTDTL_SEARCH_flex_aircon(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update);}
+      else if(BTDTL_SEARCH_expensetypes==17)
+        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_carpark(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update);
+      else if(BTDTL_SEARCH_expensetypes==13)
+        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_electricity(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update);
+      else if(BTDTL_SEARCH_expensetypes==15)
+        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_show_digital(BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update);
+      else if(BTDTL_SEARCH_expensetypes==14)
+        var BTDTL_SEARCH_refresh = BTDTL_SEARCH_show_starhub(BTDTL_SEARCH_searchdatevalue,BTDTL_SEARCH_searchvalue,BTDTL_SEARCH_searchoption,BTDTL_SEARCH_flag_update)
+        if((BTDTL_SEARCH_refresh.BTDTL_SEARCH_id.length==0) &&(BTDTL_SEARCH_searchoption!=101)&&(BTDTL_SEARCH_searchoption!=103)&&(BTDTL_SEARCH_searchoption!=108)&&(BTDTL_SEARCH_searchoption!=104)&&(BTDTL_SEARCH_searchoption!=110)&&(BTDTL_SEARCH_searchoption!=112)&&(BTDTL_SEARCH_searchoption!=122))
+        var BTDTL_SEARCH_refresh= BTDTL_SEARCH_expense_searchby(BTDTL_SEARCH_searchoption,BTDTL_SEARCH_expensetypes,'BTDTL_SEARCH_update_listbox');
+      BTDTL_SEARCH_conn.close();
+      return BTDTL_SEARCH_refresh;  }
+    catch(err){
+      BTDTL_SEARCH_conn.rollback();
+      if(BTDTL_SEARCH_insertflag==1||BTDTL_SEARCH_recordversion==1)
+      {
+        if((BTDTL_SEARCH_starhub_cablestartdate_shtime!='')&&(BTDTL_SEARCH_starhub_cableenddate_shtime!='')&&(BTDTL_SEARCH_starhub_cablestartdate_shtime!=null)&&(BTDTL_SEARCH_starhub_cableenddate_shtime!=null)){
+          eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_unitno,calenderIDcode,BTDTL_SEARCH_starhub_cablestartdate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_starhub_cableenddate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'CABLE')
+        }
+        if((BTDTL_SEARCH_cablesdate!='')&&(BTDTL_SEARCH_cableedate!='')&&(BTDTL_SEARCH_cablesdate!=null)&&(BTDTL_SEARCH_cableedate!=null)){
+          var BTDTL_SEARCH_cablesd = eilib.SqlDateFormat(BTDTL_SEARCH_cablesdate);       
+          var BTDTL_SEARCH_cableed = eilib.SqlDateFormat(BTDTL_SEARCH_cableedate);
+          eilib.StarHubUnit_CreateCalEvent(calenderIDcode,BTDTL_SEARCH_cablesd,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_cableed,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'STARHUB',BTDTL_SEARCH_unitno,BTDTL_SEARCH_accountno,'CABLE START DATE','CABLE END DATE','','')
+        }
+        if((BTDTL_SEARCH_starhub_internetstartdate_shtime!='')&&(BTDTL_SEARCH_starhub_internetenddate_shtime!='')&&(BTDTL_SEARCH_starhub_internetstartdate_shtime!=null)&&(BTDTL_SEARCH_starhub_internetenddate_shtime!=null)){
+          eilib.StarHubUnit_DeleteCalEvent(BTDTL_SEARCH_unitno,calenderIDcode,BTDTL_SEARCH_starhub_internetstartdate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_starhub_internetenddate_shtime,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'INTERNET')
+        }
+        if((BTDTL_SEARCH_internetsdate!='')&&(BTDTL_SEARCH_internetedate!='')&&(BTDTL_SEARCH_internetsdate!=null)&&(BTDTL_SEARCH_internetedate!=null)){
+          var BTDTL_SEARCH_internetsd = eilib.SqlDateFormat(BTDTL_SEARCH_internetsdate);       
+          var BTDTL_SEARCH_interneted = eilib.SqlDateFormat(BTDTL_SEARCH_internetedate);
+          eilib.StarHubUnit_CreateCalEvent(calenderIDcode,BTDTL_SEARCH_internetsd,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,BTDTL_SEARCH_interneted,BTDTL_SEARCH_sh_starttime,BTDTL_SEARCH_sh_endtime,'STARHUB',BTDTL_SEARCH_unitno,BTDTL_SEARCH_accountno,'INTERNET START DATE','INTERNET END DATE','','')
+        }
+      }
+      BTDTL_SEARCH_conn.close();
+      Logger.log("SCRIPT ERROR:"+err)
+      return Logger.getLog();
+    }
+  }
+}
 catch(err)
 {
 }

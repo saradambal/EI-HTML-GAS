@@ -1,8 +1,11 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*************************************EMAIL PROFILE ENTRY****************************************************//
+//DONE BY:PUNI
+//VER 1.8-SD:03/10/2014 ED:03/10/2014 TRACKER NO:703:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.7-SD:21/08/2014 ED:21/08/2014,TRACKER NO:703,updated new links
 //DONE BY:LALITHA
+//VER 1.6-SD:24/07/2014 ED:24/07/2014,TRACKER NO:703,Updated sorting for email profile lst bx
 //VER 1.5-SD:09/06/2014 ED:12/06/2014,TRACKER NO:703,Updated commit funct,Changed failure funct,Converted the emailid to lowercase for valid emailid only,Changed btn name(submit to save)
 //VER 1.4-SD:06/06/2014 ED:06/06/2014,Changed jquery link in html file
 //VER 1.3-SD:28/05/2014 ED:28/05/2014,Updated preloader for already exit functn,Updated after reset button hide the email id lbl,txt bx nd buttons(save,reset)
@@ -23,21 +26,31 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function EP_ENTRY_onFailure(EP_ENTRY_error) {
 $(".preloader").hide();
@@ -48,7 +61,7 @@ $('#EP_ENTRY_form_emailprofile').replaceWith('<center><label class="dberrormsg">
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_error,position:{top:150,left:500}}});
 }
 }
 //FAILURE FUNCTION END
@@ -63,7 +76,6 @@ var EP_ENTRY_errorMsg_array=[];
 //SUCCESS FUNCTION FOR EMAIL PROFILE NAME,ERROR MESSAGE
 function EP_ENTRY_getdomain_errresult(EP_ENTRY_getdomain_errresult_response)
 {
-$(".preloader").hide();
 EP_ENTRY_emailarr_profilename=EP_ENTRY_getdomain_errresult_response.EP_ENTRY_profilenamedataid;
 EP_ENTRY_errorMsg_array=EP_ENTRY_getdomain_errresult_response.EP_ENTRY_errormsg;
 var EP_ENTRY_emailarray_profilename ='<option>SELECT</option>';
@@ -73,6 +85,10 @@ EP_ENTRY_emailarray_profilename += '<option value="' + EP_ENTRY_emailarr_profile
 }
 $('#EP_ENTRY_form_emailprofile').show();
 $('#EP_ENTRY_lb_profilename').html(EP_ENTRY_emailarray_profilename).show();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //JQUERY LIB VALIDATION START
 $('#EP_ENTRY_tb_emailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
@@ -85,6 +101,8 @@ $('#EP_ENTRY_btn_reset').hide();
 $('#EP_ENTRY_lbl_validid').hide();
 //CHANGE EVENT FOR PROFILE
 $('#EP_ENTRY_lb_profilename').change(function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 EP_ENTRY_listboxname=$('#EP_ENTRY_lb_profilename').find('option:selected').text();
 var EP_ENTRY_profilename=$(this).val();
@@ -138,6 +156,8 @@ $('#EP_ENTRY_lbl_validid').hide();
 $("#EP_ENTRY_tb_emailid").removeClass('invalid');
 $('#EP_ENTRY_tb_emailid').val($('#EP_ENTRY_tb_emailid').val().toLowerCase())
 google.script.run.withSuccessHandler(EP_ENTRY_already_result).withFailureHandler(EP_ENTRY_onFailure).EP_ENTRY_already(EP_ENTRY_listboxname,EP_ENTRY_email);
+//var  newPos= adjustPosition($(this).position(),100,270);
+//resetPreloader(newPos);
 $(".preloader").show(); 
 }
 else
@@ -161,6 +181,8 @@ $("#EP_ENTRY_btn_save").removeAttr("disabled");
 }
 else
 {
+//var  newPos= adjustPosition($(this).position(),100,270);
+//resetPreloader(newPos);
 $(".preloader").show(); 
 google.script.run.withSuccessHandler(EP_ENTRY_save_result).withFailureHandler(EP_ENTRY_onFailure).EP_ENTRY_save(EP_ENTRY_profilenameid,EP_ENTRY_emailid);
 }
@@ -183,6 +205,8 @@ EP_ENTRY_checkmailid()
 });
 //CLICK FUNCTION FOR SAVE BUTTON
 $("#EP_ENTRY_btn_save").click(function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show(); 
 $("#EP_ENTRY_hidden_chkvalid").val("SAVE")//SET SAVE FUNCTION VALUE
 var EP_ENTRY_emailid=$('#EP_ENTRY_tb_emailid').val();
@@ -208,7 +232,7 @@ $('#EP_ENTRY_btn_save').attr("disabled","disabled").hide();
 $('#EP_ENTRY_btn_reset').hide();
 var EP_ENTRY_email_errmsg=EP_ENTRY_errorMsg_array[1].replace('[PROFILE]',EP_ENTRY_listboxname);
 //MESSAGE BOX FOR SAVED SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_email_errmsg}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_email_errmsg,position:{top:150,left:500}}}); 
 $('#EP_ENTRY_lb_profilename').val('SELECT');
 $('#EP_ENTRY_tb_emailid').prop("size","20");
 $('#EP_ENTRY_lbl_validid').hide();
@@ -216,7 +240,7 @@ $('#EP_ENTRY_lbl_validid').hide();
 else
 {
 //MESSAGE BOX FOR NOT SAVED SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_errorMsg_array[3]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_errorMsg_array[3],position:{top:150,left:500}}}); 
 }
 }
 //CLEAR ALL FIELDS

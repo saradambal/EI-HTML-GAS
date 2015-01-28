@@ -1,5 +1,9 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //****************************************STAFF EXPENSE DETAIL ENTRY**************************************//
+//DONE BY:PUNI
+//VER 1.2-SD:09/10/2014 ED:09/10/2014,TRACKER NO:488:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.1-SD:21/08/2014 ED:21/08/2014,TRACKER NO:488,updated new links,autogrow
 //DONE BY:LALITHA
 //VER 1.0-SD:09/06/2014 ED:13/06/2014,TRACKER NO:488,Updated commit funct,Changed failure funct,Changed btn name(submit to save)
 //VER 0.09-SD:06/06/2014 ED:06/06/2014,Changed jquery link ,Updated parse float for amount fields,Added preloader for already exit funct of cpf number

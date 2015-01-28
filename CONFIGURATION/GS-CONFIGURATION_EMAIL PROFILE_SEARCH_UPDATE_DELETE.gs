@@ -1,6 +1,11 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*************************************EMAIL PROFILE SEARCH/UPDATE/DELETE***************************//
+//DONE BY:PUNI
+//VER 1.9-SD:03/10/2014 ED:03/10/2014 TRACKER NO:703:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.8-SD:21/08/2014 ED:21/08/2014,TRACKER NO:703,updated new links
 //DONE BY:LALITHA
+//VER 1.7-SD:24/07/2014 ED:25/07/2014,TRACKER NO:703,Changed Emailid validation of SSOMENS.COM,EXPATSINT.COM,GMAIL.COM for the DocOwner emailprofile
 //VER 1.6-SD:09/06/2014 ED:12/06/2014,TRACKER NO:703,Updated commit funct,Changed failure funct,Converted the emailid to lowercase for valid emailid only,If flex tble data nd txt bx data same means hide the err msg nd invalid class,Updated while updating nd deleting data in flex tble means frst load the flex tble nd thn shown err msg,After delete the record reload the email profile listbox
 //VER 1.5-SD:06/06/2014 ED:06/06/2014,Changed jquery link in html file
 //VER 1.4-SD:28/05/2014 ED:28/05/2014,Updated preloader for already exit functn
@@ -26,7 +31,7 @@ try
     var EP_SRC_UPD_DEL_conn=eilib.db_GetConnection();
     var EP_SRC_UPD_DEL_email_array=[];
     var EP_SRC_UPD_DEL_emailstmt=EP_SRC_UPD_DEL_conn.createStatement();
-    var EP_SRC_UPD_DEL_emaillistprofile="SELECT EP.EP_ID,EP.EP_EMAIL_DOMAIN,EL.EL_ID,EP.EP_NON_IP_FLAG FROM EMAIL_PROFILE EP,EMAIL_LIST EL WHERE EL.EP_ID=EP.EP_ID ORDER BY EP_EMAIL_DOMAIN";
+    var EP_SRC_UPD_DEL_emaillistprofile="SELECT EP.EP_ID,EP.EP_EMAIL_DOMAIN,EL.EL_ID,EP.EP_NON_IP_FLAG FROM EMAIL_PROFILE EP,EMAIL_LIST EL WHERE EL.EP_ID=EP.EP_ID ORDER BY EP_EMAIL_DOMAIN ASC";
     var EP_SRC_UPD_DEL_emailresult=EP_SRC_UPD_DEL_emailstmt.executeQuery(EP_SRC_UPD_DEL_emaillistprofile);
     while(EP_SRC_UPD_DEL_emailresult.next())
     {
@@ -37,7 +42,7 @@ try
       var EP_SRC_UPD_DEL_nameid_object={"EP_SRC_UPD_DEL_profilenames_id":EP_SRC_UPD_DEL_profilename_id,"EP_SRC_UPD_DEL_profilenames_data":EP_SRC_UPD_DEL_profilename_data,"EP_SRC_UPD_DEL_listnames_id":EP_SRC_UPD_DEL_listname_id,"EP_SRC_UPD_DEL_profilenames_flag":EP_SRC_UPD_DEL_profilename_flag};
       EP_SRC_UPD_DEL_email_array.push(EP_SRC_UPD_DEL_nameid_object); 
     }
-    var EP_SRC_UPD_DEL_errmsgids="170,288,283,284,36,286,282,315,401";  
+    var EP_SRC_UPD_DEL_errmsgids="170,288,283,284,36,286,282,315,401,481,482,483";  
     var EP_SRC_UPD_DEL_errorMsg_array=[];
     EP_SRC_UPD_DEL_errorMsg_array=eilib.GetErrorMessageList(EP_SRC_UPD_DEL_conn,EP_SRC_UPD_DEL_errmsgids);
     var EP_SRC_UPD_DEL_email_arrayresult={"EP_SRC_UPD_DEL_profilelistdataid":EP_SRC_UPD_DEL_email_array,"EP_SRC_UPD_DEL_errormsg":EP_SRC_UPD_DEL_errorMsg_array.errormsg};      

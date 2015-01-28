@@ -1,7 +1,9 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************SITE MAINTENANCE*********************************************//
+//DONE BY:PUNI
+//VER 1.2-SD:03/10/2014 ED:03/10/2014,TRACKER NO:683,1.changed html script to hide preloader after menu loads,2.changed messagebx n preloader position
+//DONE BY:SARADAMBAL
+//VER 1.1-SD:22/08/2014 ED:22/08/2014,TRACKER NO:683,updated new links
 //DONE BY:LALITHA
 //VER 1.0-SD:15/07/2014 ED:15/07/2014,TRACKER NO:683,Deleted the access rights menu,Replaced the btn name
 //VER 0.09-SD:14/06/2014 ED:14/06/2014,TRACKER NO:683,Changed failure funct,Removed the btn disabling functn,after updating the record reload the tree view function,Put condition for(frst form reloaded nd thn shown err msg)
@@ -18,21 +20,31 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function USR_SITE_onFailure(USR_SITE_error) 
 {
@@ -44,13 +56,14 @@ $('#formid').replaceWith('<center><label class="dberrormsg">'+USR_SITE_error+'</
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_error,position:{top:150,left:500}}});
 }
 }
 //FAILURE FUNCTION END
 var USR_SITE_sucsval=0;
 //START DOCUMENT READY FUNCTION
 $(document).ready(function(){
+$(".preloader").show();
 var USR_SITE_multi_array=[];
 var USR_SITE_multi_arrays=[];
 var USR_SITE_errorMsg_array=[]
@@ -61,6 +74,10 @@ google.script.run.withSuccessHandler(USR_SITE_tree_view).withFailureHandler(USR_
 function USR_SITE_get_errresult(USR_SITE_get_errresult_response)
 {
 USR_SITE_errorMsg_array=USR_SITE_get_errresult_response.USR_SITE_errormsg;
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //SUCCESS FUNCTION TREE VIEW
 function USR_SITE_tree_view(USR_SITE_menus)
@@ -157,13 +174,17 @@ if(USR_SITE_sucsval==1)
 {
 //MESSAGE BOX FOR REVOKE AND GRANT BUTTON
 $(".preloader").hide();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_errorMsg_array[0]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_errorMsg_array[0],position:{top:150,left:500}}}); 
 }
 if(USR_SITE_sucsval==2)
 {
 $(".preloader").hide();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_errorMsg_array[1]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"SITE MAINTENANCE",msgcontent:USR_SITE_errorMsg_array[1],position:{top:150,left:500}}}); 
 }
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //CLICK FUNCTION FOR CHECKBOX MENU
 $(document).on("click",'.exp,.collapse', function (){
@@ -230,6 +251,8 @@ $(this).closest('ul').prev().attr('checked', false);
 });
 //CLICK FUNCTON FOR SUBMIT BUTTON
 $(document).on('click','#USR_SITE_btn_submitbutton',function(){
+var  newPos= adjustPosition($("#USR_SITE_tble_menu").position(),100,230);
+resetPreloader(newPos);
 $(".preloader").show();
 google.script.run.withSuccessHandler(USR_SITE_clear).withFailureHandler(USR_SITE_onFailure).USR_SITE_update(document.getElementById('USR_SITE_form_user'));
 });

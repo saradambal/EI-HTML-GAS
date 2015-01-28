@@ -1,5 +1,6 @@
 //updated contract script to remove last line if no ep n pass port no,updated notice period part to place text instead of no n replace null if no notice period n reused function to remove editors n set owner all invoice n contract function,
 //FUNCTION TO SET OWNER FOR A DOC
+var invoiceflag;
 function SetDocOwner(docid,docowner,semailid)
 {
   var editorfile= DocsList.getFileById(docid).getEditors();
@@ -20,20 +21,52 @@ function SetDocOwner(docid,docowner,semailid)
   }
   DriveApp.getFileById(docid).setOwner(docowner);
 }
+//********************CUSTOMER DOMAIN DOC OWNER**********************/
+function CUST_SetDocOwner(docid,docowner,semailid)
+{
+  var editorfile= DocsList.getFileById(docid).getEditors();
+  //  var editorfile= DriveApp.getFileById(docid).getEditors();
+  for(var j=0;j<editorfile.length;j++)
+  {
+    if(editorfile[j].getEmail()=="")continue;
+    var exsitmailid=(editorfile[j].getEmail()).toString();
+    semailid=semailid.toString()
+    if(exsitmailid!=semailid)
+    {
+      DriveApp.getFileById(docid).removeEditor(editorfile[j].getEmail());
+    }
+  }
+  if(docowner!=semailid)
+  {
+    DriveApp.getFileById(docid).addEditor(semailid);
+  }
+}
 //FUNCTION TO REMOVE EDITORS IF SESSION ID NOT OWNER OR EDITOR
 function RemoveEditors(docid,email_fetch,docowner)
 {
+  DriveApp.getFileById(docid).setOwner(docowner);
   if((email_fetch!=UserStamp)&&(docowner!=UserStamp))
   {
-//    DriveApp.getFileById(docid).removeEditor(UserStamp);
+    //    DriveApp.getFileById(docid).removeEditor(UserStamp);
     DocsList.getFileById(docid).removeEditor(UserStamp);
   }
+}
+//***********UNSHARE FILE**********************/
+function CUST_UNSHARE_FILE(fileid)
+{
+  var editorfile= DocsList.getFileById(fileid).getEditors();
+  for(var j=0;j<editorfile.length;j++)
+  {
+    if(editorfile[j].getEmail()=="")continue;
+    var exsitmailid=(editorfile[j].getEmail()).toString();
+    DriveApp.getFileById(fileid).removeEditor(editorfile[j].getEmail());
+  }
+  DriveApp.getFileById(fileid).setTrashed(true);
 }
 //CONTRACT MAIL
 function CUST_contractmail(conn,unitno,checkindate,checkoutdate,companyname,customername,noticeperiod,passportno,passportdate,epno,epdate,noticedate,lp,cardno,rent,airquartfee,airfixedfee,electcap,dryclean,chkoutfee,procfee,deposit,waived,roomtype,rent_check,sendmailid,formname,targetFolderId,docowner)
 {
   CUST_contract(conn,unitno,checkindate,checkoutdate,companyname,customername,noticeperiod,passportno,passportdate,epno,epdate,noticedate,lp,cardno,rent,airquartfee,airfixedfee,electcap,dryclean,chkoutfee,procfee,deposit,waived,roomtype,rent_check,formname,targetFolderId)
-  conn.commit();
   var userPropertiesid = PropertiesService.getUserProperties();
   var contractidcopy = userPropertiesid.getProperty('contractid');
   var contractarray=[];
@@ -47,16 +80,22 @@ function CUST_contractmail(conn,unitno,checkindate,checkoutdate,companyname,cust
   var url = linkkk.getUrl();
   var sourceFolderId=getTemplatesFolderId(conn);
   CUST_moveFileToFolder(contractidcopy,sourceFolderId,targetFolderId);
-  SetDocOwner(contractidcopy,docowner,email_fetch);
+  CUST_SetDocOwner(contractidcopy,docowner,email_fetch);
   var mail_username=email_fetch.split('@');
   var subcontent2 = '#'+" "+unit_fetch + " " + tenant_fetch;
   var subject2 =subject_db.replace('[UNIT NO - CUSTOMER_NAME]',subcontent2);
   var body2 =message_db.replace('[UNIT NO - CUSTOMER_NAME]',subcontent2); 
   body2=body2.replace('[MAILID_USERNAME]',mail_username[0].toUpperCase());
+  RemoveEditors(contractidcopy,email_fetch,docowner);
   MailApp.sendEmail(email_fetch, subject2, body2, {name:Get_MailDisplayName("CONTRACT"),htmlBody: body2+'<br><br>CONTRACT : '+url});
-  RemoveEditors(contractidcopy,email_fetch,docowner)
 }
-//CONTRACT
+//RETURN GENERATED CONTRACT ID
+var contractflag;
+function contractid()
+{
+  return contractflag;
+}
+
 function CUST_contract(conn,unitno,checkindate,checkoutdate,companyname,customername,noticeperiod,passportno,passportdate,epno,epdate,noticedate,lp,cardno,rent,airquartfee,airfixedfee,electcap,dryclean,chkoutfee,procfee,deposit,waived,roomtype,rent_check,formname,targetFolderId)
 {
   var cust_config_array=[];
@@ -141,6 +180,7 @@ function CUST_contract(conn,unitno,checkindate,checkoutdate,companyname,customer
   var LastMonthformat = Utilities.formatDate(new Date(LastMonth), TimeZone, "dd-MMM-yyyy");
   //end
   var contractidcopy = DriveApp.getFileById(contractidcode).makeCopy("CONTRACT"+"-"+" "+unitno+" "+ "-"+ " "+customername).getId();
+  contractflag=contractidcopy;
   var docId1 = DocumentApp.openById(contractidcopy);
   var para1 =docId1.getParagraphs();
   var docIdbody1 = docId1.getActiveSection();
@@ -550,6 +590,7 @@ function CUST_invoice(conn,unit,customername,companyname,invoiceid,invoicesno,in
     }
   }
   var doc1 =DriveApp.getFileById(invoiceid).makeCopy("INVOICE"+"   -"+" "+unit_fetch+" "+ "-"+ " "+tenant_fetch+"_INV"+todaysDate+Slno).getId();
+  invoiceflag=doc1;
   var doc = DocumentApp.openById(doc1);
   var body = doc.getBody();
   var docIdbody1 = doc.getActiveSection();
@@ -720,6 +761,7 @@ function CUST_invoice(conn,unit,customername,companyname,invoiceid,invoicesno,in
   var userPropertiesinvoicesno = PropertiesService.getUserProperties();
   userPropertiesinvoiceid.setProperty('InvoiceNo',Slno);
 }
+//GET TEMPLATE FOLDER ID
 function getTemplatesFolderId(conn)
 {
   var tempfoldidstmt = conn.createStatement();
@@ -752,7 +794,6 @@ function CUST_moveFileToFolder(fileId,sourceFolderId, targetFolderId)
 function CUST_invoicemail(conn,unit,customername,companyname,invoiceid,invoicesno,invoicedate,rent,process,deposit,sdate,edate,roomtype,Leaseperiod,mailid,Folderid,rentcheck,docowner,formname,waived,custid)
 {
   var invoicecontect=CUST_invoice(conn,unit,customername,companyname,invoiceid,invoicesno,invoicedate,rent,process,deposit,sdate,edate,roomtype,Leaseperiod,mailid,Folderid,rentcheck,docowner,formname,waived,custid)
-  conn.commit();
   var userPropertiesid = PropertiesService.getUserProperties();
   var invoiceidcopy = userPropertiesid.getProperty('invoiceid');
   var userPropertiessno = PropertiesService.getUserProperties();
@@ -768,15 +809,21 @@ function CUST_invoicemail(conn,unit,customername,companyname,invoiceid,invoicesn
   var url = linkkk.getUrl(); 
   var sourceFolderId=getTemplatesFolderId(conn);
   CUST_moveFileToFolder(invoiceidcopy,sourceFolderId,Folderid);
-  SetDocOwner(invoiceidcopy,docowner,email_fetch);
+  CUST_SetDocOwner(invoiceidcopy,docowner,email_fetch);
   var todaysDate =  Utilities.formatDate(new Date(), TimeZone, "yyyyMMdd"); 
   var subcontent1 =  '#'+" "+unit_fetch+" "+ "-"+ " "+tenant_fetch+" "+"- INV"+ todaysDate +Slno;
   var bodycontent1 = '#'+" "+unit_fetch+" "+ "-"+ " "+tenant_fetch+" "+ "- INV"+todaysDate+Slno;
   var subject1 =emailsub.replace('[UNIT NO- CUSTOMER_NAME - INVOICE_NO]',subcontent1);
   var body1 =emailmessage.replace('[UNIT NO - CUSTOMER_NAME]',bodycontent1); 
   body1=body1.replace('[MAILID_USERNAME]',mail_username[0].toUpperCase());
-  MailApp.sendEmail(email_fetch, subject1, body1, {name:Get_MailDisplayName("INVOICE"),htmlBody: body1+'<br><br>INVOICE : '+url});
-  RemoveEditors(invoiceidcopy,email_fetch,docowner)
+  RemoveSEditors(invoiceidcopy,email_fetch,docowner);
+  MailApp.sendEmail(email_fetch, subject1, body1, {name:Get_MailDisplayName("INVOICE"),htmlBody: body1+'<br><br>INVOICE : '+url});  
+}
+//FUNCTION TO RETURN GENERATED INVOICE ID
+var invoiceflag;
+function invoiceid()
+{
+  return invoiceflag;
 }
 //FUNCTION TO CALCULATE PRORATED RENT
 function proratedmonthcalculation(startdate,enddate) {
@@ -862,11 +909,11 @@ function nonproratedmonthcalculation(startdate,enddate)
   var return_array=[startdate_array,enddate_array];
   return return_array;
 }
+//FUNCTION TO SEND INVOICE N CONTRACT
 function CUST_invoicecontractmail(conn,unit,invoiceid,startdate,enddate,compname,customername,invoicesno,invoicedate,noticeno,passportno,passportdate,epno,epdate,noticedate,Leaseperiod,cardno,rent,quarterlyfee,airconfixed,electricity,drycleaning,cleaning,process,deposit,waived,roomtype,Folderid,rentcheck,docowner,mailid,formname,custid)
 {
   CUST_invoice(conn,unit,customername,compname,invoiceid,invoicesno,invoicedate,rent,process,deposit,startdate,enddate,roomtype,Leaseperiod,mailid,Folderid,rentcheck,docowner,formname,waived,custid)
-  CUST_contract (conn,unit,startdate,enddate,compname,customername,noticeno,passportno,passportdate,epno,epdate,noticedate,Leaseperiod,cardno,rent,quarterlyfee,airconfixed,electricity,drycleaning,cleaning,process,deposit,waived,roomtype,rentcheck,formname,Folderid)
-  conn.commit();
+  CUST_contract(conn,unit,startdate,enddate,compname,customername,noticeno,passportno,passportdate,epno,epdate,noticedate,Leaseperiod,cardno,rent,quarterlyfee,airconfixed,electricity,drycleaning,cleaning,process,deposit,waived,roomtype,rentcheck,formname,Folderid)
   var userPropertiesid = PropertiesService.getUserProperties();
   var invoiceidcopy = userPropertiesid.getProperty('invoiceid');
   var userPropertiessno = PropertiesService.getUserProperties();
@@ -888,8 +935,8 @@ function CUST_invoicecontractmail(conn,unit,invoiceid,startdate,enddate,compname
   var sourceFolderId=getTemplatesFolderId(conn);
   CUST_moveFileToFolder(invoiceidcopy,sourceFolderId,Folderid);
   CUST_moveFileToFolder(contractidcopy,sourceFolderId, Folderid);
-  SetDocOwner(invoiceidcopy,docowner,email_fetch);
-  SetDocOwner(contractidcopy,docowner,email_fetch);
+  CUST_SetDocOwner(invoiceidcopy,docowner,email_fetch);
+  CUST_SetDocOwner(contractidcopy,docowner,email_fetch);
   var mail_username=email_fetch.split('@');
   var todaysDate =  Utilities.formatDate(new Date(), TimeZone, "yyyyMMdd"); 
   var subcontent3 = '#'+" "+ unit_fetch+" "+ "-"+ " "+customername+" "+"- INV"+ todaysDate +Slno;
@@ -897,7 +944,19 @@ function CUST_invoicecontractmail(conn,unit,invoiceid,startdate,enddate,compname
   var subject3 =emailsub.replace('[UNIT NO - CUSTOMER NAME - INVOICE NO]',subcontent3);
   var body3 =emailmessage.replace('[UNIT NO - CUSTOMER_NAME]',bodycontent3); 
   body3=body3.replace('[MAILID_USERNAME]',mail_username[0].toUpperCase());
+  InvAndConRemoveEditors(invoiceidcopy,contractidcopy,email_fetch,docowner);
   MailApp.sendEmail(email_fetch, subject3, body3, {name:Get_MailDisplayName('INVOICE_N_CONTRACT'),htmlBody: body3+'<br><br>INVOICE : '+url+'<br><br>CONTRACT : '+url1});
-  RemoveEditors(invoiceidcopy,email_fetch,docowner);
-  RemoveEditors(contractidcopy,email_fetch,docowner)
+}
+//FUNCTION TO REMOVE EDITORS FOR INVOICE N CONTRACT
+function InvAndConRemoveEditors(invdocid,contdocid,email_fetch,docowner)
+{
+  DriveApp.getFileById(invdocid).setOwner(docowner);
+  DriveApp.getFileById(contdocid).setOwner(docowner);
+  if((email_fetch!=UserStamp)&&(docowner!=UserStamp))
+  {
+    //    DriveApp.getFileById(invdocid).removeEditor(UserStamp);
+    //    DriveApp.getFileById(contdocid).removeEditor(UserStamp);
+    DocsList.getFileById(invdocid).removeEditor(UserStamp);
+    DocsList.getFileById(contdocid).removeEditor(UserStamp);
+  }
 }

@@ -1,5 +1,8 @@
 //*******************************************TRIGGER*********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 2.07-SD:28/10/2014,ED:28/10/2014 TRACKER NO:771,Added Drop temp table function from eilib n added drop table in try catch also for ACTIVE CC LIST,EXPIRY 1 WEEK,TEMP TABLE TRIGGER
+//VER 2.06-SD:09/10/2014,ED:09/10/2014 TRACKER NO:771,Added script to hide preloader after menu n form loads,changed drive app to docslist for remove editor
 //DONE BY:KUMAR
 //VER 2.05-SD:03/09/2014,ED:03/09/2014 TRACKER NO:changed old records select query and did exception mail part corrections and added one parameter in temp table drop call query.
 //VER 2.04-SD:02/09/2014,ED:02/09/2014 TRACKER NO:updated maintainance mail id.
@@ -796,89 +799,95 @@ function NONPAYMENTREMINDER()
   }
   catch(err)
   {
+    Logger.log("SCRIPT ERROR:"+err)
   }
 }
+
 //DONE BY:SAFI
 //VER 0.02 SD:28/05/2014 ED:28/05/2014;TRACKER NO: 363
 //VER 0.01-INITIAL VERSION,SD:03/12/2013 ED:04/12/2013;TRACKER NO: 363;
 
 function CUSTOMEREXPIRYXWEEK()
 {
-  var CWEXP_weekBefore=1;
-  var CWEXP_conn = eilib.db_GetConnection(); 
-  Trigger_Run_Time(CWEXP_conn,'CUSTOMER EXPIRY X WEEK');
-  var CWEXP_emaildata_stmt = CWEXP_conn.createStatement(); 
-  var CWEXP_select_emaildata="SELECT * from EMAIL_TEMPLATE_DETAILS WHERE ET_ID=10";    
-  var CWEXP_emaildata_rs=CWEXP_emaildata_stmt.executeQuery(CWEXP_select_emaildata);
-  while(CWEXP_emaildata_rs.next()){
-    var CWEXP_subject_db=CWEXP_emaildata_rs.getString("ETD_EMAIL_SUBJECT");
-    var CWEXP_message_db=CWEXP_emaildata_rs.getString("ETD_EMAIL_BODY");      
-  }
-  CWEXP_emaildata_rs.close();
-  CWEXP_emaildata_stmt.close(); 
-  var CWEXP_emaildata_stmt = CWEXP_conn.createStatement(); 
-  var CWEXP_select_emaildata="SELECT * from EMAIL_TEMPLATE_DETAILS WHERE ET_ID=12";    
-  var CWEXP_emaildata_rs=CWEXP_emaildata_stmt.executeQuery(CWEXP_select_emaildata);
-  while(CWEXP_emaildata_rs.next()){
-    var CWEXP_subject_db1=CWEXP_emaildata_rs.getString("ETD_EMAIL_SUBJECT");
-    var CWEXP_message_db1=CWEXP_emaildata_rs.getString("ETD_EMAIL_BODY");      
-  }
-  CWEXP_emaildata_rs.close();
-  CWEXP_emaildata_stmt.close();  
-  var CWEXP_check_week_flag=0;
-  var CWEXP_check_weekly_expiry_list;  
-  var CEXP_temptable_weeklyexpiry_stmt = CWEXP_conn.createStatement();
-  CEXP_temptable_weeklyexpiry_stmt.execute("CALL SP_CUSTOMER_WEEKLY_EXPIRY_ONE_WEEK('"+trg_UserStamp+"',@CEXP_EXPIRYFEETMPTBLNAM)");
-  CEXP_temptable_weeklyexpiry_stmt.close();
-  var CEXP_beforefeetemptbl_stmt=CWEXP_conn.createStatement();
-  var CEXP_beforefeetemptbl_query="SELECT @CEXP_EXPIRYFEETMPTBLNAM";
-  var CEXP_beforefeetemptblres=CEXP_beforefeetemptbl_stmt.executeQuery(CEXP_beforefeetemptbl_query);
-  var CEXP_weeklytemptblname="";
-  while(CEXP_beforefeetemptblres.next())
+  try
   {
-    CEXP_weeklytemptblname=CEXP_beforefeetemptblres.getString(1);
-  }
-  CEXP_beforefeetemptblres.close();
-  CEXP_beforefeetemptbl_stmt.close();
-  var CWEXP_customerdetails_stmt = CWEXP_conn.createStatement();    
-  var CEXP_select_customerdetails="select * from "+CEXP_weeklytemptblname+""    
-  var CWEXP_customerdetails_result=CWEXP_customerdetails_stmt.executeQuery(CEXP_select_customerdetails);  
-  while(CWEXP_customerdetails_result.next()){
-    var CWEXP_unitno = CWEXP_customerdetails_result.getString("UNITNO");        
-    var CWEXP_firstname = CWEXP_customerdetails_result.getString("CUSTOMERFIRSTNAME");
-    var CWEXP_lastname = CWEXP_customerdetails_result.getString("CUSTOMERLASTNAME");        
-    var CWEXP_rental = CWEXP_customerdetails_result.getString("PAYMENT");
-    var CWEXP_emailid=CWEXP_customerdetails_result.getString("EMAILID");
-    var mailId=CWEXP_emailid.toString();
-    var index=mailId.indexOf('@')
-    var CWEXP_mail_username=mailId.substring(0,index).toUpperCase();
-    var CWEXP_cust_name=CWEXP_firstname+' '+CWEXP_lastname;
-    var CWEXP_enddate = CWEXP_customerdetails_result.getString("ENDDATE");
-    var CWEXP_ptddate=CWEXP_customerdetails_result.getString("PRETERMINATEDATE");
-    var unitcustomer=CWEXP_unitno+"-"+CWEXP_cust_name;
-    var subjectdb=CWEXP_subject_db1.replace("'[UNIT NO - CUSTOMER NAME]'", unitcustomer);            
-    var subjectmail=subjectdb.replace("'X'",CWEXP_weekBefore);        
-    if(CWEXP_ptddate==null){
-      var CWEXP_newdate=eilib.SqlDateFormat(CWEXP_enddate);        
+    var CWEXP_weekBefore=1;
+    var CWEXP_conn = eilib.db_GetConnection(); 
+    Trigger_Run_Time(CWEXP_conn,'CUSTOMER EXPIRY X WEEK');
+    var CWEXP_emaildata_stmt = CWEXP_conn.createStatement(); 
+    var CWEXP_select_emaildata="SELECT * from EMAIL_TEMPLATE_DETAILS WHERE ET_ID=10";    
+    var CWEXP_emaildata_rs=CWEXP_emaildata_stmt.executeQuery(CWEXP_select_emaildata);
+    while(CWEXP_emaildata_rs.next()){
+      var CWEXP_subject_db=CWEXP_emaildata_rs.getString("ETD_EMAIL_SUBJECT");
+      var CWEXP_message_db=CWEXP_emaildata_rs.getString("ETD_EMAIL_BODY");      
     }
-    else{
-      var CWEXP_newdate=eilib.SqlDateFormat(CWEXP_ptddate);        
-    }    
-    var CWEXP_subject=CWEXP_subject_db.replace("'X'",CWEXP_weekBefore);
-    var message=CWEXP_message_db.replace("[MAILID_USERNAME]",CWEXP_mail_username);
-    var message1=message.replace("'X'", CWEXP_weekBefore);          
-    CWEXP_check_week_flag=1;
-    var CWEXP_emailmessage = '<body>'+'<br>'+'<h> '+message1 +' </h>'+'<br>'+'<br>'+'<table border="1" style="color:white" width="700">'+'<tr  bgcolor="#498af3" align="center">'+'<td width=25% ><h3>UNIT</h3></td>'+'<td width=25%><h3>CUSTOMER NAME</h3></td>'+'<td width=25%><h3>END DATE</h3></td>'+'<td width=25%><h3>RENT</h3></td>'+'</tr>'+'</table>'+'</body>';
-    CWEXP_emailmessage += '<body>'+'<table border="1" width="700" >'+'<tr align="center">'+'<td width=25%>'+CWEXP_unitno+'</td>'+'<td width=25%>'+CWEXP_cust_name+'</td>'+'<td width=25%>'+CWEXP_newdate+'</td>'+'<td width=25%>'+CWEXP_rental+'</td>'+'</tr>'+'</table>'+'</body>'; 
-    var displayname=eilib.Get_MailDisplayName("CUSTOMER_EXPIRY");
-    MailApp.sendEmail(CWEXP_emailid,CWEXP_subject,CWEXP_emailmessage,{htmlBody:CWEXP_emailmessage,name:displayname});
+    CWEXP_emaildata_rs.close();
+    CWEXP_emaildata_stmt.close(); 
+    var CWEXP_emaildata_stmt = CWEXP_conn.createStatement(); 
+    var CWEXP_select_emaildata="SELECT * from EMAIL_TEMPLATE_DETAILS WHERE ET_ID=12";    
+    var CWEXP_emaildata_rs=CWEXP_emaildata_stmt.executeQuery(CWEXP_select_emaildata);
+    while(CWEXP_emaildata_rs.next()){
+      var CWEXP_subject_db1=CWEXP_emaildata_rs.getString("ETD_EMAIL_SUBJECT");
+      var CWEXP_message_db1=CWEXP_emaildata_rs.getString("ETD_EMAIL_BODY");      
+    }
+    CWEXP_emaildata_rs.close();
+    CWEXP_emaildata_stmt.close();  
+    var CWEXP_check_week_flag=0;
+    var CWEXP_check_weekly_expiry_list;  
+    var CEXP_temptable_weeklyexpiry_stmt = CWEXP_conn.createStatement();
+    CEXP_temptable_weeklyexpiry_stmt.execute("CALL SP_CUSTOMER_WEEKLY_EXPIRY_ONE_WEEK('"+trg_UserStamp+"',@CEXP_EXPIRYFEETMPTBLNAM)");
+    CEXP_temptable_weeklyexpiry_stmt.close();
+    var CEXP_beforefeetemptbl_stmt=CWEXP_conn.createStatement();
+    var CEXP_beforefeetemptbl_query="SELECT @CEXP_EXPIRYFEETMPTBLNAM";
+    var CEXP_beforefeetemptblres=CEXP_beforefeetemptbl_stmt.executeQuery(CEXP_beforefeetemptbl_query);
+    var CEXP_weeklytemptblname="";
+    while(CEXP_beforefeetemptblres.next())
+    {
+      CEXP_weeklytemptblname=CEXP_beforefeetemptblres.getString(1);
+    }
+    CEXP_beforefeetemptblres.close();
+    CEXP_beforefeetemptbl_stmt.close();
+    var CWEXP_customerdetails_stmt = CWEXP_conn.createStatement();    
+    var CEXP_select_customerdetails="select * from "+CEXP_weeklytemptblname+""    
+    var CWEXP_customerdetails_result=CWEXP_customerdetails_stmt.executeQuery(CEXP_select_customerdetails);  
+    while(CWEXP_customerdetails_result.next()){
+      var CWEXP_unitno = CWEXP_customerdetails_result.getString("UNITNO");        
+      var CWEXP_firstname = CWEXP_customerdetails_result.getString("CUSTOMERFIRSTNAME");
+      var CWEXP_lastname = CWEXP_customerdetails_result.getString("CUSTOMERLASTNAME");        
+      var CWEXP_rental = CWEXP_customerdetails_result.getString("PAYMENT");
+      var CWEXP_emailid=CWEXP_customerdetails_result.getString("EMAILID");
+      var mailId=CWEXP_emailid.toString();
+      var index=mailId.indexOf('@')
+      var CWEXP_mail_username=mailId.substring(0,index).toUpperCase();
+      var CWEXP_cust_name=CWEXP_firstname+' '+CWEXP_lastname;
+      var CWEXP_enddate = CWEXP_customerdetails_result.getString("ENDDATE");
+      var CWEXP_ptddate=CWEXP_customerdetails_result.getString("PRETERMINATEDATE");
+      var unitcustomer=CWEXP_unitno+"-"+CWEXP_cust_name;
+      var subjectdb=CWEXP_subject_db1.replace("'[UNIT NO - CUSTOMER NAME]'", unitcustomer);            
+      var subjectmail=subjectdb.replace("'X'",CWEXP_weekBefore);        
+      if(CWEXP_ptddate==null){
+        var CWEXP_newdate=eilib.SqlDateFormat(CWEXP_enddate);        
+      }
+      else{
+        var CWEXP_newdate=eilib.SqlDateFormat(CWEXP_ptddate);        
+      }    
+      var CWEXP_subject=CWEXP_subject_db.replace("'X'",CWEXP_weekBefore);
+      var message=CWEXP_message_db.replace("[MAILID_USERNAME]",CWEXP_mail_username);
+      var message1=message.replace("'X'", CWEXP_weekBefore);          
+      CWEXP_check_week_flag=1;
+      var CWEXP_emailmessage = '<body>'+'<br>'+'<h> '+message1 +' </h>'+'<br>'+'<br>'+'<table border="1" style="color:white" width="700">'+'<tr  bgcolor="#498af3" align="center">'+'<td width=25% ><h3>UNIT</h3></td>'+'<td width=25%><h3>CUSTOMER NAME</h3></td>'+'<td width=25%><h3>END DATE</h3></td>'+'<td width=25%><h3>RENT</h3></td>'+'</tr>'+'</table>'+'</body>';
+      CWEXP_emailmessage += '<body>'+'<table border="1" width="700" >'+'<tr align="center">'+'<td width=25%>'+CWEXP_unitno+'</td>'+'<td width=25%>'+CWEXP_cust_name+'</td>'+'<td width=25%>'+CWEXP_newdate+'</td>'+'<td width=25%>'+CWEXP_rental+'</td>'+'</tr>'+'</table>'+'</body>'; 
+      var displayname=eilib.Get_MailDisplayName("CUSTOMER_EXPIRY");
+      MailApp.sendEmail(CWEXP_emailid,CWEXP_subject,CWEXP_emailmessage,{htmlBody:CWEXP_emailmessage,name:displayname});
+    }
+    eilib.DropTempTable(CWEXP_conn, CEXP_weeklytemptblname);
+    CWEXP_conn.close();  
+  }catch(err)
+  {
+    Logger.log("SCRIPT ERROR:"+err)
+    eilib.DropTempTable(CWEXP_conn, CEXP_weeklytemptblname);
+    CWEXP_conn.close();  
   }
-  var CEXP_drop_stmt=CWEXP_conn.createStatement();
-  var CEXP_drop_query="DROP TABLE "+CEXP_weeklytemptblname+" "
-  CEXP_drop_stmt.execute(CEXP_drop_query);
-  CEXP_drop_stmt.close()
-  CWEXP_conn.close();  
-  CWEXP_conn.close();
 }
 function PURGEDOC()
 {
@@ -942,7 +951,7 @@ function CUSTOMERTERMINATION()
   }
   catch(err)
   {
-    Logger.log(err)
+    Logger.log("SCRIPT ERROR:"+err)
   }
 }
 function ACTIVECUSTOMERLIST()
@@ -1189,18 +1198,22 @@ function ACTIVECUSTOMERLIST()
     var body1 ="HELLO  "+FIN_OPL_username;
     var subject='ACTIVE CUST LIST-'+FIN_ACT_monthyear;
     MailApp.sendEmail(emaillistarray[0], subject, body1,{cc:FIN_OPL_acticecc_cclist,name:displayname,htmlBody: body1+'<br><br>, PLEASE FIND ATTACHED THE CURRENT : '+FIN_ACT_url});
-    var activeliststmt=FIN_OPL_conn.createStatement();
-    activeliststmt.execute("DROP TABLE "+activelisttablename+"");
-    activeliststmt.execute("DROP TABLE "+sortactivelisttablename+"");
-    activeliststmt.close();
+    eilib.DropTempTable(FIN_OPL_conn, activelisttablename);
+    eilib.DropTempTable(FIN_OPL_conn, sortactivelisttablename);
     if((emaillistarray[0]!=trg_UserStamp)&&(docowner!=trg_UserStamp)&&(FIN_OPL_acticecc_cclist!=trg_UserStamp))
     {
-      DriveApp.getFileById(FIN_ACT_ssid).removeEditor(trg_UserStamp);
+      //      DriveApp.getFileById(FIN_ACT_ssid).removeEditor(trg_UserStamp);
+      DocsList.getFileById(FIN_ACT_ssid).removeEditor(trg_UserStamp);
+      
     }
+    FIN_OPL_conn.close();
   }
   catch(err)
   {
-    Logger.log(err)
+    Logger.log("SCRIPT ERROR:"+err)
+    eilib.DropTempTable(FIN_OPL_conn, activelisttablename);
+    eilib.DropTempTable(FIN_OPL_conn, sortactivelisttablename);
+    FIN_OPL_conn.close();
   }
 }
 
@@ -1322,59 +1335,64 @@ function SITEACCESS()
 /*******************TEMP TABLE DROP TRIGGER************************/
 function TEMP_TABLE_TRIGGER()
 {
-  var temtable_schema_conn =eilib.db_GetConnection();
-  Trigger_Run_Time(temtable_schema_conn,'DROP TEMP TABLES');
-  var emaillistarray=eilib.getProfileEmailId(temtable_schema_conn,'DROPTABLE')
-  var name=emaillistarray[0]; 
-  var cclist=emaillistarray[1];
-  name=name.toString();
-  var username=name.split('@');
-  var mailusername=username[0].toUpperCase();
-  var emailtempstmt=temtable_schema_conn.createStatement();
-  var emailtempquery="SELECT *FROM EMAIL_TEMPLATE_DETAILS WHERE ET_ID=14";
-  var emailtempresult=emailtempstmt.executeQuery(emailtempquery);
-  if(emailtempresult.next())
+  try{
+    var temtable_schema_conn =eilib.db_GetConnection();
+    Trigger_Run_Time(temtable_schema_conn,'DROP TEMP TABLES');
+    var emaillistarray=eilib.getProfileEmailId(temtable_schema_conn,'DROPTABLE')
+    var name=emaillistarray[0]; 
+    var cclist=emaillistarray[1];
+    name=name.toString();
+    var username=name.split('@');
+    var mailusername=username[0].toUpperCase();
+    var emailtempstmt=temtable_schema_conn.createStatement();
+    var emailtempquery="SELECT *FROM EMAIL_TEMPLATE_DETAILS WHERE ET_ID=14";
+    var emailtempresult=emailtempstmt.executeQuery(emailtempquery);
+    if(emailtempresult.next())
+    {
+      var emailsub=emailtempresult.getString(3);
+      var subject=emailtempresult.getString(4);
+    }
+    emailtempresult.close();
+    emailtempstmt.close();
+    var CURRENT_MONTH=Utilities.formatDate(new Date(), TimeZone, 'dd-MMMM-yyyy')
+    emailsub=emailsub.replace('CURRENTDATE',CURRENT_MONTH);
+    emailsub=emailsub.replace('[INSTANCENAME]',InstanceName);
+    emailsub=emailsub.replace('[SCHEMANAME]',schema_name);
+    emailsub=emailsub.toUpperCase();
+    subject=subject.replace('CURRENTDATE',CURRENT_MONTH);
+    subject=subject.replace('[INSTANCENAME]',InstanceName);
+    subject=subject.replace('[SCHEMANAME]',schema_name);
+    subject=subject.toUpperCase();
+    var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'<br>'+'<table border="1" width="500" hieght="20">'+'<tr  bgcolor="#6495ed" style="color:white"  align="center" >'+'<td width=25%><h3>TEMP TABLE NAME(S)</h3></td>'+'</tr>'+'</table>'+'</body>';
+    var temtable_stmt=temtable_schema_conn.createStatement();
+    temtable_stmt.execute("CALL SP_DROP_PROD_TEMP_TABLE('"+schema_name+"','"+trg_UserStamp+"',@FINALTABLE)");
+    var temtable_result=temtable_stmt.executeQuery("SELECT @FINALTABLE");
+    if(temtable_result.next())
+    {
+      var temptablename=temtable_result.getString(1);
+    }
+    temtable_stmt.close();
+    var temtableselect_stmt=temtable_schema_conn.createStatement();
+    var temptableresult=temtableselect_stmt.executeQuery("SELECT *FROM "+temptablename+"");
+    while(temptableresult.next())
+    {
+      var temptableflag=1;
+      message += '<body>'+'<table border="1"width="500" >'+'<tr align="left" >'+'<td align="center" width=40%>'+temptableresult.getString(2)+'</td>'+'</tr>'+'</table>'+'</body>';
+    }
+    temptableresult.close();
+    eilib.DropTempTable(temtable_schema_conn, temptablename) 
+    var displayname=eilib.Get_MailDisplayName('DROP_TEMP_TABLE')
+    var advancedArgs={cc:cclist,name:displayname,htmlBody:message};  
+    if(temptableflag==1)
+    {
+      MailApp.sendEmail(name,emailsub,message ,advancedArgs);
+    }
+    temtable_schema_conn.close();
+  }catch(err)
   {
-    var emailsub=emailtempresult.getString(3);
-    var subject=emailtempresult.getString(4);
-  }
-  emailtempresult.close();
-  emailtempstmt.close();
-  var CURRENT_MONTH=Utilities.formatDate(new Date(), TimeZone, 'dd-MMMM-yyyy')
-  emailsub=emailsub.replace('CURRENTDATE',CURRENT_MONTH);
-  emailsub=emailsub.replace('[INSTANCENAME]',InstanceName);
-  emailsub=emailsub.replace('[SCHEMANAME]',schema_name);
-  emailsub=emailsub.toUpperCase();
-  subject=subject.replace('CURRENTDATE',CURRENT_MONTH);
-  subject=subject.replace('[INSTANCENAME]',InstanceName);
-  subject=subject.replace('[SCHEMANAME]',schema_name);
-  subject=subject.toUpperCase();
-  Logger.log(subject);
-  Logger.log(emailsub);
-  var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'<br>'+'<table border="1" width="500" hieght="20">'+'<tr  bgcolor="#6495ed" style="color:white"  align="center" >'+'<td width=25%><h3>TEMP TABLE NAME(S)</h3></td>'+'</tr>'+'</table>'+'</body>';
-  var temtable_stmt=temtable_schema_conn.createStatement();
-  temtable_stmt.execute("CALL SP_DROP_PROD_TEMP_TABLE('"+trg_UserStamp+"',@FINALTABLE)");
-  var temtable_result=temtable_stmt.executeQuery("SELECT @FINALTABLE");
-  if(temtable_result.next())
-  {
-    var temptablename=temtable_result.getString(1);
-  }
-  temtable_stmt.close();
-  var temtableselect_stmt=temtable_schema_conn.createStatement();
-  var temptableresult=temtableselect_stmt.executeQuery("SELECT *FROM "+temptablename+"");
-  while(temptableresult.next())
-  {
-    var temptableflag=1;
-    message += '<body>'+'<table border="1"width="500" >'+'<tr align="left" >'+'<td align="center" width=40%>'+temptableresult.getString(2)+'</td>'+'</tr>'+'</table>'+'</body>';
-  }
-  temptableresult.close();
-  temtableselect_stmt.execute("DROP TABLE "+temptablename+"");
-  temtableselect_stmt.close();
-  var displayname=eilib.Get_MailDisplayName('DROP_TEMP_TABLE')
-  var advancedArgs={cc:cclist,name:displayname,htmlBody:message};  
-  if(temptableflag==1)
-  {
-    MailApp.sendEmail(name,emailsub,message ,advancedArgs);
+    Logger.log("SCRIPT ERROR:"+err)
+    eilib.DropTempTable(temtable_schema_conn, temptablename) ;
+    temtable_schema_conn.close();
   }
 }
 function ERMLEEDS()
@@ -1649,7 +1667,9 @@ function ERMLEEDS()
       MailApp.sendEmail(REP_mailid, REP_subject, REP_message, {CC:REP_ccmailid,name:REP_subject,htmlBody: REP_message+': '+REP_spreadsheet_url});
       if((REP_mailid!=trg_UserStamp)&&(docowner!=trg_UserStamp)&&(REP_ccmailid!=trg_UserStamp))
       {
-        DriveApp.getFileById(REP_ssids).removeEditor(trg_UserStamp);
+        //        DriveApp.getFileById(REP_ssids).removeEditor(trg_UserStamp);
+        DocsList.getFileById(REP_ssids).removeEditor(trg_UserStamp);
+        
       }
     }
     REP_conn.close();

@@ -1,5 +1,9 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //***********************************************STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE**********//
+//DONE BY:PUNI
+//VER 1.6-SD:09/10/2014 ED:09/10/2014,TRACKER NO:706:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.5-SD:21/08/2014 ED:21/08/2014,TRACKER NO:706,updated new links,autogrow
 //DONE BY:LALITHA
 //VER 1.4-SD:09/06/2014 ED:13/06/2014,TRACKER NO:706,Updated commit funct,Changed failure funct,Hide the flex tble thn nly shown err msg for update nd delete,After deleting record again checked flex tble response length zero means reload the listbox
 //VER 1.3-SD:06/06/2014 ED:06/06/2014,Changed jquery link

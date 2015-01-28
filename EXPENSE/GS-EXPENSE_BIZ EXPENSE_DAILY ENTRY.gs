@@ -1,6 +1,12 @@
 /*<!--//*******************************************FILE DESCRIPTION*********************************************
 //*************************************************BIZ EXPENSE DAILY ENTRY*********************************************
+//DONE BY:PUNI
+<!---  VER 1.9-SD:09/10/2014 ED:09/10/2014,TRACKER NO:413,Corrected preloader n msgbox position
 //DONE BY:SARADAMBAL M
+<!---  VER 1.8-SD:15/09/2014 ED:15/09/2014,TRACKER NO:413,implemented script for preloader,msgbox,implemented script for style to submit button instead of div -style
+<!---  VER 1.7-SD:01/09/2014 ED:01/09/2014,TRACKER NO:413,updated new links,n script for autogrow
+<!---  VER 1.6-SD:05/08/2014 ED:05/08/2014,TRACKER NO:413,implemented script for inv from and inv item by adding ^^ & pass in sp
+<!---  VER 1.5-SD:27/07/2014 ED:27/07/2014,TRACKER NO:413,implemented script for starhub DP validation, autocomplete for unit category,cleared exp unit DP issue
 <!---  VER 1.4-SD:11/07/2014 ED:12/07/2014,TRACKER NO:413,implemented sp to get inv,sdate & edate for dynamic dp validation using eilib,corrected some coding to remove multirow after selecting another type of expense,cleared starhub dp validation issue
 <!---  VER 1.3-SD:17/06/2014 ED:17/06/2014,TRACKER NO:413,implemented script for commit and failure function ,implemented script for numbers only,removed extra class for elect amt
 <!---  VER 1.2-SD:04/06/2014 ED:04/06/2014;TRACKER NO:413//cleared petty cash issue (bal) after saving,put blur and change func for amt validation
@@ -143,7 +149,7 @@ try
     var BDLY_INPUT_tableerrmsgarr=[];
     BDLY_INPUT_tableerrmsgarr=eilib.GetErrorMessageList(BDLY_INPUT_conn,BDLY_INPUT_errmsgids);
     var BDLY_INPUT_expanse_arrayvalues={"BDLY_INPUT_empdetailsarry":BDLY_INPUT_empdetailsarry,"BDLY_INPUT_tableerrmsgarr":BDLY_INPUT_tableerrmsgarr.errormsg,"BDLY_INPUT_detailstarhub":BDLY_INPUT_detailstarhub,"BDLY_INPUT_detailelecticity":BDLY_INPUT_detailelecticity,"BDLY_INPUT_detailairconservice":BDLY_INPUT_detailairconservice,"BDLY_INPUT_detailcarpark":BDLY_INPUT_detailcarpark,"BDLY_INPUT_detaildigitalvoice":BDLY_INPUT_detaildigitalvoice, "BDLY_INPUT_unittable":BDLY_INPUT_unittable,"BDLY_INPUT_customer":BDLY_INPUT_customer,"BDLY_INPUT_customerentrydetails":BDLY_INPUT_customerentrydetails,"BDLY_INPUT_expanse_array":BDLY_INPUT_expanse_array}//,"BDLY_INPUT_errmsgarr":BDLY_INPUT_errmsgarr}
-    BDLY_INPUT_errorarray.push(BDLY_INPUT_expanse_arrayvalues)
+    BDLY_INPUT_errorarray.push(BDLY_INPUT_expanse_arrayvalues);
     BDLY_INPUT_conn.close();
     return BDLY_INPUT_errorarray;
   }
@@ -151,7 +157,7 @@ try
   function BDLY_INPUT_get_unitno(BDLY_INPUT_type)
   {
     var BDLY_INPUT_conn = eilib.db_GetConnection(); 
-    var BDLY_INPUT_unitno_array=[];
+    var BDLY_INPUT_unitno_array=[]; var BDLY_INPUT_unit_autocomplete=[];
     var BDLY_INPUT_select_unitno=[];
     var  BDLY_INPUT_unitno_stmt=BDLY_INPUT_conn.createStatement();
     BDLY_INPUT_select_unitno[9]="SELECT DISTINCT U.UNIT_NO FROM UNIT U,EXPENSE_DETAIL_AIRCON_SERVICE AIRCONDTL WHERE (U.UNIT_ID=AIRCONDTL.UNIT_ID) ORDER BY U.UNIT_NO ASC"
@@ -169,8 +175,10 @@ try
     }
     BDLY_INPUT_unitno_rs.close();
     BDLY_INPUT_unitno_stmt.close();
-    BDLY_INPUT_conn.close()
-    return BDLY_INPUT_unitno_array 
+    if(BDLY_INPUT_type==3)
+      BDLY_INPUT_unit_autocomplete=eilib.BDLY_getinvoicefrom(BDLY_INPUT_conn); 
+    BDLY_INPUT_conn.close();
+    return [BDLY_INPUT_unitno_array,BDLY_INPUT_unit_autocomplete]; 
   }
   //GET THE PETTY CASH BALANCE//
   function BDLY_INPUT_get_balance(){
@@ -335,396 +343,6 @@ try
     BDLY_INPUT_conn.close();
     return  BDLY_INPUT_cleanername;
   }
-  /*--------------------------------------FUNCTION TO CHECK WHETHER THE DATA INSERTED OR NOT---------------------------------------*/
-  function BDLY_INPUT_getmaxprimaryid(BDLY_INPUT_expense_types){
-    var BDLY_INPUT_conn =eilib.db_GetConnection();
-    var BDLY_INPUT_twodimen={9:['EXPENSE_AIRCON_SERVICE','EAS_ID'],8:['EXPENSE_CARPARK','ECP_PARK_ID'],
-                             7:['EXPENSE_MOVING_IN_AND_OUT','EMIO_ID'],3:['EXPENSE_UNIT','EU_ID'],
-                             11:['EXPENSE_HOUSEKEEPING','EHK_ID'],4:['EXPENSE_FACILITY_USE','EFU_ID'],
-                             1:['EXPENSE_ELECTRICITY','EE_ID']                                  
-                            }
-    var BDLY_INPUT_stmt_primaryid = BDLY_INPUT_conn.createStatement();
-    var BDLY_INPUT_select="SELECT MAX("+BDLY_INPUT_twodimen[BDLY_INPUT_expense_types][1]+") AS PRIMARY_ID FROM "+BDLY_INPUT_twodimen[BDLY_INPUT_expense_types][0]+"";
-    var BDLY_INPUT_rs_primaryid=BDLY_INPUT_stmt_primaryid.executeQuery(BDLY_INPUT_select);
-    while(BDLY_INPUT_rs_primaryid.next())
-      var BDLY_INPUT_primaryid=BDLY_INPUT_rs_primaryid.getString("PRIMARY_ID");
-    BDLY_INPUT_rs_primaryid.close();BDLY_INPUT_stmt_primaryid.close();   
-    return BDLY_INPUT_primaryid;
-  }
-  //SAVE ALL  FORM DATA IN THE TABLE//
-  function BDLY_INPUT_save_values(BDLY_INPUT_form_values)
-  {
-    var BDLY_INPUT_refresh=[];
-    var BDLY_INPUT_exptype=BDLY_INPUT_form_values.BDLY_INPUT_lb_selectexptype;
-    var BDLY_INPUT_unitno=BDLY_INPUT_form_values.BDLY_INPUT_lb_unitno;
-    var BDLY_INPUT_conn = eilib.db_GetConnection();
-    BDLY_INPUT_conn.setAutoCommit(false);
-    if((BDLY_INPUT_exptype==9)||(BDLY_INPUT_exptype==8)||(BDLY_INPUT_exptype==7)||(BDLY_INPUT_exptype==3)||(BDLY_INPUT_exptype==11)||(BDLY_INPUT_exptype==4)||(BDLY_INPUT_exptype==1))
-    var BDLY_INPUT_primaryid_before=BDLY_INPUT_getmaxprimaryid(BDLY_INPUT_exptype)
-    //AIRCON SERVICES SAVING PART//
-    if(BDLY_INPUT_exptype==9){
-      var BDLY_INPUT_serviceby=BDLY_INPUT_form_values.BDLY_INPUT_tb_serviceby;
-      var BDLY_INPUT_invoicedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_air_date);
-      var BDLY_INPUT_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_aircon_comments;
-      if(BDLY_INPUT_comments=="")//COMMENTS
-      {  BDLY_INPUT_comments=null;}else{
-        BDLY_INPUT_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_comments)+'"';}
-      var BDLY_INPUT_airconid=(BDLY_INPUT_form_values.BDLY_INPUT_hidden_edasid).trim();      
-      var BDLY_INPUT_airconsave_stmt=BDLY_INPUT_conn.createStatement();
-      var BDLY_INPUT_insert_aircon="INSERT INTO EXPENSE_AIRCON_SERVICE(EDAS_ID,EAS_DATE,EAS_COMMENTS,ULD_ID)values("+BDLY_INPUT_airconid+",'"+BDLY_INPUT_invoicedate+"',"+BDLY_INPUT_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";
-      BDLY_INPUT_airconsave_stmt.execute(BDLY_INPUT_insert_aircon);
-      BDLY_INPUT_airconsave_stmt.close();    
-      BDLY_INPUT_conn.commit();
-    }
-    //CAR PARK SAVING PART//
-    if(BDLY_INPUT_exptype==8){      
-      var BDLY_INPUT_carno=BDLY_INPUT_form_values.BDLY_INPUT_tb_carno;      
-      var BDLY_INPUT_cp_invoicedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_cp_invoicedate);
-      var BDLY_INPUT_cp_invoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_cp_invoiceamt; 
-      var BDLY_INPUT_cp_fromdate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_cp_fromdate);
-      var BDLY_INPUT_cp_todate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_cp_todate);
-      var BDLY_INPUT_cp_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_cp_comments;
-      var BDLY_INPUT_edcpid=BDLY_INPUT_form_values.BDLY_INPUT_hidden_edcpid;
-      if(BDLY_INPUT_cp_comments=="")//COMMENTS
-      { BDLY_INPUT_cp_comments=null;}else{
-        BDLY_INPUT_cp_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_cp_comments)+'"';}
-      var BDLY_INPUT_carparksavestmt = BDLY_INPUT_conn.createStatement();
-      var BDLY_INPUT_insert_carpark = "INSERT INTO EXPENSE_CARPARK (ULD_ID,EDCP_ID,ECP_INVOICE_DATE,ECP_FROM_PERIOD,ECP_TO_PERIOD,ECP_AMOUNT,ECP_COMMENTS) VALUES((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),"+BDLY_INPUT_edcpid+",'"+BDLY_INPUT_cp_invoicedate+"','"+BDLY_INPUT_cp_fromdate+"','"+BDLY_INPUT_cp_todate+"','"+BDLY_INPUT_cp_invoiceamt+"',"+BDLY_INPUT_cp_comments+")";
-      BDLY_INPUT_carparksavestmt.execute(BDLY_INPUT_insert_carpark); 
-      BDLY_INPUT_carparksavestmt.close(); 
-      BDLY_INPUT_conn.commit();     
-    }
-    //PURCHASE NEW ACCESS CARD SAVING PART//
-    if(BDLY_INPUT_exptype==6){ 
-      var BDLY_INPUT_access_cardno=BDLY_INPUT_form_values.BDLY_INPUT_tb_access_cardno;
-      var BDLY_INPUT_access_date=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_access_date); 
-      var BDLY_INPUT_access_invoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_access_invoiceamt;
-      var BDLY_INPUT_access_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_access_comments;      
-      var BDLY_INPUT_unitid_stmt = BDLY_INPUT_conn.createStatement();
-      if(BDLY_INPUT_access_comments=="")//COMMENTS
-      { BDLY_INPUT_access_comments=null;}else{
-        BDLY_INPUT_access_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_access_comments)+'"';}
-      var BDLY_INPUT_insert_card="CALL SP_BIZDLY_PURCHASE_NEW_CARD_INSERT("+BDLY_INPUT_unitno+","+BDLY_INPUT_access_cardno+",'"+BDLY_INPUT_access_date+"',"+BDLY_INPUT_access_invoiceamt+","+BDLY_INPUT_access_comments+",'"+UserStamp+"',@FLAG_INSERT)";
-      BDLY_INPUT_unitid_stmt.execute(BDLY_INPUT_insert_card);
-      BDLY_INPUT_unitid_stmt.close();
-      BDLY_INPUT_conn.commit();
-    }
-    //PETTY CASH SAVING PART//
-    if(BDLY_INPUT_exptype==10)
-    {
-      var BDLY_INPUT_petty_cashin=BDLY_INPUT_form_values.BDLY_INPUT_tb_petty_cashin;
-      var BDLY_INPUT_petty_date=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_petty_date); 
-      var BDLY_INPUT_petty_cashout=BDLY_INPUT_form_values.BDLY_INPUT_tb_petty_cashout;
-      if(BDLY_INPUT_petty_cashout==''){       
-        BDLY_INPUT_petty_cashout=null
-      }
-      if(BDLY_INPUT_petty_cashin==''){
-        
-        BDLY_INPUT_petty_cashin=null
-      }
-      var BDLY_INPUT_petty_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_petty_comments; 
-      var BDLY_INPUT_petty_invoiceitem=BDLY_INPUT_form_values.BDLY_INPUT_ta_petty_invoiceitem;   
-      if(BDLY_INPUT_petty_invoiceitem!='')
-        BDLY_INPUT_petty_invoiceitem=eilib.ConvertSpclCharString(BDLY_INPUT_petty_invoiceitem)
-        if(BDLY_INPUT_petty_comments=="")//COMMENTS
-        { BDLY_INPUT_petty_comments=null;}else{
-          BDLY_INPUT_petty_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_petty_comments)+'"';}
-      var BDLY_INPUT_pettysave_stmt = BDLY_INPUT_conn.createStatement();
-      BDLY_INPUT_pettysave_stmt.execute("CALL SP_BIZDLY_PETTY_CASH_INSERT('"+UserStamp+"','"+BDLY_INPUT_petty_date+"',"+BDLY_INPUT_petty_cashin+","+BDLY_INPUT_petty_cashout+",'"+BDLY_INPUT_petty_invoiceitem+"',"+BDLY_INPUT_petty_comments+",@FLAG_INSERT)");
-      BDLY_INPUT_pettysave_stmt.close();
-      BDLY_INPUT_conn.commit();
-      BDLY_INPUT_refresh=BDLY_INPUT_get_balance();
-    }
-    //MOVING IN AND OUT SAVING PART//
-    if(BDLY_INPUT_exptype==7){
-      var BDLY_INPUT_moving_date=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_mov_date);
-      var BDLY_INPUT_moving_invoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_mov_invoiceamt;
-      var BDLY_INPUT_moving_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_mov_comments;    
-      var BDLY_INPUT_unitid_stmt = BDLY_INPUT_conn.createStatement();
-      if(BDLY_INPUT_moving_comments=="")//COMMENTS
-      { BDLY_INPUT_moving_comments=null;}else{
-        BDLY_INPUT_moving_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_moving_comments)+'"';}
-      var BDLY_INPUT_insert_moving = "INSERT INTO EXPENSE_MOVING_IN_AND_OUT (ULD_ID,UNIT_ID,EMIO_INVOICE_DATE,EMIO_AMOUNT,EMIO_COMMENTS) VALUES ((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),(SELECT UNIT_ID FROM UNIT U WHERE U.UNIT_NO='"+BDLY_INPUT_unitno+"'),'"+BDLY_INPUT_moving_date+"','"+BDLY_INPUT_moving_invoiceamt+"',"+BDLY_INPUT_moving_comments+")";
-      BDLY_INPUT_unitid_stmt.execute(BDLY_INPUT_insert_moving);
-      BDLY_INPUT_unitid_stmt.close();
-      BDLY_INPUT_conn.commit();
-    }
-    //UNIT EXPENSE SAVING PART//
-    if(BDLY_INPUT_exptype==3){
-      var  BDLY_INPUT_arrunitvalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_uexp_unit;
-      var find_isArray=(BDLY_INPUT_arrunitvalue.toString()).search(',');
-      var BDLY_INPUT_unitnovalue=BDLY_INPUT_form_values.BDLY_INPUT_hidden_customerid;
-      var BDLY_INPUT_unitnovalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_uexp_unit;
-      var BDLY_INPUT_categoryvalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_uexp_category;
-      var BDLY_INPUT_customervalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_uexp_customer;
-      var BDLY_INPUT_customerid=BDLY_INPUT_form_values.BDLY_INPUT_tb_uexp_hideradioid;
-      var BDLY_INPUT_invoicedatevalue=BDLY_INPUT_form_values.BDLY_INPUT_db_uexp_invoicedate;
-      var BDLY_INPUT_amountvalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_uexp_amount;
-      var BDLY_INPUT_invoiceitemvalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_uexp_invoiceitem;
-      var BDLY_INPUT_invoicefromvalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_uexp_invoicefrom;
-      var BDLY_INPUT_commentsvalue=BDLY_INPUT_form_values.BDLY_INPUT_ta_uexpcomments;
-      var BDLY_INPUT_array_length=parseInt(BDLY_INPUT_unitnovalue.length);
-      var BDLY_INPUT_comments_split='';
-      if((Array.isArray(BDLY_INPUT_commentsvalue))==true){
-        for(var i=0;i<BDLY_INPUT_commentsvalue.length;i++)
-        {
-          if(BDLY_INPUT_commentsvalue[i]==''){
-            if(i==0)
-              BDLY_INPUT_comments_split +=' '
-              else
-                BDLY_INPUT_comments_split +='^^'+' '; }          
-          else{
-            if(i==0)
-              BDLY_INPUT_comments_split +=eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue[i]);
-            else
-              BDLY_INPUT_comments_split +='^^'+eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue[i]);
-          }  
-          BDLY_INPUT_invoicedatevalue[i]=eilib.SqlDateFormat(BDLY_INPUT_invoicedatevalue[i]);
-          BDLY_INPUT_invoiceitemvalue[i]=eilib.ConvertSpclCharString(BDLY_INPUT_invoiceitemvalue[i]);
-          BDLY_INPUT_invoicefromvalue[i]=eilib.ConvertSpclCharString(BDLY_INPUT_invoicefromvalue[i]);
-          if(BDLY_INPUT_customerid[i]=='')
-            BDLY_INPUT_customerid[i]=null;
-        }}
-      else
-      {
-        if(BDLY_INPUT_commentsvalue=='')
-          BDLY_INPUT_comments_split=' ';
-        else
-          BDLY_INPUT_comments_split=eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue);
-        if(BDLY_INPUT_customerid=='')
-          BDLY_INPUT_customerid=' ';
-        BDLY_INPUT_invoicedatevalue=eilib.SqlDateFormat(BDLY_INPUT_invoicedatevalue);
-        BDLY_INPUT_invoiceitemvalue=eilib.ConvertSpclCharString(BDLY_INPUT_invoiceitemvalue);
-        BDLY_INPUT_invoicefromvalue=eilib.ConvertSpclCharString(BDLY_INPUT_invoicefromvalue);
-      }
-      var BDLY_INPUT_unit_insertquery= "CALL SP_BIZDLY_UNIT_INSERT('"+BDLY_INPUT_unitnovalue+"','"+BDLY_INPUT_categoryvalue+"','"+BDLY_INPUT_customerid+"','"+BDLY_INPUT_invoicedatevalue+"','"+BDLY_INPUT_amountvalue+"','"+BDLY_INPUT_invoiceitemvalue+"','"+BDLY_INPUT_invoicefromvalue+"','"+BDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
-      var BDLY_INPUT_unitstmt=BDLY_INPUT_conn.createStatement();
-      BDLY_INPUT_unitstmt.execute(BDLY_INPUT_unit_insertquery);
-      BDLY_INPUT_unitstmt.close();
-      BDLY_INPUT_conn.commit();
-    }
-    //HOUSEKEEPING PAYMENT SAVING PART//
-    if(BDLY_INPUT_exptype==12){
-      var BDLY_INPUT_tb_payunitnoold=BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_unitno;
-      var BDLY_INPUT_tb_payunitnonew=BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_unitnocheck;
-      var BDLY_INPUT_tb_payunitno;
-      if(BDLY_INPUT_tb_payunitnoold==undefined)
-      {
-        BDLY_INPUT_tb_payunitno=BDLY_INPUT_tb_payunitnonew;
-      }
-      if(BDLY_INPUT_tb_payunitnonew==undefined)
-      {
-        BDLY_INPUT_tb_payunitno=BDLY_INPUT_tb_payunitnoold;
-      }
-      var BDLY_INPUT_tb_payinvoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_invoiceamt;    
-      var BDLY_INPUT_tb_payforperiod=BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_forperiod;
-      var BDLY_INPUT_date=eilib.GetForperiodDateFormat(BDLY_INPUT_tb_payforperiod,BDLY_INPUT_tb_payforperiod)
-      var BDLY_INPUT_period=BDLY_INPUT_date.frmdate;
-      var BDLY_INPUT_tb_paypaiddate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_paiddate);
-      var BDLY_INPUT_ta_paycomments=BDLY_INPUT_form_values.BDLY_INPUT_ta_pay_comments;
-      if(BDLY_INPUT_ta_paycomments!='')
-        BDLY_INPUT_ta_paycomments=eilib.ConvertSpclCharString(BDLY_INPUT_ta_paycomments)
-        var timeZoneFormat=eilib.getTimezone();
-      var BDLY_INPUT_housepayment_stmt = BDLY_INPUT_conn.createStatement();
-      var BDLY_INPUT_hkp_savequery="CALL SP_BIZDLY_HOUSEKEEPING_PAYMENT_INSERT("+BDLY_INPUT_tb_payunitno+",'"+BDLY_INPUT_period+"','"+BDLY_INPUT_tb_paypaiddate+"',"+BDLY_INPUT_tb_payinvoiceamt+",'"+BDLY_INPUT_ta_paycomments+"','"+UserStamp+"',@FLAG_INSERT)";
-      BDLY_INPUT_housepayment_stmt.execute(BDLY_INPUT_hkp_savequery);
-      BDLY_INPUT_housepayment_stmt.close();
-      BDLY_INPUT_conn.commit();
-      BDLY_INPUT_refresh=BDLY_INPUT_get_allunitno();
-    }
-    //HOUSEKEEPING SAVING PART//
-    if(BDLY_INPUT_exptype==11){
-      var BDLY_INPUT_lb_housecleanername=BDLY_INPUT_form_values.BDLY_INPUT_lb_house_cleanername;
-      var BDLY_INPUT_tb_housedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_house_date);
-      var BDLY_INPUT_tb_househours=BDLY_INPUT_form_values.BDLY_INPUT_tb_house_hours;
-      var BDLY_INPUT_tb_housemin=BDLY_INPUT_form_values.BDLY_INPUT_tb_house_min;
-      var BDLY_INPUT_ta_housedesc=BDLY_INPUT_form_values.BDLY_INPUT_ta_house_desc;
-      var BDLY_INPUT_radio_hkname=BDLY_INPUT_form_values.BDLY_INPUT_radio_hkname;
-      var BDLY_INPUT_cleanerid=BDLY_INPUT_form_values.BDLY_INPUT_hidden_edeid;
-      var BDLY_INPUT_index=BDLY_INPUT_lb_housecleanername.indexOf('_');
-      var BDLY_INPUT_Cnamelength=BDLY_INPUT_lb_housecleanername.length;
-      if(BDLY_INPUT_ta_housedesc!='')
-        BDLY_INPUT_ta_housedesc=eilib.ConvertSpclCharString(BDLY_INPUT_ta_housedesc)
-        var BDLY_INPUT_firstname= BDLY_INPUT_lb_housecleanername.substring(0,BDLY_INPUT_index);
-      var BDLY_INPUT_lastname=BDLY_INPUT_lb_housecleanername.substring(BDLY_INPUT_index+1,BDLY_INPUT_Cnamelength);
-      if(BDLY_INPUT_tb_househours!=""&&BDLY_INPUT_tb_housemin!="")
-      {
-        var BDLY_INPUT_duration=BDLY_INPUT_tb_househours+'.'+BDLY_INPUT_tb_housemin;
-      }
-      if(BDLY_INPUT_tb_househours!=""&&BDLY_INPUT_tb_housemin=="")
-      {
-        var BDLY_INPUT_duration=BDLY_INPUT_tb_househours+"."+'00';
-      }
-      if(BDLY_INPUT_tb_househours==""&&BDLY_INPUT_tb_housemin!="")
-      {
-        var BDLY_INPUT_duration='00'+"."+BDLY_INPUT_tb_housemin;
-      }
-      var BDLY_INPUT_hksavequery = "INSERT INTO EXPENSE_HOUSEKEEPING(ULD_ID,EHK_WORK_DATE,EHK_DURATION,EHK_DESCRIPTION,EMP_ID) VALUES ((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),'"+BDLY_INPUT_tb_housedate+"','"+BDLY_INPUT_duration+"','"+BDLY_INPUT_ta_housedesc+"','"+BDLY_INPUT_cleanerid+"')";
-      var BDLY_INPUT_cleanerstmt=BDLY_INPUT_conn.createStatement();
-      BDLY_INPUT_cleanerstmt.execute(BDLY_INPUT_hksavequery);
-      BDLY_INPUT_cleanerstmt.close();
-      BDLY_INPUT_conn.commit();
-    }
-    //FACILITY USE SAVING PART//
-    if(BDLY_INPUT_exptype==4){
-      var BDLY_INPUT_tb_payunitno=BDLY_INPUT_form_values.BDLY_INPUT_lb_unitno;
-      var BDLY_INPUT_tb_facinvoicedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_fac_invoicedate);
-      var BDLY_INPUT_tb_facdepositamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_fac_depositamt;
-      var BDLY_INPUT_tb_facinvoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_fac_invoiceamt;
-      var BDLY_INPUT_ta_faccomments=BDLY_INPUT_form_values.BDLY_INPUT_ta_fac_comments;
-      if(BDLY_INPUT_tb_facdepositamt=="" || BDLY_INPUT_tb_facdepositamt==undefined)
-      {
-        BDLY_INPUT_tb_facdepositamt=null
-      }
-      else if(BDLY_INPUT_tb_facinvoiceamt=="" || BDLY_INPUT_tb_facinvoiceamt==undefined)
-      {
-        BDLY_INPUT_tb_facinvoiceamt=null
-      }
-      if(BDLY_INPUT_ta_faccomments=="")//COMMENTS
-      {  BDLY_INPUT_ta_faccomments=null;}else{
-        BDLY_INPUT_ta_faccomments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_ta_faccomments)+'"';}
-      var BDLY_INPUT_facility_without_depositinvoiceamt_insertquery = "INSERT INTO EXPENSE_FACILITY_USE(ULD_ID,UNIT_ID,EFU_INVOICE_DATE,EFU_COMMENTS,EFU_AMOUNT,EFU_DEPOSIT) VALUES ((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),(SELECT UNIT_ID FROM UNIT U WHERE U.UNIT_NO='"+BDLY_INPUT_tb_payunitno+"'),'"+BDLY_INPUT_tb_facinvoicedate+"',"+BDLY_INPUT_ta_faccomments+","+BDLY_INPUT_tb_facinvoiceamt+","+BDLY_INPUT_tb_facdepositamt+")";
-      var BDLY_INPUT_facilitystmt = BDLY_INPUT_conn.createStatement();
-      BDLY_INPUT_facilitystmt.execute(BDLY_INPUT_facility_without_depositinvoiceamt_insertquery);
-      BDLY_INPUT_facilitystmt.close();
-      BDLY_INPUT_conn.commit();
-    }
-    //DIGITAL VOICE SAVING PART//
-    if(BDLY_INPUT_exptype==5){
-      var BDLY_INPUT_tb_gigunitno=BDLY_INPUT_form_values.BDLY_INPUT_lb_unitno;
-      var BDLY_INPUT_tb_digiinvoicedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_invoicedate);
-      var BDLY_INPUT_tb_digifromdate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_fromdate);
-      var BDLY_INPUT_tb_digitodate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_todate);
-      var BDLY_INPUT_tb_digitovoice=BDLY_INPUT_form_values.BDLY_INPUT_lb_digi_invoiceto;
-      var BDLY_INPUT_tb_digiinvoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_invoiceamt;
-      var BDLY_INPUT_ta_digicomments=BDLY_INPUT_form_values.BDLY_INPUT_ta_digi_comments;
-      if(BDLY_INPUT_ta_digicomments!='')
-        BDLY_INPUT_ta_digicomments=eilib.ConvertSpclCharString(BDLY_INPUT_ta_digicomments)
-        var BDLY_INPUT_digitalsavestmt = BDLY_INPUT_conn.createStatement();
-      if(BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_invoiceto==undefined)
-        var BDLY_INPUT_digitalsavequery = "CALL SP_BIZDLY_DIGITAL_VOICE_INSERT("+BDLY_INPUT_tb_gigunitno+","+BDLY_INPUT_tb_digitovoice+",'"+BDLY_INPUT_tb_digiinvoicedate+"','"+BDLY_INPUT_tb_digifromdate+"','"+BDLY_INPUT_tb_digitodate+"','"+BDLY_INPUT_tb_digiinvoiceamt+"','"+BDLY_INPUT_ta_digicomments+"','"+UserStamp+"',@FLAG_INSERT)";
-      else
-        var BDLY_INPUT_digitalsavequery = "CALL SP_BIZDLY_DIGITAL_VOICE_INSERT("+BDLY_INPUT_tb_gigunitno+",(SELECT ECN_ID FROM EXPENSE_CONFIGURATION WHERE ECN_DATA='"+BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_invoiceto+"' AND CGN_ID=27),'"+BDLY_INPUT_tb_digiinvoicedate+"','"+BDLY_INPUT_tb_digifromdate+"','"+BDLY_INPUT_tb_digitodate+"','"+BDLY_INPUT_tb_digiinvoiceamt+"','"+BDLY_INPUT_ta_digicomments+"','"+UserStamp+"',@FLAG_INSERT)";
-      BDLY_INPUT_digitalsavestmt.execute(BDLY_INPUT_digitalsavequery);
-      BDLY_INPUT_digitalsavestmt.close();
-      BDLY_INPUT_conn.commit();
-    }
-    //ELECTRICITY SAVE FUNCTION//
-    if(BDLY_INPUT_exptype==1){
-      var  BDLY_INPUT_electunit=BDLY_INPUT_form_values.BDLY_INPUT_lb_elect_unit;
-      var find_isArray=(BDLY_INPUT_electunit.toString()).search(',');
-      var BDLY_INPUT_electamountstmt = BDLY_INPUT_conn.createStatement();
-      var BDLY_INPUT_electunit=BDLY_INPUT_form_values.BDLY_INPUT_lb_elect_unit;
-      var BDLY_INPUT_invoiceto=BDLY_INPUT_form_values.BDLY_INPUT_lb_elect_payment;
-      var BDLY_INPUT_invoicedate=BDLY_INPUT_form_values.BDLY_INPUT_db_invoicedate;
-      var BDLY_INPUT_elect_amount=BDLY_INPUT_form_values.BDLY_INPUT_hidden_amt_elec;
-      var BDLY_INPUT_fromperiod=BDLY_INPUT_form_values.BDLY_INPUT_db_fromperiod;
-      var BDLY_INPUT_toperiod=BDLY_INPUT_form_values.BDLY_INPUT_db_toperiod;  
-      var BDLY_INPUT_elect_payment=BDLY_INPUT_form_values.BDLY_INPUT_lb_elect_payment;    
-      var BDLY_INPUT_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_comments;
-      var BDLY_INPUT_array_length=parseInt(BDLY_INPUT_electunit.length);
-      var BDLY_INPUT_comments_split=[];
-      if((Array.isArray(BDLY_INPUT_comments))==true){
-        for(var i=0;i<BDLY_INPUT_comments.length;i++)
-        {
-          if(BDLY_INPUT_comments[i]==''){
-            if(i==0)
-              BDLY_INPUT_comments_split +=' '
-              else
-                BDLY_INPUT_comments_split +='^^'+' '; }
-          else{
-            if(i==0)
-              BDLY_INPUT_comments_split +=eilib.ConvertSpclCharString(BDLY_INPUT_comments[i]);
-            else
-              BDLY_INPUT_comments_split +='^^'+eilib.ConvertSpclCharString(BDLY_INPUT_comments[i]);
-          }  
-          BDLY_INPUT_invoicedate[i]=eilib.SqlDateFormat(BDLY_INPUT_invoicedate[i]);
-          BDLY_INPUT_fromperiod[i]=eilib.SqlDateFormat(BDLY_INPUT_fromperiod[i]);
-          BDLY_INPUT_toperiod[i]=eilib.SqlDateFormat(BDLY_INPUT_toperiod[i]);
-        }}
-      else
-      {
-        if(BDLY_INPUT_comments=='')
-          BDLY_INPUT_comments_split=' ';
-        else
-          BDLY_INPUT_comments_split=eilib.ConvertSpclCharString(BDLY_INPUT_comments);
-        BDLY_INPUT_invoicedate=eilib.SqlDateFormat(BDLY_INPUT_invoicedate);
-        BDLY_INPUT_fromperiod=eilib.SqlDateFormat(BDLY_INPUT_fromperiod);
-        BDLY_INPUT_toperiod=eilib.SqlDateFormat(BDLY_INPUT_toperiod);    }
-      var BDLY_INPUT_insertinto_electricity_withoutcomment = "CALL SP_BIZDLY_ELECTRICITY_INSERT('"+BDLY_INPUT_electunit+"','"+BDLY_INPUT_invoicedate+"','"+BDLY_INPUT_fromperiod+"','"+BDLY_INPUT_toperiod+"','"+BDLY_INPUT_invoiceto+"','"+BDLY_INPUT_elect_amount+"','"+BDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
-      BDLY_INPUT_electamountstmt.execute(BDLY_INPUT_insertinto_electricity_withoutcomment);
-      BDLY_INPUT_electamountstmt.close();
-      BDLY_INPUT_conn.commit();
-    }
-    //STAR HUB SAVING PART//
-    if(BDLY_INPUT_exptype==2){      
-      var  BDLY_INPUT_arrunitvalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_star_unit;
-      var find_isArray=(BDLY_INPUT_arrunitvalue.toString()).search(',');
-      var BDLY_INPUT_unitnovalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_star_unit;
-      var BDLY_INPUT_accnovalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_star_accno;
-      var BDLY_INPUT_invoicetovalue=BDLY_INPUT_form_values.BDLY_INPUT_hidden_star_ecnid;
-      var BDLY_INPUT_invoicedatevalue=BDLY_INPUT_form_values.BDLY_INPUT_db_star_invoicedate;
-      var BDLY_INPUT_amountvalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_star_amount;
-      var BDLY_INPUT_fromdatevalue=BDLY_INPUT_form_values.BDLY_INPUT_db_star_fromperiod;
-      var BDLY_INPUT_todatevalue=BDLY_INPUT_form_values.BDLY_INPUT_db_star_toperiod;    
-      var BDLY_INPUT_commentsvalue=BDLY_INPUT_form_values.BDLY_INPUT_ta_star_comments;
-      var BDLY_INPUT_array_length=parseInt(BDLY_INPUT_unitnovalue.length);
-      var BDLY_INPUT_comments_split='';
-      if((Array.isArray(BDLY_INPUT_commentsvalue))==true){
-        for(var i=0;i<BDLY_INPUT_commentsvalue.length;i++)
-        {
-          if(BDLY_INPUT_commentsvalue[i]==''){
-            if(i==0)
-              BDLY_INPUT_comments_split +=' '
-              else
-                BDLY_INPUT_comments_split +='^^'+' '; }
-          else{
-            if(i==0)
-              BDLY_INPUT_comments_split +=eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue[i]);
-            else
-              BDLY_INPUT_comments_split +='^^'+eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue[i]);
-          }  
-          BDLY_INPUT_invoicedatevalue[i]=eilib.SqlDateFormat(BDLY_INPUT_invoicedatevalue[i]);
-          BDLY_INPUT_fromdatevalue[i]=eilib.SqlDateFormat(BDLY_INPUT_fromdatevalue[i]);
-          BDLY_INPUT_todatevalue[i]=eilib.SqlDateFormat(BDLY_INPUT_todatevalue[i]);
-        }}
-      else
-      {
-        if(BDLY_INPUT_commentsvalue=='')
-          BDLY_INPUT_comments_split=' ';
-        else
-          BDLY_INPUT_comments_split=eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue);
-        BDLY_INPUT_invoicedatevalue=eilib.SqlDateFormat(BDLY_INPUT_invoicedatevalue);
-        BDLY_INPUT_fromdatevalue=eilib.SqlDateFormat(BDLY_INPUT_fromdatevalue);
-        BDLY_INPUT_todatevalue=eilib.SqlDateFormat(BDLY_INPUT_todatevalue);
-      }
-      var BDLY_INPUT_starhub_insert="CALL SP_BIZDLY_STARHUB_INSERT('"+BDLY_INPUT_unitnovalue+"','"+BDLY_INPUT_invoicetovalue+"','"+BDLY_INPUT_invoicedatevalue+"','"+BDLY_INPUT_fromdatevalue+"','"+BDLY_INPUT_todatevalue+"','"+BDLY_INPUT_amountvalue+"','"+BDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)"    
-      var BDLY_INPUT_starhub_savestmt = BDLY_INPUT_conn.createStatement(); 
-      BDLY_INPUT_starhub_savestmt.execute(BDLY_INPUT_starhub_insert);          
-      BDLY_INPUT_starhub_savestmt.close();
-      BDLY_INPUT_conn.commit();
-    }
-    if((BDLY_INPUT_exptype==9)||(BDLY_INPUT_exptype==8)||(BDLY_INPUT_exptype==7)||(BDLY_INPUT_exptype==11)||(BDLY_INPUT_exptype==4)){
-      var BDLY_INPUT_primaryid_after=BDLY_INPUT_getmaxprimaryid(BDLY_INPUT_exptype);
-      if(BDLY_INPUT_primaryid_after>BDLY_INPUT_primaryid_before)
-        var BDLY_INPUT_flag=1;
-      else
-        BDLY_INPUT_flag=0;
-    }else
-    {
-      var BDLY_INPUT_stmt_flag = BDLY_INPUT_conn.createStatement();
-      var BDLY_INPUT_flag_rs=BDLY_INPUT_stmt_flag.executeQuery("SELECT @FLAG_INSERT");
-      while(BDLY_INPUT_flag_rs.next())
-        var BDLY_INPUT_flag=BDLY_INPUT_flag_rs.getString("@FLAG_INSERT")
-        BDLY_INPUT_flag_rs.close();BDLY_INPUT_stmt_flag.close();
-    } 
-    if(BDLY_INPUT_exptype==5)
-      BDLY_INPUT_refresh=BDLY_INPUT_get_values(BDLY_INPUT_tb_gigunitno,BDLY_INPUT_exptype)
-      if((BDLY_INPUT_exptype==2)||(BDLY_INPUT_exptype==3)||(BDLY_INPUT_exptype==1))
-      BDLY_INPUT_refresh=BDLY_INPUT_get_unitno(BDLY_INPUT_exptype)
-      BDLY_INPUT_conn.close();
-    return [BDLY_INPUT_refresh,BDLY_INPUT_flag]
-  }
   //CHECK THE CUSTOMER NAME HAVING  MORE ID'S//
   function BDLY_INPUT_custvalidation(unit,customer,id)
   {
@@ -801,6 +419,368 @@ try
     }
     BDLY_INPUT_conn.close();
     return false;
+  }
+  //SAVE ALL  FORM DATA IN THE TABLE//
+  function BDLY_INPUT_save_values(BDLY_INPUT_form_values)
+  {
+    var BDLY_INPUT_refresh=[];
+    var BDLY_INPUT_exptype=BDLY_INPUT_form_values.BDLY_INPUT_lb_selectexptype;
+    var BDLY_INPUT_unitno=BDLY_INPUT_form_values.BDLY_INPUT_lb_unitno;
+    var BDLY_INPUT_conn = eilib.db_GetConnection();
+    BDLY_INPUT_conn.setAutoCommit(false);
+    //AIRCON SERVICES SAVING PART//
+    if(BDLY_INPUT_exptype==9){
+      var BDLY_INPUT_serviceby=BDLY_INPUT_form_values.BDLY_INPUT_tb_serviceby;
+      var BDLY_INPUT_invoicedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_air_date);
+      var BDLY_INPUT_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_aircon_comments;
+      if(BDLY_INPUT_comments=="")//COMMENTS
+      {  BDLY_INPUT_comments=null;}else{
+        BDLY_INPUT_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_comments)+'"';}
+      var BDLY_INPUT_airconid=(BDLY_INPUT_form_values.BDLY_INPUT_hidden_edasid).trim();      
+      var BDLY_INPUT_airconsave_stmt=BDLY_INPUT_conn.createStatement();
+      var BDLY_INPUT_insert_aircon="INSERT INTO EXPENSE_AIRCON_SERVICE(EDAS_ID,EAS_DATE,EAS_COMMENTS,ULD_ID)values("+BDLY_INPUT_airconid+",'"+BDLY_INPUT_invoicedate+"',"+BDLY_INPUT_comments+",(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";
+      BDLY_INPUT_airconsave_stmt.execute(BDLY_INPUT_insert_aircon);
+      BDLY_INPUT_airconsave_stmt.close();BDLY_INPUT_conn.commit();
+    }
+    //CAR PARK SAVING PART//
+    if(BDLY_INPUT_exptype==8){      
+      var BDLY_INPUT_carno=BDLY_INPUT_form_values.BDLY_INPUT_tb_carno;      
+      var BDLY_INPUT_cp_invoicedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_cp_invoicedate);
+      var BDLY_INPUT_cp_invoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_cp_invoiceamt; 
+      var BDLY_INPUT_cp_fromdate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_cp_fromdate);
+      var BDLY_INPUT_cp_todate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_cp_todate);
+      var BDLY_INPUT_cp_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_cp_comments;
+      var BDLY_INPUT_edcpid=BDLY_INPUT_form_values.BDLY_INPUT_hidden_edcpid;
+      if(BDLY_INPUT_cp_comments=="")//COMMENTS
+      { BDLY_INPUT_cp_comments=null;}else{
+        BDLY_INPUT_cp_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_cp_comments)+'"';}
+      var BDLY_INPUT_carparksavestmt = BDLY_INPUT_conn.createStatement();
+      var BDLY_INPUT_insert_carpark = "INSERT INTO EXPENSE_CARPARK (ULD_ID,EDCP_ID,ECP_INVOICE_DATE,ECP_FROM_PERIOD,ECP_TO_PERIOD,ECP_AMOUNT,ECP_COMMENTS) VALUES((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),"+BDLY_INPUT_edcpid+",'"+BDLY_INPUT_cp_invoicedate+"','"+BDLY_INPUT_cp_fromdate+"','"+BDLY_INPUT_cp_todate+"','"+BDLY_INPUT_cp_invoiceamt+"',"+BDLY_INPUT_cp_comments+")";
+      BDLY_INPUT_carparksavestmt.execute(BDLY_INPUT_insert_carpark); 
+      BDLY_INPUT_carparksavestmt.close(); BDLY_INPUT_conn.commit();
+    }
+    //PURCHASE NEW ACCESS CARD SAVING PART//
+    if(BDLY_INPUT_exptype==6){ 
+      var BDLY_INPUT_access_cardno=BDLY_INPUT_form_values.BDLY_INPUT_tb_access_cardno;
+      var BDLY_INPUT_access_date=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_access_date); 
+      var BDLY_INPUT_access_invoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_access_invoiceamt;
+      var BDLY_INPUT_access_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_access_comments;      
+      var BDLY_INPUT_unitid_stmt = BDLY_INPUT_conn.createStatement();
+      if(BDLY_INPUT_access_comments=="")//COMMENTS
+      { BDLY_INPUT_access_comments=null;}else{
+        BDLY_INPUT_access_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_access_comments)+'"';}
+      var BDLY_INPUT_insert_card="CALL SP_BIZDLY_PURCHASE_NEW_CARD_INSERT("+BDLY_INPUT_unitno+","+BDLY_INPUT_access_cardno+",'"+BDLY_INPUT_access_date+"','"+BDLY_INPUT_access_invoiceamt+"',"+BDLY_INPUT_access_comments+",'"+UserStamp+"',@FLAG_INSERT)";
+      BDLY_INPUT_unitid_stmt.execute(BDLY_INPUT_insert_card);
+      BDLY_INPUT_unitid_stmt.close();BDLY_INPUT_conn.commit();
+    }
+    //PETTY CASH SAVING PART//
+    if(BDLY_INPUT_exptype==10)
+    {
+      var BDLY_INPUT_petty_cashin=BDLY_INPUT_form_values.BDLY_INPUT_tb_petty_cashin;
+      var BDLY_INPUT_petty_date=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_petty_date); 
+      var BDLY_INPUT_petty_cashout=BDLY_INPUT_form_values.BDLY_INPUT_tb_petty_cashout;
+      if(BDLY_INPUT_petty_cashout==''){       
+        BDLY_INPUT_petty_cashout=null
+      }
+      if(BDLY_INPUT_petty_cashin==''){
+        BDLY_INPUT_petty_cashin=null;
+      }
+      var BDLY_INPUT_petty_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_petty_comments; 
+      var BDLY_INPUT_petty_invoiceitem=BDLY_INPUT_form_values.BDLY_INPUT_ta_petty_invoiceitem;   
+      if(BDLY_INPUT_petty_invoiceitem!='')
+        BDLY_INPUT_petty_invoiceitem=eilib.ConvertSpclCharString(BDLY_INPUT_petty_invoiceitem)
+        if(BDLY_INPUT_petty_comments=="")//COMMENTS
+        { BDLY_INPUT_petty_comments=null;}else{
+          BDLY_INPUT_petty_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_petty_comments)+'"';}
+      var BDLY_INPUT_pettysave_stmt = BDLY_INPUT_conn.createStatement();
+      BDLY_INPUT_pettysave_stmt.execute("CALL SP_BIZDLY_PETTY_CASH_INSERT('"+UserStamp+"','"+BDLY_INPUT_petty_date+"',"+BDLY_INPUT_petty_cashin+","+BDLY_INPUT_petty_cashout+",'"+BDLY_INPUT_petty_invoiceitem+"',"+BDLY_INPUT_petty_comments+",@FLAG_INSERT)");
+      BDLY_INPUT_pettysave_stmt.close();BDLY_INPUT_conn.commit();
+      BDLY_INPUT_refresh=BDLY_INPUT_get_balance();
+    }
+    //MOVING IN AND OUT SAVING PART//
+    if(BDLY_INPUT_exptype==7){
+      var BDLY_INPUT_moving_date=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_mov_date);
+      var BDLY_INPUT_moving_invoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_mov_invoiceamt;
+      var BDLY_INPUT_moving_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_mov_comments;    
+      var BDLY_INPUT_unitid_stmt = BDLY_INPUT_conn.createStatement();
+      if(BDLY_INPUT_moving_comments=="")//COMMENTS
+      { BDLY_INPUT_moving_comments=null;}else{
+        BDLY_INPUT_moving_comments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_moving_comments)+'"';}
+      var BDLY_INPUT_insert_moving = "INSERT INTO EXPENSE_MOVING_IN_AND_OUT (ULD_ID,UNIT_ID,EMIO_INVOICE_DATE,EMIO_AMOUNT,EMIO_COMMENTS) VALUES ((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),(SELECT UNIT_ID FROM UNIT U WHERE U.UNIT_NO='"+BDLY_INPUT_unitno+"'),'"+BDLY_INPUT_moving_date+"','"+BDLY_INPUT_moving_invoiceamt+"',"+BDLY_INPUT_moving_comments+")";
+      BDLY_INPUT_unitid_stmt.execute(BDLY_INPUT_insert_moving);
+      BDLY_INPUT_unitid_stmt.close();BDLY_INPUT_conn.commit();
+    }
+    //UNIT EXPENSE SAVING PART//
+    if(BDLY_INPUT_exptype==3){
+      var  BDLY_INPUT_arrunitvalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_uexp_unit;
+      var find_isArray=(BDLY_INPUT_arrunitvalue.toString()).search(',');
+      var BDLY_INPUT_unitnovalue=BDLY_INPUT_form_values.BDLY_INPUT_hidden_customerid;
+      var BDLY_INPUT_unitnovalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_uexp_unit;
+      var BDLY_INPUT_categoryvalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_uexp_category;
+      var BDLY_INPUT_customervalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_uexp_customer;
+      var BDLY_INPUT_customerid=BDLY_INPUT_form_values.BDLY_INPUT_tb_uexp_hideradioid;
+      var BDLY_INPUT_invoicedatevalue=BDLY_INPUT_form_values.BDLY_INPUT_db_uexp_invoicedate;
+      var BDLY_INPUT_amountvalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_uexp_amount;
+      var BDLY_INPUT_invoiceitemvalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_uexp_invoiceitem;
+      var BDLY_INPUT_invoicefromvalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_uexp_invoicefrom;
+      var BDLY_INPUT_commentsvalue=BDLY_INPUT_form_values.BDLY_INPUT_ta_uexpcomments;
+      var BDLY_INPUT_array_length=parseInt(BDLY_INPUT_unitnovalue.length);
+      var BDLY_INPUT_comments_split=''; var BDLY_INPUT_invfrom_split='';var BDLY_INPUT_invitem_split='';
+      if((Array.isArray(BDLY_INPUT_commentsvalue))==true){
+        for(var i=0;i<BDLY_INPUT_invoicefromvalue.length;i++)
+        {
+          if(BDLY_INPUT_commentsvalue[i]==''){
+            if(i==0)
+              BDLY_INPUT_comments_split +=' '
+              else
+                BDLY_INPUT_comments_split +='^^'+' '; }          
+          else{
+            if(i==0){
+              BDLY_INPUT_comments_split +=eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue[i]);
+            }
+            else{
+              BDLY_INPUT_comments_split +='^^'+eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue[i]);
+            }  }
+          if(i==0){
+            BDLY_INPUT_invitem_split +=eilib.ConvertSpclCharString(BDLY_INPUT_invoiceitemvalue[i]);
+            BDLY_INPUT_invfrom_split +=eilib.ConvertSpclCharString(BDLY_INPUT_invoicefromvalue[i]);}
+          else{
+            BDLY_INPUT_invitem_split +='^^'+eilib.ConvertSpclCharString(BDLY_INPUT_invoiceitemvalue[i]);
+            BDLY_INPUT_invfrom_split +='^^'+eilib.ConvertSpclCharString(BDLY_INPUT_invoicefromvalue[i]);
+          }
+          BDLY_INPUT_invoicedatevalue[i]=eilib.SqlDateFormat(BDLY_INPUT_invoicedatevalue[i]);
+          if(BDLY_INPUT_customerid[i]=='')
+            BDLY_INPUT_customerid[i]=null;
+        }}
+      else
+      {
+        if(BDLY_INPUT_commentsvalue=='')
+          BDLY_INPUT_comments_split=' ';
+        else
+          BDLY_INPUT_comments_split=eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue);
+        if(BDLY_INPUT_customerid=='')
+          BDLY_INPUT_customerid=' ';
+        BDLY_INPUT_invoicedatevalue=eilib.SqlDateFormat(BDLY_INPUT_invoicedatevalue);
+        BDLY_INPUT_invitem_split=eilib.ConvertSpclCharString(BDLY_INPUT_invoiceitemvalue);
+        BDLY_INPUT_invfrom_split=eilib.ConvertSpclCharString(BDLY_INPUT_invoicefromvalue);
+      }
+      var BDLY_INPUT_unit_insertquery= "CALL SP_BIZDLY_UNIT_INSERT('"+BDLY_INPUT_unitnovalue+"','"+BDLY_INPUT_categoryvalue+"','"+BDLY_INPUT_customerid+"','"+BDLY_INPUT_invoicedatevalue+"','"+BDLY_INPUT_amountvalue+"','"+BDLY_INPUT_invitem_split+"','"+BDLY_INPUT_invfrom_split+"','"+BDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
+      var BDLY_INPUT_unitstmt=BDLY_INPUT_conn.createStatement();
+      BDLY_INPUT_unitstmt.execute(BDLY_INPUT_unit_insertquery);
+      BDLY_INPUT_unitstmt.close();BDLY_INPUT_conn.commit();
+    }
+    //HOUSEKEEPING PAYMENT SAVING PART//
+    if(BDLY_INPUT_exptype==12){
+      var BDLY_INPUT_tb_payunitnoold=BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_unitno;
+      var BDLY_INPUT_tb_payunitnonew=BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_unitnocheck;
+      var BDLY_INPUT_tb_payunitno;
+      if(BDLY_INPUT_tb_payunitnoold==undefined)
+      {
+        BDLY_INPUT_tb_payunitno=BDLY_INPUT_tb_payunitnonew;
+      }
+      if(BDLY_INPUT_tb_payunitnonew==undefined)
+      {
+        BDLY_INPUT_tb_payunitno=BDLY_INPUT_tb_payunitnoold;
+      }
+      var BDLY_INPUT_tb_payinvoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_invoiceamt;    
+      var BDLY_INPUT_tb_payforperiod=BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_forperiod;
+      var BDLY_INPUT_date=eilib.GetForperiodDateFormat(BDLY_INPUT_tb_payforperiod,BDLY_INPUT_tb_payforperiod)
+      var BDLY_INPUT_period=BDLY_INPUT_date.frmdate;
+      var BDLY_INPUT_tb_paypaiddate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_pay_paiddate);
+      var BDLY_INPUT_ta_paycomments=BDLY_INPUT_form_values.BDLY_INPUT_ta_pay_comments;
+      if(BDLY_INPUT_ta_paycomments!='')
+        BDLY_INPUT_ta_paycomments=eilib.ConvertSpclCharString(BDLY_INPUT_ta_paycomments)
+        var timeZoneFormat=eilib.getTimezone();
+      var BDLY_INPUT_pettysave_stmt = BDLY_INPUT_conn.createStatement();
+      var BDLY_INPUT_housepayment_stmt = BDLY_INPUT_conn.createStatement();
+      var BDLY_INPUT_hkp_savequery="CALL SP_BIZDLY_HOUSEKEEPING_PAYMENT_INSERT("+BDLY_INPUT_tb_payunitno+",'"+BDLY_INPUT_period+"','"+BDLY_INPUT_tb_paypaiddate+"',"+BDLY_INPUT_tb_payinvoiceamt+",'"+BDLY_INPUT_ta_paycomments+"','"+UserStamp+"',@FLAG_INSERT)";
+      BDLY_INPUT_housepayment_stmt.execute(BDLY_INPUT_hkp_savequery);
+      BDLY_INPUT_housepayment_stmt.close();BDLY_INPUT_conn.commit();
+      BDLY_INPUT_refresh=BDLY_INPUT_get_allunitno();
+    }
+    //HOUSEKEEPING SAVING PART//
+    if(BDLY_INPUT_exptype==11){
+      var BDLY_INPUT_lb_housecleanername=BDLY_INPUT_form_values.BDLY_INPUT_lb_house_cleanername;
+      var BDLY_INPUT_tb_housedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_house_date);
+      var BDLY_INPUT_tb_househours=BDLY_INPUT_form_values.BDLY_INPUT_tb_house_hours;
+      var BDLY_INPUT_tb_housemin=BDLY_INPUT_form_values.BDLY_INPUT_tb_house_min;
+      var BDLY_INPUT_ta_housedesc=BDLY_INPUT_form_values.BDLY_INPUT_ta_house_desc;
+      var BDLY_INPUT_radio_hkname=BDLY_INPUT_form_values.BDLY_INPUT_radio_hkname;
+      var BDLY_INPUT_cleanerid=BDLY_INPUT_form_values.BDLY_INPUT_hidden_edeid;
+      var BDLY_INPUT_index=BDLY_INPUT_lb_housecleanername.indexOf('_');
+      var BDLY_INPUT_Cnamelength=BDLY_INPUT_lb_housecleanername.length;
+      if(BDLY_INPUT_ta_housedesc!='')
+        BDLY_INPUT_ta_housedesc=eilib.ConvertSpclCharString(BDLY_INPUT_ta_housedesc)
+        var BDLY_INPUT_firstname= BDLY_INPUT_lb_housecleanername.substring(0,BDLY_INPUT_index);
+      var BDLY_INPUT_lastname=BDLY_INPUT_lb_housecleanername.substring(BDLY_INPUT_index+1,BDLY_INPUT_Cnamelength);
+      if(BDLY_INPUT_tb_househours!=""&&BDLY_INPUT_tb_housemin!="")
+      {
+        var BDLY_INPUT_duration=BDLY_INPUT_tb_househours+'.'+BDLY_INPUT_tb_housemin;
+      }
+      if(BDLY_INPUT_tb_househours!=""&&BDLY_INPUT_tb_housemin=="")
+      {
+        var BDLY_INPUT_duration=BDLY_INPUT_tb_househours+"."+'00';
+      }
+      if(BDLY_INPUT_tb_househours==""&&BDLY_INPUT_tb_housemin!="")
+      {
+        var BDLY_INPUT_duration='00'+"."+BDLY_INPUT_tb_housemin;
+      }
+      var BDLY_INPUT_hksavequery = "INSERT INTO EXPENSE_HOUSEKEEPING(ULD_ID,EHK_WORK_DATE,EHK_DURATION,EHK_DESCRIPTION,EMP_ID) VALUES ((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),'"+BDLY_INPUT_tb_housedate+"','"+BDLY_INPUT_duration+"','"+BDLY_INPUT_ta_housedesc+"','"+BDLY_INPUT_cleanerid+"')";
+      var BDLY_INPUT_cleanerstmt=BDLY_INPUT_conn.createStatement();
+      BDLY_INPUT_cleanerstmt.execute(BDLY_INPUT_hksavequery);
+      BDLY_INPUT_cleanerstmt.close();BDLY_INPUT_conn.commit();
+    }
+    //FACILITY USE SAVING PART//
+    if(BDLY_INPUT_exptype==4){
+      var BDLY_INPUT_tb_payunitno=BDLY_INPUT_form_values.BDLY_INPUT_lb_unitno;
+      var BDLY_INPUT_tb_facinvoicedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_fac_invoicedate);
+      var BDLY_INPUT_tb_facdepositamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_fac_depositamt;
+      var BDLY_INPUT_tb_facinvoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_fac_invoiceamt;
+      var BDLY_INPUT_ta_faccomments=BDLY_INPUT_form_values.BDLY_INPUT_ta_fac_comments;
+      if(BDLY_INPUT_tb_facdepositamt=="" || BDLY_INPUT_tb_facdepositamt==undefined)
+      {
+        BDLY_INPUT_tb_facdepositamt=null
+      }
+      else if(BDLY_INPUT_tb_facinvoiceamt=="" || BDLY_INPUT_tb_facinvoiceamt==undefined)
+      {
+        BDLY_INPUT_tb_facinvoiceamt=null
+      }
+      if(BDLY_INPUT_ta_faccomments=="")//COMMENTS
+      {  BDLY_INPUT_ta_faccomments=null;}else{
+        BDLY_INPUT_ta_faccomments='"'+eilib.ConvertSpclCharString(BDLY_INPUT_ta_faccomments)+'"';}
+      var BDLY_INPUT_facility_without_depositinvoiceamt_insertquery = "INSERT INTO EXPENSE_FACILITY_USE(ULD_ID,UNIT_ID,EFU_INVOICE_DATE,EFU_COMMENTS,EFU_AMOUNT,EFU_DEPOSIT) VALUES ((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),(SELECT UNIT_ID FROM UNIT U WHERE U.UNIT_NO='"+BDLY_INPUT_tb_payunitno+"'),'"+BDLY_INPUT_tb_facinvoicedate+"',"+BDLY_INPUT_ta_faccomments+","+BDLY_INPUT_tb_facinvoiceamt+","+BDLY_INPUT_tb_facdepositamt+")";
+      var BDLY_INPUT_facilitystmt = BDLY_INPUT_conn.createStatement();
+      BDLY_INPUT_facilitystmt.execute(BDLY_INPUT_facility_without_depositinvoiceamt_insertquery);
+      BDLY_INPUT_facilitystmt.close();BDLY_INPUT_conn.commit();
+    }
+    //DIGITAL VOICE SAVING PART//
+    if(BDLY_INPUT_exptype==5){
+      var BDLY_INPUT_tb_gigunitno=BDLY_INPUT_form_values.BDLY_INPUT_lb_unitno;
+      var BDLY_INPUT_tb_digiinvoicedate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_invoicedate);
+      var BDLY_INPUT_tb_digifromdate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_fromdate);
+      var BDLY_INPUT_tb_digitodate=eilib.SqlDateFormat(BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_todate);
+      var BDLY_INPUT_tb_digitovoice=BDLY_INPUT_form_values.BDLY_INPUT_lb_digi_invoiceto;
+      var BDLY_INPUT_tb_digiinvoiceamt=BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_invoiceamt;
+      var BDLY_INPUT_ta_digicomments=BDLY_INPUT_form_values.BDLY_INPUT_ta_digi_comments;
+      if(BDLY_INPUT_ta_digicomments!='')
+        BDLY_INPUT_ta_digicomments=eilib.ConvertSpclCharString(BDLY_INPUT_ta_digicomments)
+        var BDLY_INPUT_digitalsavestmt = BDLY_INPUT_conn.createStatement();
+      if(BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_invoiceto==undefined)
+        var BDLY_INPUT_digitalsavequery = "CALL SP_BIZDLY_DIGITAL_VOICE_INSERT("+BDLY_INPUT_tb_gigunitno+","+BDLY_INPUT_tb_digitovoice+",'"+BDLY_INPUT_tb_digiinvoicedate+"','"+BDLY_INPUT_tb_digifromdate+"','"+BDLY_INPUT_tb_digitodate+"','"+BDLY_INPUT_tb_digiinvoiceamt+"','"+BDLY_INPUT_ta_digicomments+"','"+UserStamp+"',@FLAG_INSERT)";
+      else
+        var BDLY_INPUT_digitalsavequery = "CALL SP_BIZDLY_DIGITAL_VOICE_INSERT("+BDLY_INPUT_tb_gigunitno+",(SELECT ECN_ID FROM EXPENSE_CONFIGURATION WHERE ECN_DATA='"+BDLY_INPUT_form_values.BDLY_INPUT_tb_digi_invoiceto+"' AND CGN_ID=27),'"+BDLY_INPUT_tb_digiinvoicedate+"','"+BDLY_INPUT_tb_digifromdate+"','"+BDLY_INPUT_tb_digitodate+"','"+BDLY_INPUT_tb_digiinvoiceamt+"','"+BDLY_INPUT_ta_digicomments+"','"+UserStamp+"',@FLAG_INSERT)";
+      BDLY_INPUT_digitalsavestmt.execute(BDLY_INPUT_digitalsavequery);
+      BDLY_INPUT_digitalsavestmt.close();BDLY_INPUT_conn.commit();
+    }
+    //ELECTRICITY SAVE FUNCTION//
+    if(BDLY_INPUT_exptype==1){
+      var  BDLY_INPUT_electunit=BDLY_INPUT_form_values.BDLY_INPUT_lb_elect_unit;
+      var find_isArray=(BDLY_INPUT_electunit.toString()).search(',');
+      var BDLY_INPUT_electamountstmt = BDLY_INPUT_conn.createStatement();
+      var BDLY_INPUT_electunit=BDLY_INPUT_form_values.BDLY_INPUT_lb_elect_unit;
+      var BDLY_INPUT_invoiceto=BDLY_INPUT_form_values.BDLY_INPUT_lb_elect_payment;
+      var BDLY_INPUT_invoicedate=BDLY_INPUT_form_values.BDLY_INPUT_db_invoicedate;
+      var BDLY_INPUT_elect_amount=BDLY_INPUT_form_values.BDLY_INPUT_hidden_amt_elec;
+      var BDLY_INPUT_fromperiod=BDLY_INPUT_form_values.BDLY_INPUT_db_fromperiod;
+      var BDLY_INPUT_toperiod=BDLY_INPUT_form_values.BDLY_INPUT_db_toperiod;  
+      var BDLY_INPUT_elect_payment=BDLY_INPUT_form_values.BDLY_INPUT_lb_elect_payment;    
+      var BDLY_INPUT_comments=BDLY_INPUT_form_values.BDLY_INPUT_ta_comments;
+      var BDLY_INPUT_array_length=parseInt(BDLY_INPUT_electunit.length);
+      var BDLY_INPUT_comments_split=[];
+      if((Array.isArray(BDLY_INPUT_comments))==true){
+        for(var i=0;i<BDLY_INPUT_comments.length;i++)
+        {
+          if(BDLY_INPUT_comments[i]==''){
+            if(i==0)
+              BDLY_INPUT_comments_split +=' '
+              else
+                BDLY_INPUT_comments_split +='^^'+' '; }
+          else{
+            if(i==0)
+              BDLY_INPUT_comments_split +=eilib.ConvertSpclCharString(BDLY_INPUT_comments[i]);
+            else
+              BDLY_INPUT_comments_split +='^^'+eilib.ConvertSpclCharString(BDLY_INPUT_comments[i]);
+          }  
+          BDLY_INPUT_invoicedate[i]=eilib.SqlDateFormat(BDLY_INPUT_invoicedate[i]);
+          BDLY_INPUT_fromperiod[i]=eilib.SqlDateFormat(BDLY_INPUT_fromperiod[i]);
+          BDLY_INPUT_toperiod[i]=eilib.SqlDateFormat(BDLY_INPUT_toperiod[i]);
+        }}
+      else
+      {
+        if(BDLY_INPUT_comments=='')
+          BDLY_INPUT_comments_split=' ';
+        else
+          BDLY_INPUT_comments_split=eilib.ConvertSpclCharString(BDLY_INPUT_comments);
+        BDLY_INPUT_invoicedate=eilib.SqlDateFormat(BDLY_INPUT_invoicedate);
+        BDLY_INPUT_fromperiod=eilib.SqlDateFormat(BDLY_INPUT_fromperiod);
+        BDLY_INPUT_toperiod=eilib.SqlDateFormat(BDLY_INPUT_toperiod);    }
+      var BDLY_INPUT_insertinto_electricity_withoutcomment = "CALL SP_BIZDLY_ELECTRICITY_INSERT('"+BDLY_INPUT_electunit+"','"+BDLY_INPUT_invoicedate+"','"+BDLY_INPUT_fromperiod+"','"+BDLY_INPUT_toperiod+"','"+BDLY_INPUT_invoiceto+"','"+BDLY_INPUT_elect_amount+"','"+BDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
+      BDLY_INPUT_electamountstmt.execute(BDLY_INPUT_insertinto_electricity_withoutcomment);
+      BDLY_INPUT_electamountstmt.close();BDLY_INPUT_conn.commit();
+    }
+    //STAR HUB SAVING PART//
+    if(BDLY_INPUT_exptype==2){      
+      var  BDLY_INPUT_arrunitvalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_star_unit;
+      var find_isArray=(BDLY_INPUT_arrunitvalue.toString()).search(',');
+      var BDLY_INPUT_unitnovalue=BDLY_INPUT_form_values.BDLY_INPUT_lb_star_unit;
+      var BDLY_INPUT_accnovalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_star_accno;
+      var BDLY_INPUT_invoicetovalue=BDLY_INPUT_form_values.BDLY_INPUT_hidden_star_ecnid;
+      var BDLY_INPUT_invoicedatevalue=BDLY_INPUT_form_values.BDLY_INPUT_db_star_invoicedate;
+      var BDLY_INPUT_amountvalue=BDLY_INPUT_form_values.BDLY_INPUT_tb_star_amount;
+      var BDLY_INPUT_fromdatevalue=BDLY_INPUT_form_values.BDLY_INPUT_db_star_fromperiod;
+      var BDLY_INPUT_todatevalue=BDLY_INPUT_form_values.BDLY_INPUT_db_star_toperiod;    
+      var BDLY_INPUT_commentsvalue=BDLY_INPUT_form_values.BDLY_INPUT_ta_star_comments;
+      var BDLY_INPUT_array_length=parseInt(BDLY_INPUT_unitnovalue.length);
+      var BDLY_INPUT_comments_split='';
+      if((Array.isArray(BDLY_INPUT_commentsvalue))==true){
+        for(var i=0;i<BDLY_INPUT_commentsvalue.length;i++)
+        {
+          if(BDLY_INPUT_commentsvalue[i]==''){
+            if(i==0)
+              BDLY_INPUT_comments_split +=' '
+              else
+                BDLY_INPUT_comments_split +='^^'+' '; }
+          else{
+            if(i==0)
+              BDLY_INPUT_comments_split +=eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue[i]);
+            else
+              BDLY_INPUT_comments_split +='^^'+eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue[i]);
+          }  
+          BDLY_INPUT_invoicedatevalue[i]=eilib.SqlDateFormat(BDLY_INPUT_invoicedatevalue[i]);
+          BDLY_INPUT_fromdatevalue[i]=eilib.SqlDateFormat(BDLY_INPUT_fromdatevalue[i]);
+          BDLY_INPUT_todatevalue[i]=eilib.SqlDateFormat(BDLY_INPUT_todatevalue[i]);
+        }}
+      else
+      {
+        if(BDLY_INPUT_commentsvalue=='')
+          BDLY_INPUT_comments_split=' ';
+        else
+          BDLY_INPUT_comments_split=eilib.ConvertSpclCharString(BDLY_INPUT_commentsvalue);
+        BDLY_INPUT_invoicedatevalue=eilib.SqlDateFormat(BDLY_INPUT_invoicedatevalue);
+        BDLY_INPUT_fromdatevalue=eilib.SqlDateFormat(BDLY_INPUT_fromdatevalue);
+        BDLY_INPUT_todatevalue=eilib.SqlDateFormat(BDLY_INPUT_todatevalue);
+      }
+      var BDLY_INPUT_starhub_insert="CALL SP_BIZDLY_STARHUB_INSERT('"+BDLY_INPUT_unitnovalue+"','"+BDLY_INPUT_invoicetovalue+"','"+BDLY_INPUT_invoicedatevalue+"','"+BDLY_INPUT_fromdatevalue+"','"+BDLY_INPUT_todatevalue+"','"+BDLY_INPUT_amountvalue+"','"+BDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)"    
+      var BDLY_INPUT_starhub_savestmt = BDLY_INPUT_conn.createStatement(); 
+      BDLY_INPUT_starhub_savestmt.execute(BDLY_INPUT_starhub_insert);          
+      BDLY_INPUT_starhub_savestmt.close();BDLY_INPUT_conn.commit();
+    }
+    if((BDLY_INPUT_exptype==9)||(BDLY_INPUT_exptype==8)||(BDLY_INPUT_exptype==7)||(BDLY_INPUT_exptype==11)||(BDLY_INPUT_exptype==4)){
+      var BDLY_INPUT_flag=1;
+    }else
+    {
+      var BDLY_INPUT_stmt_flag = BDLY_INPUT_conn.createStatement();
+      var BDLY_INPUT_flag_rs=BDLY_INPUT_stmt_flag.executeQuery("SELECT @FLAG_INSERT");
+      while(BDLY_INPUT_flag_rs.next())
+        var BDLY_INPUT_flag=BDLY_INPUT_flag_rs.getString("@FLAG_INSERT")
+        BDLY_INPUT_flag_rs.close();BDLY_INPUT_stmt_flag.close();
+    } 
+    if(BDLY_INPUT_exptype==5)
+      BDLY_INPUT_refresh=BDLY_INPUT_get_values(BDLY_INPUT_tb_gigunitno,BDLY_INPUT_exptype)
+      if((BDLY_INPUT_exptype==2)||(BDLY_INPUT_exptype==3)||(BDLY_INPUT_exptype==1))
+      BDLY_INPUT_refresh=BDLY_INPUT_get_unitno(BDLY_INPUT_exptype)
+      return [BDLY_INPUT_refresh,BDLY_INPUT_flag];
+    BDLY_INPUT_conn.close();    
   }
 }
 catch(err)

@@ -1,13 +1,17 @@
-//-*******************************************FILE DESCRIPTION*********************************************
+//--*******************************************FILE DESCRIPTION*********************************************
 //*******************************************CUSTOMER CREATION UAT*********************************************//
 //DONE BY:PUNITHA
-//VER 0.03-ISSUE:828,COMMENT #8,UPDATED ANOTHER EMAIL PROFILE FOR EMAIL ID LIST -FUNCTION TAKEN FROM EILIB BY PUNI
-//VER 0.02-ISSUE:828,COMMENT #4,TOOK COPY OF LATEST VERSION 1.04 OF CUSTOMER CREATION,REMOVED CAL EVENT CALL FUNCTION BY PUNI
-//VER 0.01-INITIAL VERSION-ISSUE:828,TOOK COPY OF LATEST VERSION 1.03 OF CUSTOMER CREATION,ADDED PREFIX AS UAT,ADDED ONE FUNCTION TO GET UAT CONNECTION N REPLACED CONN FN IN GS BY PUNI
-//*********************************************************************************************************-->
-
+//VER 0.05-SD:09/10/2014,ED:09/10/2014,ISSUE:828,Changed preloader n msgbox position
+//VER 0.04-SD:16/09/2014,ED:16/09/2014,ISSUE:828,COMMENT #12,UPDATED CURRENT VERSION 1.08 OF CC FORM,removed cal event,added email profile to get uat email id,added drop temp table function from eilib,added failure handler in save button click BY PUNI
+//VER 0.03-SD:22/07/2014,ED:22/07/2014,ISSUE:828,COMMENT #8,UPDATED ANOTHER EMAIL PROFILE FOR EMAIL ID LIST -FUNCTION TAKEN FROM EILIB BY PUNI
+//VER 0.02-SD:12/07/2014,ED:12/07/2014,ISSUE:828,COMMENT #4,TOOK COPY OF LATEST VERSION 1.04 OF CUSTOMER CREATION,REMOVED CAL EVENT CALL FUNCTION BY PUNI
+//VER 0.01-SD:25/06/2014,ED:25/06/2014,INITIAL VERSION-ISSUE:828,TOOK COPY OF LATEST VERSION 1.03 OF CUSTOMER CREATION,ADDED PREFIX AS UAT,ADDED ONE FUNCTION TO GET UAT CONNECTION N REPLACED CONN FN IN GS BY PUNI
+//*********************************************************************************************************//
 try
 { 
+  var UAT_CCRE_customer_id;
+  var UAT_CCRE_expconn;
+  var UAT_CCRE_temptablename; 
   /************************FUNCTION TO GET ROOMTYPE FOR SELECTED UNIT*****************************/
   function UAT_CCRE_Roomtype(UAT_CCRE_unit,UAT_CCRE_nullpara)
   {
@@ -37,9 +41,33 @@ try
     var UAT_CCRE_chkproflag="";
     UAT_CCRE_chkproflag=eilib.CUST_chkProrated(UAT_CCRE_startdate, UAT_CCRE_enddate);
     return UAT_CCRE_chkproflag;
+  }  
+  function UAT_CCRE_customercreation_commonvalues()
+  {
+    var UAT_CCRE_conn = eilib.db_GetUATConnection();
+    /************************ERROR MESSAGE*****************************/
+    var UAT_CCRE_error_code ='1,2,6,33,34,35,36,37,321,324,339,342,343,344,345,346,347,348,400,443,444,458,459,460,461';
+    var UAT_CCRE_error_array=eilib.GetErrorMessageList(UAT_CCRE_conn, UAT_CCRE_error_code);
+    var UAT_CCRE_nation_array =eilib.CUST_getNationality(UAT_CCRE_conn);
+    var UAT_CCRE_option_array =eilib.CUST_getOptionValue(UAT_CCRE_conn);
+    var UAT_CCRE_mail_array =eilib.getProfileEmailId(UAT_CCRE_conn,'CREATION_UAT');
+    var UAT_CCRE_timearray=eilib.CUST_getCalendarTime(UAT_CCRE_conn);
+    var proratedwaived=eilib.CUST_getProratedWaivedValue(UAT_CCRE_conn);
+    var UAT_CCRE_unit_array=eilib.GetActiveUnit(UAT_CCRE_conn);
+    var UAT_CCRE_customerSD=eilib.getCustomerStartdate(UAT_CCRE_conn);
+    var UAT_CCRE_RESULTS={prorated:proratedwaived,unit:UAT_CCRE_unit_array,time:UAT_CCRE_timearray,email:UAT_CCRE_mail_array,ccoption:UAT_CCRE_option_array,nation:UAT_CCRE_nation_array,error:UAT_CCRE_error_array.errormsg,CustomerSD:UAT_CCRE_customerSD}
+    return UAT_CCRE_RESULTS;
+    UAT_CCRE_conn.close();
   }
-  /************************CUSTOMER CREATION SAVING PART*****************************/
-  function UAT_CCRE_processFormSubmit(customercreation)
+}
+catch (err)
+{
+}
+
+/************************CUSTOMER CREATION SAVING PART*****************************/
+function UAT_CCRE_processFormSubmit(customercreation)
+{
+  try
   {
     var UAT_CCRE_card_array=customercreation.temptex;
     var UAT_CCRE_accesscard="";
@@ -101,6 +129,8 @@ try
     else
     { cardno=""; }
     var UAT_CCRE_conn =eilib.db_GetUATConnection();
+    UAT_CCRE_expconn=UAT_CCRE_conn;
+    UAT_CCRE_conn.setAutoCommit(false);
     var UAT_CCRE_firstname=customercreation.UAT_CCRE_tb_firstname;
     var UAT_CCRE_lastname=customercreation.UAT_CCRE_tb_lastname;
     var UAT_CCRE_name=UAT_CCRE_firstname+' '+UAT_CCRE_lastname;
@@ -147,7 +177,7 @@ try
     if(UAT_CCRE_noticeno=="")
     {    UAT_CCRE_noticeno=null;var noticeno="";}else{noticeno=UAT_CCRE_noticeno;UAT_CCRE_noticeno="'"+UAT_CCRE_noticeno+"'"}
     var UAT_CCRE_noticedate=customercreation.UAT_CCRE_db_noticedate;
-    if(UAT_CCRE_noticedate=="")
+    if(UAT_CCRE_noticedate=="" || UAT_CCRE_noticedate==undefined)
     {    UAT_CCRE_noticedate=null;var noticedate="";  }else{noticedate=UAT_CCRE_noticedate;UAT_CCRE_noticedate="'"+eilib.SqlDateFormat(UAT_CCRE_noticedate)+"'";}
     var UAT_CCRE_quarterlyfee=customercreation.UAT_CCRE_tb_quarterlyfee;
     if(UAT_CCRE_quarterlyfee=="")
@@ -199,15 +229,17 @@ try
     var UAT_CCRE_quators  = eilib.quarterCalc(new Date(UAT_CCRE_sdate[2],UAT_CCRE_sdate[1]-1,UAT_CCRE_sdate[0]),new Date(UAT_CCRE_edate[2],UAT_CCRE_edate[1]-1,UAT_CCRE_edate[0])); 
     var UAT_CCRE_Leaseperiod  = eilib.leasePeriodCalc(new Date(UAT_CCRE_sdate[2],UAT_CCRE_sdate[1]-1,UAT_CCRE_sdate[0]),new Date(UAT_CCRE_edate[2],UAT_CCRE_edate[1]-1,UAT_CCRE_edate[0]));
     var UAT_CCRE_customerstmt=UAT_CCRE_conn.createStatement();
-    var UAT_CCRE_insertquery="CALL SP_CUSTOMER_CREATION_INSERT('"+UAT_CCRE_firstname+"','"+UAT_CCRE_lastname+"',"+UAT_CCRE_companyname+","+UAT_CCRE_companyaddress+","+UAT_CCRE_companypostalcode+","+UAT_CCRE_office+","+UAT_CCRE_unit+",'"+UAT_CCRE_roomtype+"','"+UAT_CCRE_startdate_starttime+"','"+UAT_CCRE_startdate_endtime+"','"+UAT_CCRE_enddate_starttime+"','"+UAT_CCRE_enddate_endtime+"','"+UAT_CCRE_Leaseperiod+"',"+UAT_CCRE_quators+","+UAT_CCRE_process_check+","+UAT_CCRE_prorated+","+UAT_CCRE_noticeno+","+UAT_CCRE_noticedate+","+UAT_CCRE_rent+","+UAT_CCRE_deposit+","+UAT_CCRE_process+","+UAT_CCRE_airconfixed+","+UAT_CCRE_quarterlyfee+","+UAT_CCRE_electricity+","+UAT_CCRE_cleaning+","+UAT_CCRE_drycleaning+",'"+UAT_CCRE_accesscard+"','"+UAT_CCRE_startdate+"','"+UserStamp+"','"+UAT_CCRE_startdate+"','"+UAT_CCRE_enddate+"','"+UAT_CCRE_guestcard+"','"+UAT_CCRE_nationality+"',"+UAT_CCRE_mobile+","+UAT_CCRE_intmobile+",'"+UAT_CCRE_customermailid+"',"+UAT_CCRE_passportno+","+UAT_CCRE_passportdate+","+UAT_CCRE_dateofbirth+","+UAT_CCRE_epno+","+UAT_CCRE_epdate+",'"+UAT_CCRE_comments+"',@CUSTOMER_SUCCESSFLAG)";
+    var UAT_CCRE_insertquery="CALL SP_CUSTOMER_CREATION_INSERT('"+UAT_CCRE_firstname+"','"+UAT_CCRE_lastname+"',"+UAT_CCRE_companyname+","+UAT_CCRE_companyaddress+","+UAT_CCRE_companypostalcode+","+UAT_CCRE_office+","+UAT_CCRE_unit+",'"+UAT_CCRE_roomtype+"','"+UAT_CCRE_startdate_starttime+"','"+UAT_CCRE_startdate_endtime+"','"+UAT_CCRE_enddate_starttime+"','"+UAT_CCRE_enddate_endtime+"','"+UAT_CCRE_Leaseperiod+"',"+UAT_CCRE_quators+","+UAT_CCRE_process_check+","+UAT_CCRE_prorated+","+UAT_CCRE_noticeno+","+UAT_CCRE_noticedate+","+UAT_CCRE_rent+","+UAT_CCRE_deposit+","+UAT_CCRE_process+","+UAT_CCRE_airconfixed+","+UAT_CCRE_quarterlyfee+","+UAT_CCRE_electricity+","+UAT_CCRE_cleaning+","+UAT_CCRE_drycleaning+",'"+UAT_CCRE_accesscard+"','"+UAT_CCRE_startdate+"','"+UserStamp+"','"+UAT_CCRE_startdate+"','"+UAT_CCRE_enddate+"','"+UAT_CCRE_guestcard+"','"+UAT_CCRE_nationality+"',"+UAT_CCRE_mobile+","+UAT_CCRE_intmobile+",'"+UAT_CCRE_customermailid+"',"+UAT_CCRE_passportno+","+UAT_CCRE_passportdate+","+UAT_CCRE_dateofbirth+","+UAT_CCRE_epno+","+UAT_CCRE_epdate+",'"+UAT_CCRE_comments+"',@CUSTOMER_CREATION_TEMPTBLNAME,@CUSTOMER_SUCCESSFLAG)";
     UAT_CCRE_customerstmt.execute(UAT_CCRE_insertquery);
-    var returnflagresult=UAT_CCRE_customerstmt.executeQuery("SELECT @CUSTOMER_SUCCESSFLAG");
+    var returnflagresult=UAT_CCRE_customerstmt.executeQuery("SELECT @CUSTOMER_CREATION_TEMPTBLNAME,@CUSTOMER_SUCCESSFLAG");
     if(returnflagresult.next())
     {
-      var returnflag=returnflagresult.getString(1);
+      var temp_tablename=returnflagresult.getString(1);
+      var returnflag=returnflagresult.getString(2);
     }
     returnflagresult.close();
     UAT_CCRE_customerstmt.close();
+    UAT_CCRE_temptablename=temp_tablename;
     if(returnflag==1)
     {
       var UAT_CCRE_customername=UAT_CCRE_firstname+' '+UAT_CCRE_lastname;
@@ -222,12 +254,14 @@ try
       }
       UAT_CCRE_custidresult.close();
       UAT_CCRE_cccustidstmt.close();
+      UAT_CCRE_customer_id=UAT_CCRE_custid;
       //////////////INVOICE AND CONTRACT DETAILS///////////////
       var cust_config_array=eilib.CUST_invoice_contractreplacetext(UAT_CCRE_conn);
       var UAT_CCRE_invoiceid=cust_config_array[9];
       var UAT_CCRE_contractid=cust_config_array[10];
       var UAT_CCRE_invoicesno=cust_config_array[0];
-      var UAT_CCRE_invoicedate=cust_config_array[1];   
+      var UAT_CCRE_invoicedate=cust_config_array[1];
+      var calenderIDcode=eilib.CUST_getCalenderId(UAT_CCRE_conn);
       if((UAT_CCRE_customerflag==1)&&(UAT_CCRE_custname==UAT_CCRE_cust_name))
       {
         if(UAT_CCRE_ccoption==4 || UAT_CCRE_ccoption==5 || UAT_CCRE_ccoption==6)
@@ -248,28 +282,34 @@ try
           }
         }
       }
-      return returnflag;
+      returnflag=1;
     }
+    if(UAT_CCRE_temptablename!=null || UAT_CCRE_temptablename!=undefined)
+    {
+      eilib.DropTempTable(UAT_CCRE_conn, UAT_CCRE_temptablename);
+    }
+    UAT_CCRE_conn.commit();
     UAT_CCRE_conn.close();
+    return returnflag;
   }
-  function UAT_CCRE_customercreation_commonvalues()
+  catch(err)
   {
-    var UAT_CCRE_conn = eilib.db_GetUATConnection();
-    /************************ERROR MESSAGE*****************************/
-    var UAT_CCRE_error_code ='1,2,6,33,34,35,36,37,321,324,339,342,343,344,345,346,347,348,400,443,444,458,459,460,461';
-    var UAT_CCRE_error_array=eilib.GetErrorMessageList(UAT_CCRE_conn, UAT_CCRE_error_code);
-    var UAT_CCRE_nation_array =eilib.CUST_getNationality(UAT_CCRE_conn);
-    var UAT_CCRE_option_array =eilib.CUST_getOptionValue(UAT_CCRE_conn);
-    var UAT_CCRE_mail_array =eilib.getProfileEmailId(UAT_CCRE_conn,'CREATION_UAT');
-    var UAT_CCRE_timearray=eilib.CUST_getCalendarTime(UAT_CCRE_conn);
-    var proratedwaived=eilib.CUST_getProratedWaivedValue(UAT_CCRE_conn);
-    var UAT_CCRE_unit_array=eilib.GetActiveUnit(UAT_CCRE_conn);
-    var UAT_CCRE_customerSD=eilib.getCustomerStartdate(UAT_CCRE_conn);
-    var UAT_CCRE_RESULTS={prorated:proratedwaived,unit:UAT_CCRE_unit_array,time:UAT_CCRE_timearray,email:UAT_CCRE_mail_array,ccoption:UAT_CCRE_option_array,nation:UAT_CCRE_nation_array,error:UAT_CCRE_error_array.errormsg,CustomerSD:UAT_CCRE_customerSD}
-    UAT_CCRE_conn.close();
-    return UAT_CCRE_RESULTS;
+    Logger.log("SCRIPT EXCEPTION:"+err)
+    UAT_CCRE_expconn.rollback();
+    if(UAT_CCRE_temptablename!=null || UAT_CCRE_temptablename!=undefined)
+    {
+      eilib.DropTempTable(UAT_CCRE_expconn, UAT_CCRE_temptablename);
+    }
+    var invoice=eilib.invoiceid();
+    var contract=eilib.contractid();
+    if(invoice!=undefined)
+    {
+      eilib.CUST_UNSHARE_FILE(invoice);
+    }
+    if(contract!=undefined)
+    {
+      eilib.CUST_UNSHARE_FILE(contract);
+    }
+    return (Logger.getLog());
   }
-}
-catch (err)
-{
 }

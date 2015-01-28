@@ -1,6 +1,10 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************
 //*******************************************DEPOSIT DEDUCTION EXTRACTS********************************************
+DONE BY PUNI
+VER 1.8  -SD:07/10/2014 ED:07/10/2014;TRACKER NO: 517//Corrected script for preloader,msgbox position
 DONE BY SARADAMBAL M
+VER 1.7  -SD:18/09/2014 ED:18/09/2014;TRACKER NO: 517//implemented script for preloader,msgbox,implemented script for style to submit button instead of div -style
+VER 1.6- SD:14/08/2014 ED:14/08/2014,TRACKER NO: 517//updated new links
 VER 1.5 -SD:08/07/2014 ED:10/07/2014;TRACKER NO: 517//updated err msg ,if any sheet err,removed hypen for duplicate customer,sorted lp expcept for group LP,hide cb for single lp
 VER 1.4 -SD:27/06/2014 ED:30/06/2014;TRACKER NO: 517//use single sheet for extraction,implemented script for wrap the text for rent row,removed script for getting sending email sheet
 VER 1.3 -SD:25/06/2014 ED:25/06/2014;TRACKER NO: 517//implemented err msg ,if no permission to access SS
@@ -21,21 +25,30 @@ VER 0.01 - INITIAL VERSION-SD:20/8/2013 ED:4/12/2013;TRACKER NO: 517
 STARTING OF HTML ELEMENT FOR CREATING FORM -->
 <html>
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
 //LOADING THE MONTH LISTBOX....................... 
 $(document).ready(function() {
 $(".preloader").show(); 
@@ -65,6 +78,9 @@ $('#DDE_emailtable').hide();
 $("#DDE_btn_sbutton").attr("disabled", "disabled");
 //CHANGE FUNCTION FOR MONTH SELECTION
 $('#DDE_lb_monthselect').change(function(){ 
+$(".preloader").show(); 
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var month = $(this).val();
 if(month=="SELECT")
@@ -96,6 +112,8 @@ $('#DDE_emailtable').hide();
 //SHOWS THE CUSTOMER LISTBOX..................
 $('#DDE_lb_unitselect').change(function(){ 
 $(".preloader").show(); 
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $("#DDE_btn_sbutton").hide();
 $("#DDE_btn_rbutton").hide();
 $("#DDE_btn_sbutton").attr("disabled", "disabled");
@@ -160,7 +178,9 @@ var DDE_td='<tr><td><input type="radio" id="DDE_customer_id_name'+c+'" name="DDE
 $(DDE_td).appendTo($("#DDE_radiotable"));
 }}}
 if(DDE_flag_radio_custname==0){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_getdatebox).DDE_getcustid(name,DDE_unit,DDE_month);
 $('#DDE_radiotable').hide();
 }
@@ -172,6 +192,8 @@ $('#DDE_emailtable').hide();
 //CLICK FUNCTION FOR RADIO BTN FOR DUPLICATE CUSTOMER
 $(document).on('click','.DDE_class_customeridname',function(){
 $(".preloader").show(); 
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 var DDE_unit=$('#DDE_lb_unitselect').val();
 var DDE_month=$('#DDE_lb_monthselect').val();
 var DDE_name=$(this).val();
@@ -204,12 +226,14 @@ $("select#DDE_lb_monthselect")[0].selectedIndex = 0;
 //CONFORMATION MESSAGE IS  SHOWS AFTER CLICK THE SUBMIT BUTTON................
 $('#DDE_btn_sbutton').click(function(){
 $(".preloader").show(); 
+var  newPos= adjustPosition($(this).position(),100,280);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(DDE_onFailuremsg).withSuccessHandler(DDE_clearandshowmsg).DDE_Dep_Exct_submit(document.getElementById('DDE_form'));
 });
 function DDE_clearandshowmsg(success)
 {$(".preloader").hide(); 
 if(success=='DDC_flag_nosheet')
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_errorAarray[11]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_errorAarray[11],position:{top:150,left:500}}});
 else{
 $('#em').hide();
 $('#DDE_lb_customerselect').hide();
@@ -217,7 +241,7 @@ $('#DDE_lbl_customerid').hide();
 var unit=$('#DDE_lb_customerselect').val();
 var save=DDE_errorAarray[7];
 var savemsg = save.replace('[PROFILE]', unit); 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:savemsg}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:savemsg,position:{top:150,left:500}}});
 $('#DDE_lbl_unit').hide();
 $('#DDE_radiotable').hide();
 $('#DDE_recvertable').hide();
@@ -236,10 +260,12 @@ $("#DDE_btn_rbutton").hide();
 //LOAD THE MONTH IN THE MONTH LISTBOX FROM  THE SHEET................
 function DDE_loadgetmonthh(month)
 {
-$(".preloader").hide(); 
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 DDE_errorAarray=month.DDE_errorAarray;
 if(month.DDE_flag_noss=='DDE_flag_noss'){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_errorAarray[12]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_errorAarray[12],position:{top:150,left:500}}});
 }
 else{
 montharray=month.montharray;
@@ -616,14 +642,17 @@ else{
 if(DDE_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
 {
 DDE_err=DDE_errorAarray[13];
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_err,position:{top:150,left:500}}});
 }
 else {
 var DDE_err=DDE_err.toString();
 var match=DDE_err.search("Cannot find method getRange");
 var matchClass=DDE_err.search("class");
-if((match>-1)||(matchClass>-1))
+if((match>-1)||(matchClass>-1)){
 DDE_err=DDE_errorAarray[14];
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_err}});
+var DDE_postion=$("#DDE_btn_sbutton").position();}
+var DDE_postion={top:150,left:500};
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_err,position:{top:150,left:500}}});
 }}}
 });
 </script>

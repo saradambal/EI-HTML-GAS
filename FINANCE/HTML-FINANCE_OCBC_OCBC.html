@@ -1,6 +1,7 @@
 <!--****************************************OCBC*********************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.05- SD:19/09/2014 ED:19/09/2014,TRACKER NO:741,Implemented preloader and msgbox position script
 //VER 1.04- SD:03/09/2014 ED:03/09/2014 TRACKER NO:741,added ref-id sorting in ocbc bank records select query.
 //VER 1.03- SD:22/08/2014 ED:22/08/2014 TRACKER NO:741,Updated new jquery and css links and auto grow script line.
 //VER 1.02- SD:11/07/2014 ED:11/07/2014 TRACKER NO:741,Did multiple customer radio buttons clear after saved record.
@@ -41,6 +42,13 @@
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
   var unit=[];
   var payment=[];
@@ -71,7 +79,9 @@ $(document).ready(function() {
     payment=FIN_OCBC_DU_result.payment;
     errormsg=FIN_OCBC_DU_result.error;
     $('#ocbctable').show();
-    $(".preloader").hide();
+     //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
   }
   //////OCBC_SUBMIT BUTTON VALIDATION FUNCTION//////////////
   $('#FIN_OCBC_DU_selectedmonth').change(function(){
@@ -95,6 +105,8 @@ $(document).ready(function() {
     if(unit!="SELECT")
     {
       $(".preloader").show(); 
+      var newPos= adjustPosition($('.FIN_OCBC_DU_unitlistbox').position(),100,230);
+      resetPreloader(newPos);
       google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_OCBC_CustomerResponse).FIN_OCBC_Customer(unit,no[1]);
     }
     else
@@ -113,6 +125,9 @@ $(document).ready(function() {
     $(".preloader").show();
     var sub_id=$(this).attr('id');
     var no=(sub_id.toString()).split('-');
+     $(".preloader").show();
+    var newPos= adjustPosition($('#FIN_OCBC_DU_db_forperiod-'+no[1]).position(),100,230);
+    resetPreloader(newPos);
     var unit = $('#FIN_OCBC_DU_lb_unit-'+no[1]).val();
     var customer = $('#FIN_OCBC_DU_custid-'+no[1]).val();
     var recver=$('#FIN_OCBC_DU_lb_recver-'+no[1]).val();
@@ -260,6 +275,8 @@ $(document).ready(function() {
   
   $(document).on('change','.forperiodrange',function(){
     $(".preloader").show();
+    var newPos= adjustPosition($('.forperiodrange').position(),100,230);
+    resetPreloader(newPos);
     var FIN_ENTRY_id=$(this).attr('id');
     var idsplit=FIN_ENTRY_id.split('-');
     var data=$("#FIN_OCBC_DU_lb_recver-"+idsplit[1]).val();
@@ -343,7 +360,9 @@ $(document).ready(function() {
     var rowlength=splitedid[5];
     $('#FIN_OCBC_DU_btn_save-'+id).attr("disabled", "disabled");
     $('#FIN_OCBC_DU_custid-'+id).val(customer);
-    $(".preloader").show(); 
+    $(".preloader").show();
+    var newPos= adjustPosition($('.FIN_OCBC_DU_showlist').position(),100,230);
+    resetPreloader(newPos);
     google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_ENTRY_FORPERIOD_Response).FIN_ENTRY_FORPERIOD_validation(unit,customer,id)
   });
   
@@ -372,6 +391,8 @@ $(document).ready(function() {
     var unit=$('#FIN_OCBC_DU_lb_unit-'+splitedid[1]).val();
     var customer=$('#FIN_OCBC_DU_lb_customer-'+splitedid[1]).val();
     $(".preloader").show(); 
+     var newPos= adjustPosition($('.forperiodvalidation').position(),100,230);
+    resetPreloader(newPos);
     google.script.runwithFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_OCBC_DU_FORPERIOD_Response).FIN_OCBC_DU_FORPERIOD_validation(unit,customer,splitedid[1]);
   });
   $(document).on('blur','.customernamecheck',function(){
@@ -505,7 +526,7 @@ return result;
     var ocbc_id=response[1];
     if(ocbc_ack=="null" || ocbc_ack==null)
     {
-      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:errormsg[1]}});
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:errormsg[1],position:$('#FIN_OCBC_DU_ta_comments-'+ocbc_id).position()}});
       $('#FIN_OCBC_DU_lb_unit-'+ocbc_id)[0].selectedIndex = 0;
       $('#FIN_OCBC_DU_lb_unit-'+ocbc_id).hide();
       $('#FIN_OCBC_DU_lb_customer-'+ocbc_id)[0].selectedIndex = 0;
@@ -524,13 +545,15 @@ return result;
     }
     else
     {
-      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:ocbc_ack}});
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:ocbc_ack,position:$('#FIN_OCBC_DU_ta_comments-'+ocbc_id).position()}});
     }
     $('#FIN_OCBC_DU_btn_save-'+ocbc_id).attr("disabled", "disabled");
     $(".preloader").hide();
   }
   $('#FIN_OCBC_DU_savebutton').click(function(){
     $(".preloader").show();
+    var newPos= adjustPosition($('#FIN_OCBC_DU_savebutton').position(),100,230);
+    resetPreloader(newPos);
     google.script.run.withFailureHandler(FIN_OCBC_DU_error_message).withSuccessHandler(FIN_OCBC_DU_response).FIN_OCBC_DU_selectedmonthdetails(document.getElementById('FIN_OCBC_DU_form'))
   });
 
@@ -543,7 +566,7 @@ $('#FIN_OCBC_DU_form').replaceWith('<center><label class="dberrormsg">'+OCBC_err
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:OCBC_err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"OCBC",msgcontent:OCBC_err,position:{top:150,left:500}}});
 }
 $(".preloader").hide();
 }

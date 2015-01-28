@@ -1,6 +1,11 @@
 //*****************************************MODEL SEARCH/UPDATE******************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.04- SD:07/10/2014 ED:07/10/2014,TRACKER NO:678,changed preloader pos when clicking srch btn
 //DONE BY:KUMAR
+//VER 1.03- SD:19/09/2014 ED:19/09/2014,TRACKER NO:678,Implemented preloader and msgbox position script
+//ver 1.02- SD:27/08/2014 ED:27/08/2014,TRACKER NO:678 Cleared obsolute flag update issue
+//ver 1.01- SD:22/08/2014 ED:22/08/2014,TRACKER NO:678 updateD new jquery and css links.
 //ver 1.00- SD:28/06/2014 ED:28/06/2014,TRACKER NO:678 cleared conn issue.
 //VER 0.09- SD:19/06/2014 ED:19/06/2014,TRACKER NO:678 Added conn failure message.
 //VER 0.08- SD:09/06/2014 ED:09/06/2014,TRACKER NO:678,Added commit() command after Updating record.
@@ -65,7 +70,7 @@ try
   {
     var MODEL_SRC_conn =eilib.db_GetConnection();
     var flag='X'
-    if(obsolute==false){obsolute=null}else{obsolute="'"+flag+"'"}
+    if(obsolute==false || obsolute==undefined){obsolute=null}else{obsolute="'"+flag+"'"}
     var MODEL_SRC_updatestmt=MODEL_SRC_conn.createStatement();
     var MODEL_SRC_updatequery="UPDATE BANK_TRANSFER_MODELS SET BTM_OBSOLETE="+obsolute+",BTM_DATA='"+modelname+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE BTM_ID='"+modelid+"'";
     MODEL_SRC_updatestmt.execute(MODEL_SRC_updatequery);
@@ -81,28 +86,19 @@ try
     var MODEL_idcheckstmt=MODEL_SRC_conn.createStatement();
     var MODEL_idcheckquery="SELECT BTM_ID FROM BANK_TRANSFER WHERE BTM_ID="+modelid+"";
     var MODEL_idcheckresult=MODEL_idcheckstmt.executeQuery(MODEL_idcheckquery);
-    if(MODEL_idcheckresult.next()){
+    if(MODEL_idcheckresult.next())
+    {
       var flag=0
       var MODEL_SRC_updatestmt=MODEL_SRC_conn.createStatement();
       var MODEL_SRC_updatequery="UPDATE BANK_TRANSFER_MODELS SET BTM_OBSOLETE='X',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE BTM_ID="+modelid+"";
       MODEL_SRC_updatestmt.execute(MODEL_SRC_updatequery);
       MODEL_SRC_updatestmt.close();
       MODEL_SRC_conn.commit();
-    } else {
-      var MODEL_SRC_deletestmt=MODEL_SRC_conn.createStatement();
-      
-      var MODEL_SRC_deletequery="CALL SP_SINGLE_TABLE_ROW_DELETION(73, "+modelid+",'"+UserStamp+"',@DELETION_FLAG)";
-      MODEL_SRC_deletestmt.execute(MODEL_SRC_deletequery);
-      var returnflagresult=MODEL_SRC_deletestmt.executeQuery("SELECT @DELETION_FLAG");
-      if(returnflagresult.next())
-      {
-        flag=returnflagresult.getString(1);
-      }
-      returnflagresult.close();
-      MODEL_SRC_deletestmt.close();
     }
-    MODEL_idcheckresult.close();
-    MODEL_idcheckstmt.close();
+    else
+    {
+      flag=eilib.DeleteRecord(MODEL_SRC_conn, 73, modelid);
+    }
     var model=eilib.getBankTransferModels(MODEL_SRC_conn);
     var returnvalue=[model,flag]
     return returnvalue;

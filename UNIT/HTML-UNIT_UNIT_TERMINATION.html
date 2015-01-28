@@ -1,7 +1,11 @@
 <!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //***********************************************UNIT TERMINATION***********************************************//
+<!--DONE BY:PUNI
+VER 1.6 -SD:06/10/2014 ED:06/10/2014,TRACKER NO:249,Changed some preloader n msgbox position
 <!--DONE BY:SARADAMBAL
+VER 1.5 -SD:13/09/2014 ED:13/09/2014,TRACKER NO:249,implemented script for preloader,msgbox
+VER 1.4 -SD:14/08/2014 ED:14/08/2014,TRACKER NO:249,updated new links,checked sp after updation of rollback,implemented autogrow
 VER 1.3 -SD:13/06/2014 ED:13/06/2014,TRACKER NO:249,updated failure function
 VER 1.2 -SD:06/06/2014 ED:06/06/2014,TRACKER NO:249,updated new link
 VER 1.1 -SD:27/05/2014 ED:27/05/2014,TRACKER NO:249,cleared return function,implemented sp and checked
@@ -17,20 +21,29 @@ VER 0.02-SD:30/09/2013 ED:30/09/2013,TRACKER NO:249,updated eilib connection,mes
 VER 0.01-INITIAL VERSION,TRACKER NO:249,SD:04/09/2013,ED:05/09/2013-->
 <html>
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
 /*----------------------------------------------- FAILURE FUNTION FOR UNIT TERMINATION----------------------------------*/
 function UTERM_onFailure(UTERM_error)
 {
@@ -42,9 +55,10 @@ $('#UTERM_form_termination').replaceWith('<center><label class="dberrormsg">'+UT
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_error,position:{top:150,left:500}}});
 }}
 $(document).ready(function(){
+$('textarea').autogrow({onInitialize: true});
 /*----------------------------------------highlight selected row start------------------------------*/
 var all_tr = $('#USRC_UPDCODE_tble_doorcode tr');
 $('#USRC_UPDCODE_tble_doorcode tr td input[type="radio"]').on('click', function () {
@@ -65,7 +79,9 @@ return string[2]+'-'+ string[1]+'-'+string[0];
 /*-------------------------------------------SUCCESS FUNCTION FOR ERROR MS AND LOAD UNIT NO.-----------------------------------------*/
 function UTERM_refreshSuccess(UTERM_response)
 {
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 UTERM_errorarray=UTERM_response.UTERM_errormsg;
 UTERM_types_array=UTERM_response.UTERM_unitno;
 if(UTERM_types_array.length==0){
@@ -85,6 +101,8 @@ $("#UTERM_lb_unitnumber").change(function(){
 if($('#UTERM_lb_unitnumber').val()!='SELECT')
 {
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,200);
+resetPreloader(newPos);
 var UTERM_unitnumber=$('#UTERM_lb_unitnumber').val();
 $("#UTERM_div_form").hide();
 $("#UTERM_btn_terminate").attr("disabled", "disabled");
@@ -137,18 +155,22 @@ UTERM_options += '<option value="' + UTERM_response.UTERM_UPDCODE_unitno_obj[i] 
 }
 $('#UTERM_lb_unitnumber').html(UTERM_options);
 }
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_errmsg}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_errmsg,position:$("#UTERM_lb_unitnumber").position()}});
 $('#UTERM_lb_unitnumber').val('SELECT');}
 else if(UTERM_response.UTERM_UPDCODE_obj_flag==0)
 {
 $('#UTERM_lb_unitnumber').val('SELECT');
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_errorarray[1]}});
-}}
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_errorarray[1],position:$("#UTERM_lb_unitnumber").position()}});
+}
+$('textarea').height(20);
+}
 /*-------------------------------------------CLICK EVENT FUNCTION FOR RESET---------------------------------------*/
 $("#UTERM_btn_reset").click(function(){
 $("#UTERM_div_form").hide();
 $('#UTERM_lb_unitnumber').val('SELECT');
+$('textarea').height(20);
 });
+/*--------------------------------------------KEYPRESS EVENT OF COMMENTS--------------------------------------*/
 });
 </script>
 <!--SCRIPT TAG END-->

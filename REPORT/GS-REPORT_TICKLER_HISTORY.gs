@@ -1,5 +1,10 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //***********************************************TICKLER HISTORY**********************************************//
+//DONE BY:PUNITHA
+//VER 1.5-SD:24/09/2014 ED:24/09/2014,TRACKER NO:694,changed preloader position,msgbox position
+//VER 1.4-SD:24/09/2014 ED:24/09/2014,TRACKER NO:694,used function from jquery to replace<> tag in old val n new val,changed script as per corrected sp ,used drop table function from eilib,corrected sort by timestamp in query,changed preloader position,msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.3-SD:22/08/2014 ED:22/08/2014,TRACKER NO:694,updated new links
 //DONE BY:LALITHA
 //VER 1.2-SD:14/07/2014 ED:15/07/2014,TRACKER NO:694,Changed failure funct,Inbetween record put comma,Select query ordered by timestamp desc,sp changed:added unsigned zero for unit nos
 //VER 1.1-SD:07/06/2014 ED:07/06/2014,TRACKER NO:694,Changed jquery link 
@@ -32,8 +37,9 @@ try
   {
     var TH_conn=eilib.db_GetConnection();
     var TH_stmt=TH_conn.createStatement();
+    var TH_temptblename=CallTicklerSP(TH_conn)
     var TH_dataArray=[];
-    var TH_rs=TH_stmt.executeQuery("SELECT DISTINCT CONCAT(CUSTOMER_FIRST_NAME,'  ',CUSTOMER_LAST_NAME) AS CUSTOMERNAME FROM CUSTOMER ORDER BY CUSTOMER_FIRST_NAME ASC");
+    var TH_rs=TH_stmt.executeQuery("SELECT DISTINCT CONCAT(CUSTOMER_FIRST_NAME,'  ',CUSTOMER_LAST_NAME) AS CUSTOMERNAME FROM "+TH_temptblename+" ORDER BY CUSTOMER_FIRST_NAME ASC");
     while(TH_rs.next()) 
     {
       if(TH_rs.getString('CUSTOMERNAME')!=null)
@@ -41,18 +47,13 @@ try
     }
     TH_rs.close();
     TH_stmt.close();
+    eilib.DropTempTable(TH_conn, TH_temptblename)
     TH_conn.close();
     return TH_dataArray;
-  }  
-  // FUNCTION FOR SHOW THE DATA IN TABLE
-  function TH_flextabel_getdatas(TH_customername)
+  }
+  function CallTicklerSP(TH_conn)
   {
-    var TH_conn=eilib.db_GetConnection();
     var TH_stmt=TH_conn.createStatement();
-    var TH_flname=TH_customername.split('  ');
-    var TH_fname=TH_flname[0];
-    var TH_lname=TH_flname[1];
-    var TH_tickler_list=[];
     TH_stmt.execute("CALL SP_CUSTOMER_TICKLER_DATA('"+UserStamp+"',@CUSTOMER_TICKLER_HISTORY_TMPTBL)");
     TH_stmt.close();
     var TH_stmt_temptble = TH_conn.createStatement();
@@ -62,8 +63,20 @@ try
     }
     TH_rs_temptble.close();
     TH_stmt_temptble.close();
+    return TH_temptblename;
+  }
+  // FUNCTION FOR SHOW THE DATA IN TABLE
+  function TH_flextabel_getdatas(TH_customername)
+  {
+    var TH_conn=eilib.db_GetConnection();
     var TH_stmt=TH_conn.createStatement();
-    var TH_query="SELECT CUSTOMER_ID,UPDATION_DELETION,TABLE_NAME,TH_OLD_VALUE,TH_NEW_VALUE,TH_USERSTAMP,DATE_FORMAT(CONVERT_TZ(TH_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTAMP FROM "+TH_temptblename+" WHERE CUSTOMER_FIRST_NAME='"+TH_fname+"' AND CUSTOMER_LAST_NAME='"+TH_lname+"' ORDER BY TIMESTAMP DESC";
+    var TH_flname=TH_customername.split('  ');
+    var TH_fname=TH_flname[0];
+    var TH_lname=TH_flname[1];
+    var TH_tickler_list=[];
+    var TH_temptblename=CallTicklerSP(TH_conn)
+    var TH_stmt=TH_conn.createStatement();
+    var TH_query="SELECT CUSTOMER_ID,UPDATION_DELETION,TABLE_NAME,TH_OLD_VALUE,TH_NEW_VALUE,TH_USERSTAMP,DATE_FORMAT(CONVERT_TZ(TH_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T')  AS TIMESTAMP FROM "+TH_temptblename+" WHERE CUSTOMER_FIRST_NAME='"+TH_fname+"' AND CUSTOMER_LAST_NAME='"+TH_lname+"' ORDER BY TH_TIMESTAMP DESC";
     var TH_rs=TH_stmt.executeQuery(TH_query);
     while(TH_rs.next())
     {
@@ -83,9 +96,7 @@ try
     }
     TH_rs.close();
     TH_stmt.close();
-    var TH_temp_stmt= TH_conn.createStatement();
-    TH_temp_stmt.execute("DROP TABLE "+TH_temptblename+"");
-    TH_temp_stmt.close();
+    eilib.DropTempTable(TH_conn, TH_temptblename);
     TH_conn.close();
     return TH_tickler_list;
   }

@@ -1,11 +1,15 @@
 <!--/*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************CUSTOMER TERMINATION*****************************************//
-//DONE BY:PUNITHA,SAFI
+//DONE BY:PUNITHA
+//VER 1.4-SD:08/10/2014 ED:08/10/2014,TRACKER NO:732,Changed preloader n msgbox position
+//VER 1.3-SD:01/08/2014 ED:25/08/2014,TRACKER NO:732,,updated new links n AG,implemented commit n rollback n updated  sp to ptd for null card ptd for unterm sp n in active customer term option  BY PUNI
 //VER 1.2-SD:22/07/2014 ED:22/07/2014,TRACKER NO:732,ADDED CALL FUNCTION TO PASS FROM EILIB TO PASS TIMESTAMP IN 24 HRS FORMAT FOR UPDATION WITH COMTS FOR UNTERMINATION OPTION BY PUNI
 //VER 1.1-SD:17/06/2014 ED:19/06/2014,TRACKER NO:732,ADDED FAILURE ERR MSG FOR INCORRECT USER NAME N PW N CHKED CORRECTED SP FOR USERSTAMP N TIMESTAMP UPDATION N CHANGED VW NAMES BY PUNI
 //VER 1.0-SD:06/06/2014 ED:6/06/2014,TRACKER NO:732,ADDED ERR MSG IF CAL NAME IS WRONG,CHANGED NEW DRIVE LINK IN HTML FILE BY PUNI
 //VER 0.09-SD:30/05/2014 ED:31/05/2014,TRACKER NO:732,CHANGED SCRIPT TO DROP TEMP TABLE CREATING IN SP N CHECKED CORRECTED SP BY PUNI
+//DONE BY:SAFI
 //VER 0.08-SD:09/05/2014 ED:10/05/2014,TRACKER NO:732,CHANGED TEMP TABLE DYNAMICALLY AND CHECK SPLITTED SP BY SAFI
+//DONE BY:PUNITHA
 //VER 0.07-SD:12/04/2014 ED:22/04/2014,TRACKER NO:732,checked with guest record for manual term sp n updated cal event n lp n quarters script n chked with changed views n extn form changes BY PUNI
 //VER 0.06-SD:24/03/2014 ED:12/04/2014,TRACKER NO:732,updated form validation as per new changes in manual term sp,changed table name as per new changes,updated calendar event script n checked with new manual term sp BY PUNI
 //VER 0.05-SD:20/01/2014 ED:24/03/2014,updated array concept to get calendar time,trimed script,updated return flag from sp,updated some validation when ptd not between sd n edate,checked tickler history data to id updation in manual term sp BY PUNI 
@@ -16,24 +20,35 @@
 //*********************************************************************************************************//-->
 <html>
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() 
 {
+$('textarea').autogrow({onInitialize: true});
 $(".preloader").show();
 //FUNCTION TO ALERT EXCEPTION ERROR
 function onFailure(CTERM_error) {
@@ -49,7 +64,7 @@ if(CTERM_error=='TypeError: Cannot call method "getEvents" of undefined.'||CTERM
 {
 CTERM_error=CTERM_errmsgs[7];
 }
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER TERMINATION",msgcontent:CTERM_error}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER TERMINATION",msgcontent:CTERM_error,position:{top:150,left:500}}}); 
 }
 }
 //FUNCTION TO UNIQUE ARRAY VALUES
@@ -85,11 +100,16 @@ else
 {
 $('#CTERM_form').show();
 }
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //OPTION RADIO BUTTON CHANGE
 $("input[name='CTERM_radio_termoption']").on("change", function () {
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,280);
+resetPreloader(newPos);
 $('#CTERM_lbl_custname').hide();
 $('#CTERM_lb_custname').hide();
 $('#CTERM_div_custid').hide();
@@ -155,6 +175,8 @@ $('#CTERM_div_termform').hide();
 var CTERM_lb_custname=$('#CTERM_lb_custname').val();
 if(CTERM_lb_custname!='SELECT')
 {
+var  newPos= adjustPosition($(this).position(),100,280);
+resetPreloader(newPos);
 $(".preloader").show(); 
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(CTERM_getCustomerId_result).CTERM_getCustomerId(document.getElementById("CTERM_form"));
 }
@@ -193,6 +215,8 @@ $('#CTERM_div_custid').show();
 //FUNCTION FOR ON CLICK OF CUST ID 
 $(document).on("change",'.CTERM_class_custid', function ()
 {
+var  newPos= adjustPosition($(this).position(),100,280);
+resetPreloader(newPos);
 $(".preloader").show(); 
 $('#CTERM_div_errmsg').hide();
 $('#CTERM_div_srctable').hide();
@@ -237,7 +261,7 @@ if(CTERM_result_array.length == 1) {var px ="150px"}
 $('#CTERM_div_srctable').css('height',px)
 //END SET WIDTH FOR SEARCH TABLE DIV
 var CTERM_table_value='';
-var CTERM_table_header='<thead><tr><th style="width:40px">UNIT NO</th><th >FIRST NAME</th><th >LAST NAME</th><th style="width:95px">START DATE</th><th style="width:75px">END DATE</th><th style="width:75px">PRETERMINATE DATE</th><th style="width:30px">LEASE PERIOD</th><th style="width:180px">ROOM TYPE</th><th style="width:55px">CARD NO</th ><th style="width:10px">GUEST CARD</th><th style="width:10px">PRETERMINATE</th><th style="width:10px">EXTENSION</th><th style="width:10px">RECHECKIN</th><th style="width:10px">TERMINATE</th><th style="width:100px">LEASE PERIOD DURATION</th><th style="width:30px">QUARTERS</th><th style="width:55px">RENT</th><th style="width:500px">COMMENTS</th><th style="width:170px">USERSTAMP</th><th style="width:140px">TIMESTAMP</th></tr></thead>'
+var CTERM_table_header='<thead><tr><th style="width:40px">UNIT NUMBER</th><th >FIRST NAME</th><th >LAST NAME</th><th style="width:95px">START DATE</th><th style="width:75px">END DATE</th><th style="width:75px">PRETERMINATE DATE</th><th style="width:30px">LEASE PERIOD</th><th style="width:180px">ROOM TYPE</th><th style="width:55px">CARD NUMBER</th ><th style="width:10px">GUEST CARD</th><th style="width:10px">PRETERMINATE</th><th style="width:10px">EXTENSION</th><th style="width:10px">RECHECKIN</th><th style="width:10px">TERMINATE</th><th style="width:100px">LEASE PERIOD DURATION</th><th style="width:30px">QUARTERS</th><th style="width:55px">RENT</th><th style="width:500px">COMMENTS</th><th style="width:170px">USERSTAMP</th><th style="width:140px">TIMESTAMP</th></tr></thead>'
 $('#CTERM_tbl_srctable').html(CTERM_table_header);
 for(var i=0;i<CTERM_result_array.length;i++)
 {
@@ -308,6 +332,7 @@ CTERM_chkoutdate=$tds.eq(4).text();
 CTERM_gstcard=$tds.eq(9).text();
 CTERM_ptdd=$tds.eq(5).text();
 ctermrv=$tds.eq(6).text();
+$('#CTERM_ta_comments').height(20);
 $('#CTERM_ta_comments').val(CTERM_comts);//set comments
 ctermgstcard.push(CTERM_gstcard);
 if(CTERM_unitno!=""&&CTERM_gstcard=="")
@@ -973,12 +998,17 @@ $("#CTERM_btn_termbtn").attr("disabled","disabled");
 $("#CTERM_div_srcbtn").hide();
 $("#CTERM_div_termform").hide();
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(CTERM_getCustomerName_result).CTERM_getCustomerName(document.getElementById("CTERM_form"));
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER TERMINATION",msgcontent:sucessmsg}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER TERMINATION",msgcontent:sucessmsg,position:{top:150,left:500}}}); 
+}
+else if(ctermresult==0)
+{
+$(".preloader").hide();
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER TERMINATION",msgcontent:CTERM_errmsgs[6],position:{top:150,left:500}}}); 
 }
 else
 {
 $(".preloader").hide();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER TERMINATION",msgcontent:CTERM_errmsgs[6]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER TERMINATION",msgcontent:ctermresult,position:{top:150,left:500}}});
 }
 }
 });

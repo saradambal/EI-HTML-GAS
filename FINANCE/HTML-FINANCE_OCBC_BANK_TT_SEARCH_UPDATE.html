@@ -1,6 +1,10 @@
-<!--**************************************BANKTT SEARCH/UPDATE*******************************************************************//-->
+<!--**************************************BANK TT search update*******************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.08- SD:07/10/2014 ED:07/10/2014,TRACKER NO:675,Corrected preloader n msgbox position
 //DONE BY:KUMAR
+//VER 1.07- SD:19/09/2014 ED:19/09/2014,TRACKER NO:675,Implemented preloader and msgbox position script
+//VER 1.06-SD:22/08/2014 ED:22/08/2014,TRACKER NO:675,Updated new jquery and css links and did rollback and commit.
 //VER 1.05- SD:23/07/2014 ED:23/07/2014,TRACKER NO:675,showing all customer name in customer list for selected unit and all units.
 //VER 1.04- SD:15/07/2014 ED:15/07/2014,TRACKER NO:675,droped temp tables in script side.
 //VER 1.03- SD:21/06/2014 ED:21/06/2014,TRACKER NO:675,SET min and max date for banktt DP(MIN DATE AS old banktt date-1 YEAR AND MAX DATE AS SYSDATE) AND implemented connection error message.
@@ -22,25 +26,36 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={AmountCompare:'InValid'}
 $(document).ready(function() {
+$('.banktt_src_ta_comments').autogrow({onInitialize: true});
   $(document).on('click','#BANKTT_SRC_tbl_htmltable tr td input[type="radio"]',function() {
     $('#BANKTT_SRC_tbl_htmltable tr').removeClass('higlightrow');
     $(this).closest('tr').addClass('higlightrow');
@@ -51,7 +66,7 @@ $(document).ready(function() {
   $('#BANKTT_SRC_form_mainform').hide();
   $('#BANKTT_SRC_errormessageform').hide();
   $("#BANKTT_SRC_tb_accountno").doValidation({rule:'numbersonly',prop:{realpart:25,leadzero:true}});
-  $(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+  $(".autosize").doValidation({rule:'general',prop:{whitespace:true,autosize:true}});
   $("#BANKTT_SRC_db_date").datepicker({dateFormat:'dd-mm-yy',changeYear: true,changeMonth: true});
   $('#BANKTT_SRC_db_date').datepicker("option","maxDate",new Date());
   $('#BANKTT_SRC_div_htmltable').hide();
@@ -60,6 +75,8 @@ $(document).ready(function() {
   $("#BANKTT_SRC_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'BANKTT_SRC_tb_fromamount'}});
   $('.amtonly').doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
   $(document).doValidation({rule:'fromto',prop:{elem1:'BANKTT_SRCL_db_fromdate',elem2:'BANKTT_SRCL_db_todate'}}); 
+  $("#BANKTT_SRC_tb_bankcode").doValidation({rule:'numbersonly',prop:{realpart:4,leadzero:true}});
+   $("#BANKTT_SRC_tb_branchcode").doValidation({rule:'numbersonly',prop:{realpart:3,leadzero:true}});
   $('#BANKTT_SRC_unitsearch_table').hide();
   $('#BANKTT_SRC_tble_customersearch').hide();
   $('#BANKTT_SRC_customername_LBL').hide()
@@ -186,7 +203,9 @@ $(document).ready(function() {
       $('#BANKTT_SRC_errormessageform').hide();
     }
     
-    $(".preloader").hide();
+    //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
   }
   $('#BANKTT_SRC_lb_main').change(function(){
     $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
@@ -243,6 +262,8 @@ $(document).ready(function() {
     if(BANKTT_SRC_OPTION==4)
     {
       $(".preloader").show();
+      var  newPos= adjustPosition($('#BANKTT_SRC_btn_accountnamesearchbutton').position(),100,350);
+       resetPreloader(newPos);
       $("#BANKTT_SRC_btn_accountnamesearchbutton").attr("disabled", "disabled");;
       //$('#BANKTT_SRC_lb_accountnamesearch')[0].selectedIndex = 0;
       $('#BANKTT_SRC_unitsearch_table').hide();
@@ -307,6 +328,8 @@ $(document).ready(function() {
     if(unit!='SELECT')
     {
      $(".preloader").show();
+     var  newPos= adjustPosition($('#BANKTT_SRC_lb_customerunitsearch').position(),100,120);
+       resetPreloader(newPos);
       google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_customer_result).BANKTT_SRC_Customer(unit);
     }
     else
@@ -564,7 +587,9 @@ $('#autocompleteerrormsg').hide();
      $(".preloader").hide();
   }
   $('#BANKTT_SRC_btn_unitsearchbutton').click(function(){
-    $(".preloader").show(); 
+    $(".preloader").show();
+    var  newPos= adjustPosition($('#BANKTT_SRC_btn_unitsearchbutton').position(),100,350);
+       resetPreloader(newPos);
     $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
     $('#BANKTT_SRC_div_htmltable').hide();
     $('#BANKTT_SRC_lbl_error').hide();
@@ -579,6 +604,8 @@ $('#autocompleteerrormsg').hide();
   });
   $('#BANKTT_SRC_btn_customersearchbutton').click(function(){
     $(".preloader").show();
+      var  newPos= adjustPosition($('#BANKTT_SRC_btn_customersearchbutton').position(),100,350);
+       resetPreloader(newPos);
     $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
     $('#BANKTT_SRC_div_htmltable').hide();
     $('#BANKTT_SRC_lbl_error').hide();
@@ -593,6 +620,8 @@ $('#autocompleteerrormsg').hide();
   });
   $('#BANKTT_SRC_btn_accountnamesearchbutton').click(function(){
     $(".preloader").show(); 
+     var  newPos= adjustPosition($('#BANKTT_SRC_btn_accountnamesearchbutton').position(),100,350);
+       resetPreloader(newPos);
     $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
     $('#BANKTT_SRC_div_htmltable').hide();
     $('#BANKTT_SRC_lbl_error').hide();
@@ -603,7 +632,9 @@ $('#autocompleteerrormsg').hide();
     google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_search_result).BANKTT_SRC_searchoption(accname,empty,selectedoption);
   });
   $('#BANKTT_SRC_btn_datesearchbutton').click(function(){
-    $(".preloader").show(); 
+    $(".preloader").show();
+      var  newPos= adjustPosition($('#BANKTT_SRC_btn_datesearchbutton').position(),100,350);
+       resetPreloader(newPos);
     $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
     $('#BANKTT_SRC_div_htmltable').hide();
     $('#BANKTT_SRC_lbl_error').hide();
@@ -617,7 +648,9 @@ $('#autocompleteerrormsg').hide();
     }
   });
   $('#BANKTT_SRC_btn_amountrangesearchbutton').click(function(){
-    $(".preloader").show(); 
+    $(".preloader").show();
+    var  newPos= adjustPosition($('#BANKTT_SRC_btn_amountrangesearchbutton').position(),100,350);
+       resetPreloader(newPos);
     $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
     $('#BANKTT_SRC_div_htmltable').hide();
     $('#BANKTT_SRC_lbl_error').hide();
@@ -631,7 +664,9 @@ $('#autocompleteerrormsg').hide();
     }
   });
   $('#BANKTT_SRC_btn_modelnamesearchbutton').click(function(){
-    $(".preloader").show(); 
+    $(".preloader").show();
+     var  newPos= adjustPosition($('#BANKTT_SRC_btn_modelnamesearchbutton').position(),100,350);
+       resetPreloader(newPos);
     $('#BANKTT_SRC_lbl_errormsgcustomer').hide();
     $('#BANKTT_SRC_div_htmltable').hide();
     $('#BANKTT_SRC_lbl_error').hide();
@@ -812,6 +847,8 @@ $('#autocompleteerrormsg').hide();
     });
   $(document).on('click','#BANKTT_SRC_btn_search',function(){
   $(".preloader").show();
+   var  newPos= adjustPosition($('#BANKTT_SRC_btn_search').position(),100,350);
+    resetPreloader(newPos);
     var BANKTT_SRC_id=$("input[name=radiobuttons]:checked").val();
     $("#BANKTT_SRC_btn_updatebutton").attr("disabled", "disabled");
      $("#BANKTT_SRC_btn_search").attr("disabled", "disabled");
@@ -938,6 +975,7 @@ $('#autocompleteerrormsg').hide();
         $('#BANKTT_SRC_tb_tempcustomer').val('')
         $('#BANKTT_SRC_lbl_customer').hide();
         $('#BANKTT_SRC_lb_modelname').val(type).show();
+        $('#BANKTT_SRC_lbl_modelname').show();
       }
       $('#BANKTT_SRC_tble_updateformtable').show();
       $(".preloader").hide();
@@ -953,6 +991,8 @@ $('#autocompleteerrormsg').hide();
   });
   $('#BANKTT_SRC_btn_updatebutton').click(function(){
     $(".preloader").show(); 
+    var  newPos= adjustPosition($('#BANKTT_SRC_btn_updatebutton').position(),100,350);
+    resetPreloader(newPos);
     google.script.run.withFailureHandler(BANKTT_SRC_error_message).withSuccessHandler(BANKTT_SRC_form_updateform).BANKTT_SRC_processFormUpdate(document.getElementById('BANKTT_SRC_form_mainform'))
   });
   function BANKTT_SRC_form_updateform(res)
@@ -962,11 +1002,11 @@ $('#autocompleteerrormsg').hide();
     $('#BANKTT_SRC_div_htmltable').hide();
     $('#BANKTT_SRC_lbl_error').hide();
     $('#BANKTT_SRC_tble_updateformtable').hide();
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:errormsg[2]}});
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:errormsg[2],position:$('#BANKTT_SRC_form_mainform').position()}});
    }
    else
    {
-   $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:errormsg[7]}});
+   $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:errormsg[7],position:$('#BANKTT_SRC_btn_updatebutton').position()}});
    }
     $(".preloader").hide(); 
   }
@@ -987,7 +1027,7 @@ $('#autocompleteerrormsg').hide();
   }
   else
   {
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:BANKTT_SRC_err}});
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT SEARCH/UPDATE",msgcontent:BANKTT_SRC_err,position:{top:150,left:500}}});
   }
   $(".preloader").hide(); 
   }
@@ -1014,7 +1054,7 @@ $('#autocompleteerrormsg').hide();
 <table id='BANKTT_SRC_errormessagetable'>
 </table>
 </form>
-<form class="content" id="BANKTT_SRC_form_mainform">
+<form class="content" id="BANKTT_SRC_form_mainform" hidden>
 <table id="BANKK_SRC_tble_maintable">
 <tr>
 <td><label class="fontstyle" id="BANKTT_SRC_lbl_main"hidden>BANKTT SEARCH BY<em>*</em></label></td>
@@ -1067,7 +1107,7 @@ $('#autocompleteerrormsg').hide();
 <input  type="text" name="BANKTT_SRCL_db_todate" id="BANKTT_SRCL_db_todate" class="datemandtry" style="width:75px;height:20px"/></td>
 </tr>
 <tr><td>
-<input type="button"  id="BANKTT_SRC_btn_datesearchbutton" class="maxbtn"  value="SEARCH" disabled onclick="BANKTT_SRC_daterangesearch()"   /> 
+<input type="button"  id="BANKTT_SRC_btn_datesearchbutton" class="maxbtn"  value="SEARCH" disabled  /> 
 </td></tr>
 </table>
 <table cellspacing="5px" id="BANKTT_SRC_tble_accountnamesearch" hidden>
@@ -1160,13 +1200,13 @@ $('#autocompleteerrormsg').hide();
 <td><label id="BANKTT_SRC_lbl_debited" hidden >DEBITED/REJECTED DATE<em>*</em></label></td><td> <input type="text" name="BANKTT_SRC_db_debited" id="BANKTT_SRC_db_debited" style="width:75px" class="BANKTT_UPDATION_validate datemandtry" hidden/></td>
 </tr>
 <tr>
-<td><label id='BANKTT_SRC_lbl_bankcode' >BANK CODE</label></td><td> <input  type="text" name="BANKTT_SRC_tb_bankcode" id="BANKTT_SRC_tb_bankcode" style = 'width:60px;'  maxlength="4" class='numonly BANKTT_UPDATION_validate' /></td>
+<td><label id='BANKTT_SRC_lbl_bankcode' >BANK CODE</label></td><td> <input  type="text" name="BANKTT_SRC_tb_bankcode" id="BANKTT_SRC_tb_bankcode" style = 'width:60px;'  maxlength="4" class='BANKTT_UPDATION_validate' /></td>
 </tr>
 <tr>
-<td><label id='BANKTT_SRC_lbl_branchcode' >BRANCH CODE</label></td><td> <input  type="text" name="BANKTT_SRC_tb_branchcode" id="BANKTT_SRC_tb_branchcode" style = 'width:60px;' maxlength="3" class='numonly BANKTT_UPDATION_validate' /></td>
+<td><label id='BANKTT_SRC_lbl_branchcode' >BRANCH CODE</label></td><td> <input  type="text" name="BANKTT_SRC_tb_branchcode" id="BANKTT_SRC_tb_branchcode" style = 'width:60px;' maxlength="3" class='BANKTT_UPDATION_validate' /></td>
 </tr>
 <tr>
-<td><label >BANK ADDRESS</label></td><td><textarea  name="BANKTT_SRC_ta_bankaddress" id="BANKTT_SRC_ta_bankaddress"rows="5" cols="20" class="BANKTT_UPDATION_validate uppercase" style = 'width = 2000px;'></textarea></td>
+<td><label >BANK ADDRESS</label></td><td><textarea  name="BANKTT_SRC_ta_bankaddress" id="BANKTT_SRC_ta_bankaddress"rows="5" cols="20" class="BANKTT_UPDATION_validate uppercase banktt_src_ta_comments" style = 'width = 2000px;'></textarea></td>
 </tr>
 <tr>
 <td><label id='BANKTT_SRC_lbl_swiftcode' >SWIFT CODE<em>*</em></label></td><td> <input  type="text" name="BANKTT_SRC_tb_swiftcode" id="BANKTT_SRC_tb_swiftcode" class="BANKTT_UPDATION_validate" /></td>
@@ -1180,7 +1220,7 @@ $('#autocompleteerrormsg').hide();
 <td><label >CUSTOMER REF</label></td><td> <input  type="text" name="BANKTT_SRC_tb_custref" id="BANKTT_SRC_tb_custref" class="BANKTT_UPDATION_validate autosize"/></td>
 </tr>
 <tr>
-<td><label >INV DETAILS</label></td><td><textarea  name="BANKTT_SRC_ta_invdetails" id="BANKTT_SRC_ta_invdetails"rows="5" cols="20" style = 'width = 2000px;' class="BANKTT_UPDATION_validate"></textarea></td>
+<td><label >INV DETAILS</label></td><td><textarea  name="BANKTT_SRC_ta_invdetails" id="BANKTT_SRC_ta_invdetails"rows="5" cols="20" style = 'width = 2000px;' class="BANKTT_UPDATION_validate banktt_src_ta_comments"></textarea></td>
 </tr>
 <tr>
 <td><label id='BANKTT_SRC_lbl_created'>CREATED BY</label></td>
@@ -1189,7 +1229,7 @@ $('#autocompleteerrormsg').hide();
 </select>
 </tr>
 <tr>
-<td><label >COMMENTS</label></td><td><textarea  name="BANKTT_SRC_ta_comments" id="BANKTT_SRC_ta_comments"rows="5" cols="20" style = 'width = 2000px;' class="BANKTT_UPDATION_validate"></textarea></td>
+<td><label >COMMENTS</label></td><td><textarea  name="BANKTT_SRC_ta_comments" id="BANKTT_SRC_ta_comments"rows="5" cols="20" style = 'width = 2000px;' class="BANKTT_UPDATION_validate banktt_src_ta_comments"></textarea></td>
 </tr>
 <tr><td><input type="button" class="maxbtn"  value="UPDATE"  id="BANKTT_SRC_btn_updatebutton" disabled  /></td></tr> 
 </table>

@@ -1,6 +1,8 @@
 <!--***************************************MODEL ENTRY **************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.01- SD:19/09/2014 ED:19/09/2014,TRACKER NO:678,Implemented preloader and msgbox position script
+//ver 1.00- SD:22/08/2014 ED:22/08/2014,TRACKER NO:678:Updated jquery and css links 
 //VER 0.09- SD:19/06/2014 ED:19/06/2014,TRACKER NO:678 Added conn failure message.
 //VER 0.08- SD:09/06/2014 ED:09/06/2014,TRACKER NO:678,Added commit() command after inserting record.
 //VER 0.07- SD:06/06/2014 ED:06/06/2014,TRACKER NO:678,changed preloader and jquery,css links.
@@ -16,24 +18,35 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
+$(".preloader").show(); 
 var errormsg=[];
 $('#MODEL_ENTRY_errormsg').hide();
 $(".autosize").doValidation({rule:'general',prop:{whitespace:true,autosize:true}});
@@ -43,6 +56,9 @@ $('#MODEL_ENTRY_errormsg').hide();
 var modelname=$('#FIN_OCBC_MODEL_ENTRY_tb_modelname').val()
 if(modelname!="")
 {
+$(".preloader").show(); 
+var  newPos= adjustPosition($('#FIN_OCBC_MODEL_ENTRY_tb_modelname').position(),100,230);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(MODEL_ENTRY_error_message).withSuccessHandler(MODEL_ENTRY_getexistingmodel_result).MODEL_ENTRY_existingmodels(modelname);
 }
 });
@@ -60,9 +76,12 @@ else
 $('#MODEL_ENTRY_errormsg').show();
 $("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
 }
+ $(".preloader").hide(); 
 }
 $('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position(),100,230);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(MODEL_ENTRY_error_message).withSuccessHandler(FIN_OCBC_MODEL_ENTRY_Conformation).FIN_OCBC_MODEL_ENTRY_processFormSubmit(document.getElementById('FIN_OCBC_MODEL_ENTRY_form_mainform'))
 });
 function FIN_OCBC_MODEL_ENTRY_Conformation(response)
@@ -72,9 +91,13 @@ if(response=='true')
 $('#FIN_OCBC_MODEL_ENTRY_form_mainform').find('input:text').prop("size","20");//set
 $('#FIN_OCBC_MODEL_ENTRY_form_mainform').find('input[type=text]').val('');
 $("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:errormsg}});
-$(".preloader").hide(); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:errormsg,position:$('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position()}});
 }
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:response,position:$('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position()}});
+}
+$(".preloader").hide(); 
 }
 function MODEL_ENTRY_error_message(MODEL_ENTRY_err)
 {
@@ -85,9 +108,10 @@ $('#FIN_OCBC_MODEL_ENTRY_form_mainform').replaceWith('<center><label class="dber
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:MODEL_ENTRY_err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:MODEL_ENTRY_err,position:{top:150,left:500}}});
 }
 }
+$(".preloader").hide(); 
 });
 </script>
 <body bgcolor="#E6E6FA">

@@ -1,5 +1,10 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************VIEW ALL CARD***********************************************//
+//DONE BY:PUNI
+//VER 1.3-SD:14/11/2014 ED:14/11/2014;TRACKER NO:780:Corrected script to show err msg throwing from sp if any duplicard card issue occurs
+//VER 1.2-SD:09/10/2014 ED:09/10/2014;TRACKER NO:780:1.added script to hide preloader after menu n form loads,2.Changed preloader n msgbox position
+////DONE BY:SARADAMBAL.M
+//VER 1.1-SD:27/08/2014 ED:27/08/2014;TRACKER NO:780;UPDATED NEW LINKS
 //DONE BY:SAFIYULLAH.M
 //VER 1.0-SD:12/06/2014 ED:12/06/2014;TRACKER NO:780;UPDATED FAILURE MSG
 //VER 0.09-SD:06/06/2014 ED:06/06/2014;TRACKER NO:780;CHANGED JQUERY LINK
@@ -12,9 +17,7 @@
 //VER 0.02 - SD:05/11/2013 ED:30/11/2013;TRACKER NO: 530-Design Changed,Tickler Table updated
 //VER 0.01 - INITIAL VERSION-SD:04/09/2013 ED:01/10/2013;TRACKER NO: 530
 //*********************************************************************************************************//
-
-try{  
-  
+try{   
   function CACS_VIEW_get_initial_values()
   {     
     var CACS_VIEW_conn =eilib.db_GetConnection();    
@@ -62,19 +65,20 @@ try{
     {      
       var CACS_VIEW_conn = eilib.db_GetConnection();
       var CACS_VIEW_carddetails_stmt=CACS_VIEW_conn.createStatement();
-      CACS_VIEW_carddetails_stmt.execute("CALL SP_ACCESS_CARD_STATUS('"+cardno+"','"+UserStamp+"',@CARDSTATUSTMPTBLNAM)")
+      CACS_VIEW_carddetails_stmt.execute("CALL SP_ACCESS_CARD_STATUS('"+cardno+"','"+UserStamp+"',@CARDSTATUSTMPTBLNAM,@CARDFLAG)")
       var CACS_VIEW_feetemptbl_stmt=CACS_VIEW_conn.createStatement();
-      var CACS_VIEW_feetemptbl_query="SELECT @CARDSTATUSTMPTBLNAM";
+      var CACS_VIEW_feetemptbl_query="SELECT @CARDSTATUSTMPTBLNAM,@CARDFLAG";
       var CACS_VIEW_feetemptblres=CACS_VIEW_feetemptbl_stmt.executeQuery(CACS_VIEW_feetemptbl_query);
-      var CACS_VIEW_temptblname="";
+      var CACS_VIEW_temptblname="",CACS_VIEW_CHECKFLAG="";
       while(CACS_VIEW_feetemptblres.next())
       {
         CACS_VIEW_temptblname=CACS_VIEW_feetemptblres.getString(1);
+        CACS_VIEW_CHECKFLAG=CACS_VIEW_feetemptblres.getString(2);  
       }
       CACS_VIEW_feetemptblres.close();
       CACS_VIEW_feetemptbl_stmt.close();
       var CACS_VIEW_select_carddetails="SELECT * FROM "+CACS_VIEW_temptblname+""
-      var CACS_VIEW_carddetails_array=[];      
+      var CACS_VIEW_carddetails_array=[],CACS_VIEW_finalcarddetails_array=[];      
       var CACS_VIEW_carddetails_rs=CACS_VIEW_carddetails_stmt.executeQuery(CACS_VIEW_select_carddetails);
       if(CACS_VIEW_carddetails_rs.next())
       {
@@ -94,12 +98,13 @@ try{
       }
       CACS_VIEW_carddetails_rs.close() 
       CACS_VIEW_carddetails_stmt.close()
+      CACS_VIEW_finalcarddetails_array=[CACS_VIEW_carddetails_array,CACS_VIEW_CHECKFLAG]
       var CCARD_drop_stmt=CACS_VIEW_conn.createStatement();
       var CCARD_drop_query=("DROP TABLE IF EXISTS "+CACS_VIEW_temptblname+"")
       CCARD_drop_stmt.execute(CCARD_drop_query)
       CCARD_drop_stmt.close()
       CACS_VIEW_conn.close();
-      return CACS_VIEW_carddetails_array;      
+      return CACS_VIEW_finalcarddetails_array;      
     }
     else if(option==31)
     {
@@ -109,9 +114,9 @@ try{
       var CACS_VIEW_CHECKFLAG;
       var CACS_VIEW_conn = eilib.db_GetConnection();
       var CACS_VIEW_unit_carddetails_stmt=CACS_VIEW_conn.createStatement();
-      CACS_VIEW_unit_carddetails_stmt.execute("CALL SP_ACCESS_CARD_SEARCH_BY_UNIT("+unitno+",'"+UserStamp+"',@BYUNITTMPTBLNAM,@checkflag)");
+      CACS_VIEW_unit_carddetails_stmt.execute("CALL SP_ACCESS_CARD_SEARCH_BY_UNIT("+unitno+",'"+UserStamp+"',@BYUNITTMPTBLNAM,@ACCESSSEARCHSUCCESSMSG)");
       var CACS_VIEW_feetemptbl_stmt=CACS_VIEW_conn.createStatement();
-      var CACS_VIEW_feetemptbl_query="SELECT @BYUNITTMPTBLNAM,@checkflag";
+      var CACS_VIEW_feetemptbl_query="SELECT @BYUNITTMPTBLNAM,@ACCESSSEARCHSUCCESSMSG";
       var CACS_VIEW_feetemptblres=CACS_VIEW_feetemptbl_stmt.executeQuery(CACS_VIEW_feetemptbl_query);
       var CACS_VIEW_temptblname="";
       while(CACS_VIEW_feetemptblres.next())
@@ -154,7 +159,7 @@ try{
       CACS_VIEW_unit_carddetails_stmt.close();
       var CACS_VIEW_final_array=[];
       CACS_VIEW_final_array.push(CACS_VIEW_finalarray)
-      CACS_VIEW_final_array.push(CACS_VIEW_CHECKFLAG);      
+      CACS_VIEW_final_array.push(CACS_VIEW_CHECKFLAG); 
       var CCARD_drop_stmt=CACS_VIEW_conn.createStatement();
       var CCARD_drop_query=("DROP TABLE IF EXISTS "+CACS_VIEW_temptblname+"")
       CCARD_drop_stmt.execute(CCARD_drop_query)
@@ -165,9 +170,9 @@ try{
     else if(option==40){
       var CACS_VIEW_conn = eilib.db_GetConnection();
       var CACS_VIEW_unit_carddetails_stmt=CACS_VIEW_conn.createStatement();
-      CACS_VIEW_unit_carddetails_stmt.execute("CALL SP_ACCESS_CARD_SEARCH_BY_ALL_UNIT('"+UserStamp+"',@BYALLUNITTMPTBLNAM,@checkflag)");
+      CACS_VIEW_unit_carddetails_stmt.execute("CALL SP_ACCESS_CARD_SEARCH_BY_ALL_UNIT('"+UserStamp+"',@BYALLUNITTMPTBLNAM,@FLAG)");
       var CACS_VIEW_feetemptbl_stmt=CACS_VIEW_conn.createStatement();
-      var CACS_VIEW_feetemptbl_query="SELECT @BYALLUNITTMPTBLNAM,@checkflag";
+      var CACS_VIEW_feetemptbl_query="SELECT @BYALLUNITTMPTBLNAM,@FLAG";
       var CACS_VIEW_feetemptblres=CACS_VIEW_feetemptbl_stmt.executeQuery(CACS_VIEW_feetemptbl_query);
       var CACS_VIEW_temptblname="";
       var CACS_VIEW_CHECKFLAG;
@@ -236,9 +241,9 @@ try{
     var  CACS_VIEW_finalreturn_array=[];
     var CACS_VIEW_conn = eilib.db_GetConnection();
     var CACS_VIEW_custcard_details_stmt=CACS_VIEW_conn.createStatement();
-    CACS_VIEW_custcard_details_stmt.execute("CALL SP_ACCESS_CARD_SEARCH_BY_CUSTOMER('"+custid+"','"+UserStamp+"',@BYCUSTOMERTMPTBLNAM,@cust_checkflag)");
+    CACS_VIEW_custcard_details_stmt.execute("CALL SP_ACCESS_CARD_SEARCH_BY_CUSTOMER('"+custid+"','"+UserStamp+"',@BYCUSTOMERTMPTBLNAM,@FLAG_MESSAGE)");
     var CACS_VIEW_feetemptbl_stmt=CACS_VIEW_conn.createStatement();
-    var CACS_VIEW_feetemptbl_query="SELECT @BYCUSTOMERTMPTBLNAM,@cust_checkflag";
+    var CACS_VIEW_feetemptbl_query="SELECT @BYCUSTOMERTMPTBLNAM,@FLAG_MESSAGE";
     var CACS_VIEW_feetemptblres=CACS_VIEW_feetemptbl_stmt.executeQuery(CACS_VIEW_feetemptbl_query);
     var CACS_VIEW_temptblname="";
     var CACS_VIEW_CHECKFLAG;

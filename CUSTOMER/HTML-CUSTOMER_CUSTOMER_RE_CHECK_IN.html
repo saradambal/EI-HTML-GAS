@@ -1,6 +1,13 @@
 <!--//***************************************CUSTOMER RECHECK IN******************************************//
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 2.1-SD:08/10/2014 ED:08/10/2014,TRACKER NO:833-corrected preloader position
 //DONE BY:KUMAR
+//VER 2.00-SD:06/10/2014 ED:06/10/2014,TRACKER NO:833-updated proloader and message box position.
+//VER 1.09-SD:13/09/2014 ED:13/09/2014,TRACKER NO:833-Did notice period validation.
+//VER 1.08- sd:06/09/2014 ed:06/09/2014,TRACKER updated card error message in recheck in form
+//VER 1.07- SD:28/08/2014 ED:28/08/2014,TRACKER NO:833- in catch block get log method implemented.
+//VER 1.06- SD:11/08/2014 ED:11/08/2014,TRACKER NO:814-implemented rollback and commit comment in script side.
 //VER 1.05- SD:03/07/2014 ED:03/07/2014,TRACKER NO:681-changed processing fee amount text box max digits 5 to 4.
 //VER 1.04- SD:17/06/2014 ED:17/06/2014,TRACKER NO:681-Updated error msg if calendar or inv or contract doc id wrong means and updated new email id validation script And ep date and passport date validation.
 //VER 1.03- SD:05/06/2014 ED:05/06/2014,TRACKER NO:681-updated new common jquery link and set max date for epdate and passport date.
@@ -21,216 +28,229 @@
 <html>
 <head>
 <!--TO SUPPORT DATE PICKER CSS-->
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
-  $('#customerrecheckin_head').hide();
-  $("#recheckinheader").show();
-  var errormsg=[];
-  var activeunit=[];
-  var email=[];
-  var unit_startenddate=[];
-  var CRCHK_cardArray= [];
-  var CRCHK_cardslbl_array=[];
-  var accesscard_array=[];
-  var CustomerSD;
-  $('.preloader').show();
-  /******************************FORM VALIDATION CLASSES******************************/
-  $(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
-  $(".nameautoextend").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
-  $('#CRCHK_tb_custmailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
-  $(".number").doValidation({rule:'numbersonly'});
-  $(".amount").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
-  $(".amount1").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-  $(".processamount1").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
-  $(".alphanumer").doValidation({rule:'alphanumeric'});
-  $("#CRCHK_tb_intmobile").doValidation({rule:'numbersonly',prop:{realpart:15,leadzero:true}});
-  $("#CRCHK_tb_companypostalcode").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
-  google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_getCommonvalues_result).CRCHK_customerrecheckin_commonvalues('nounit');
-  var time=[];
-  function CRCHK_getCommonvalues_result(CRCHK_result)
-  {
-    CustomerSD=CRCHK_result.CustomerSD;
-    var unit=[];
-    unit=CRCHK_result.unit;
-    activeunit=CRCHK_result.activeunit;
-    var nation=[];
-    nation=CRCHK_result.nation;
-    errormsg=CRCHK_result.error;
-    var ccoption=[];
-    ccoption=CRCHK_result.ccoption;
-    email=CRCHK_result.email;
-    time=CRCHK_result.time;
-    var prorated=[];
-    prorated=CRCHK_result.prorated;
-    var unitarray=[];
-    for(var k=0;k<unit.length;k++)
-    {
-    unitarray.push(unit[k].unit);
-    }
-    unitarray=unique(unitarray);
-    var CRCHK_unitvalue='<option>SELECT</option>';
-    for(var i=0;i<unitarray.length;i++)
-    {
-      CRCHK_unitvalue += '<option value="' + unitarray[i]+ '">' + unitarray[i] + '</option>';
-    }
-    $('#CRCHK_lb_unitselectmain').html(CRCHK_unitvalue);
-    $('#CRCHK_lb_unitselectmain').show();
-    $('#CRCHK_lbl_unitselectmain').show();
-    var CRCHK_activeunitvalue='<option>SELECT</option>';
-    for(var i=0;i<activeunit.length;i++)
-    {
-      CRCHK_activeunitvalue += '<option value="' + activeunit[i] + '">' + activeunit[i] + '</option>';
-    }
-    $('#CRCHK_lb_unitselect').html(CRCHK_activeunitvalue);
-    var CRCHK_nationvalue='<option>SELECT</option>';
-    for(var i=0;i<nation.length;i++)
-    {
-      CRCHK_nationvalue += '<option value="' + nation[i] + '">' + nation[i] + '</option>';
-    }
-    $('#CRCHK_lb_nationselect').html(CRCHK_nationvalue);
-    var CRCHK_timevalue='<option>SELECT</option>';
-    for(var i=0;i<time.length;i++)
-    {
-      CRCHK_timevalue += '<option value="' + time[i] + '">' + time[i] + '</option>';
-    }
-    $('#CRCHK_lb_startselect').html(CRCHK_timevalue);
-    $('#CRCHK_lb_endselect').html(CRCHK_timevalue);
-    var CRCHK_emailvalue='<option>SELECT</option>';
-    for(var i=0;i<email.length;i++)
-    {
-      CRCHK_emailvalue += '<option value="' + email[i] + '">' + email[i] + '</option>';
-    }
-    $('#CRCHK_lb_mailselect').html(CRCHK_emailvalue);
-    var CRCHK_ccoptionvalue='<option>SELECT</option>';
-    for(var i=0;i<ccoption.length;i++)
-    {
-      CRCHK_ccoptionvalue += '<option value="' + ccoption[i].optionid + '">' + ccoption[i].optionname + '</option>';
-    }
-    $('#CRCHK_lb_ccoptionselect').html(CRCHK_ccoptionvalue);
-    $('#CRCHK_tb_firstname').prop('title',errormsg[0])
-    $('#CRCHK_tb_lastname').prop('title',errormsg[0])
-    $('#CRCHK_tb_companypostalcode').prop('title',errormsg[1]);
-    $('#CRCHK_tb_intmobile').prop('title',errormsg[1]);
-    $('#CRCHK_tb_mobile').prop('title',errormsg[1]);
-    $('#CRCHK_tb_office').prop('title',errormsg[1]);
-    $('#CRCHK_tb_noticeno').prop('title',errormsg[1]);
-    $('#CRCHK_tb_quarterlyfee').prop('title',errormsg[1]);
-    $('#CRCHK_tb_aicon_fixed').prop('title',errormsg[1]);
-    $('#CRCHK_tb_electricity').prop('title',errormsg[1]);
-    $('#CRCHK_tb_drycleaning').prop('title',errormsg[1]);
-    $('#CRCHK_tb_cleaning').prop('title',errormsg[1]);
-    $('#CRCHK_tb_deposit').prop('title',errormsg[1]);
-    $('#CRCHK_tb_process').prop('title',errormsg[1]);
-    $('#CRCHK_tb_rent').prop('title',errormsg[1]);
-    $('#CRCHK_lbl_prorated').text(prorated[0]);
-    $('#CRCHK_lbl_emailiderrormsg').text(errormsg[6]);
-    $('#CRCHK_lbl_checkouterrormsg').text(errormsg[10]);
-    $('#CRCHK_lbl_waived').text(prorated[1]);
-    $('#CRCHK_lbl_mobileerrormsg').text(errormsg[12])
-    $('#CRCHK_lbl_intlmobileerrormsg').text(errormsg[12])
-    $('#CRCHK_lbl_officeerrormsg').text(errormsg[12])
-    $('#CRCHK_lbl_passporterrormsg').text(errormsg[13])
-    $('#CRCHK_lbl_epnoerrormsg').text(errormsg[14])
-    $('#CRCHK_lbl_postalerrormsg').text(errormsg[15])
-    $('#CRCHK_lbl_renterrormsg').text(errormsg[16])
-    $('#CRCHK_lbl_depositerrormsg').text(errormsg[17])
-    $('#CRCHK_lbl_processerrormsg').text(errormsg[18])
-    $('#CRCHK_lbl_electcaperrormsg').text(errormsg[19])
-    $('#CRCHK_lbl_passportdateerrormsg').text(errormsg[21]);
-    $('#CRCHK_lbl_epnodateerrormsg').text(errormsg[22]);
-    $('#CRCHK_lbl_pportdateerrormsg').text(errormsg[26]);
-    $('#CRCHK_lbl_ep_dateerrormsg').text(errormsg[25]);
-    
-    if(unit.length!=0)
-    {
-      $('#CRCHK_errormessagetable tr').remove().hide();
-      $('#customerrecheckin_head').show();
-      $("#recheckinheader").show();
-      $('#CRCHK_recheckinForm').hide();
-    }
-    else
-    {
-      $('#customerrecheckin_head').hide();
-      var uniterrormsg='<p><label class="errormsg">'+errormsg[9]+'</label></p>';
-      $('#CRCHK_errormessagetable').append(uniterrormsg);
-      $('#CRCHK_recheckinForm').hide();
-    }
-    $(".preloader").hide(); 
-  }
-  
-  /******************************CUSTOMER FORM SUBMIT BUTTON VALIDATION******************************/
-  $(document).on('change','.formvalidation',function(){
+$('#CRCHK_ta_comments').autogrow({onInitialize: true});
+$('#customerrecheckin_head').hide();
+$("#recheckinheader").show();
+var errormsg=[];
+var activeunit=[];
+var email=[];
+var unit_startenddate=[];
+var CRCHK_cardArray= [];
+var CRCHK_cardslbl_array=[];
+var accesscard_array=[];
+var CustomerSD;
+$('.preloader').show();
+/******************************FORM VALIDATION CLASSES******************************/
+$(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+$(".nameautoextend").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+$('#CRCHK_tb_custmailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
+$(".number").doValidation({rule:'numbersonly'});
+$(".amount").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
+$(".amount1").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+$(".processamount1").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+$(".alphanumer").doValidation({rule:'alphanumeric'});
+$("#CRCHK_tb_intmobile").doValidation({rule:'numbersonly',prop:{realpart:15,leadzero:true}});
+$("#CRCHK_tb_companypostalcode").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
+google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_getCommonvalues_result).CRCHK_customerrecheckin_commonvalues('nounit');
+var time=[];
+function CRCHK_getCommonvalues_result(CRCHK_result)
+{
+CustomerSD=CRCHK_result.CustomerSD;
+var unit=[];
+unit=CRCHK_result.unit;
+activeunit=CRCHK_result.activeunit;
+var nation=[];
+nation=CRCHK_result.nation;
+errormsg=CRCHK_result.error;
+var ccoption=[];
+ccoption=CRCHK_result.ccoption;
+email=CRCHK_result.email;
+time=CRCHK_result.time;
+var prorated=[];
+prorated=CRCHK_result.prorated;
+var unitarray=[];
+for(var k=0;k<unit.length;k++)
+{
+unitarray.push(unit[k].unit);
+}
+unitarray=unique(unitarray);
+var CRCHK_unitvalue='<option>SELECT</option>';
+for(var i=0;i<unitarray.length;i++)
+{
+CRCHK_unitvalue += '<option value="' + unitarray[i]+ '">' + unitarray[i] + '</option>';
+}
+$('#CRCHK_lb_unitselectmain').html(CRCHK_unitvalue);
+$('#CRCHK_lb_unitselectmain').show();
+$('#CRCHK_lbl_unitselectmain').show();
+var CRCHK_activeunitvalue='<option>SELECT</option>';
+for(var i=0;i<activeunit.length;i++)
+{
+CRCHK_activeunitvalue += '<option value="' + activeunit[i] + '">' + activeunit[i] + '</option>';
+}
+$('#CRCHK_lb_unitselect').html(CRCHK_activeunitvalue);
+var CRCHK_nationvalue='<option>SELECT</option>';
+for(var i=0;i<nation.length;i++)
+{
+CRCHK_nationvalue += '<option value="' + nation[i] + '">' + nation[i] + '</option>';
+}
+$('#CRCHK_lb_nationselect').html(CRCHK_nationvalue);
+var CRCHK_timevalue='<option>SELECT</option>';
+for(var i=0;i<time.length;i++)
+{
+CRCHK_timevalue += '<option value="' + time[i] + '">' + time[i] + '</option>';
+}
+$('#CRCHK_lb_startselect').html(CRCHK_timevalue);
+$('#CRCHK_lb_endselect').html(CRCHK_timevalue);
+var CRCHK_emailvalue='<option>SELECT</option>';
+for(var i=0;i<email.length;i++)
+{
+CRCHK_emailvalue += '<option value="' + email[i] + '">' + email[i] + '</option>';
+}
+$('#CRCHK_lb_mailselect').html(CRCHK_emailvalue);
+var CRCHK_ccoptionvalue='<option>SELECT</option>';
+for(var i=0;i<ccoption.length;i++)
+{
+CRCHK_ccoptionvalue += '<option value="' + ccoption[i].optionid + '">' + ccoption[i].optionname + '</option>';
+}
+$('#CRCHK_lb_ccoptionselect').html(CRCHK_ccoptionvalue);
+$('#CRCHK_tb_firstname').prop('title',errormsg[0])
+$('#CRCHK_tb_lastname').prop('title',errormsg[0])
+$('#CRCHK_tb_companypostalcode').prop('title',errormsg[1]);
+$('#CRCHK_tb_intmobile').prop('title',errormsg[1]);
+$('#CRCHK_tb_mobile').prop('title',errormsg[1]);
+$('#CRCHK_tb_office').prop('title',errormsg[1]);
+$('#CRCHK_tb_noticeno').prop('title',errormsg[1]);
+$('#CRCHK_tb_quarterlyfee').prop('title',errormsg[1]);
+$('#CRCHK_tb_aicon_fixed').prop('title',errormsg[1]);
+$('#CRCHK_tb_electricity').prop('title',errormsg[1]);
+$('#CRCHK_tb_drycleaning').prop('title',errormsg[1]);
+$('#CRCHK_tb_cleaning').prop('title',errormsg[1]);
+$('#CRCHK_tb_deposit').prop('title',errormsg[1]);
+$('#CRCHK_tb_process').prop('title',errormsg[1]);
+$('#CRCHK_tb_rent').prop('title',errormsg[1]);
+$('#CRCHK_lbl_prorated').text(prorated[0]);
+$('#CRCHK_lbl_emailiderrormsg').text(errormsg[6]);
+$('#CRCHK_lbl_checkouterrormsg').text(errormsg[10]);
+$('#CRCHK_lbl_waived').text(prorated[1]);
+$('#CRCHK_lbl_mobileerrormsg').text(errormsg[12])
+$('#CRCHK_lbl_intlmobileerrormsg').text(errormsg[12])
+$('#CRCHK_lbl_officeerrormsg').text(errormsg[12])
+$('#CRCHK_lbl_passporterrormsg').text(errormsg[13])
+$('#CRCHK_lbl_epnoerrormsg').text(errormsg[14])
+$('#CRCHK_lbl_postalerrormsg').text(errormsg[15])
+$('#CRCHK_lbl_renterrormsg').text(errormsg[16])
+$('#CRCHK_lbl_depositerrormsg').text(errormsg[17])
+$('#CRCHK_lbl_processerrormsg').text(errormsg[18])
+$('#CRCHK_lbl_electcaperrormsg').text(errormsg[19])
+$('#CRCHK_lbl_passportdateerrormsg').text(errormsg[21]);
+$('#CRCHK_lbl_epnodateerrormsg').text(errormsg[22]);
+$('#CRCHK_lbl_pportdateerrormsg').text(errormsg[26]);
+$('#CRCHK_lbl_ep_dateerrormsg').text(errormsg[25]);
+
+if(unit.length!=0)
+{
+$('#CRCHK_errormessagetable tr').remove().hide();
+$('#customerrecheckin_head').show();
+$("#recheckinheader").show();
+$('#CRCHK_recheckinForm').hide();
+}
+else
+{
+$('#customerrecheckin_head').hide();
+var uniterrormsg='<p><label class="errormsg">'+errormsg[9]+'</label></p>';
+$('#CRCHK_errormessagetable').append(uniterrormsg);
+$('#CRCHK_recheckinForm').hide();
+}
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+}
+
+/******************************CUSTOMER FORM SUBMIT BUTTON VALIDATION******************************/
+$(document).on('change blur','.formvalidation',function(){
 //  $('.formvalidation').change(function(){
-    /******POSATAL CODE************/
-    var postalcode=$('#CRCHK_tb_companypostalcode').val();
-    if(postalcode!=""){if(postalcode.length>=5){var postalflag=1;$('#CRCHK_lbl_postalerrormsg').hide();$('#CRCHK_tb_companypostalcode').removeClass('invalid');}else{postalflag=0;$('#CRCHK_lbl_postalerrormsg').show();$('#CRCHK_tb_companypostalcode').addClass('invalid');}}else{$('#CRCHK_lbl_postalerrormsg').hide();postalflag=1;$('#CRCHK_tb_companypostalcode').removeClass('invalid');}
-    /******MOBILE NO************/
-    var mobileno=$('#CRCHK_tb_mobile').val();
-    if(mobileno!=""){if(mobileno.length>=6){var mobileflag=1;$('#CRCHK_lbl_mobileerrormsg').hide();$('#CRCHK_tb_mobile').removeClass('invalid');}else{mobileflag=0;$('#CRCHK_lbl_mobileerrormsg').show();$('#CRCHK_tb_mobile').addClass('invalid');}}else{$('#CRCHK_lbl_mobileerrormsg').hide();mobileflag=1;$('#CRCHK_tb_mobile').removeClass('invalid');}
-    /******INTL MOBILE NO************/
-    var intlmobileno=$('#CRCHK_tb_intmobile').val();
-    if(intlmobileno!=""){if(intlmobileno.length>=6){var intlmobileflag=1;$('#CRCHK_lbl_intlmobileerrormsg').hide();$('#CRCHK_tb_intmobile').removeClass('invalid');}else{intlmobileflag=0;$('#CRCHK_lbl_intlmobileerrormsg').show();$('#CRCHK_tb_intmobile').addClass('invalid');}}else{$('#CRCHK_lbl_intlmobileerrormsg').hide();intlmobileflag=1;$('#CRCHK_tb_intmobile').removeClass('invalid');};
-    /******OFFICE NO************/
-    var officeno=$('#CRCHK_tb_office').val();
-    if(officeno!=""){if(officeno.length>=6){var officenoflag=1;$('#CRCHK_lbl_officeerrormsg').hide();$('#CRCHK_tb_office').removeClass('invalid');}else{officenoflag=0;$('#CRCHK_lbl_officeerrormsg').show();$('#CRCHK_tb_office').addClass('invalid');}}else{$('#CRCHK_lbl_officeerrormsg').hide();officenoflag=1;$('#CRCHK_tb_office').removeClass('invalid');}
-    /******PASSPORT NO************/
-    var passportno=$('#CRCHK_tb_passportno').val();
-    if(passportno!=""){if(passportno.length>=6){var passportnoflag=1;$('#CRCHK_lbl_passporterrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid');$('#CRCHK_tb_passportno').val($("#CRCHK_tb_passportno").val().toUpperCase())}else{passportnoflag=0;$('#CRCHK_lbl_passporterrormsg').show();$('#CRCHK_tb_passportno').removeClass('invalid');}}else{$('#CRCHK_lbl_passporterrormsg').hide();passportnoflag=1;$('#CRCHK_tb_passportno').removeClass('invalid');}
-    /******EP NO************/
-    var epno=$('#CRCHK_tb_epno').val();
-    if(epno!=""){if(epno.length>=6){var epnoflag=1;$('#CRCHK_lbl_epnoerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid');$('#CRCHK_tb_epno').val($("#CRCHK_tb_epno").val().toUpperCase())}else{epnoflag=0;$('#CRCHK_lbl_epnoerrormsg').show();$('#CRCHK_tb_epno').removeClass('invalid'); }}else{$('#CRCHK_lbl_epnoerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid');epnoflag=1;}
-    /******DEPOSIT ************/
-    var deposit=$('#CRCHK_tb_deposit').val();
-    if(deposit!=""){var depositamount=deposit.split('.');if(depositamount[0].length>=3){var depositflag=1;$('#CRCHK_lbl_depositerrormsg').hide();$('#CRCHK_tb_deposit').removeClass('invalid');}else{depositflag=0;$('#CRCHK_lbl_depositerrormsg').show();$('#CRCHK_tb_deposit').addClass('invalid');}}else{$('#CRCHK_lbl_depositerrormsg').hide();depositflag=1;$('#CRCHK_tb_deposit').removeClass('invalid');}
-    /******PROCESS************/
-    var process=$('#CRCHK_tb_process').val();
-    if(process!=""){var processamount=process.split('.');if(processamount[0].length>=3){var processflag=1;$('#CRCHK_lbl_processerrormsg').hide();$('#CRCHK_tb_process').removeClass('invalid');}else{processflag=0;$('#CRCHK_lbl_processerrormsg').show();$('#CRCHK_tb_process').addClass('invalid');}}else{$('#CRCHK_lbl_processerrormsg').hide();$('#CRCHK_tb_process').removeClass('invalid');processflag=1;}
-    /******RENT************/
-    var rent=$('#CRCHK_tb_rent').val();
-    if(rent!=""){var rentamount=rent.split('.');if(rentamount[0].length>=3){var rentflag=1;$('#CRCHK_lbl_renterrormsg').hide();$('#CRCHK_tb_rent').removeClass('invalid');}else{rentflag=0;$('#CRCHK_lbl_renterrormsg').show();$('#CRCHK_tb_rent').addClass('invalid');}}else{$('#CRCHK_lbl_renterrormsg').hide();$('#CRCHK_tb_rent').removeClass('invalid');rentflag=1;}
-    /******ELECTRICITY CAP************/
-    var electricity=$('#CRCHK_tb_electricity').val();
-    if(electricity!=""){var electamount=electricity.split('.');if(electamount[0].length>=2){var electflag=1;$('#CRCHK_lbl_electcaperrormsg').hide();$('#CRCHK_tb_electricity').removeClass('invalid');}else{electflag=0;$('#CRCHK_lbl_electcaperrormsg').show();$('#CRCHK_tb_electricity').addClass('invalid');}}else{$('#CRCHK_lbl_electcaperrormsg').hide();$('#CRCHK_tb_electricity').removeClass('invalid');electflag=1;}
-   if($('#CRCHK_db_passportdate').val()=="" && $('#CRCHK_tb_passportno').val()=="") { var passportflag=1;$('#CRCHK_lbl_passportdateerrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid'); } else { if($('#CRCHK_db_passportdate').val()!="" && $('#CRCHK_tb_passportno').val()==""){passportflag=0;$('#CRCHK_lbl_passportdateerrormsg').show();$('#CRCHK_tb_passportno').addClass('invalid');} else {passportflag=1;$('#CRCHK_lbl_passportdateerrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid');} }
-   if($('#CRCHK_db_epdate').val()=="" && $('#CRCHK_tb_epno').val()=="") { var epflag=1;$('#CRCHK_lbl_epnodateerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid') } else { if($('#CRCHK_db_epdate').val()!="" && $('#CRCHK_tb_epno').val()==""){epflag=0;$('#CRCHK_lbl_epnodateerrormsg').show();$('#CRCHK_tb_epno').addClass('invalid');} else {epflag=1;$('#CRCHK_lbl_epnodateerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid')} }
-   var CRCHK_emailid=$("#CRCHK_tb_custmailid").val();
-    if(CRCHK_emailid.length>0)
-    {
-      var CRCHK_atpos=CRCHK_emailid.indexOf("@");
-      var CRCHK_dotpos=CRCHK_emailid.lastIndexOf(".");
-       if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(CRCHK_emailid) || "" == CRCHK_emailid)&&(CRCHK_atpos-1!=CRCHK_emailid.indexOf(".")))
-      {
-        $('#CRCHK_lbl_emailiderrormsg').hide();
-        var CRCHK_emailchk="valid";
-        $('#CRCHK_tb_custmailid').removeClass('invalid');
-        $('#CRCHK_tb_custmailid').val(CRCHK_emailid.toLowerCase());
-      }
-      else
-      {
-        $('#CRCHK_lbl_emailiderrormsg').show();
-        CRCHK_emailchk="invalid"
-        $('#CRCHK_tb_custmailid').addClass('invalid');
-      }
-    }
-    else
-    {
-      $('#CRCHK_lbl_emailiderrormsg').hide();
-      $('#CRCHK_tb_custmailid').removeClass('invalid');
-    }
+/******POSATAL CODE************/
+var postalcode=$('#CRCHK_tb_companypostalcode').val();
+if(postalcode!=""){if(postalcode.length>=5){var postalflag=1;$('#CRCHK_lbl_postalerrormsg').hide();$('#CRCHK_tb_companypostalcode').removeClass('invalid');}else{postalflag=0;$('#CRCHK_lbl_postalerrormsg').show();$('#CRCHK_tb_companypostalcode').addClass('invalid');}}else{$('#CRCHK_lbl_postalerrormsg').hide();postalflag=1;$('#CRCHK_tb_companypostalcode').removeClass('invalid');}
+/******MOBILE NO************/
+var mobileno=$('#CRCHK_tb_mobile').val();
+if(mobileno!=""){if(mobileno.length>=6){var mobileflag=1;$('#CRCHK_lbl_mobileerrormsg').hide();$('#CRCHK_tb_mobile').removeClass('invalid');}else{mobileflag=0;$('#CRCHK_lbl_mobileerrormsg').show();$('#CRCHK_tb_mobile').addClass('invalid');}}else{$('#CRCHK_lbl_mobileerrormsg').hide();mobileflag=1;$('#CRCHK_tb_mobile').removeClass('invalid');}
+/******INTL MOBILE NO************/
+var intlmobileno=$('#CRCHK_tb_intmobile').val();
+if(intlmobileno!=""){if(intlmobileno.length>=6){var intlmobileflag=1;$('#CRCHK_lbl_intlmobileerrormsg').hide();$('#CRCHK_tb_intmobile').removeClass('invalid');}else{intlmobileflag=0;$('#CRCHK_lbl_intlmobileerrormsg').show();$('#CRCHK_tb_intmobile').addClass('invalid');}}else{$('#CRCHK_lbl_intlmobileerrormsg').hide();intlmobileflag=1;$('#CRCHK_tb_intmobile').removeClass('invalid');};
+/******OFFICE NO************/
+var officeno=$('#CRCHK_tb_office').val();
+if(officeno!=""){if(officeno.length>=6){var officenoflag=1;$('#CRCHK_lbl_officeerrormsg').hide();$('#CRCHK_tb_office').removeClass('invalid');}else{officenoflag=0;$('#CRCHK_lbl_officeerrormsg').show();$('#CRCHK_tb_office').addClass('invalid');}}else{$('#CRCHK_lbl_officeerrormsg').hide();officenoflag=1;$('#CRCHK_tb_office').removeClass('invalid');}
+/******PASSPORT NO************/
+var passportno=$('#CRCHK_tb_passportno').val();
+if(passportno!=""){if(passportno.length>=6){var passportnoflag=1;$('#CRCHK_lbl_passporterrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid');$('#CRCHK_tb_passportno').val($("#CRCHK_tb_passportno").val().toUpperCase())}else{passportnoflag=0;$('#CRCHK_lbl_passporterrormsg').show();$('#CRCHK_tb_passportno').removeClass('invalid');}}else{$('#CRCHK_lbl_passporterrormsg').hide();passportnoflag=1;$('#CRCHK_tb_passportno').removeClass('invalid');}
+/******EP NO************/
+var epno=$('#CRCHK_tb_epno').val();
+if(epno!=""){if(epno.length>=6){var epnoflag=1;$('#CRCHK_lbl_epnoerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid');$('#CRCHK_tb_epno').val($("#CRCHK_tb_epno").val().toUpperCase())}else{epnoflag=0;$('#CRCHK_lbl_epnoerrormsg').show();$('#CRCHK_tb_epno').removeClass('invalid'); }}else{$('#CRCHK_lbl_epnoerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid');epnoflag=1;}
+/******DEPOSIT ************/
+var deposit=$('#CRCHK_tb_deposit').val();
+if(deposit!=""){var depositamount=deposit.split('.');if(depositamount[0].length>=3){var depositflag=1;$('#CRCHK_lbl_depositerrormsg').hide();$('#CRCHK_tb_deposit').removeClass('invalid');}else{depositflag=0;$('#CRCHK_lbl_depositerrormsg').show();$('#CRCHK_tb_deposit').addClass('invalid');}}else{$('#CRCHK_lbl_depositerrormsg').hide();depositflag=1;$('#CRCHK_tb_deposit').removeClass('invalid');}
+/******PROCESS************/
+var process=$('#CRCHK_tb_process').val();
+if(process!=""){var processamount=process.split('.');if(processamount[0].length>=3){var processflag=1;$('#CRCHK_lbl_processerrormsg').hide();$('#CRCHK_tb_process').removeClass('invalid');}else{processflag=0;$('#CRCHK_lbl_processerrormsg').show();$('#CRCHK_tb_process').addClass('invalid');}}else{$('#CRCHK_lbl_processerrormsg').hide();$('#CRCHK_tb_process').removeClass('invalid');processflag=1;}
+/******RENT************/
+var rent=$('#CRCHK_tb_rent').val();
+if(rent!=""){var rentamount=rent.split('.');if(rentamount[0].length>=3){var rentflag=1;$('#CRCHK_lbl_renterrormsg').hide();$('#CRCHK_tb_rent').removeClass('invalid');}else{rentflag=0;$('#CRCHK_lbl_renterrormsg').show();$('#CRCHK_tb_rent').addClass('invalid');}}else{$('#CRCHK_lbl_renterrormsg').hide();$('#CRCHK_tb_rent').removeClass('invalid');rentflag=1;}
+/******ELECTRICITY CAP************/
+var electricity=$('#CRCHK_tb_electricity').val();
+if(electricity!=""){var electamount=electricity.split('.');if(electamount[0].length>=2){var electflag=1;$('#CRCHK_lbl_electcaperrormsg').hide();$('#CRCHK_tb_electricity').removeClass('invalid');}else{electflag=0;$('#CRCHK_lbl_electcaperrormsg').show();$('#CRCHK_tb_electricity').addClass('invalid');}}else{$('#CRCHK_lbl_electcaperrormsg').hide();$('#CRCHK_tb_electricity').removeClass('invalid');electflag=1;}
+if($('#CRCHK_db_passportdate').val()=="" && $('#CRCHK_tb_passportno').val()=="") { var passportflag=1;$('#CRCHK_lbl_passportdateerrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid'); } else { if($('#CRCHK_db_passportdate').val()!="" && $('#CRCHK_tb_passportno').val()==""){passportflag=0;$('#CRCHK_lbl_passportdateerrormsg').show();$('#CRCHK_tb_passportno').addClass('invalid');} else {passportflag=1;$('#CRCHK_lbl_passportdateerrormsg').hide();$('#CRCHK_tb_passportno').removeClass('invalid');} }
+if($('#CRCHK_db_epdate').val()=="" && $('#CRCHK_tb_epno').val()=="") { var epflag=1;$('#CRCHK_lbl_epnodateerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid') } else { if($('#CRCHK_db_epdate').val()!="" && $('#CRCHK_tb_epno').val()==""){epflag=0;$('#CRCHK_lbl_epnodateerrormsg').show();$('#CRCHK_tb_epno').addClass('invalid');} else {epflag=1;$('#CRCHK_lbl_epnodateerrormsg').hide();$('#CRCHK_tb_epno').removeClass('invalid')} }
+var CRCHK_emailid=$("#CRCHK_tb_custmailid").val();
+if(CRCHK_emailid.length>0)
+{
+var CRCHK_atpos=CRCHK_emailid.indexOf("@");
+var CRCHK_dotpos=CRCHK_emailid.lastIndexOf(".");
+if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(CRCHK_emailid) || "" == CRCHK_emailid)&&(CRCHK_atpos-1!=CRCHK_emailid.indexOf(".")))
+{
+$('#CRCHK_lbl_emailiderrormsg').hide();
+var CRCHK_emailchk="valid";
+$('#CRCHK_tb_custmailid').removeClass('invalid');
+$('#CRCHK_tb_custmailid').val(CRCHK_emailid.toLowerCase());
+}
+else
+{
+$('#CRCHK_lbl_emailiderrormsg').show();
+CRCHK_emailchk="invalid"
+$('#CRCHK_tb_custmailid').addClass('invalid');
+}
+}
+else
+{
+$('#CRCHK_lbl_emailiderrormsg').hide();
+$('#CRCHK_tb_custmailid').removeClass('invalid');
+}
 var pp_date=$('#CRCHK_db_passportdate').val();
 var end_date=$("#CRCHK_db_enddate").val();
 var ep_date=$('#CRCHK_db_epdate').val();
@@ -255,52 +275,52 @@ else
 }
 else
 {epdateflag=1}
-    if($("#CRCHK_tb_firstname").val()!="" && $("#CRCHK_tb_lastname").val()!="" && $("#CRCHK_lb_startselect").val()!="SELECT"&&$("#CRCHK_lb_unitselect").val()!="SELECT"&& $("#CRCHK_lb_roomselect").val()!="SELECT"&&$("#CRCHK_lb_endselect").val()!="SELECT"
-    && $("#CRCHK_lb_ccoptionselect").val()!="SELECT"&& $("#CRCHK_lb_mailselect").val()!="SELECT"&& $("#CRCHK_tb_rent").val()!=""&& $("#CRCHK_db_startdate").val()!=""&& $("#CRCHK_db_enddate").val()!=""&&(CRCHK_emailchk=="valid")&& mobileflag==1 && intlmobileflag==1 && officenoflag==1&& passportnoflag==1 && epnoflag==1 && processflag==1&& depositflag==1 && rentflag==1 && postalflag==1 &&electflag==1 && passportflag==1 && epflag==1 && ppdateflag==1 && epdateflag==1)
-    {
-    if(($("input[name='radio']:checked").val()=='null')||(($("input[name='radio']:checked").val()=='cardnum')&&($("input[name='checkbox']:checked").val()!="")&&($("input[name='checkbox']:checked").val()!=undefined)))
-    {
-     if($("input[name='radio']:checked").val()=='cardnum')
-      {
-      var CRCHK_cardflag=0;
-       for(var card=0;card<CRCHK_cardslbl_array.length;card++)
-       {
-       if($('#CRCHK_lb_cardlistselect'+card).val()==$("#CRCHK_tb_firstname").val()+" "+$("#CRCHK_tb_lastname").val())
-       {
-       CRCHK_cardflag=1;
-       }
-       else
-       {
-       $("#CRCHK_savebutton").attr("disabled", "disabled");
-       }
-       }
-       if(CRCHK_cardflag==1)
-       {
-       $("#CRCHK_savebutton").removeAttr("disabled");
-       }
-       }
-       else
-       {
-       $("#CRCHK_savebutton").removeAttr("disabled");
-       }
-       }
-      else
-      {
-        $("#CRCHK_savebutton").attr("disabled", "disabled");
-      }
-    }
-    else
-    {
-      $("#CRCHK_savebutton").attr("disabled", "disabled");
-    }
-  });
-  $('#CRCHK_lb_customerselect').hide();
-  $('#CRCHK_lbl_customername').hide();
-  $('#CRCHK_lbl_noticeerroemsg').hide();
-  $('#CRCHK_lbl_emailiderrormsg').hide();
-  
-  /***************************PASSPORT DATE VALIDATION***********************************************/
-$(document).on('change','.passportdatevalidation',function(){
+if($("#CRCHK_tb_firstname").val()!="" && $("#CRCHK_tb_lastname").val()!="" && $("#CRCHK_lb_startselect").val()!="SELECT"&&$("#CRCHK_lb_unitselect").val()!="SELECT"&& $("#CRCHK_lb_roomselect").val()!="SELECT"&&$("#CRCHK_lb_endselect").val()!="SELECT"
+&& $("#CRCHK_lb_ccoptionselect").val()!="SELECT"&& $("#CRCHK_lb_mailselect").val()!="SELECT"&& $("#CRCHK_tb_rent").val()!=""&& $("#CRCHK_db_startdate").val()!=""&& $("#CRCHK_db_enddate").val()!=""&&(CRCHK_emailchk=="valid")&& mobileflag==1 && intlmobileflag==1 && officenoflag==1&& passportnoflag==1 && epnoflag==1 && processflag==1&& depositflag==1 && rentflag==1 && postalflag==1 &&electflag==1 && passportflag==1 && epflag==1 && ppdateflag==1 && epdateflag==1)
+{
+if(($("input[name='radio']:checked").val()=='null')||(($("input[name='radio']:checked").val()=='cardnum')&&($("input[name='checkbox']:checked").val()!="")&&($("input[name='checkbox']:checked").val()!=undefined)))
+{
+if($("input[name='radio']:checked").val()=='cardnum')
+{
+var CRCHK_cardflag=0;
+for(var card=0;card<CRCHK_cardArray.length;card++)
+{
+if($('#CRCHK_lb_cardlistselect'+card).val()==$("#CRCHK_tb_firstname").val()+" "+$("#CRCHK_tb_lastname").val())
+{
+CRCHK_cardflag=1;
+}
+else
+{
+$("#CRCHK_savebutton").attr("disabled", "disabled");
+}
+}
+if(CRCHK_cardflag==1)
+{
+$("#CRCHK_savebutton").removeAttr("disabled");
+}
+}
+else
+{
+$("#CRCHK_savebutton").removeAttr("disabled");
+}
+}
+else
+{
+$("#CRCHK_savebutton").attr("disabled", "disabled");
+}
+}
+else
+{
+$("#CRCHK_savebutton").attr("disabled", "disabled");
+}
+});
+$('#CRCHK_lb_customerselect').hide();
+$('#CRCHK_lbl_customername').hide();
+$('#CRCHK_lbl_noticeerroemsg').hide();
+$('#CRCHK_lbl_emailiderrormsg').hide();
+
+/***************************PASSPORT DATE VALIDATION***********************************************/
+$(document).on('change blur','.passportdatevalidation',function(){
 var pp_date=$('#CRCHK_db_passportdate').val();
 var end_date=$("#CRCHK_db_enddate").val();
 if(pp_date!="" && end_date!="")
@@ -320,7 +340,7 @@ $('#CRCHK_db_passportdate').addClass('invalid');
 }
 });
 /***************************EPDATE VALIDATION***********************************************/
-$(document).on('change','.epdatevalidation',function(){
+$(document).on('change blur','.epdatevalidation',function(){
 var ep_date=$('#CRCHK_db_epdate').val();
 var end_date=$("#CRCHK_db_enddate").val();
 if(ep_date!="" && end_date!="")
@@ -340,337 +360,381 @@ $('#CRCHK_db_epdate').addClass('invalid');
 }
 });
 function FormnewDateFormat(inputdate)
-  {
-    var string = inputdate.split("-");
-    var newdate=new Date(string[2],string[1]-1,string[0])
-    return newdate;
-  }
-  
-  /******************************CALL ROOM TYPE FUNCTION FOR SELECTED UNIT******************************/
-  $('.CRCHK_class_customernamechange').change(function(){ 
-  $("#CRCHK_savebutton").attr("disabled", "disabled");
-    var CRCHK_unit = $('#CRCHK_lb_unitselect').val();
-    $('#CRCHK_checkindatelabel').hide();
-    $('#CRCHK_db_startdate').hide().val('');
-    $('#CRCHK_checkoutdatelabel').hide();
-    $('#CRCHK_db_enddate').hide().val('');
-    $('#CRCHK_lbl_startto').hide();
-    $('#CRCHK_lb_startselect').hide();
-    $('#CRCHK_lb_startselect1').hide();
-    $("#CRCHK_lb_startselect")[0].selectedIndex = 0;
-    $("#CRCHK_lb_startselect1")[0].selectedIndex = 0;
-    $('#CRCHK_lbl_endto').hide();
-    $('#CRCHK_lb_endselect').hide();
-    $('#CRCHK_lb_endselect1').hide();
-    $("#CRCHK_lb_endselect")[0].selectedIndex = 0;
-    $("#CRCHK_lb_endselect1")[0].selectedIndex = 0;
-    var CRCHK_nullparam="";
-    if(CRCHK_unit!="SELECT")
-    {
-      $(".preloader").show(); 
-      google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_roomtypeResponse).CRCHK_Roomtype(CRCHK_unit,CRCHK_nullparam);
-    }
-    else
-    {
-    $('#CRCHK_lb_roomselect').hide();
-    $('#CRF_cardradio').hide();
-    $('#CRF_nullradio').hide();
-    $('#CRCHK_lbl_roomtype').hide();
-    $('#CRCHK_tble_cardtable').hide();
-    $('#CRCHK_checkindatelabel').hide();
-    $('#CRCHK_db_startdate').hide();
-    $('#CRCHK_checkoutlabel').hide();
-    $('#CRCHK_db_enddate').hide();
-    $('#CRCHK_lbl_endto').hide();
-    $('#CRCHK_lb_endselect').hide();
-    $('#CRCHK_lb_endselect1').hide();
-    $("#CRCHK_lb_endselect").hide();
-    $('#CRCHK_lbl_startto').hide();
-    $('#CRCHK_lb_startselect').hide();
-    $('#CRCHK_lb_startselect1').hide();
-    $("#CRCHK_lb_startselect").hide();
-    }
-  });
-  
-  /******************************CARD NUMBER CALL FUNCTION******************************/
-  $(function () {
-    $("#radio").buttonset();
-    $("input[name='radio']").on("click", function () {
-      var CRCHK_radio_name = $("input[name='radio']:checked").val();
-      if(CRCHK_radio_name=='cardnum')
-      {
-        var CRCHK_unit = $('#CRCHK_lb_unitselect').val();
-        var CRCHK_firstname=$('#CRCHK_tb_firstname').val();
-        var CRCHK_lastname=$('#CRCHK_tb_lastname').val();
-        if((CRCHK_firstname!="")&&(CRCHK_lastname!=""))
-        {
-          $(".preloader").show(); 
-          google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_cardnumberresponse).CRCHK_CardNumber(CRCHK_unit,CRCHK_firstname,CRCHK_lastname);
-        }
-        else
-        {
-          var CRCHK_value='<tr><td><label></label></td><td><label></label></td><td><label></label></td><td><label class="font_color" style="width=250;">ENTER CUSTOMER NAME</label></td></tr>';
-          $('#CRCHK_tble_cardtable').append(CRCHK_value);
-          $('#CRCHK_tble_cardtable').show();
-        }
-      }
-      else
-      {
-        $("#CRCHK_tble_cardtable tr").remove();
-        $('#CRCHK_tble_cardtable').hide();
-        $('#CRCHK_lbl_error').hide();
-      }
-    });
-    
-  });
-  
-  /******************************CALL STARTDATE ENDTIME FUNCTION******************************/
-  $('#CRCHK_db_startdate').change(function(){
-    if($('#CRCHK_db_startdate').val()!="")
-    {
-      $('#CRCHK_lb_startselect').show();
-      $('#CRCHK_db_enddate').show().val('');
-      $("#CRCHK_checkoutdatelabel").show();
-    }
-    else
-    {
-    $('#CRCHK_lb_startselect').hide();
-    $("#CRCHK_lb_startselect")[0].selectedIndex = 0;
-    $('#CRCHK_db_enddate').hide();
-    $('#CRCHK_db_startdate').show().val('');
-    $("#CRCHK_checkoutdatelabel").hide();
-    $('#CRCHK_lb_endselect1').hide();
-    $('#CRCHK_lb_endselect').hide();
-    $('#CRCHK_lbl_endto').hide();
-    $('#CRCHK_lb_startselect1').hide();
-    $('#CRCHK_lb_startselect').hide();
-    $('#CRCHK_lbl_startto').hide();
-    }
-  });
-  function CCRE_startendtimevalues(endtime)
 {
-var timearray=[];
-  for(var i=0;i<time.length;i++)
-  {
-    if(endtime==time[i])
-    {
-      var endtime_status=i;
-      break;
-    }
-  } 
-  if(endtime=="23:30")
-  {
-    timearray.push("23:59");
-  }
-  else if(endtime=="23:00")
-  {
-    timearray.push("23:30");
-    timearray.push("23:59");
-  }
-  else
-  {
-    var length=endtime_status+2;
-    for(var j=endtime_status+1;j<=length;j++)
-    {
-      timearray.push(time[j]);
-    }
-  }
-  return timearray;
+var string = inputdate.split("-");
+var newdate=new Date(string[2],string[1]-1,string[0])
+return newdate;
 }
 
-  $('#CRCHK_lb_startselect').change(function(){ 
-    var CRCHK_start = $(this).val();
-    var timearray=CCRE_startendtimevalues(CRCHK_start);
-    if(CRCHK_start!="SELECT")
-    {
-      var CRCHK_options ='';
-    for (var i = 0; i < timearray.length; i++) 
-    {
-      CRCHK_options += '<option value="' + timearray[i] + '">' + timearray[i] + '</option>';
-    }
-    $('#CRCHK_lb_startselect1').html(CRCHK_options);
-    $('#CRCHK_lbl_startto').show();
-    $('#CRCHK_lb_startselect1').show();
-    }
-    else
-    {
-      $('#CRCHK_lb_startselect1').hide();
-      $('#CRCHK_lbl_startto').hide();
-    }
-  });
-  
-  /******************************ENDDATE TIME******************************/
-  $('#CRCHK_db_enddate').change(function(){
-    if($('#CRCHK_db_enddate').val()!="")
-    {
-      $('#CRCHK_lb_endselect').show();
+/******************************CALL ROOM TYPE FUNCTION FOR SELECTED UNIT******************************/
+$('.CRCHK_class_customernamechange').change(function(){ 
+$("#CRCHK_db_noticedate").removeAttr("disabled");
+$("#CRCHK_savebutton").attr("disabled", "disabled");
+var CRCHK_unit = $('#CRCHK_lb_unitselect').val();
+$('#CRCHK_checkindatelabel').hide();
+$('#CRCHK_db_startdate').hide().val('');
+$('#CRCHK_checkoutdatelabel').hide();
+$('#CRCHK_db_enddate').hide().val('');
+$('#CRCHK_lbl_startto').hide();
+$('#CRCHK_lb_startselect').hide();
+$('#CRCHK_lb_startselect1').hide();
+$("#CRCHK_lb_startselect")[0].selectedIndex = 0;
+$("#CRCHK_lb_startselect1")[0].selectedIndex = 0;
+$('#CRCHK_lbl_endto').hide();
+$('#CRCHK_lb_endselect').hide();
+$('#CRCHK_lb_endselect1').hide();
+$("#CRCHK_lb_endselect")[0].selectedIndex = 0;
+$("#CRCHK_lb_endselect1")[0].selectedIndex = 0;
+var CRCHK_nullparam="";
+if(CRCHK_unit!="SELECT")
+{
+$(".preloader").show();
+var  newPos= adjustPosition($('#CRCHK_lb_unitselect').position(),100,120);
+resetPreloader(newPos);
+google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_roomtypeResponse).CRCHK_Roomtype(CRCHK_unit,CRCHK_nullparam);
+}
+else
+{
+$('#CRCHK_lb_roomselect').hide();
+$('#CRF_cardradio').hide();
+$('#CRF_nullradio').hide();
+$('#CRCHK_lbl_roomtype').hide();
+$('#CRCHK_tble_cardtable').hide();
+$('#CRCHK_checkindatelabel').hide();
+$('#CRCHK_db_startdate').hide();
+$('#CRCHK_checkoutlabel').hide();
+$('#CRCHK_db_enddate').hide();
+$('#CRCHK_lbl_endto').hide();
+$('#CRCHK_lb_endselect').hide();
+$('#CRCHK_lb_endselect1').hide();
+$("#CRCHK_lb_endselect").hide();
+$('#CRCHK_lbl_startto').hide();
+$('#CRCHK_lb_startselect').hide();
+$('#CRCHK_lb_startselect1').hide();
+$("#CRCHK_lb_startselect").hide();
+}
+});
+
+/******************************CARD NUMBER CALL FUNCTION******************************/
+$(function () {
+$("#radio").buttonset();
+$("input[name='radio']").on("click", function () {
+var CRCHK_radio_name = $("input[name='radio']:checked").val();
+if(CRCHK_radio_name=='cardnum')
+{
+var CRCHK_unit = $('#CRCHK_lb_unitselect').val();
+var CRCHK_firstname=$('#CRCHK_tb_firstname').val();
+var CRCHK_lastname=$('#CRCHK_tb_lastname').val();
+if((CRCHK_firstname!="")&&(CRCHK_lastname!=""))
+{
+$(".preloader").show();
+var  newPos= adjustPosition($('#CRCHK_lb_unitselect').position(),100,120);
+resetPreloader(newPos);
+google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_cardnumberresponse).CRCHK_CardNumber(CRCHK_unit,CRCHK_firstname,CRCHK_lastname);
+}
+else
+{
+var CRCHK_value='<tr><td><label></label></td><td><label></label></td><td><label></label></td><td><label class="font_color" style="width=250;">ENTER CUSTOMER NAME</label></td></tr>';
+$('#CRCHK_tble_cardtable').append(CRCHK_value);
+$('#CRCHK_tble_cardtable').show();
+}
+}
+else
+{
+$("#CRCHK_tble_cardtable tr").remove();
+$('#CRCHK_tble_cardtable').hide();
+$('#CRCHK_lbl_error').hide();
+}
+});
+
+});
+
+/******************************CALL STARTDATE ENDTIME FUNCTION******************************/
+$('#CRCHK_db_startdate').change(function(){
+if($('#CRCHK_db_startdate').val()!="")
+{
+$('#CRCHK_lb_startselect').show();
+$('#CRCHK_db_enddate').show().val('');
+$("#CRCHK_checkoutdatelabel").show();
+}
+else
+{
+$('#CRCHK_lb_startselect').hide();
+$("#CRCHK_lb_startselect")[0].selectedIndex = 0;
+$('#CRCHK_db_enddate').hide();
+$('#CRCHK_db_startdate').show().val('');
+$("#CRCHK_checkoutdatelabel").hide();
+$('#CRCHK_lb_endselect1').hide();
+$('#CRCHK_lb_endselect').hide();
+$('#CRCHK_lbl_endto').hide();
+$('#CRCHK_lb_startselect1').hide();
+$('#CRCHK_lb_startselect').hide();
+$('#CRCHK_lbl_startto').hide();
+}
+});
+function CCRE_startendtimevalues(endtime)
+{
+var timearray=[];
+for(var i=0;i<time.length;i++)
+{
+if(endtime==time[i])
+{
+var endtime_status=i;
+break;
+}
+} 
+if(endtime=="23:30")
+{
+timearray.push("23:59");
+}
+else if(endtime=="23:00")
+{
+timearray.push("23:30");
+timearray.push("23:59");
+}
+else
+{
+var length=endtime_status+2;
+for(var j=endtime_status+1;j<=length;j++)
+{
+timearray.push(time[j]);
+}
+}
+return timearray;
+}
+
+$('#CRCHK_lb_startselect').change(function(){ 
+var CRCHK_start = $(this).val();
+var timearray=CCRE_startendtimevalues(CRCHK_start);
+if(CRCHK_start!="SELECT")
+{
+var CRCHK_options ='';
+for (var i = 0; i < timearray.length; i++) 
+{
+CRCHK_options += '<option value="' + timearray[i] + '">' + timearray[i] + '</option>';
+}
+$('#CRCHK_lb_startselect1').html(CRCHK_options);
+$('#CRCHK_lbl_startto').show();
+$('#CRCHK_lb_startselect1').show();
+}
+else
+{
+$('#CRCHK_lb_startselect1').hide();
+$('#CRCHK_lbl_startto').hide();
+}
+});
+
+/******************************ENDDATE TIME******************************/
+$('#CRCHK_db_enddate').change(function(){
+$("#CRCHK_db_noticedate").removeAttr("disabled");
+if($('#CRCHK_db_enddate').val()!="")
+{
+$('#CRCHK_lb_endselect').show();
 //      $("#CRCHK_lb_endselect")[0].selectedIndex = 0;
-    }
-    else
-    {
-      $('#CRCHK_lb_endselect').hide();
-      $("#CRCHK_lb_endselect")[0].selectedIndex = 0;
-    }
-  });
-  $('#CRCHK_lb_endselect').change(function(){ 
-    var CRCHK_end = $(this).val();
-    var timearray=CCRE_startendtimevalues(CRCHK_end);
-    if(CRCHK_end!="SELECT")
-    {
-      var CRCHK_options ='';
-    for (var i = 0; i < timearray.length; i++) 
-    {
-      CRCHK_options += '<option value="' + timearray[i] + '">' + timearray[i] + '</option>';
-    }
-    $('#CRCHK_lb_endselect1').html(CRCHK_options);
-    $('#CRCHK_lbl_endto').show();
-    $('#CRCHK_lb_endselect1').show();
-    }
-    else
-    {
-      $('#CRCHK_lb_endselect1').hide();
-      $('#CRCHK_lbl_endto').hide();
-    }
-  });
-  
-  /******************************SET DOB DATEPICKER******************************/
-  var CRCHK_d = new Date();
-  var CRCHK_year = CRCHK_d.getFullYear() - 18;
-  CRCHK_d.setFullYear(CRCHK_year);
-  $('#CRCHK_db_BirthDate').datepicker({
-    dateFormat: 'dd-mm-yy',
-    changeYear: true,
-    changeMonth: true,
-    yearRange: '1920:' + CRCHK_year + '',
-    defaultDate: CRCHK_d});
-  
-  $('#CRCHK_db_BirthDate').change(function(){
-  });
-  
-  /******************************CALL TERMINATED CUSTOMER LIST FOR SELECTED UNIT******************************/
-  $('#CRCHK_lb_unitselectmain').change(function(){ 
-    var CRCHK_unit = $('#CRCHK_lb_unitselectmain').val();
-    $("#CRCHK_savebutton").attr("disabled", "disabled");
-    $('#CRCHK_roometypeerror').hide();
-    if(CRCHK_unit!="SELECT")
-    {
-      $(".preloader").show(); 
-      $('#CRCHK_lb_customerselect').hide();
-      $('#CRCHK_lbl_customername').hide();
-      $('#CRCHK_tble_radiotable tr').remove();
-      $('#CRCHK_recheckinForm').hide();
-      google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_unitResponse).CRCHK_Customer(CRCHK_unit);
-    }
-    else
-    {
-      $('#CRCHK_lb_customerselect').hide();
-      $('#CRCHK_lbl_customername').hide();
-      $('#CRCHK_tble_radiotable tr').remove();
-      $('#CRCHK_recheckinForm').hide();
-      $('#CRCHK_db_startdate').hide();
-      $("#CRCHK_checkindatelabel").hide();
-      $('#CRCHK_lb_startselect1').hide();
-      $('#CRCHK_lb_startselect').hide();
-      $('#CRCHK_lbl_startto').hide();
-      $('#CRCHK_lb_endselect1').hide();
-      $('#CRCHK_lb_endselect').hide();
-      $('#CRCHK_lbl_endto').hide();
-      $('#CRCHK_db_enddate').hide();
-      $("#CRCHK_checkindatelabel").hide();
-      $('#CRCHK_db_startdate').hide();
-      $("#CRCHK_checkoutdatelabel").hide();
-      $("#CCRE_lb_startselect")[0].selectedIndex = 0;
-      $("#CCRE_lb_startselect1")[0].selectedIndex = 0;
-      $("#CCRE_lb_endselect")[0].selectedIndex = 0;
-      $("#CCRE_lb_endselect1")[0].selectedIndex = 0;
-    }
-  });
- 
- function FormTableDateFormat(inputdate){
-    var string = inputdate.split("-");
-    return string[2]+'-'+ string[1]+'-'+string[0];
-  }
-  /******************************CHECK RENT AMOUNT PRORATED BASED ON  STARTDATE AND ENDDATE******************************/
-  $('#CRCHK_db_enddate').change(function(){ 
-    var CRCHK_date1 = $('#CRCHK_db_startdate').val();
-    var CRCHK_date2 = $('#CRCHK_db_enddate').val();
-    if((CRCHK_date2!=""))
-    {
-      var CCRE_db_chkindate1 = new Date(Date.parse(FormTableDateFormat(CRCHK_date1))); 
-      CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate() + 1 );  
-      var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
-      CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) ); 
-      $('#CRCHK_db_noticedate').datepicker("option","minDate",CCRE_db_chkindate1);
-      var CCRE_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(CRCHK_date2)) ); 
-      CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate()-1);  
-      var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
-      CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1 )); 
-      var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate()
-      var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()+1
-      var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear()
-      var CCRE_finnoticedate=CCRE_chkoutyear+"-"+CCRE_chkoutmonth+"-"+CCRE_chkoutdate;
-      CCRE_finnoticedate = new Date( Date.parse( CCRE_finnoticedate ) ); 
-      $('#CRCHK_db_noticedate').datepicker("option","maxDate",CCRE_db_chkoutdate1);
-      if(new Date(CCRE_finnoticedate)<=new Date(FormTableDateFormat(CRCHK_date1)))
-      {
-        $('#CRCHK_db_noticedate').val("");
-      }
-    }
-  });
-  
-  /******************************prorated******************************/
-  $('.prorated').change(function(){ 
-    var CRCHK_date1 = $('#CRCHK_db_startdate').val();
-    var CRCHK_date2 = $('#CRCHK_db_enddate').val();
-    var rent=$('#CRCHK_tb_rent').val();
-    if(CRCHK_date1!="" && CRCHK_date2!="" && rent!="")
-    {
-      google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_proratedResponse).CRCHK_prorated(CRCHK_date1,CRCHK_date2);
-    }
-    else
-    {
-     $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr('checked',false);
-     $('input:checkbox[name=CRCHK_rentprorated_tempcheckbox2]').attr('checked',false);
-     $('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr("disabled",'disabled');
-    }
-  });
-  
-  /******************************SET PASSPORTDATE,EPDATE,NOTICEDATE DATEPICKER******************************/
-  $( "#datepicker" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
-  $( "#CRCHK_db_passportdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
-  $( "#CRCHK_db_epdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
-  $( "#CRCHK_db_noticedate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
-  var date1 = new Date();
-  var day=date1.getDate();
-  date1.setDate( day + 1 );        
-  var newDate = date1.toDateString(); 
-  newDate = new Date( Date.parse( newDate ) ); 
-  var passCCRE_d = new Date();
-  var CCRE_passyear = passCCRE_d.getFullYear()+10;
-  var pass_changedmonth=new Date(passCCRE_d.setFullYear(CCRE_passyear));
-  $('#CRCHK_db_passportdate').datepicker("option","minDate",newDate);
-  $('#CRCHK_db_passportdate').datepicker("option","maxDate",pass_changedmonth);
-  var epCCRE_d = new Date();
-   var CCRE_epyear = epCCRE_d.getFullYear()+3;
-   var ep_changedmonth=new Date(epCCRE_d.setFullYear(CCRE_epyear));
-  $('#CRCHK_db_epdate').datepicker("option","minDate",newDate);
-  $('#CRCHK_db_epdate').datepicker("option","maxDate",ep_changedmonth); 
-  /////////SET CHECKIN DATE AND CHECKOUTDATE/////////////////
-  $('#CRCHK_db_enddate').datepicker({
-    dateFormat: 'dd-mm-yy',
-    changeYear: true,
-    changeMonth: true 
-  });
-  
-  $("#CRCHK_db_startdate").datepicker({
-  dateFormat: "dd-mm-yy", 
-  changeYear: true,
-  changeMonth: true
-  });
-  
+}
+else
+{
+$('#CRCHK_lb_endselect').hide();
+$("#CRCHK_lb_endselect")[0].selectedIndex = 0;
+}
+});
+$('#CRCHK_lb_endselect').change(function(){ 
+var CRCHK_end = $(this).val();
+var timearray=CCRE_startendtimevalues(CRCHK_end);
+if(CRCHK_end!="SELECT")
+{
+var CRCHK_options ='';
+for (var i = 0; i < timearray.length; i++) 
+{
+CRCHK_options += '<option value="' + timearray[i] + '">' + timearray[i] + '</option>';
+}
+$('#CRCHK_lb_endselect1').html(CRCHK_options);
+$('#CRCHK_lbl_endto').show();
+$('#CRCHK_lb_endselect1').show();
+}
+else
+{
+$('#CRCHK_lb_endselect1').hide();
+$('#CRCHK_lbl_endto').hide();
+}
+});
+
+/******************************SET DOB DATEPICKER******************************/
+var CRCHK_d = new Date();
+var CRCHK_year = CRCHK_d.getFullYear() - 18;
+CRCHK_d.setFullYear(CRCHK_year);
+$('#CRCHK_db_BirthDate').datepicker({
+dateFormat: 'dd-mm-yy',
+changeYear: true,
+changeMonth: true,
+yearRange: '1920:' + CRCHK_year + '',
+defaultDate: CRCHK_d});
+
+$('#CRCHK_db_BirthDate').change(function(){
+});
+
+/******************************CALL TERMINATED CUSTOMER LIST FOR SELECTED UNIT******************************/
+$('#CRCHK_lb_unitselectmain').change(function(){ 
+$("#CRCHK_db_noticedate").removeAttr("disabled");
+var CRCHK_unit = $('#CRCHK_lb_unitselectmain').val();
+$("#CRCHK_savebutton").attr("disabled", "disabled");
+$('#CRCHK_roometypeerror').hide();
+if(CRCHK_unit!="SELECT")
+{
+$(".preloader").show(); 
+var  newPos= adjustPosition($('#CRCHK_lb_unitselectmain').position(),100,120);
+resetPreloader(newPos);
+$('#CRCHK_lb_customerselect').hide();
+$('#CRCHK_lbl_customername').hide();
+$('#CRCHK_tble_radiotable tr').remove();
+$('#CRCHK_recheckinForm').hide();
+google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_unitResponse).CRCHK_Customer(CRCHK_unit);
+}
+else
+{
+$('#CRCHK_lb_customerselect').hide();
+$('#CRCHK_lbl_customername').hide();
+$('#CRCHK_tble_radiotable tr').remove();
+$('#CRCHK_recheckinForm').hide();
+$('#CRCHK_db_startdate').hide();
+$("#CRCHK_checkindatelabel").hide();
+$('#CRCHK_lb_startselect1').hide();
+$('#CRCHK_lb_startselect').hide();
+$('#CRCHK_lbl_startto').hide();
+$('#CRCHK_lb_endselect1').hide();
+$('#CRCHK_lb_endselect').hide();
+$('#CRCHK_lbl_endto').hide();
+$('#CRCHK_db_enddate').hide();
+$("#CRCHK_checkindatelabel").hide();
+$('#CRCHK_db_startdate').hide();
+$("#CRCHK_checkoutdatelabel").hide();
+$("#CCRE_lb_startselect")[0].selectedIndex = 0;
+$("#CCRE_lb_startselect1")[0].selectedIndex = 0;
+$("#CCRE_lb_endselect")[0].selectedIndex = 0;
+$("#CCRE_lb_endselect1")[0].selectedIndex = 0;
+}
+});
+
+function FormTableDateFormat(inputdate){
+var string = inputdate.split("-");
+return string[2]+'-'+ string[1]+'-'+string[0];
+}
+/******************************CHECK RENT AMOUNT PRORATED BASED ON  STARTDATE AND ENDDATE******************************/
+$('.noticedate').change(function(){ 
+var CCRE_date1 = $('#CRCHK_db_startdate').val();
+var CCRE_date2 = $('#CRCHK_db_enddate').val();
+if(CCRE_date2!="")
+{
+var CCRE_db_chkindate1 = new Date();
+CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate() + 1);  
+var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
+CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ));
+var CCRE_db_chkindate = new Date( Date.parse(FormTableDateFormat(CCRE_date1))); 
+var new_CCRE_db_chkindate=new Date( Date.parse(FormTableDateFormat(CCRE_date1)));
+CCRE_db_chkindate.setDate( CCRE_db_chkindate.getDate() + 1);  
+if(new Date()>CCRE_db_chkindate)
+{
+$('#CRCHK_db_noticedate').datepicker("option","minDate",CCRE_db_chkindate1);
+}
+else
+{
+$('#CRCHK_db_noticedate').datepicker("option","minDate",CCRE_db_chkindate);
+}
+var CCRE_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(CCRE_date2)) ); 
+CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate()-1);  
+var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
+CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1 )); 
+var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate()
+var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()+1
+var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear()
+var CCRE_finnoticedate=CCRE_chkoutyear+"-"+CCRE_chkoutmonth+"-"+CCRE_chkoutdate;
+CCRE_finnoticedate = new Date( Date.parse( CCRE_finnoticedate ) ); 
+$('#CRCHK_db_noticedate').datepicker("option","maxDate",CCRE_db_chkoutdate1);
+if(new Date(CCRE_finnoticedate)<=new Date(FormTableDateFormat(CCRE_date1)))
+{
+$('#CRCHK_db_noticedate').val("");
+}
+if(new Date()< CCRE_db_chkindate)
+{
+var noticestartdate=new Date( Date.parse(FormTableDateFormat(CCRE_date1))); 
+}
+else
+{
+noticestartdate=new Date();
+}
+noticestartdate.setDate( noticestartdate.getDate()+1);
+var noticeenddate=new Date( Date.parse(FormTableDateFormat(CCRE_date2)));
+var noticestart_date=noticestartdate.getFullYear()+'-'+noticestartdate.getMonth()+'-'+noticestartdate.getDate();
+var noticeend_date=noticeenddate.getFullYear()+'-'+noticeenddate.getMonth()+'-'+noticeenddate.getDate();
+if(noticestart_date==noticeend_date)
+{
+$('#CRCHK_db_noticedate').attr("disabled",'disabled');
+}
+else
+{
+$("#CRCHK_db_noticedate").removeAttr("disabled");
+}
+}
+else
+{
+$('#CRCHK_db_noticedate').val("");
+}
+});
+
+/******************************prorated******************************/
+$('.prorated').change(function(){ 
+var CRCHK_date1 = $('#CRCHK_db_startdate').val();
+var CRCHK_date2 = $('#CRCHK_db_enddate').val();
+var rent=$('#CRCHK_tb_rent').val();
+if(CRCHK_date1!="" && CRCHK_date2!="" && rent!="")
+{
+google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHK_proratedResponse).CRCHK_prorated(CRCHK_date1,CRCHK_date2);
+}
+else
+{
+$('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr('checked',false);
+$('input:checkbox[name=CRCHK_rentprorated_tempcheckbox2]').attr('checked',false);
+$('input:checkbox[name=CRCHK_rentprorated_checkbox]').attr("disabled",'disabled');
+}
+});
+
+/******************************SET PASSPORTDATE,EPDATE,NOTICEDATE DATEPICKER******************************/
+$( "#datepicker" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+$( "#CRCHK_db_passportdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+$( "#CRCHK_db_epdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+$( "#CRCHK_db_noticedate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+var date1 = new Date();
+var day=date1.getDate();
+date1.setDate( day + 1 );        
+var newDate = date1.toDateString(); 
+newDate = new Date( Date.parse( newDate ) ); 
+var passCCRE_d = new Date();
+var CCRE_passyear = passCCRE_d.getFullYear()+10;
+var pass_changedmonth=new Date(passCCRE_d.setFullYear(CCRE_passyear));
+$('#CRCHK_db_passportdate').datepicker("option","minDate",newDate);
+$('#CRCHK_db_passportdate').datepicker("option","maxDate",pass_changedmonth);
+var epCCRE_d = new Date();
+var CCRE_epyear = epCCRE_d.getFullYear()+3;
+var ep_changedmonth=new Date(epCCRE_d.setFullYear(CCRE_epyear));
+$('#CRCHK_db_epdate').datepicker("option","minDate",newDate);
+$('#CRCHK_db_epdate').datepicker("option","maxDate",ep_changedmonth); 
+/////////SET CHECKIN DATE AND CHECKOUTDATE/////////////////
+$('#CRCHK_db_enddate').datepicker({
+dateFormat: 'dd-mm-yy',
+changeYear: true,
+changeMonth: true 
+});
+
+$("#CRCHK_db_startdate").datepicker({
+dateFormat: "dd-mm-yy", 
+changeYear: true,
+changeMonth: true
+});
+
 /**********************ENDDATE VALIDATION***********************************/
 $(".startdatevalidate").change(function(){
-var startdate=$('#CRCHK_db_startdate').val()
+$("#CRCHK_db_noticedate").removeAttr("disabled");
+var startdate=$('#CRCHK_db_startdate').val();
 var currentdate=new Date( Date.parse( FormTableDateFormat(startdate)) )
 if(new Date()<=currentdate){
 var date1 = $('#CRCHK_db_startdate').datepicker('getDate');           
@@ -679,102 +743,102 @@ date.setDate(date.getDate() + 1);
 var newDate = date.toDateString(); 
 newDate = new Date( Date.parse( newDate ));                      
 $('#CRCHK_db_enddate').datepicker("option","minDate",newDate);
-   var enddateunit=unit_startenddate[1].split('-');
-   var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]);
-   $('#CRCHK_db_enddate').datepicker("option","maxDate",unitenddate);
+var enddateunit=unit_startenddate[1].split('-');
+var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
+$('#CRCHK_db_enddate').datepicker("option","maxDate",unitenddate);
 }
 else
 {
-   var CCRE_date1 = new Date();
-   var CCRE_day=CCRE_date1.getDate();
-   CCRE_date1.setDate( CCRE_day + 1 );        
-   var newDate = CCRE_date1.toDateString(); 
-   newDate = new Date( Date.parse( newDate )); 
-   $('#CRCHK_db_enddate').datepicker("option","minDate",newDate);
-   var enddateunit=unit_startenddate[1].split('-');
-   var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
-   $('#CRCHK_db_enddate').datepicker("option","maxDate",unitenddate);
+var CCRE_date1 = new Date();
+var CCRE_day=CCRE_date1.getDate();
+CCRE_date1.setDate( CCRE_day + 1 );        
+var newDate = CCRE_date1.toDateString(); 
+newDate = new Date( Date.parse( newDate )); 
+$('#CRCHK_db_enddate').datepicker("option","minDate",newDate);
+var enddateunit=unit_startenddate[1].split('-');
+var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
+$('#CRCHK_db_enddate').datepicker("option","maxDate",unitenddate);
 }
 });
-   
-  
-  /******************************FUNCTION FOR AIRCON FEE RADIO BUTTON VALIDATION******************************/
-  $(function () {
-    $("#radio").buttonset();
-    $("input[name='aircon']").on("change", function () {
-      var CRCHK_radio_name = $("input[name='aircon']:checked").val();
-      if(CRCHK_radio_name=='quarterlyfee')
-      {
-        $("#CRCHK_tb_quarterlyfee").show().val('');
-        $("#CRCHK_tb_aircon_fixed").hide().val('');
-      }
-      if(CRCHK_radio_name=='fixedairconfee')
-      {
-        $("#CRCHK_tb_quarterlyfee").hide().val('');
-        $("#CRCHK_tb_aircon_fixed").show().val('');
-      }
-    });
-  });
-  
-  /******************************CHECK PROCESS AMOUNT WAIVED R NOT******************************/
-  $('#CRCHK_tb_process').change(function(){ 
-    var CRCHK_process = $(this).val();
-    if(CRCHK_process!="")
-    {
-      $('input:checkbox[name=CRF_checkbox1]').removeAttr("disabled");
-    }
-    else
-    {
-      $('input:checkbox[name=CRF_checkbox1]').attr("disabled",'disabled');
-      $('input:checkbox[name=CRF_checkbox1]').attr('checked',false);
-    }
-  });
-  var CRCHK_myArray= [];
-  ////////FUNCTION FOR UNIT NUMBER RETURN VALUES******************************/
-  function CRCHK_unitResponse(response)
-  {
-    CRCHK_myArray=response;
-    var CRCHK_options='';
-    if(CRCHK_myArray.length!=0)
-    {
-    var uniquearray=[];
-      for (var j = 0; j < CRCHK_myArray.length; j++)
-      {
-      var CRCHK_myarray=CRCHK_myArray[j].name;
-      uniquearray.push(CRCHK_myarray);
-      }
-      uniquearray=unique(uniquearray);
-      CRCHK_options ='<option>SELECT</option>';
-      for (var i = 0; i < uniquearray.length; i++)
-      {
-      var customername=uniquearray[i].replace("_",' ');
-      CRCHK_options += '<option value="' + uniquearray[i]+ '">' + customername + '</option>';
-      }
-      $('#CRCHK_lb_customerselect').html(CRCHK_options);
-      $('#CRCHK_lb_customerselect').show();
-      $('#CRCHK_lbl_customername').show();
-      $('#CRCHK_roometypeerror').hide();
-    }
-    else
-    {
-      var CRCHK_unit=$('#CRCHK_lb_unitselectmain').val();
-      var CRCHK_message=errormsg[8].replace("[UNIT NO]",CRCHK_unit);
-      var CRCHK_errormessage='<tr><td ><label id="CRCHK_roometypeerror" class="errormsg">'+CRCHK_message+'</label></td></tr>'
-      $('#CRCHK_headertable').after('<p>'+CRCHK_errormessage+'<p>');
-      $('#CRCHK_db_startdate').hide();
-      $("#CRCHK_checkindatelabel").hide();
-      $('#CRCHK_lb_startselect1').hide();
-      $('#CRCHK_lb_startselect').hide();
-      $('#CRCHK_lbl_startto').hide();
-      $('#CRCHK_lb_endselect1').hide();
-      $('#CRCHK_lb_endselect').hide();
-      $('#CRCHK_lbl_endto').hide();
-      $('#CRCHK_db_enddate').hide();
-      $("#CRCHK_checkoutdatelabel").hide();
-    }
-    $(".preloader").hide(); 
-  }
-  /*************UNIQUE FUNCTION*********************/  
+
+
+/******************************FUNCTION FOR AIRCON FEE RADIO BUTTON VALIDATION******************************/
+$(function () {
+$("#radio").buttonset();
+$("input[name='aircon']").on("change", function () {
+var CRCHK_radio_name = $("input[name='aircon']:checked").val();
+if(CRCHK_radio_name=='quarterlyfee')
+{
+$("#CRCHK_tb_quarterlyfee").show().val('');
+$("#CRCHK_tb_aircon_fixed").hide().val('');
+}
+if(CRCHK_radio_name=='fixedairconfee')
+{
+$("#CRCHK_tb_quarterlyfee").hide().val('');
+$("#CRCHK_tb_aircon_fixed").show().val('');
+}
+});
+});
+
+/******************************CHECK PROCESS AMOUNT WAIVED R NOT******************************/
+$('#CRCHK_tb_process').change(function(){ 
+var CRCHK_process = $(this).val();
+if(CRCHK_process!="")
+{
+$('input:checkbox[name=CRF_checkbox1]').removeAttr("disabled");
+}
+else
+{
+$('input:checkbox[name=CRF_checkbox1]').attr("disabled",'disabled');
+$('input:checkbox[name=CRF_checkbox1]').attr('checked',false);
+}
+});
+var CRCHK_myArray= [];
+////////FUNCTION FOR UNIT NUMBER RETURN VALUES******************************/
+function CRCHK_unitResponse(response)
+{
+CRCHK_myArray=response;
+var CRCHK_options='';
+if(CRCHK_myArray.length!=0)
+{
+var uniquearray=[];
+for (var j = 0; j < CRCHK_myArray.length; j++)
+{
+var CRCHK_myarray=CRCHK_myArray[j].name;
+uniquearray.push(CRCHK_myarray);
+}
+uniquearray=unique(uniquearray);
+CRCHK_options ='<option>SELECT</option>';
+for (var i = 0; i < uniquearray.length; i++)
+{
+var customername=uniquearray[i].replace("_",' ');
+CRCHK_options += '<option value="' + uniquearray[i]+ '">' + customername + '</option>';
+}
+$('#CRCHK_lb_customerselect').html(CRCHK_options);
+$('#CRCHK_lb_customerselect').show();
+$('#CRCHK_lbl_customername').show();
+$('#CRCHK_roometypeerror').hide();
+}
+else
+{
+var CRCHK_unit=$('#CRCHK_lb_unitselectmain').val();
+var CRCHK_message=errormsg[8].replace("[UNIT NO]",CRCHK_unit);
+var CRCHK_errormessage='<tr><td ><label id="CRCHK_roometypeerror" class="errormsg">'+CRCHK_message+'</label></td></tr>'
+$('#CRCHK_headertable').after('<p>'+CRCHK_errormessage+'<p>');
+$('#CRCHK_db_startdate').hide();
+$("#CRCHK_checkindatelabel").hide();
+$('#CRCHK_lb_startselect1').hide();
+$('#CRCHK_lb_startselect').hide();
+$('#CRCHK_lbl_startto').hide();
+$('#CRCHK_lb_endselect1').hide();
+$('#CRCHK_lb_endselect').hide();
+$('#CRCHK_lbl_endto').hide();
+$('#CRCHK_db_enddate').hide();
+$("#CRCHK_checkoutdatelabel").hide();
+}
+$(".preloader").hide(); 
+}
+/*************UNIQUE FUNCTION*********************/  
 function unique(a) {
 var result = [];
 $.each(a, function(i, e) {
@@ -871,7 +935,8 @@ $(document).on('change','.customernameselect',function(){
   /******************************RETURN VALUES FOR SELECTED CUSTOMER FULL DETAILS******************************/
   function CRCHK_formdata(details)
   {
-    $(".preloader").show(); 
+    $(".preloader").show();
+    $("#CRCHK_db_noticedate").removeAttr("disabled");
     if((email.length!=0)&&(activeunit.length!=0))
     {
       var CRCHK_detailsarray=[];
@@ -1068,6 +1133,9 @@ $(document).on('change','.customernameselect',function(){
       $('input:checkbox[name=CRCHK_rentprorated_checkbox]').removeAttr("disabled");
     }
   }
+   $(document).on('click','#RECHECKINreset',function(){
+    Recheckin_reset();
+   });
   /******************************ACCESSCARD RETURN FUNCTION******************************/
   $(document).on('change','.CRCHK_showlist',function()
                  {
@@ -1173,8 +1241,8 @@ $(document).on('change','.customernameselect',function(){
     var CRCHK_lname=$('#CRCHK_tb_lastname').val();
     var CRCHK_cardArray=[];
     var CRCHK_g_array=[];
-    CRCHK_cardArray=card[1];
-    CRCHK_g_array=card[0]
+    CRCHK_cardArray=card[0];
+    CRCHK_g_array=card[1]
     var CRCHK_cararray_length=CRCHK_cardArray.length;
     var CRCHK_gcardlen=CRCHK_g_array.length;
     var CRCHK_printarray=[];
@@ -1317,11 +1385,16 @@ $(document).on('change','.customernameselect',function(){
     $('#CRCHK_lbl_endto').hide();
     $('#CRCHK_db_enddate').hide();
     $("#CRCHK_checkoutdatelabel").hide();
+    $('#fixedairconfee').prop('checked',false);
+    $('#quarterlyfee').prop('checked',false);
     $('#CRCHK_recheckinForm').hide();
   }
   /******************************CUSTOMER RECHECKIN CONFORMATION RETURN******************************/
   function CRCHEK_conformation(response)
   {
+  $(".preloader").hide(); 
+    if(response!=undefined && response!=null)
+    {
     if(response[0]==1)
     {
     $('#customerrecheckin_form').find('input[type=text]').val('');
@@ -1343,16 +1416,27 @@ $(document).on('change','.customernameselect',function(){
       CRCHK_unitvalue += '<option value="' + unitarray[i]+ '">' + unitarray[i] + '</option>';
     }
     $('#CRCHK_lb_unitselectmain').html(CRCHK_unitvalue);
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[7]}});
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[7],position:$('#CRCHK_savebutton').position()}});
     }
-    else
+    if(response[0]==0)
     {
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[20]}});
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[20],position:$('#CRCHK_savebutton').position()}});
     }
+    if(response[0]!=1 && response[0]!=0)
+    {
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:response[0],position:$('#CRCHK_savebutton').position()}});
+    }
+    }
+    if(response.match("SCRIPT EXCEPTION:"))
+     {
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:response,position:$('#CRCHK_savebutton').position()}});
+     }
     $(".preloader").hide(); 
   }
   $('#CRCHK_savebutton').click(function(){
-    $(".preloader").show(); 
+    $(".preloader").show();
+    var  newPos= adjustPosition($('#CRCHK_savebutton').position(),100,200);
+    resetPreloader(newPos);
     google.script.run.withFailureHandler(CRCHK_error_message).withSuccessHandler(CRCHEK_conformation).CRCHK_processFormSubmit(document.getElementById('customerrecheckin_form'));
   });
   function CRCHK_card_diffArray(a, b)
@@ -1369,11 +1453,11 @@ $(document).on('change','.customernameselect',function(){
   {
   if(CRCHK_err=='TypeError: Cannot call method "createEvent" of undefined.')
   {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[23]}});
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[23],position:$('#CRCHK_savebutton').position()}});
   }
   else if(CRCHK_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
   {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[24]}});
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:errormsg[24],position:$('#CRCHK_savebutton').position()}});
   }
   else if(CRCHK_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
   {
@@ -1382,7 +1466,7 @@ $(document).on('change','.customernameselect',function(){
   }
   else
   {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:CRCHK_err}});
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER RECHECK IN",msgcontent:CRCHK_err,position:$('#CRCHK_savebutton').position()}});
   }
   $(".preloader").hide();
   }
@@ -1436,7 +1520,7 @@ $(document).on('change','.customernameselect',function(){
 <label>FIRST NAME<em>*</em></label>
 </td>
 <td>
-<input type="text" name="CRCHK_tb_firstname" maxlength="50" class="CRCHK_class_customernamechange autosize formvalidation" id="CRCHK_tb_firstname"/>
+<input type="text" name="CRCHK_tb_firstname" maxlength="30" class="CRCHK_class_customernamechange autosize formvalidation" id="CRCHK_tb_firstname"/>
 </td>
 <td>
 <input required type="text" name="CRF_id" id="CRF_id" style="visibility:hidden;"/>
@@ -1447,7 +1531,7 @@ $(document).on('change','.customernameselect',function(){
 <label>LAST NAME<em>*</em></label>
 </td>
 <td>
-<input type="text" name="CRCHK_tb_lastname" id="CRCHK_tb_lastname" maxlength="50" class="autosize CCRE_class_customernamechange formvalidation"/>
+<input type="text" name="CRCHK_tb_lastname" id="CRCHK_tb_lastname" maxlength="30" class="autosize CCRE_class_customernamechange formvalidation"/>
 </td>
 </tr>
 <tr>
@@ -1647,7 +1731,7 @@ $(document).on('change','.customernameselect',function(){
 <td>
 <table>
 <td>
-<input type="text" name="CRCHK_db_startdate" id="CRCHK_db_startdate" class="prorated startdatevalidate formvalidation datemandtry" style="width:75px;height:20px" />
+<input type="text" name="CRCHK_db_startdate" id="CRCHK_db_startdate" class="prorated startdatevalidate formvalidation datemandtry noticedate" style="width:75px;height:20px" />
 </td>
 <td>
 <select id='CRCHK_lb_startselect' name="CRCHK_lb_startselect" style="width:75px;height:20px" class="formvalidation" hidden>
@@ -1673,7 +1757,7 @@ $(document).on('change','.customernameselect',function(){
 <table>
 <tr>
 <td>
-<input type="text" name="CRCHK_db_enddate" id="CRCHK_db_enddate" class="epdatevalidation passportdatevalidation prorated formvalidation datemandtry" style="width:75px;height:20px"/>
+<input type="text" name="CRCHK_db_enddate" id="CRCHK_db_enddate" class="epdatevalidation noticedate passportdatevalidation prorated formvalidation datemandtry" style="width:75px;height:20px"/>
 </td>
 <td>
 <select id='CRCHK_lb_endselect' name="CRCHK_lb_endselect" style="width:75px;height:20px" class="formvalidation" hidden>
@@ -1712,7 +1796,7 @@ $(document).on('change','.customernameselect',function(){
 <label>SELECT AIRCON FEE</label>
 </td>
 <td>
-&nbsp;<input type="radio" name="aircon" value="quarterlyfee">QUARTERLY SERVICE FEE <input type="text" name="CRCHK_tb_quarterlyfee" id="CRCHK_tb_quarterlyfee" maxlength="6" class="amount formvalidation" style="width:50px;"/>
+&nbsp;<input type="radio" name="aircon" id="quarterlyfee" value="quarterlyfee">QUARTERLY SERVICE FEE <input type="text" name="CRCHK_tb_quarterlyfee" id="CRCHK_tb_quarterlyfee" maxlength="6" class="amount formvalidation" style="width:50px;"/>
 </td>
 </tr>
 <tr>
@@ -1720,7 +1804,7 @@ $(document).on('change','.customernameselect',function(){
 <label></label>
 </td>
 <td>
-&nbsp;<input type="radio" name="aircon" value="fixedairconfee">FIXED AIRCON FEE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="CRCHK_tb_aircon_fixed" id="CRCHK_tb_aircon_fixed" maxlength="6" style="width:50px;" class="amount formvalidation"/>
+&nbsp;<input type="radio" name="aircon" id="fixedairconfee" value="fixedairconfee">FIXED AIRCON FEE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="CRCHK_tb_aircon_fixed" id="CRCHK_tb_aircon_fixed" maxlength="6" style="width:50px;" class="amount formvalidation"/>
 </td>
 </tr>
 <tr>
@@ -1852,7 +1936,7 @@ $(document).on('change','.customernameselect',function(){
 <input type="button" class="btn" value="CREATE" id="CRCHK_savebutton" disabled/>
 </td>
 <td>
-<input type="button" class="btn" name="reset" id="RECHECKINreset" onclick="RECHECKINreset()" value="RESET"/>
+<input type="button" class="btn" name="reset" id="RECHECKINreset" value="RESET"/>
 </td>
 </tr>
 </table>

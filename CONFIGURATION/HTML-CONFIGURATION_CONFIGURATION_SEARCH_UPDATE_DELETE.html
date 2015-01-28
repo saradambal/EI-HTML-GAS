@@ -1,7 +1,11 @@
 <!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************CONFIGURATION SEARCH/UPDATE/DELETE*********************************************//
+//DONE BY:PUNI
+//VER 1.9-SD:03/10/2014 ED:03/10/2014 TRACKER NO;689:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 <!--DONE BY:SARADAMBAL,SAFI,PUNI
+//VER 1.8-SD:13/08/2014 ED:13/08/2014 TRACKER NO;689 ; Implemented rollback script,logger script to show err in msg box,new jquery,css links- SARADAMBAL
+//VER 1.7-SD:21/07/2014 ED:21/07/2014 TRACKER NO;689 ; UPDATED DRIVEAPP AS DOCSLIST FOR SHARING/UNSHARING DOCS
 //VER 1.6-SD:04/07/2014 ED:05/07/2014 TRACKER NO:689:given err message if cal name is wrong n fake folder /file is given without updation in db n give acess and added cond. do not chk own acs level for calender by PUNI
 //VER 1.5-SD:24/06/2014 ED:26/06/2014 TRACKER NO:689:REMOVED ALERT IN HTML
 //VER 1.4-SD:21/06/2014 ED21/06/2014:TRACKER NO:689:UPDATED THE DRIVE LINK 
@@ -22,22 +26,31 @@ VER 0.01-INITIAL VERSION,TRACKER NO:271,START DATE:31/07/2013,END DATE:22/08/201
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 /*----------------------------------------------- FAILURE FUNTION----------------------------------*/
-
 $(document).ready(function(){ 
 var CONFSCR_UPD_DEL_data='';
 var CONFSCR_UPD_DEL_datadd='';
@@ -59,7 +72,6 @@ $(".preloader").show();
 google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_success_module_err).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_module_errormsg();
 /*----------------------------------------SUCCESS FUNCTION FOR LOADING MODULE AND ERROR MSG--------------------------------------*/
 function CONFSRC_UPD_DEL_success_module_err(CONFSCR_UPD_DEL_response){
-$(".preloader").hide();
 CONFSCR_UPD_DEL_module_arr=CONFSCR_UPD_DEL_response.CONFSRC_UPD_DEL_module;
 CONFSCR_UPD_DEL_errmsg_arr=CONFSCR_UPD_DEL_response.CONFSRC_UPD_DEL_errormsg;
 var CONFSCR_UPD_DEL_options ='<option>SELECT</option>';
@@ -69,6 +81,10 @@ CONFSCR_UPD_DEL_options += '<option value="' + CONFSCR_UPD_DEL_module_arr[i].CON
 }
 $('#CONFSRC_UPD_DEL_lb_Profile').html(CONFSCR_UPD_DEL_options);
 $('#CONFSRC_UPD_DEL_form_SearchUpdate').show();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 /*-----------------------------------------AUTOSIZE FOR UPDATE DATA------------------------------------------------------*/
 $('#CONFSRC_UPD_DEL_tb_UpdSubtype').doValidation({rule:'general',prop:{autosize:true}});
@@ -87,7 +103,10 @@ $('#CONFSRC_UPD_DEL_lbl_errprofile').hide();
 $("#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_UpdSubtype").removeClass('invalid');
 $('#CONFSRC_UPD_DEL_div_UpdData,#CONFSRC_UPD_DEL_div_UpdSubtype').text('');
 if(CONFSRC_UPD_DEL_profileName!='SELECT')
-{$(".preloader").show(); 
+{
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
+$(".preloader").show(); 
 google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_successType).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_selectModule(CONFSRC_UPD_DEL_profileName);
 $('#CONFSRC_UPD_DEL_lbl_errprofile').replaceWith('<label id="CONFSRC_UPD_DEL_lbl_Type" name="CONFSRC_UPD_DEL_lbl_Type" hidden >TYPE<em style="color:red">*</em></label>');
 }});
@@ -126,6 +145,8 @@ $('#CONFSRC_UPD_DEL_lbl_errNoType').hide();
 $("#CONFSRC_UPD_DEL_tb_UpdData,#CONFSRC_UPD_DEL_tb_UpdSubtype").removeClass('invalid');
 $('#CONFSRC_UPD_DEL_div_UpdData,#CONFSRC_UPD_DEL_div_UpdSubtype').text('');
 if($('#CONFSRC_UPD_DEL_lb_Type').val()!='SELECT'){
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var CONFSRC_UPD_DEL_parentFunction="gs";
 google.script.run.withSuccessHandler(CONFSRC_UPD_DEL_successSearch).withFailureHandler(CONFSRC_UPD_DEL_onFailure).CONFSRC_UPD_DEL_selectData(CONFSRC_UPD_DEL_lb_Profile,CONFSRC_UPD_DEL_lb_Type,CONFSRC_UPD_DEL_parentFunction);
@@ -143,12 +164,18 @@ $('#CONFSRC_UPD_DEL_lb_subtype').html(CONFSRC_UPD_DEL_dd_opt);
 function CONFSRC_UPD_DEL_successSearch(CONFSRC_UPD_DEL_response){
 var CONFSRC_UPD_DEL_lb_Type = $('#CONFSRC_UPD_DEL_lb_Type').find('option:selected').text();
 var CONFSRC_UPD_DEL_data_array= [];
+if(CONFSRC_UPD_DEL_response.toString().match("SCRIPT ERROR:"))
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_response,position:{top:150,left:500}}});
+}
+else
+{
 CONFSRC_UPD_DEL_data_array=CONFSRC_UPD_DEL_response[0];
 if(CONFSRC_UPD_DEL_response[1]=='CONFSRC_UPD_DEL_notupdate'){
 $("#CONFSRC_UPD_DEL_btn_Update").attr("disabled", "disabled");
 }
 else if(CONFSRC_UPD_DEL_response[1]==0){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[0]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[0],position:{top:150,left:500}}});
 }
 else{
 /*-------------------------------------------------ERROR MESSAGE FOR NO DATA-----------------------------------------------------*/
@@ -194,15 +221,15 @@ else
 var functionname=CONFSRC_UPD_DEL_data_array[i];
 /*-------------------------------------------------ERROR MESSAGE FOR UPDATE------------------------------------------------------*/
 if(functionname=="CONFSRC_UPD_DEL_update"){
-var CONFSRC_UPD_DEL_updMsg=CONFSCR_UPD_DEL_errmsg_arr[2].replace('[MODULE NAME]',$('#CONFSRC_UPD_DEL_lb_Profile').find('option:selected').text());;
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_updMsg}});
+var CONFSRC_UPD_DEL_updMsg=CONFSCR_UPD_DEL_errmsg_arr[2].replace('[MODULE NAME]',$('#CONFSRC_UPD_DEL_lb_Profile').find('option:selected').text());
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_updMsg,position:{top:150,left:500}}});
 $('#CONFSRC_UPD_DEL_tble_SrchUpd').hide();
 $('#CONFSRC_UPD_DEL_div_Update').hide();
 }
 /*-------------------------------------------------ERROR MESSAGE FOR DATA WHICH TO BE DELETED---------------------------------*/
 if(functionname=='CONFSRC_UPD_DEL_parentFunction_delete'){
 var CONFSRC_UPD_DEL_delMsg=CONFSCR_UPD_DEL_errmsg_arr[4].replace('[MODULE NAME]',$('#CONFSRC_UPD_DEL_lb_Profile').find('option:selected').text());;
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_delMsg}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_delMsg,position:{top:150,left:500}}});
 }}}
 /*-------------------------------------------------ERROR MESSAGE FOR HAVING DATA--------------------------------------------------*/
 var CONFSRC_UPD_DEL_errType=CONFSCR_UPD_DEL_errmsg_arr[1];
@@ -211,9 +238,11 @@ $('#CONFSRC_UPD_DEL_lbl_errType').show();
 $('#CONFSRC_UPD_DEL_lbl_errType').text(CONFSRC_UPD_DEL_errmsg);
 $('#CONFSRC_UPD_DEL_tble_Data').show();
 }
-}$(".preloader").hide();}
+}}$(".preloader").hide();}
 /*------------------------------------------CLICK FUNCTION FOR RADIO BUTTON-------------------------------------------------------*/
 $(document).on('click','.CONFSRC_UPD_DEL_class_data',function(){
+var  newPos= adjustPosition($(this).position(),100,350);
+resetPreloader(newPos);
 $(".preloader").show();
 var CONFSRC_UPD_DEL_data=$("input[type='radio'][name='CONFSRC_UPD_DEL_radio_data']:checked").val();
 $("#CONFSRC_UPD_DEL_btn_Delete").hide();
@@ -252,7 +281,6 @@ $('#CONFSRC_UPD_DEL_tble_SrchUpd').show();
 }
 /*-----------------------------------------COMMON FUNCTION FETCHING FLEX TABLE ROW VALUES-----------------*/
 function CONFSRC_UPD_DEL_srch_del(){
-
 $("#CONFSRC_UPD_DEL_div_updata").html('')
 $('<input type="text" id="CONFSRC_UPD_DEL_tb_UpdData" name="CONFSRC_UPD_DEL_tb_UpdData" maxlength=200>').appendTo($("#CONFSRC_UPD_DEL_div_updata"));
 if(($("#CONFSRC_UPD_DEL_lb_Type").val()==11)||($("#CONFSRC_UPD_DEL_lb_Type").val()==12)||($("#CONFSRC_UPD_DEL_lb_Type").val()==5)||($("#CONFSRC_UPD_DEL_lb_Type").val()==6)||($("#CONFSRC_UPD_DEL_lb_Type").val()==47)||($("#CONFSRC_UPD_DEL_lb_Type").val()==7)||($("#CONFSRC_UPD_DEL_lb_Type").val()==29)||($("#CONFSRC_UPD_DEL_lb_Type").val()==49)||($("#CONFSRC_UPD_DEL_lb_Type").val()==45)||($("#CONFSRC_UPD_DEL_lb_Type").val()==46)||($("#CONFSRC_UPD_DEL_lb_Type").val()==44)||($("#CONFSRC_UPD_DEL_lb_Type").val()==48)||($("#CONFSRC_UPD_DEL_lb_Type").val()==30)||($("#CONFSRC_UPD_DEL_lb_Type").val()==123)||($("#CONFSRC_UPD_DEL_lb_Type").val()==68)||($("#CONFSRC_UPD_DEL_lb_Type").val()==75)||($("#CONFSRC_UPD_DEL_lb_Type").val()==39)){
@@ -284,6 +312,8 @@ $('#CONFSRC_UPD_DEL_tb_Type').val(CONFSRC_UPD_DEL_lb_Type);
 });}
 /*--------------------------------------CLICK EVENT FUCNTION FOR BUTTON SEARCH-----------------------------------------------------*/
 $(document).on('click','#CONFSRC_UPD_DEL_btn_Search',function(){
+var  newPos= adjustPosition($(this).position(),100,350);
+resetPreloader(newPos);
 $(".preloader").show();
 var CONFSRC_UPD_DEL_lb_Profile=$("#CONFSRC_UPD_DEL_lb_Profile").val();
 var CONFSRC_UPD_DEL_lb_Type = $('#CONFSRC_UPD_DEL_lb_Type"').find('option:selected').text();
@@ -392,6 +422,8 @@ $("#CONFSRC_UPD_DEL_tb_UpdDatadd").hide();
 }}
 /*-----------------------------------------CLICK EVENT FUCNTION FOR UPDATE---------------------------------------------------------*/
 $(document).on('click','#CONFSRC_UPD_DEL_btn_Update',function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var CONFSRC_UPD_DEL_tb_dataId = $('input:radio[name=CONFSRC_UPD_DEL_radio_data]:checked').val();
 var CONFSRC_UPD_DEL_lb_Profile=$("#CONFSRC_UPD_DEL_lb_Profile").val();
@@ -419,7 +451,7 @@ $('#CONFSRC_UPD_DEL_div_Update').hide();
 });
 //CALL CONFIRM MESSAGE
 $('#CONFSRC_UPD_DEL_btn_Delete').click(function(){
-$(document ).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[8],confirmation:true}});
+$(document ).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[8],confirmation:true,position:$(this).position()}});
 });
 /*------------------------------------------CLICK EVENT FUCNTION FOR RESET________________________________________________________*/
 $('#CONFSRC_UPD_DEL_btn_Reset').click(function(){
@@ -437,24 +469,23 @@ CONFSRC_UPD_DEL_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDE
 $('#CONFSRC_UPD_DEL_form_SearchUpdate').replaceWith('<center><label class="dberrormsg">'+CONFSRC_UPD_DEL_err+'</label></center>');
 }
 else if((CONFSRC_UPD_DEL_err=='ReferenceError: "Calendar" is not defined.')||(CONFSRC_UPD_DEL_err=='ScriptError: Access Not Configured. Please use Google Developers Console to activate the API for your project.')){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[11]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[11],position:{top:150,left:500}}});
 }
 else if(CONFSRC_UPD_DEL_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.'){
 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[12]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[12],position:{top:150,left:500}}});
 }
 else if((CONFSRC_UPD_DEL_err=='ScriptError: Forbidden')||(CONFSRC_UPD_DEL_err=='ScriptError: You do not have permission to perform that action.')){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[14]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[14],position:{top:150,left:500}}});
 
 }
 else if((CONFSRC_UPD_DEL_err=='ScriptError: Not Found')||(CONFSRC_UPD_DEL_err=='Not Found')||(CONFSRC_UPD_DEL_err=='TypeError: Cannot call method "getId" of undefined.')){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[13]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSCR_UPD_DEL_errmsg_arr[13],position:{top:150,left:500}}});
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_err.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:CONFSRC_UPD_DEL_err,position:{top:150,left:500}}});
 }
 }
-
 });//END DOCUMENT READY FUNCTION
 </script>
 </head>

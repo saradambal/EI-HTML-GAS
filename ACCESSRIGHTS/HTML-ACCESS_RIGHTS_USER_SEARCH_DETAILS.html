@@ -1,7 +1,9 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //****************************************USER SEARCH DETAILS*************************************************//
+//DONE BY:PUNI
+//VER 1.1-SD:03/10/2014 ED:03/10/2014,TRACKER NO:683,1.changed html script to hide preloader after menu loads,2.changed messagebx position
+//DONE BY:SARADAMBAL
+//VER 1.0-SD:22/08/2014 ED:22/08/2014,TRACKER NO:683,updated new links
 //DONE BY:LALITHA
 //VER 0.09-SD:14/06/2014 ED:14/06/2014,TRACKER NO:683,Changed failure funct
 //VER 0.08-SD:06/06/2014 ED:06/06/2014,Changed jquery link 
@@ -17,23 +19,34 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function USD_SRC_onFailure(USD_SRC_error) {
+$(".preloader").hide();
 if(USD_SRC_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
 {
 USD_SRC_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
@@ -41,7 +54,7 @@ $('#USD_SRC_form_user').replaceWith('<center><label class="dberrormsg">'+USD_SRC
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"USER SEARCH DETAILS",msgcontent:USD_SRC_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"USER SEARCH DETAILS",msgcontent:USD_SRC_error,position:{top:150,left:500}}});
 }
 }
 //FAILURE FUNCTION END
@@ -49,6 +62,7 @@ var USD_SRC_srch_result_array=[];
 var USD_SRC_errorMsg;
 //DOCUMENT READY FUNCTION START
 $(document).ready(function(){
+$(".preloader").show();
 google.script.run.withSuccessHandler(USD_SRC_geterrresult).withFailureHandler(USD_SRC_onFailure).USD_SRC_get_err();
 google.script.run.withSuccessHandler(USD_SRC_srch_result).withFailureHandler(USD_SRC_onFailure).USD_SRC_flextable_getdatas();
 //SUCCESS FUNCTION FOR ERROR MESSAGE
@@ -56,6 +70,10 @@ function USD_SRC_geterrresult(USD_SRC_geterrresult_response)
 {
 $('#USD_SRC_form_user').show();
 USD_SRC_errorMsg=USD_SRC_geterrresult_response;
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //SUCCESS FUNCTION FOR SELECTING DATA
 function USD_SRC_srch_result(response)
@@ -91,6 +109,10 @@ else
 $('#USD_SRC_form_user').replaceWith('<p><label class="errormsg">'+USD_SRC_errorMsg+'</label></p>')
 $('#USD_SRC_tble_htmltable').hide();
 }
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 });
 //DOCUMENT READY FUNCTION END

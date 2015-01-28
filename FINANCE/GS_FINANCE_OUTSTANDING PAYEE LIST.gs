@@ -1,6 +1,10 @@
-//********************************OPL AND ACTIVE CUSTOMER LIST**********************************************//
+//*********************
+//***********OPL AND ACTIVE CUSTOMER LIST**********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.03:SD:19/09/2014 ED:19/09/2014,TRACKER NO:748,Implemented preloader and msgbox position script and  changed conformation message
+//VAR 1.02-SD:23/08/2014 ED:23/08/2014,TRACKER NO:748,OPL sp splited into 2 parts and sp name updated in script side.
+//VER 1.01-SD:19/08/2014 ED:19/08/2014,TRACKER NO:748,Gave warning message for if opl list empty and updated new jquery and css links
 //VER 1.00-SD:07/08/2014 ED:07/08/2014,TRACKER NO 748,changed template monthname and year;
 //VER 0.09-SD:08/07/2014 ED:08/07/2014,TRACKER NO:748,Clered document shared id issue.
 //VER 0.08-SD:28/06/2014 ED:28/06/2014,TRACKER NO:748,cleared active customer list sorted sheet max recver issue.
@@ -116,6 +120,10 @@ try
         var displayname="OUTSTANDING PAYEES LIST ";
         var advancedArgs={name:displayname,htmlBody:FIN_OPL_message};
         MailApp.sendEmail(FIN_OPL_emailId, FIN_OPL_subject, FIN_OPL_message,advancedArgs);
+      }
+      else
+      {
+        returnmsg="EMPTYOPL";
       }
       var OPLliststmt=FIN_OPL_conn.createStatement();
       OPLliststmt.execute("DROP TABLE "+temptablename+"");
@@ -355,15 +363,10 @@ try
       var body1 ="HELLO  "+FIN_OPL_username;
       var subject='ACTIVE CUST LIST-'+FIN_ACT_monthyear;
       MailApp.sendEmail(FIN_OPL_emailId, subject, body1, {name:displayname,htmlBody: body1+'<br><br>, PLEASE FIND ATTACHED THE CURRENT : '+FIN_ACT_url});
-      eilib.RemoveEditors(FIN_ACT_ssid,FIN_OPL_emailId,docowner)
       var activeliststmt=FIN_OPL_conn.createStatement();
       activeliststmt.execute("DROP TABLE "+activelisttablename+"");
       activeliststmt.execute("DROP TABLE "+sortactivelisttablename+"");
       activeliststmt.close();
-      if((FIN_OPL_emailId!=UserStamp)&&(docowner!=UserStamp))
-      {
-        DriveApp.getFileById(FIN_ACT_ssid).removeEditor(UserStamp);
-      }
       returnmsg="ACTIVECCLIST";
     }
     FIN_OPL_conn.close();

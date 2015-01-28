@@ -1,6 +1,12 @@
 //**************************************PAYMENT ENTRY FOR ACTIVE CUSTOMER*********************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.08- SD:20/10/2014 ED:20/10/2014,TRACKER NO:787,changed input parameter when calling save sp-changed comma instead of & operator
+//DONE BY:PUNI
+//VER 1.07- SD:07/10/2014 ED:07/10/2014,TRACKER NO:787,1.added script to hide preloader after menu n form loads,2.Corrected some preloader and msgbox position 
+//DONE BY:KUMAR
+//VER 1.06- SD:19/09/2014 ED:19/09/2014,TRACKER NO:787,Implemented preloader and msgbox position script 
+//VER 1.05- SD:22/08/2014 ED:22/08/2014,TRACKER NO:787 Updated new jquery and css links and add autogrow line.
 //VER 1.04- SD:28/06/2014 ED:28/06/2014,TRACKER NO:787 did delete row button validation and changed amount box maximum digits 4 to 5.
 //VER 1.03- SD:18/06/2014 ED:18/06/2014,TRACKER NO:787 Cleared form validations issues and did paiddate validation in payment entry form.
 //VER 1.02- SD:08/06/2014 ED:08/06/2014,TRACKER NO:787 cleared submit button validation issue.
@@ -107,12 +113,13 @@ try
       }
     }
     var FIN_ENTRY_stmt=FIN_ENTRY_conn.createStatement();
-    var FIN_ENTRY_query="CALL SP_PAYMENT_DETAIL_INSERT('"+units+"','"+customerids+"','"+payments+"','"+recvers+"','"+amount+"','"+forperiods+"','"+paiddates+"','"+amount_flag+"','"+comments+"','"+UserStamp+"',"+null+",@OUTPUT_FINAL_MESSAGE)"
+    var FIN_ENTRY_query="CALL SP_PAYMENT_DETAIL_INSERT('"+units+"','"+customerids+"','"+payments+"','"+recvers+"','"+amount+"','"+forperiods+"','"+paiddates+"','"+amountflags+"','"+comments+"','"+UserStamp+"',"+null+",@OUTPUT_FINAL_MESSAGE)"
     FIN_ENTRY_stmt.execute(FIN_ENTRY_query);
     var paymententryresult=FIN_ENTRY_stmt.executeQuery("SELECT @OUTPUT_FINAL_MESSAGE");
     if(paymententryresult.next())
     {
       var errormessage=paymententryresult.getString(1);
+      Logger.log(errormessage+":errormessage")
     }
     paymententryresult.close();
     FIN_ENTRY_stmt.close();

@@ -1,6 +1,10 @@
 //*******************************************FILE DESCRTION*********************************************//
 //*****************************************STAFF EXPENSE DAILY ENTRY*********************************************//
+//DONE BY:PUNI
+//VER 1.9 SD:09/10/2014 ED:09/10/2014, TRACKER NO:701//1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//VER 1.8 SD:27/09/2014 ED:27/09/2014, TRACKER NO:701//COMMENT:31,1.implemented staff salary new sp for duplicate month record,2.removed preloader n msgbox position,3.corrected submit button validatn when clicking same emp radio btn
 //DONE BY:SARADAMBAL M
+//VER 1.7 SD:01/09/2014 ED:01/09/2014, TRACKER NO:701//updated new links,n script for autogrow
 //VER 1.6 SD:10/06/2014 ED:10/06/2014, TRACKER NO:701//implemented script for commit,failure function
 //VER 1.5 SD:07/06/2014 ED:07/06/2014, TRACKER NO:701//updated new link
 //VER 1.4 SD:02/06/2014 ED:03/02/2014, TRACKER NO:701//changed amt digit for agent-4,staff-3 and salary,levy,cpf-5
@@ -19,7 +23,6 @@
 //VER 0.02 SD:25/11/2013 ED:25/11/2013,TRACKER NO:449//DELETE THE MULTIROW AFTER THE SUBMITION.
 //VER 0.01-INITIAL VERSION, SD:27/08/2013 ED:04/09/2013,TRACKER NO:449
 //*********************************************************************************************************//
-//DO GET FUNCTION
 try
 {
   //AGENT COMMISSION SAVE PART//
@@ -29,7 +32,6 @@ try
     var STDLY_INPUT_date = eilib.SqlDateFormat(STDLY_INPUT_formallid.STDLY_INPUT_db_selectdate);
     var STDLY_INPUT_conn = eilib.db_GetConnection();
     STDLY_INPUT_conn.setAutoCommit(false);
-    var STDLY_INPUT_beforeprimaryid=STDLY_INPUT_getmaxprimaryid(STDLY_INPUT_lbtypeofexpense)
     //SAVE AGENT COMMISSION DATA IN TABLE//
     if(STDLY_INPUT_lbtypeofexpense==39)
     {
@@ -44,6 +46,7 @@ try
       STDLY_INPUT_stmtagent.execute(insertIntoExpAgent);
       STDLY_INPUT_stmtagent.close();
       STDLY_INPUT_conn.commit();
+      var STDLY_INPUT_flag_SAVEFLAG=1;
     }
     //SAVE SALARY ENTRY IN THE TABLE//
     if(STDLY_INPUT_lbtypeofexpense==40)
@@ -103,19 +106,22 @@ try
       if(STDLY_INPUT_comments=="")//COMMENTS
       {  STDLY_INPUT_comments=null;}else{
         STDLY_INPUT_comments='"'+eilib.ConvertSpclCharString(STDLY_INPUT_comments)+'"';}
-      var insert_salary_detailswithcomment = "INSERT INTO EXPENSE_STAFF_SALARY(ULD_ID,EDSS_ID,ESS_INVOICE_DATE,ESS_FROM_PERIOD,ESS_TO_PERIOD,ESS_CPF_AMOUNT,ESS_LEVY_AMOUNT,ESS_SALARY_AMOUNT,ESS_SALARY_COMMENTS) VALUES((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'),"+STDLY_INPUT_edssid+",'"+STDLY_INPUT_paid_date+"','"+STDLY_INPUT_from_period+"','"+STDLY_INPUT_to_period+"',"+STDLY_INPUT_cpfamount+","+STDLY_INPUT_levyamount+","+STDLY_INPUT_salaryamount+","+STDLY_INPUT_comments+")";
+      var insert_salary_detailswithcomment = "CALL SP_STAFFDLY_STAFF_SALARY_INSERT("+STDLY_INPUT_edssid+",'"+STDLY_INPUT_paid_date+"','"+STDLY_INPUT_from_period+"','"+STDLY_INPUT_to_period+"',"+STDLY_INPUT_cpfamount+","+STDLY_INPUT_levyamount+","+STDLY_INPUT_salaryamount+","+STDLY_INPUT_comments+",'"+UserStamp+"',@SUCCESS_MSG)";
       var stmtinsetall = STDLY_INPUT_conn.createStatement();
       stmtinsetall.execute(insert_salary_detailswithcomment);
       stmtinsetall.close();
+      var STDLY_INPUT_stmt_bscprfsveflag=STDLY_INPUT_conn.createStatement();
+      var STDLY_INPUT_flag_bscprfsveselect="SELECT @SUCCESS_MSG";
+      var STDLY_INPUT_flag_bscprfsvers=STDLY_INPUT_stmt_bscprfsveflag.executeQuery(STDLY_INPUT_flag_bscprfsveselect);
+      while(STDLY_INPUT_flag_bscprfsvers.next())
+        var STDLY_INPUT_flag_SAVEFLAG=STDLY_INPUT_flag_bscprfsvers.getString(1);
+      STDLY_INPUT_flag_bscprfsvers.close();
+      STDLY_INPUT_stmt_bscprfsveflag.close();
       STDLY_INPUT_conn.commit();
       var STDLY_INPUT_arr_refresh=STDLY_INPUT_loadfistlistbox();
     }
     STDLY_INPUT_conn.close();
-    var STDLY_INPUT_afterprimaryid=STDLY_INPUT_getmaxprimaryid(STDLY_INPUT_lbtypeofexpense);
-    if(parseInt(STDLY_INPUT_afterprimaryid)>parseInt(STDLY_INPUT_beforeprimaryid))
-    return [1,STDLY_INPUT_arr_refresh];
-    else
-      return [0];
+    return [STDLY_INPUT_flag_SAVEFLAG,STDLY_INPUT_arr_refresh];
   }
   //SAVE THE STAFF DETAILS//
   function STDLY_INPUT_savestaff(STDLY_INPUT_formallid)
@@ -137,7 +143,7 @@ try
     var STDLY_INPUT_counting=STDLY_INPUT_comments1;
     var STDLY_INPUT_array_length=STDLY_INPUT_counting.length;
     var STDLY_INPUT_array_length=STDLY_INPUT_counting.length;   
-    var STDLY_INPUT_comments_split='';
+    var STDLY_INPUT_comments_split='';var STDLY_INPUT_invfrom_split='';var STDLY_INPUT_invitem_split='';
     if((Array.isArray(STDLY_INPUT_comments1))==true){
       for(var i=0;i<STDLY_INPUT_comments1.length;i++)
       {
@@ -152,9 +158,16 @@ try
           else
             STDLY_INPUT_comments_split +='^^'+eilib.ConvertSpclCharString(STDLY_INPUT_comments1[i]);
         }  
+        if(i==0){
+          STDLY_INPUT_invitem_split +=eilib.ConvertSpclCharString(STDLY_INPUT_in_items[i]);
+          STDLY_INPUT_invfrom_split +=eilib.ConvertSpclCharString(STDLY_INPUT_comments[i]);
+        }
+        else{
+          STDLY_INPUT_invitem_split +='^^'+eilib.ConvertSpclCharString(STDLY_INPUT_in_items[i]);
+          STDLY_INPUT_invfrom_split +='^^'+eilib.ConvertSpclCharString(STDLY_INPUT_comments[i]);
+        }
         STDLY_INPUT_invoiceDate[i]=eilib.SqlDateFormat(STDLY_INPUT_invoiceDate[i]);
-        STDLY_INPUT_in_items[i]=eilib.ConvertSpclCharString(STDLY_INPUT_in_items[i]);
-        STDLY_INPUT_comments[i]=eilib.ConvertSpclCharString(STDLY_INPUT_comments[i]);
+        
       }}
     else
     {
@@ -163,10 +176,10 @@ try
       else
         STDLY_INPUT_comments_split=eilib.ConvertSpclCharString(STDLY_INPUT_comments1);
       STDLY_INPUT_invoiceDate=eilib.SqlDateFormat(STDLY_INPUT_invoiceDate);
-      STDLY_INPUT_in_items=eilib.ConvertSpclCharString(STDLY_INPUT_in_items);
-      STDLY_INPUT_comments=eilib.ConvertSpclCharString(STDLY_INPUT_comments);
+      STDLY_INPUT_invitem_split=eilib.ConvertSpclCharString(STDLY_INPUT_in_items);
+      STDLY_INPUT_invfrom_split=eilib.ConvertSpclCharString(STDLY_INPUT_comments);
     }
-    var insertwithComment = "CALL SP_STAFFDLY_STAFF_INSERT('"+STDLY_INPUT_expenselist+"','"+STDLY_INPUT_invoiceDate+"','"+STDLY_INPUT_invoiceAmount+"','"+STDLY_INPUT_in_items+"','"+STDLY_INPUT_comments+"','"+STDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
+    var insertwithComment = "CALL SP_STAFFDLY_STAFF_INSERT('"+STDLY_INPUT_expenselist+"','"+STDLY_INPUT_invoiceDate+"','"+STDLY_INPUT_invoiceAmount+"','"+STDLY_INPUT_invitem_split+"','"+STDLY_INPUT_invfrom_split+"','"+STDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
     var STDLY_INPUT_stmtstaff = STDLY_INPUT_conn.createStatement();
     STDLY_INPUT_stmtstaff.execute(insertwithComment);
     STDLY_INPUT_stmtstaff.close();
@@ -226,20 +239,6 @@ try
     STDLY_INPUT_stmt.close();
     STDLY_INPUT_conn.close();
     return STDLY_INPUT_alldataArray;
-  }
-  /*--------------------------------------FUNCTION TO CHECK WHETHER THE DATA INSERTED OR NOT---------------------------------------*/
-  function STDLY_INPUT_getmaxprimaryid(STDLY_INPUT_profile_names){
-    var STDLY_INPUT_conn =eilib.db_GetConnection();
-    var STDLY_INPUT_twodimen={39:['EA_ID','EXPENSE_AGENT'],40:['ESS_ID','EXPENSE_STAFF_SALARY'],
-                              41:['ES_ID','EXPENSE_STAFF']                                    
-                             }
-    var STDLY_INPUT_stmt_primaryid = STDLY_INPUT_conn.createStatement();
-    var STDLY_INPUT_select="SELECT MAX("+STDLY_INPUT_twodimen[STDLY_INPUT_profile_names][0]+") AS PRIMARY_ID FROM "+STDLY_INPUT_twodimen[STDLY_INPUT_profile_names][1]+"";
-    var STDLY_INPUT_rs_primaryid=STDLY_INPUT_stmt_primaryid.executeQuery(STDLY_INPUT_select);
-    while(STDLY_INPUT_rs_primaryid.next())
-      var STDLY_INPUT_primaryid=STDLY_INPUT_rs_primaryid.getString("PRIMARY_ID");
-    STDLY_INPUT_rs_primaryid.close();STDLY_INPUT_stmt_primaryid.close();
-    return STDLY_INPUT_primaryid;        
   }
 }
 catch(err)

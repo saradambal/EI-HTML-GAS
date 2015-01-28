@@ -1,6 +1,7 @@
 //*******************************************OCBC*********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.05- SD:19/09/2014 ED:19/09/2014,TRACKER NO:741,Implemented preloader and msgbox position script
 //VER 1.04- SD:03/09/2014 ED:03/09/2014 TRACKER NO:741,added ref-id sorting in ocbc bank records select query.
 //VER 1.03- SD:22/08/2014 ED:22/08/2014TRACKER NO:742,Updated new jquery and css links and auto grow script line.
 //VER 1.02- SD:11/07/2014 ED:11/07/2014 TRACKER NO:742,Did multiple customer radio buttons clear after saved record.

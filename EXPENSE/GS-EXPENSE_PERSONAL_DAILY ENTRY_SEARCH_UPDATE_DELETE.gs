@@ -1,7 +1,10 @@
 //*******************************************FILE DESCRIPTION*********************************************//
-//*******************************************PERSONAL EXPENSE: SEARCH/UPDATE/DELETE*********************************************//
+//*******************************************"PERSONAL EXPENSE: SEARCH/UPDATE/DELETE*********************************************//
+//DONE BY:PUNI
+//VER 2.0-SD:09/10/2014 ED:09/10/2014,TRACKER NO:412,1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //DONE BY:SARADAMBAL
-//VER 1.8-SD:20/06/2014 ED:20/06/2014,TRACKER NO:412,removed alert box
+//VER 1.9-SD:22/09/2014 ED:22/09/2014,TRACKER NO:412,removed trim for comments fields n invitems n srch options, hide the preloader after loading flex table,correct flex table height,removed hardcore for search by header,corrected error msg for no record data 
+//VER 1.8-SD:13/08/2014 ED:13/08/2014,TRACKER NO:412,implemented script for reset normal size after updation,updated new links,checked after autocommit  
 //VER 1.7-SD:19/06/2014 ED:19/06/2014,TRACKER NO:412,implemented script for commit and failure function,checked tickler part,call comments,inv from,inv item function  after deletion,added rule general for comments,inv from,item,added numbersonly for inv amt   
 //VER 1.6 -SD:06/06/2014 ED:06/06/2014,TRACKER NO:412,updated new link
 //VER 1.5 SD:19/04/2014 ED:19/04/2014 TRACKER NO:412//IMPLEMENTED DP PICKER VALIDATION FOR SDATE AND EDATE IN SRCH FORM,CHECKED MIGRATION DATA,IMPLEMENTED CLASS FOR DP(MANDATORY)
@@ -22,7 +25,7 @@
 //VER 0.01-INITIAL VERSION, SD:26/09/2013 ED:01/10/2013,TRACKER NO:412
 //*********************************************************************************************************//
 try
-{ 
+{
   //GET THE INITIAL LOADING  DATAS //
   function PDLY_SEARCH_gettypofexpense()
   {
@@ -124,40 +127,44 @@ try
     var PDLY_SEARCH_conn = eilib.db_GetConnection();
     var PDLY_SEARCH_searchstmt = PDLY_SEARCH_conn.createStatement();
     if(PDLY_SEARCH_searchcomments!='')
-      PDLY_SEARCH_searchcomments=eilib.ConvertSpclCharString(PDLY_SEARCH_searchcomments)
-      if(PDLY_SEARCH_typelistvalue==36)
-      {
-        var PDLY_SEARCH_babyexpense_selectquery=[];
-        PDLY_SEARCH_babyexpense_selectquery[56] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPBABY.EB_COMMENTS='"+PDLY_SEARCH_searchcomments+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
-        PDLY_SEARCH_babyexpense_selectquery[52] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPCONFIG.ECN_DATA='"+PDLY_SEARCH_babycategory+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID)ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
-        PDLY_SEARCH_babyexpense_selectquery[51] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPBABY.EB_AMOUNT BETWEEN '"+PDLY_SEARCH_fromamount+"' AND '"+PDLY_SEARCH_toamount+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
-        PDLY_SEARCH_babyexpense_selectquery[53] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPCONFIG.ECN_ID=EXPBABY.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
-        PDLY_SEARCH_babyexpense_selectquery[55]= "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID,  DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPBABY.EB_INVOICE_FROM='"+PDLY_SEARCH_invfromcomt+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
-        PDLY_SEARCH_babyexpense_selectquery[54] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T')  AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPBABY.EB_INVOICE_ITEMS='"+PDLY_SEARCH_invitemcom+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
-        var PDLY_SEARCH_baby = PDLY_SEARCH_searchstmt.executeQuery(PDLY_SEARCH_babyexpense_selectquery[PDLY_SEARCH_babysearch]);
-        while(PDLY_SEARCH_baby.next())
-        {  
-          var PDLY_SEARCH_baby_id = PDLY_SEARCH_baby.getString("EB_ID");
-          var PDLY_SEARCH_type = PDLY_SEARCH_baby.getString("ECN_DATA");
-          if(PDLY_SEARCH_type==null){ PDLY_SEARCH_type=""; }    
-          var PDLY_SEARCH_date = PDLY_SEARCH_baby.getString("EB_INVOICE_DATE");
-          if(PDLY_SEARCH_date==null){ PDLY_SEARCH_date=""; }    
-          var PDLY_SEARCH_amount = PDLY_SEARCH_baby.getString("EB_AMOUNT");
-          if(PDLY_SEARCH_amount==null){ PDLY_SEARCH_amount=""; }    
-          var PDLY_SEARCH_items = PDLY_SEARCH_baby.getString("EB_INVOICE_ITEMS");
-          if(PDLY_SEARCH_items==null){ PDLY_SEARCH_items=""; }    
-          var PDLY_SEARCH_from = PDLY_SEARCH_baby.getString("EB_INVOICE_FROM");
-          if(PDLY_SEARCH_from==null){ PDLY_SEARCH_from=""; }    
-          var PDLY_SEARCH_comments = PDLY_SEARCH_baby.getString("EB_COMMENTS");
-          if(PDLY_SEARCH_comments==null){ PDLY_SEARCH_comments=""; }    
-          var PDLY_SEARCH_userstamp = PDLY_SEARCH_baby.getString("ULD_LOGINID");
-          var PDLY_SEARCH_timestamp = PDLY_SEARCH_baby.getString("TIMESTMP");
-          var PDLY_SEARCH_result={'PDLY_SEARCH_baby_id':PDLY_SEARCH_baby_id,'PDLY_SEARCH_type':PDLY_SEARCH_type,'PDLY_SEARCH_date':PDLY_SEARCH_date,'PDLY_SEARCH_amount':PDLY_SEARCH_amount,'PDLY_SEARCH_items':PDLY_SEARCH_items,'PDLY_SEARCH_from':PDLY_SEARCH_from,'PDLY_SEARCH_comments':PDLY_SEARCH_comments,'PDLY_SEARCH_userstamp':PDLY_SEARCH_userstamp,'PDLY_SEARCH_timestamp':PDLY_SEARCH_timestamp}
-          PDLY_SEARCH_sendallbabydata.push(PDLY_SEARCH_result);
+      PDLY_SEARCH_searchcomments=eilib.ConvertSpclCharString(PDLY_SEARCH_searchcomments);
+    if(PDLY_SEARCH_invfromcomt!='')
+      PDLY_SEARCH_invfromcomt=eilib.ConvertSpclCharString(PDLY_SEARCH_invfromcomt)
+      if(PDLY_SEARCH_invitemcom!='')
+        PDLY_SEARCH_invitemcom=eilib.ConvertSpclCharString(PDLY_SEARCH_invitemcom)
+        if(PDLY_SEARCH_typelistvalue==36)
+        {
+          var PDLY_SEARCH_babyexpense_selectquery=[];
+          PDLY_SEARCH_babyexpense_selectquery[56] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPBABY.EB_COMMENTS='"+PDLY_SEARCH_searchcomments+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
+          PDLY_SEARCH_babyexpense_selectquery[52] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPCONFIG.ECN_DATA='"+PDLY_SEARCH_babycategory+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID)ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
+          PDLY_SEARCH_babyexpense_selectquery[51] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPBABY.EB_AMOUNT BETWEEN '"+PDLY_SEARCH_fromamount+"' AND '"+PDLY_SEARCH_toamount+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
+          PDLY_SEARCH_babyexpense_selectquery[53] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPCONFIG.ECN_ID=EXPBABY.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
+          PDLY_SEARCH_babyexpense_selectquery[55]= "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID,  DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPBABY.EB_INVOICE_FROM='"+PDLY_SEARCH_invfromcomt+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
+          PDLY_SEARCH_babyexpense_selectquery[54] = "SELECT EXPBABY.EB_ID,EXPBABY.EB_INVOICE_DATE,EXPBABY.EB_AMOUNT,EXPBABY.EB_INVOICE_ITEMS,EXPBABY.EB_INVOICE_FROM,EXPBABY.EB_COMMENTS,ULD.ULD_LOGINID, DATE_FORMAT(CONVERT_TZ(EXPBABY.EB_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T')  AS TIMESTMP,EXPCONFIG.ECN_DATA FROM EXPENSE_BABY EXPBABY,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=EXPBABY.ULD_ID AND (EXPBABY.EB_INVOICE_DATE BETWEEN '"+PDLY_SEARCH_startdate+"' AND '"+PDLY_SEARCH_enddate+"') AND (EXPBABY.EB_INVOICE_ITEMS='"+PDLY_SEARCH_invitemcom+"') AND (EXPBABY.ECN_ID=EXPCONFIG.ECN_ID) ORDER BY EXPBABY.EB_INVOICE_DATE ASC";
+          var PDLY_SEARCH_baby = PDLY_SEARCH_searchstmt.executeQuery(PDLY_SEARCH_babyexpense_selectquery[PDLY_SEARCH_babysearch]);
+          while(PDLY_SEARCH_baby.next())
+          {  
+            var PDLY_SEARCH_baby_id = PDLY_SEARCH_baby.getString("EB_ID");
+            var PDLY_SEARCH_type = PDLY_SEARCH_baby.getString("ECN_DATA");
+            if(PDLY_SEARCH_type==null){ PDLY_SEARCH_type=""; }    
+            var PDLY_SEARCH_date = PDLY_SEARCH_baby.getString("EB_INVOICE_DATE");
+            if(PDLY_SEARCH_date==null){ PDLY_SEARCH_date=""; }    
+            var PDLY_SEARCH_amount = PDLY_SEARCH_baby.getString("EB_AMOUNT");
+            if(PDLY_SEARCH_amount==null){ PDLY_SEARCH_amount=""; }    
+            var PDLY_SEARCH_items = PDLY_SEARCH_baby.getString("EB_INVOICE_ITEMS");
+            if(PDLY_SEARCH_items==null){ PDLY_SEARCH_items=""; }    
+            var PDLY_SEARCH_from = PDLY_SEARCH_baby.getString("EB_INVOICE_FROM");
+            if(PDLY_SEARCH_from==null){ PDLY_SEARCH_from=""; }    
+            var PDLY_SEARCH_comments = PDLY_SEARCH_baby.getString("EB_COMMENTS");
+            if(PDLY_SEARCH_comments==null){ PDLY_SEARCH_comments=""; }    
+            var PDLY_SEARCH_userstamp = PDLY_SEARCH_baby.getString("ULD_LOGINID");
+            var PDLY_SEARCH_timestamp = PDLY_SEARCH_baby.getString("TIMESTMP");
+            var PDLY_SEARCH_result={'PDLY_SEARCH_baby_id':PDLY_SEARCH_baby_id,'PDLY_SEARCH_type':PDLY_SEARCH_type,'PDLY_SEARCH_date':PDLY_SEARCH_date,'PDLY_SEARCH_amount':PDLY_SEARCH_amount,'PDLY_SEARCH_items':PDLY_SEARCH_items,'PDLY_SEARCH_from':PDLY_SEARCH_from,'PDLY_SEARCH_comments':PDLY_SEARCH_comments,'PDLY_SEARCH_userstamp':PDLY_SEARCH_userstamp,'PDLY_SEARCH_timestamp':PDLY_SEARCH_timestamp}
+            PDLY_SEARCH_sendallbabydata.push(PDLY_SEARCH_result);
+          }
+          PDLY_SEARCH_baby.close();
+          //SEARCH BY CAR EXPENSE//
         }
-        PDLY_SEARCH_baby.close();
-        //SEARCH BY CAR EXPENSE//
-      }
     if(PDLY_SEARCH_typelistvalue==35)
     {         
       var PDLY_SEARCH_carexpenseexpense_selectquery=[];;
@@ -341,7 +348,7 @@ try
         var PDLY_SEARCH_personalexpense_update_query = "UPDATE EXPENSE_PERSONAL SET EP_INVOICE_DATE='"+PDLY_SEARCH_dbinvoicedate+"',EP_AMOUNT='"+PDLY_SEARCH_babyfullamount+"',EP_INVOICE_ITEMS='"+PDLY_SEARCH_invoiceitems+"',EP_INVOICE_FROM='"+PDLY_SEARCH_invoicefrom+"',EP_COMMENTS="+PDLY_SEARCH_comments+",ULD_ID="+PDLY_SEARCH_UserStampId+",ECN_ID=(SELECT ECN_ID FROM EXPENSE_CONFIGURATION WHERE ECN_DATA='"+PDLY_SEARCH_lbbabyexpense+"' AND CGN_ID=24) WHERE EP_ID="+PDLY_SEARCH_id+"";
         PDLY_SEARCH_updateexp.execute(PDLY_SEARCH_personalexpense_update_query);
       }
-    }
+    } 
     if(PDLY_SEARCH_typeofexpense==38)
     {
       var PDLY_SEARCH_id = PDLY_SEARCH_updateformid.PDLY_SEARCH_tb_hideid;
@@ -374,7 +381,7 @@ try
     var PDLY_SEARCH_stmt=PDLY_SEARCH_conn.createStatement();
     if(PDLY_SEARCH_lb_typelistvalue==36)
     {
-      var PDLY_SEARCH_expbabycmtquery="SELECT EB_COMMENTS FROM EXPENSE_BABY WHERE EB_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EB_COMMENTS IS NOT NULL";
+      var PDLY_SEARCH_expbabycmtquery="SELECT DISTINCT EB_COMMENTS FROM EXPENSE_BABY WHERE EB_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EB_COMMENTS IS NOT NULL";
       var PDLY_SEARCH_babycmtrst = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expbabycmtquery);
       while(PDLY_SEARCH_babycmtrst.next()) {
         if(PDLY_SEARCH_babycmtrst.getString('EB_COMMENTS')!=null)
@@ -384,7 +391,7 @@ try
     }
     if(PDLY_SEARCH_lb_typelistvalue==35)
     {
-      var PDLY_SEARCH_expcarcmtquery="SELECT EC_COMMENTS FROM EXPENSE_CAR WHERE EC_INVOICE_DATE  BETWEEN '"+startdate+"' AND '"+enddate+"' AND EC_COMMENTS IS NOT NULL";
+      var PDLY_SEARCH_expcarcmtquery="SELECT DISTINCT EC_COMMENTS FROM EXPENSE_CAR WHERE EC_INVOICE_DATE  BETWEEN '"+startdate+"' AND '"+enddate+"' AND EC_COMMENTS IS NOT NULL";
       var PDLY_SEARCH_searchresult = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expcarcmtquery);
       while(PDLY_SEARCH_searchresult.next()) {
         if(PDLY_SEARCH_searchresult.getString('EC_COMMENTS')!=null)
@@ -394,7 +401,7 @@ try
     }
     if(PDLY_SEARCH_lb_typelistvalue==37)
     {
-      var PDLY_SEARCH_exppercmtquery="SELECT EP_COMMENTS FROM EXPENSE_PERSONAL WHERE EP_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EP_COMMENTS IS NOT NULL";
+      var PDLY_SEARCH_exppercmtquery="SELECT DISTINCT EP_COMMENTS FROM EXPENSE_PERSONAL WHERE EP_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EP_COMMENTS IS NOT NULL";
       var PDLY_SEARCH_searchresult = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_exppercmtquery);
       while(PDLY_SEARCH_searchresult.next()) {
         if(PDLY_SEARCH_searchresult.getString('EP_COMMENTS')!=null)
@@ -404,7 +411,7 @@ try
     }
     if(PDLY_SEARCH_lb_typelistvalue==38)
     {
-      var PDLY_SEARCH_expcarlncmtquery="SELECT ECL_COMMENTS FROM EXPENSE_CAR_LOAN WHERE ECL_PAID_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND ECL_COMMENTS IS NOT NULL";
+      var PDLY_SEARCH_expcarlncmtquery="SELECT DISTINCT ECL_COMMENTS FROM EXPENSE_CAR_LOAN WHERE ECL_PAID_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND ECL_COMMENTS IS NOT NULL";
       var PDLY_SEARCH_searchresult = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expcarlncmtquery);
       while(PDLY_SEARCH_searchresult.next()) {
         if(PDLY_SEARCH_searchresult.getString('ECL_COMMENTS')!=null)
@@ -428,7 +435,7 @@ try
     {
       if(PDLY_SEARCH_lb_babysearchoptionvalue==55)
       {
-        var PDLY_SEARCH_expbabylninvfrmquery="SELECT EB_INVOICE_FROM FROM EXPENSE_BABY WHERE EB_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EB_INVOICE_FROM IS NOT NULL";
+        var PDLY_SEARCH_expbabylninvfrmquery="SELECT DISTINCT EB_INVOICE_FROM FROM EXPENSE_BABY WHERE EB_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EB_INVOICE_FROM IS NOT NULL";
         var PDLY_SEARCH_lninvfrm = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expbabylninvfrmquery);
         while(PDLY_SEARCH_lninvfrm.next()) {
           if(PDLY_SEARCH_lninvfrm.getString('EB_INVOICE_FROM')!=null)
@@ -437,7 +444,7 @@ try
       }
       if(PDLY_SEARCH_lb_babysearchoptionvalue==54)
       {
-        var PDLY_SEARCH_expbabylninvitmquery="SELECT EB_INVOICE_ITEMS FROM EXPENSE_BABY WHERE EB_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EB_INVOICE_ITEMS IS NOT NULL";
+        var PDLY_SEARCH_expbabylninvitmquery="SELECT DISTINCT EB_INVOICE_ITEMS FROM EXPENSE_BABY WHERE EB_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EB_INVOICE_ITEMS IS NOT NULL";
         var PDLY_SEARCH_searchresult = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expbabylninvitmquery);
         while(PDLY_SEARCH_searchresult.next()) {
           if(PDLY_SEARCH_searchresult.getString('EB_INVOICE_ITEMS')!=null)
@@ -449,7 +456,7 @@ try
     {    
       if(PDLY_SEARCH_lb_babysearchoptionvalue==61)
       {    
-        var PDLY_SEARCH_expcarlninvfrmquery="SELECT EC_INVOICE_FROM FROM EXPENSE_CAR  WHERE EC_INVOICE_DATE  BETWEEN '"+startdate+"' AND '"+enddate+"' AND EC_INVOICE_FROM IS NOT NULL";
+        var PDLY_SEARCH_expcarlninvfrmquery="SELECT DISTINCT EC_INVOICE_FROM FROM EXPENSE_CAR  WHERE EC_INVOICE_DATE  BETWEEN '"+startdate+"' AND '"+enddate+"' AND EC_INVOICE_FROM IS NOT NULL";
         var PDLY_SEARCH_searchresult = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expcarlninvfrmquery);
         while(PDLY_SEARCH_searchresult.next()) {
           if(PDLY_SEARCH_searchresult.getString('EC_INVOICE_FROM')!=null)
@@ -458,7 +465,7 @@ try
       }
       if(PDLY_SEARCH_lb_babysearchoptionvalue==60)
       {
-        var PDLY_SEARCH_expcarlninvitmquery="SELECT EC_INVOICE_ITEMS FROM EXPENSE_CAR WHERE EC_INVOICE_DATE  BETWEEN '"+startdate+"' AND '"+enddate+"' AND EC_INVOICE_ITEMS IS NOT NULL";
+        var PDLY_SEARCH_expcarlninvitmquery="SELECT DISTINCT EC_INVOICE_ITEMS FROM EXPENSE_CAR WHERE EC_INVOICE_DATE  BETWEEN '"+startdate+"' AND '"+enddate+"' AND EC_INVOICE_ITEMS IS NOT NULL";
         var PDLY_SEARCH_searchresult = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expcarlninvitmquery);
         while(PDLY_SEARCH_searchresult.next()) {
           if(PDLY_SEARCH_searchresult.getString('EC_INVOICE_ITEMS')!=null)
@@ -470,7 +477,7 @@ try
     {
       if(PDLY_SEARCH_lb_babysearchoptionvalue==72)
       {
-        var PDLY_SEARCH_expperlninvfrmquery="SELECT EP_INVOICE_FROM FROM EXPENSE_PERSONAL WHERE EP_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EP_INVOICE_FROM IS NOT NULL";
+        var PDLY_SEARCH_expperlninvfrmquery="SELECT DISTINCT EP_INVOICE_FROM FROM EXPENSE_PERSONAL WHERE EP_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EP_INVOICE_FROM IS NOT NULL";
         var PDLY_SEARCH_searchresult = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expperlninvfrmquery);
         while(PDLY_SEARCH_searchresult.next()) {
           if(PDLY_SEARCH_searchresult.getString('EP_INVOICE_FROM')!=null)
@@ -479,7 +486,7 @@ try
       }
       if(PDLY_SEARCH_lb_babysearchoptionvalue==71)
       {
-        var PDLY_SEARCH_expperlninvitmquery="SELECT EP_INVOICE_ITEMS FROM EXPENSE_PERSONAL WHERE EP_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EP_INVOICE_ITEMS IS NOT NULL";
+        var PDLY_SEARCH_expperlninvitmquery="SELECT DISTINCT EP_INVOICE_ITEMS FROM EXPENSE_PERSONAL WHERE EP_INVOICE_DATE BETWEEN '"+startdate+"' AND '"+enddate+"' AND EP_INVOICE_ITEMS IS NOT NULL";
         var PDLY_SEARCH_searchresult = PDLY_SEARCH_stmt.executeQuery(PDLY_SEARCH_expperlninvitmquery);
         while(PDLY_SEARCH_searchresult.next()) {
           if(PDLY_SEARCH_searchresult.getString('EP_INVOICE_ITEMS')!=null)
@@ -501,7 +508,7 @@ try
     if((PDLY_SEARCH_lb_babysearchoptionvalue==54)||(PDLY_SEARCH_lb_babysearchoptionvalue==55)||(PDLY_SEARCH_lb_babysearchoptionvalue==60)||(PDLY_SEARCH_lb_babysearchoptionvalue==61)||(PDLY_SEARCH_lb_babysearchoptionvalue==72)||(PDLY_SEARCH_lb_babysearchoptionvalue==71))
     PDLY_SEARCH_ref_autocom=PDLY_SEARCH_invfroandamtmgetMatchText(PDLY_SEARCH_lb_typelistvalue,PDLY_SEARCH_lb_getstartvaluevalue,PDLY_SEARCH_lb_getendvaluevalue,PDLY_SEARCH_lb_babysearchoptionvalue);
     else if((PDLY_SEARCH_lb_babysearchoptionvalue==56)||(PDLY_SEARCH_lb_babysearchoptionvalue==62)||(PDLY_SEARCH_lb_babysearchoptionvalue==73)||(PDLY_SEARCH_lb_babysearchoptionvalue==67))
-    PDLY_SEARCH_ref_autocom=PDLY_SEARCH_getMatchText(PDLY_SEARCH_lb_typelistvalue,PDLY_SEARCH_lb_getstartvaluevalue,PDLY_SEARCH_lb_getendvaluevalue);
+    PDLY_SEARCH_ref_autocom=PDLY_SEARCH_getMatchText(PDLY_SEARCH_lb_typelistvalue,PDLY_SEARCH_lb_getstartvaluevalue,PDLY_SEARCH_lb_getendvaluevalue,PDLY_SEARCH_lb_babysearchoptionvalue);
     PDLY_SEARCH_conn.close();
     return [PDLY_SEARCH_flag_delete,PDLY_SEARCH_ref_autocom];
   }

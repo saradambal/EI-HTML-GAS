@@ -1,8 +1,11 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--***********************************************************************************************//-->
 <!--//*********************************FILE DESCRIPTION*********************************************//
 //*************************************EMAIL PROFILE SEARCH/UPDATE/DELETE***************************//
+//DONE BY:PUNI
+//VER 1.9-SD:03/10/2014 ED:03/10/2014 TRACKER NO:703:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.8-SD:21/08/2014 ED:21/08/2014,TRACKER NO:703,updated new links
 //DONE BY:LALITHA
+//VER 1.7-SD:24/07/2014 ED:24/07/2014,TRACKER NO:703,Changed Emailid validation of SSOMENS.COM,EXPATSINT.COM,GMAIL.COM for the DocOwner emailprofile
 //VER 1.6-SD:09/06/2014 ED:12/06/2014,TRACKER NO:703,Updated commit funct,Changed failure funct,Converted the emailid to lowercase for valid emailid only,If flex tble data nd txt bx data same means hide the err msg nd invalid class,Updated while updating nd deleting data in flex tble means frst load the flex tble nd thn shown err msgAfter delete the record reload the email profile listbox
 //VER 1.5-SD:06/06/2014 ED:06/06/2014,Changed jquery link in html file
 //VER 1.4-SD:28/05/2014 ED:28/05/2014,Updated preloader for already exit functn
@@ -24,21 +27,31 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function EP_SRC_UPD_DEL_onFailure(EP_SRC_UPD_DEL_error) {
 $(".preloader").hide();
@@ -49,7 +62,7 @@ $('#EP_SRC_UPD_DEL_form_email_list').replaceWith('<center><label class="dberrorm
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_error,position:{top:150,left:500}}});
 }
 }
 //FAILURE FUNCTION END
@@ -73,7 +86,6 @@ var EP_SRC_UPD_DEL_emailarr_profilename=[];
 //SUCCESS FUNCTION FOR EMAIL PROFILE NAME,ERROR MESSAGE
 function EP_SRC_UPD_DEL_searchoptionresult(EP_SRC_UPD_DEL_searchoptionresult_response)
 {
-$(".preloader").hide();
 EP_SRC_UPD_DEL_emailarr_profilename=EP_SRC_UPD_DEL_searchoptionresult_response.EP_SRC_UPD_DEL_profilelistdataid;
 EP_SRC_UPD_DEL_errorMsg_array=EP_SRC_UPD_DEL_searchoptionresult_response.EP_SRC_UPD_DEL_errormsg;
 var EP_SRC_UPD_DEL_namearray=[];
@@ -90,6 +102,17 @@ EP_SRC_UPD_DEL_emailarray_profilename += '<option value="'+EP_SRC_UPD_DEL_profil
 }
 $('#EP_SRC_UPD_DEL_form_email_list').show();
 $('#EP_SRC_UPD_DEL_lb_profile').html(EP_SRC_UPD_DEL_emailarray_profilename).show();
+if(EP_SRC_UPD_DEL_sucsval==2)
+{
+$(".preloader").hide();
+//MESSAGE BOX FOR DELETE SUCCESSFULLY
+var EP_SRC_UPD_DEL_errmsg=EP_SRC_UPD_DEL_errorMsg_array[4].replace('[PROFILE]',EP_SRC_UPD_DEL_name);
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errmsg,position:{top:150,left:500}}}); 
+}
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //START UNIQUE FUNCTION
 function unique(a) {
@@ -106,6 +129,8 @@ $('#EP_SRC_UPD_DEL_tb_updemailid').doValidation({rule:'email',prop:{uppercase:fa
 //CHANGE EVENT FUCNTION FOR PROFILE
 $('#EP_SRC_UPD_DEL_lb_profile').change(function()
 {
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 EP_SRC_UPD_DEL_sucsval=0;
 EP_SRC_UPD_DEL_name=$('#EP_SRC_UPD_DEL_lb_profile').find('option:selected').text();
@@ -187,17 +212,25 @@ $(".preloader").hide();
 $('#EP_SRC_UPD_DEL_div_headernodata').hide();
 }
 }
+if(EP_SRC_UPD_DEL_result_array.length==0)
+{
+$(".preloader").show();
+google.script.run.withSuccessHandler(EP_SRC_UPD_DEL_searchoptionresult).withFailureHandler(EP_SRC_UPD_DEL_onFailure).EP_SRC_UPD_DEL_searchoption();
+$('#EP_SRC_UPD_DEL_div_header').hide();
+$('#EP_SRC_UPD_DEL_tble_htmltable').hide();
+}
+else if(EP_SRC_UPD_DEL_sucsval==2)
+{
+$(".preloader").hide();
+//MESSAGE BOX FOR DELETE SUCCESSFULLY
+var EP_SRC_UPD_DEL_errmsg=EP_SRC_UPD_DEL_errorMsg_array[4].replace('[PROFILE]',EP_SRC_UPD_DEL_name);
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errmsg,position:{top:150,left:500}}}); 
+}
 if(EP_SRC_UPD_DEL_sucsval==1)
 {
 //MESSAGE BOX FOR UPDATE SUCCESSFULLY
 var EP_SRC_UPD_DEL_errmsg=EP_SRC_UPD_DEL_errorMsg_array[3].replace('[PROFILE]',EP_SRC_UPD_DEL_name);
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errmsg}}); 
-}
-if(EP_SRC_UPD_DEL_sucsval==2)
-{
-//MESSAGE BOX FOR DELETE SUCCESSFULLY
-var EP_SRC_UPD_DEL_errmsg=EP_SRC_UPD_DEL_errorMsg_array[4].replace('[PROFILE]',EP_SRC_UPD_DEL_name);
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errmsg}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errmsg,position:{top:150,left:500}}}); 
 }
 }
 //CLICK FUNCTION FOR RADIO BUTTON
@@ -240,6 +273,9 @@ $('#EP_SRC_UPD_DEL_div_update').hide();
 //CLICK EVENT FUCNTION FOR BUTTON SEARCH
 $('#EP_SRC_UPD_DEL_btn_search').click(function()
 {
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+var  newPos= adjustPosition($("#EP_SRC_UPD_DEL_tble_htmltable").position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 EP_SRC_UPD_DEL_sucsval=0;
 $("#EP_SRC_UPD_DEL_tb_updemailid").removeClass('invalid');
@@ -261,37 +297,154 @@ $('#EP_SRC_UPD_DEL_tb_updemailid').val(EP_SRC_UPD_DEL_emailid_id);
 $(".preloader").hide();
 $('#EP_SRC_UPD_DEL_div_update').show();
 $("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+if(($('#EP_SRC_UPD_DEL_lb_profile').val())==3)
+{
+if(EP_SRC_UPD_DEL_emailid_id.substring(EP_SRC_UPD_DEL_emailid_id.indexOf("@") + 1)!="expatsint.com")
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[10]).show();
+}
+}
+else if(($('#EP_SRC_UPD_DEL_lb_profile').val())==8)
+{
+if(EP_SRC_UPD_DEL_emailid_id.substring(EP_SRC_UPD_DEL_emailid_id.indexOf("@") + 1)!="ssomens.com")
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[9]).show();
+}
+}
+else if(($('#EP_SRC_UPD_DEL_lb_profile').val())==7)
+{
+if(EP_SRC_UPD_DEL_emailid_id.substring(EP_SRC_UPD_DEL_emailid_id.indexOf("@") + 1)!="gmail.com")
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[11]).show();
+}
+}
 });
 });
 //EMAIL SUBMIT BUTTON VALIDATION
 function EP_SRC_UPD_DEL_checkmailid()
 {
 $('#EP_SRC_UPD_DEL_lbl_validid').hide();
+$("#EP_SRC_UPD_DEL_tb_updemailid").removeClass('invalid');
+var EP_SRC_UPD_DEL_emailprofilevld=$("#EP_SRC_UPD_DEL_lb_profile").val();
+$('#EP_SRC_UPD_DEL_lbl_validid').hide();
 var EP_SRC_UPD_DEL_email=$("#EP_SRC_UPD_DEL_tb_updemailid").val();
-if((EP_SRC_UPD_DEL_email.length==0)||(EP_SRC_UPD_DEL_email==EP_SRC_UPD_DEL_emailid_id))
+if((EP_SRC_UPD_DEL_email.length==0)){
+$('#EP_SRC_UPD_DEL_lbl_validid').hide();
+$("#EP_SRC_UPD_DEL_tb_updemailid").removeClass('invalid');
+}
+else{
+if(((EP_SRC_UPD_DEL_email).toLowerCase()==EP_SRC_UPD_DEL_emailid_id))
+{
+$('#EP_SRC_UPD_DEL_tb_updemailid').val($('#EP_SRC_UPD_DEL_tb_updemailid').val().toLowerCase())
+if(EP_SRC_UPD_DEL_emailprofilevld==3)
+{
+if(EP_SRC_UPD_DEL_emailid_id.substring(EP_SRC_UPD_DEL_emailid_id.indexOf("@") + 1)!="expatsint.com")
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[10]).show();
+}
+else 
 {
 $("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
 $('#EP_SRC_UPD_DEL_lbl_validid').hide();
 $("#EP_SRC_UPD_DEL_tb_updemailid").removeClass('invalid');
 }
+}
+else if(EP_SRC_UPD_DEL_emailprofilevld==8)
+{
+if(EP_SRC_UPD_DEL_emailid_id.substring(EP_SRC_UPD_DEL_emailid_id.indexOf("@") + 1)!="ssomens.com")
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[9]).show();
+}
+else 
+{
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').hide();
+$("#EP_SRC_UPD_DEL_tb_updemailid").removeClass('invalid');
+}
+}
+else if(EP_SRC_UPD_DEL_emailprofilevld==7)
+{
+if(EP_SRC_UPD_DEL_emailid_id.substring(EP_SRC_UPD_DEL_emailid_id.indexOf("@") + 1)!="gmail.com")
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[11]).show();
+}
+else 
+{
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').hide();
+$("#EP_SRC_UPD_DEL_tb_updemailid").removeClass('invalid');
+}
+}
+}
 else
 {
 var EP_SRC_UPD_DEL_validtype=ErrorControl.EmailId;
-if(EP_SRC_UPD_DEL_validtype=='Valid')
+if((EP_SRC_UPD_DEL_validtype=='Valid')||(EP_SRC_UPD_DEL_email==EP_SRC_UPD_DEL_emailid_id))
 {
-$('#EP_SRC_UPD_DEL_lbl_validid').hide();
-$("#EP_SRC_UPD_DEL_tb_updemailid").removeClass('invalid');
-var EP_SRC_UPD_DEL_profilename=$('#EP_SRC_UPD_DEL_tb_profileupd').val();
-var EP_SRC_UPD_DEL_emailid=$('#EP_SRC_UPD_DEL_tb_updemailid').val();
 $('#EP_SRC_UPD_DEL_tb_updemailid').val($('#EP_SRC_UPD_DEL_tb_updemailid').val().toLowerCase())
-google.script.run.withSuccessHandler(EP_SRC_UPD_DEL_already_result).withFailureHandler(EP_SRC_UPD_DEL_onFailure).EP_SRC_UPD_DEL_already(EP_SRC_UPD_DEL_profilename,EP_SRC_UPD_DEL_emailid);
-$(".preloader").show(); 
+if(EP_SRC_UPD_DEL_emailprofilevld==8)
+{
+if((($("#EP_SRC_UPD_DEL_tb_updemailid").val()).substring(($("#EP_SRC_UPD_DEL_tb_updemailid").val()).indexOf("@") + 1) == "ssomens.com"))
+{
+EP_SRC_UPD_DEL_addrssmail();
+}
+else
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[9]).show();
+}
+}
+else if(EP_SRC_UPD_DEL_emailprofilevld==7)
+{
+if((($("#EP_SRC_UPD_DEL_tb_updemailid").val()).substring(($("#EP_SRC_UPD_DEL_tb_updemailid").val()).indexOf("@") + 1) == "gmail.com"))
+{
+EP_SRC_UPD_DEL_addrssmail();
+}
+else
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[11]).show();
+}
+}
+else if(EP_SRC_UPD_DEL_emailprofilevld==3)
+{
+if((($("#EP_SRC_UPD_DEL_tb_updemailid").val()).substring(($("#EP_SRC_UPD_DEL_tb_updemailid").val()).indexOf("@") + 1) == "expatsint.com"))
+{
+EP_SRC_UPD_DEL_addrssmail();
+}
+else
+{
+$("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
+$("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+$('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[10]).show();
+}
+}
+else
+{
+EP_SRC_UPD_DEL_addrssmail();
+}
 }
 else
 {
 $('#EP_SRC_UPD_DEL_lbl_validid').text(EP_SRC_UPD_DEL_errorMsg_array[0]).show();
 $("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
 $("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
+}
+}
 }
 }
 //SUCCESS FUNCTION FOR ALREADY EXIST FOR EMAIL ID
@@ -324,6 +477,15 @@ $("#EP_SRC_UPD_DEL_tb_updemailid").addClass('invalid');
 $("#EP_SRC_UPD_DEL_btn_update").attr("disabled","disabled");
 }
 }
+//FUNCTION FOR SPECIFIC MAIL ID ALLOWING VALIDATION
+function EP_SRC_UPD_DEL_addrssmail()
+{
+$('#EP_SRC_UPD_DEL_lbl_validid').hide();
+$("#EP_SRC_UPD_DEL_tb_updemailid").removeClass('invalid');
+var EP_SRC_UPD_DEL_profilename=$('#EP_SRC_UPD_DEL_tb_profileupd').val();
+var EP_SRC_UPD_DEL_emailid=$('#EP_SRC_UPD_DEL_tb_updemailid').val();
+google.script.run.withSuccessHandler(EP_SRC_UPD_DEL_already_result).withFailureHandler(EP_SRC_UPD_DEL_onFailure).EP_SRC_UPD_DEL_already(EP_SRC_UPD_DEL_profilename,EP_SRC_UPD_DEL_emailid);
+$(".preloader").show(); 
 }
 //BLUR FUNCTION FOR VALIDATION
 $("#EP_SRC_UPD_DEL_tb_updemailid").blur(function(){
@@ -334,6 +496,8 @@ EP_SRC_UPD_DEL_checkmailid()
 $('#EP_SRC_UPD_DEL_btn_update').click(function()
 {
 $("#EP_SRC_UPD_DEL_hidden_chkvalid").val("UPDATE")//SET UPDATE FUNCTION VALUE
+var  newPos= adjustPosition($("#EP_SRC_UPD_DEL_tble_htmltable").position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var EP_SRC_UPD_DEL_updemailid=$("#EP_SRC_UPD_DEL_tb_updemailid").val();
 if(EP_SRC_UPD_DEL_updemailid!="")
@@ -344,7 +508,6 @@ EP_SRC_UPD_DEL_checkmailid()
 //SUCCESS FUNCTION FOR UPDATE
 function EP_SRC_UPD_DEL_update_result(response)
 {
-$(".preloader").hide(); 
 if(response==1)
 {
 var EP_SRC_UPD_DEL_profilename=$('#EP_SRC_UPD_DEL_lb_profile').val();
@@ -357,12 +520,15 @@ EP_SRC_UPD_DEL_sucsval=1;
 }
 else
 {
+$(".preloader").hide();
 //MESSAGE BOX FOR NOT UPDATED 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errorMsg_array[8]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errorMsg_array[8],position:{top:150,left:500}}}); 
 }
 }
 //CLICK FUNCTION FOR OK BUTTON IN DELETE MESSAGE BOX
 $(document).on('click','.messageconfirm',function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 var EP_SRC_UPD_DEL_id=$('input:radio[name=EP_SRC_UPD_DEL_radio_email]:checked').val();
 var EP_SRC_UPD_DEL_value=EP_SRC_UPD_DEL_id.split('/');
@@ -373,13 +539,12 @@ google.script.run.withSuccessHandler(EP_SRC_UPD_DEL_delete_result).withFailureHa
 //CLICK EVENT FUCNTION FOR DELETE
 $('#EP_SRC_UPD_DEL_btn_delete').click(function()
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errorMsg_array[7],confirmation:true}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errorMsg_array[7],confirmation:true,position:$(this).position()}});
 });
 //SUCCESS FUNCTION FOR DELETE
 function EP_SRC_UPD_DEL_delete_result(response)
 {
 EP_SRC_UPD_DEL_sucsval=2;
-$(".preloader").hide(); 
 var EP_SRC_UPD_DEL_profilename=$('#EP_SRC_UPD_DEL_lb_profile').val();
 if(response==1)
 {
@@ -388,12 +553,12 @@ $('#EP_SRC_UPD_DEL_tble_srchupd').hide();
 $('#EP_SRC_UPD_DEL_lbl_validid').hide();
 $('#EP_SRC_UPD_DEL_tb_updemailid').removeClass('invalid');
 google.script.run.withSuccessHandler(EP_SRC_UPD_DEL_srch_result).withFailureHandler(EP_SRC_UPD_DEL_onFailure).EP_SRC_UPD_DEL_srch(EP_SRC_UPD_DEL_profilename);
-google.script.run.withSuccessHandler(EP_SRC_UPD_DEL_searchoptionresult).withFailureHandler(EP_SRC_UPD_DEL_onFailure).EP_SRC_UPD_DEL_searchoption();
 }
 else
 {
+$(".preloader").hide();
 //MESSAGE BOX FOR NOT DELETE 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errorMsg_array[1]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE SEARCH/UPDATE/DELETE",msgcontent:EP_SRC_UPD_DEL_errorMsg_array[1],position:{top:150,left:500}}}); 
 }
 }
 //CLICK EVENT FUCNTION FOR RESET

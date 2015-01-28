@@ -1,6 +1,11 @@
 <!--**********************************************MODEL SEARCH/UPDATE******************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.04- SD:07/10/2014 ED:07/10/2014,TRACKER NO:678,changed preloader pos when clicking srch btn
 //DONE BY:KUMAR
+//VER 1.03- SD:19/09/2014 ED:19/09/2014,TRACKER NO:678,Implemented preloader and msgbox position script
+//ver 1.02- SD:27/08/2014 ED:27/08/2014,TRACKER NO:678 Cleared obsolute flag update issue
+//ver 1.01- SD:22/08/2014 ED:22/08/2014,TRACKER NO:678 updateD new jquery and css links.
 //ver 1.00- SD:28/06/2014 ED:28/06/2014,TRACKER NO:678 cleared conn issue.
 //VER 0.09- SD:19/06/2014 ED:19/06/2014,TRACKER NO:678 Added conn failure message.
 //VER 0.08- SD:09/06/2014 ED:09/06/2014,TRACKER NO:678,Added commit() command after Updating record.
@@ -17,23 +22,33 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
 $('#MODEL_SRC_errormessageform').hide();
 $('#MODEL_SRC_form_mainform').hide();
@@ -75,13 +90,16 @@ var modelnameerrormsg='<p><label class="errormsg">NO DATA AVAILABLE IN MODEL DET
 $('#MODEL_SRC_errormessagetable').append(modelnameerrormsg);
 $('#MODEL_SRC_form_mainform').hide();
 }
-$(".preloader").hide();
+ //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 }
 $('#MODEL_SRC_lb_modelname').change(function(){
 var modelname=$('#MODEL_SRC_lb_modelname').val()
 $('#MODEL_SRC_div_htmltable').hide();
 $('#MODEL_SRC_tbl_htmltable').hide();
 $('#MODEL_SRC_lbl_error').hide();
+$('#MODEL_SRC_tble_maintable').hide();
 if(modelname!="SELECT")
 {
 $("#MODEL_SRC_btn_modelnamesearch").removeAttr("disabled");
@@ -114,7 +132,10 @@ $("#MODEL_SRC_btn_modelnamesave").attr("disabled", "disabled");
 }
 }
 $('#MODEL_SRC_btn_modelnamesearch').click(function(){
+var  newPos= adjustPosition($(this).position(),100,280);
+resetPreloader(newPos);
 $(".preloader").show();
+$('#MODEL_SRC_tble_maintable').hide();
 google.script.run.withFailureHandler(MODEL_SRC_error_message).withSuccessHandler(MODEL_SRC_Conformation).MODEL_SRC_processFormSubmit(document.getElementById('MODEL_SRC_form_mainform'))
 });
 function MODEL_SRC_Conformation(result)
@@ -143,6 +164,7 @@ $("#MODEL_SRC_btn_modelnamesave").attr("disabled", "disabled");
 var MODEL_SRC_id=$("input[name=radiobuttons]:checked").val();
 $('#MODEL_SRC_tb_tempmodelname').val(MODEL_SRC_id);
 var rowid=1;
+$('#obsolute').prop('checked',false);
 $('#MODEL_SRC_tbl_htmltable tr:eq('+rowid+')').each(function () {
       var $tds = $(this).find('td'),
           modelname = $tds.eq(1).text(),
@@ -154,6 +176,8 @@ $('#MODEL_SRC_tbl_htmltable tr:eq('+rowid+')').each(function () {
 });
 $('#MODEL_SRC_btn_modelnamesave').click(function(){
 $(".preloader").show();
+ var  newPos= adjustPosition($('#MODEL_SRC_btn_modelnamedelete').position(),100,230);
+    resetPreloader(newPos);
 var modelname=$('#MODEL_SRC_tb_modelname').val();
 var id=$('#MODEL_SRC_tb_tempmodelname').val();
 var obsolute=$('#obsolute').is(":checked");
@@ -161,6 +185,8 @@ google.script.run.withFailureHandler(MODEL_SRC_error_message).withSuccessHandler
 });
 $('#MODEL_SRC_btn_modelnamedelete').click(function(){
 $(".preloader").show();
+ var  newPos= adjustPosition($('#MODEL_SRC_btn_modelnamedelete').position(),100,230);
+    resetPreloader(newPos);
 var id=$('#MODEL_SRC_tb_tempmodelname').val();
 var obsolete=$('#obsolute').is(":checked");
 google.script.run.withFailureHandler(MODEL_SRC_error_message).withSuccessHandler(MODEL_SRC_deletionresult).MODEL_SRC_modeldeletion(id,obsolete);
@@ -191,6 +217,7 @@ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE"
 }
 function MODEL_SRC_deletionresult(res)
 {
+$(".preloader").hide();
 $('#MODEL_SRC_div_htmltable').hide();
 $('#MODEL_SRC_tbl_htmltable').hide();
 $('#MODEL_SRC_tble_maintable').hide();
@@ -217,14 +244,14 @@ $('#MODEL_SRC_form_mainform').hide();
 }
 if(flag==1)
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:errormsg[1]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:errormsg[1],position:$('#MODEL_SRC_btn_modelnamesave').position()}});
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:"SELECTED MODELNAME USED IN BANK TRANSFER TABLE,SO CAN'T BE DELETED AND UPDATED X IN OBSOLETE"}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:"SELECTED MODELNAME USED IN BANK TRANSFER TABLE,SO CAN'T BE DELETED AND UPDATED X IN OBSOLETE",position:$('#MODEL_SRC_btn_modelnamesave').position()}});
 }
-$(".preloader").hide();
 }
+
 function MODEL_SRC_error_message(MODEL_SRC_err)
 {
 if(MODEL_SRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
@@ -234,7 +261,7 @@ $('#MODEL_SRC_form_mainform').replaceWith('<center><label class="dberrormsg">'+M
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:MODEL_SRC_err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL SEARCH/UPDATE",msgcontent:MODEL_SRC_err,position:$('#MODEL_SRC_btn_modelnamesearch').position()}});
 }
 $(".preloader").hide();
 }

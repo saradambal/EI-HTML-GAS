@@ -1,5 +1,9 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************SITE MAINTENANCE*********************************************//
+//DONE BY:PUNI
+//VER 1.2-SD:03/10/2014 ED:03/10/2014,TRACKER NO:683,1.changed html script to hide preloader after menu loads,2.changed messagebx n preloader position
+//DONE BY:SARADAMBAL
+//VER 1.1-SD:22/08/2014 ED:22/08/2014,TRACKER NO:683,updated new links
 //DONE BY:LALITHA
 //VER 1.0-SD:15/07/2014 ED:15/07/2014,TRACKER NO:683,Deleted the access rights menu,Replaced the btn name
 //VER 0.09-SD:14/06/2014 ED:14/06/2014,TRACKER NO:683,Changed failure funct,Removed the btn disabling functn,after updating the record reload the tree view function,Put condition for(frst form reloaded nd thn shown err msg)

@@ -1,7 +1,9 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*************************************************EMAIL TEMPLATE ENTRY***************************************//
+//DONE BY:PUNI
+//VER 1.7-SD:03/10/2014 ED:03/10/2014 TRACKER NO:422:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.6-SD:21/08/2014 ED:21/08/2014,TRACKER NO:422,updated new links,autogrow
 //DONE BY:LALITHA
 //VER 1.5-SD:11/07/2014 ED:11/07/2014,TRACKER NO:422,preloader hide before shwn err msg
 //VER 1.4-SD:20/06/2014 ED:21/06/2014,TRACKER NO:422,Changed failure funct,Changed btn name(submit to save),Updated trim function manually written for txt area,empty the hidden txt while calling insert nd after insertion,Changed validation,alredy exit funt calling time preloader showned,In gs side(Changed userstamp in global funct,while loop for resultset)
@@ -23,21 +25,30 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!--SCRIPT TAG START-->
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function ET_ENTRY_onFailure(ET_ENTRY_error) {
 $(".preloader").hide();
@@ -48,7 +59,7 @@ $('#ET_ENTRY_form_template').replaceWith('<center><label class="dberrormsg">'+ET
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:ET_ENTRY_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:ET_ENTRY_error,position:{top:150,left:500}}});
 }
 }
 //FAILURE FUNCTION END
@@ -61,11 +72,15 @@ var ET_ENTRY_errorMsg_array=[];
 //SUCCESS FUNCTION FOR EMAIL TEMPLATE ERROR MESSAGE
 function ET_ENTRY_geterrmsgresult(ET_ENTRY_geterrmsgresult_response)
 {
-$(".preloader").hide();
 ET_ENTRY_errorMsg_array=ET_ENTRY_geterrmsgresult_response.ET_ENTRY_errormsg;
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //JQUERY LIB VALIDATION START
 $("#ET_ENTRY_tb_scriptname").doValidation({rule:'general',prop:{autosize:true}});
+$('textarea').autogrow({onInitialize: true});
 //JQUERY LIB VALIDATION END
 //KEY PRESS FUNCTION START
 var ET_ENTRY_max=1000;
@@ -103,8 +118,10 @@ ET_ENTRY_chknull_input=true;
 var ET_ENTRY_scriptname=$('#ET_ENTRY_tb_scriptname').val();
 if(ET_ENTRY_scriptname!="")
 {
-google.script.run.withSuccessHandler(ET_ENTRY_already_result).withFailureHandler(ET_ENTRY_onFailure).ET_ENTRY_already(ET_ENTRY_scriptname);
+var  newPos= adjustPosition($("#ET_ENTRY_tb_scriptname").position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show(); 
+google.script.run.withSuccessHandler(ET_ENTRY_already_result).withFailureHandler(ET_ENTRY_onFailure).ET_ENTRY_already(ET_ENTRY_scriptname);
 }
 //SUCCESS FUNCTION FOR ALREADY EXIST FOR SCRIPT NAME
 function ET_ENTRY_already_result(ET_ENTRY_response)
@@ -162,6 +179,8 @@ $('#ET_ENTRY_ta_body').val(trimfunc)
 //CLICK EVENT FOR SAVE BUTTON
 $('#ET_ENTRY_btn_save').click(function()
 {
+var  newPos= adjustPosition($("#ET_ENTRY_tb_scriptname").position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show(); 
 $("#ET_ENTRY_hidden_chkvalid").val("SAVE")//SET SAVE FUNCTION VALUE
 var ET_ENTRY_scriptname=$('#ET_ENTRY_tb_scriptname').val();
@@ -182,7 +201,7 @@ if(ET_ENTRY_response==1)
 {
 $("#ET_ENTRY_btn_save").attr("disabled","disabled");
 //MESSAGE BOX FOR SAVED SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL TEMPLATE ENTRY",msgcontent:ET_ENTRY_errorMsg_array[0]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL TEMPLATE ENTRY",msgcontent:ET_ENTRY_errorMsg_array[0],position:{top:150,left:500}}}); 
 $("#ET_ENTRY_hidden_chkvalid").val("");
 $(".preloader").hide();
 }
@@ -190,7 +209,7 @@ else
 {
 $(".preloader").hide();
 //MESSAGE BOX FOR NOT SAVED 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL TEMPLATE ENTRY",msgcontent:ET_ENTRY_errorMsg_array[2]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL TEMPLATE ENTRY",msgcontent:ET_ENTRY_errorMsg_array[2],position:{top:150,left:500}}}); 
 }
 ET_ENTRY_email_template_rset();
 }
@@ -200,6 +219,7 @@ function ET_ENTRY_email_template_rset()
 $("#ET_ENTRY_form_template")[0].reset();
 $("#ET_ENTRY_tb_scriptname").removeClass('invalid');
 $('#ET_ENTRY_lbl_validid').hide();
+$('textarea').height(50).width(60);
 $("#ET_ENTRY_btn_save").attr("disabled", "disabled");
 $('#ET_ENTRY_tb_scriptname').prop("size","20");
 }

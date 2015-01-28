@@ -1,7 +1,12 @@
 <!--
 //*******************************************FILE DESCRIPTION*********************************************
 //************************************ACCESS_RIGHTS_ACCESS_RIGHTS-SEARCH/UPDATE***********************************************//
- DONE BY:SAFIYULLAH.M
+ DONE BY:PUNI
+ //VER 1.6-SD:25/10/2014 ED:25/10/2014;TRACKER NO :465;COMMENT 51,1.corrected sharing n unshare doc query with max rv by matching login id
+ //VER 1.5-SD:20/10/2014 ED:20/10/2014;TRACKER NO :465;COMMENT 47,1.CORRECTED WRONG FUNCTION NAME UR_GETSITE REUSED FOR AR SEARCH/UPDATE N AR TERMINATE SRCH/UPDATE
+ //VER 1.4-SD:28/08/2014 ED:01/10/2014;TRACKER NO :651;COMMENT 57,1.trimmed repeated functions n script,2.added new lib links,3.changed preloader n msgbox position,4.corrected btn validation,5.changed driveapp to docslist for remove editors
+DONE BY:SAFIYULLAH.M
+ //VER 1.3-SD:21/07/2014 ED:21/07/2014;TRACKER NO :651;UPDATED DRIVEAPP AS DOCSLIST FOR SHARING/UNSHARING DOCS.
  //VER 1.2-SD:16/07/2014 ED:17/07/2014;TRACKER NO:651;CLEARED ISSUE FOR-NO SUCH USER AND GET EMAIL IF UNDEFINED.
  //VER 1.1-SD:01/06/2014 ED:04/06/2014;TRACKER NO:651;updated customised error for script error.
  //VER 1.0-SD:08/06/2014 ED:10/06/2014;TRACKER NO:651;issue corrected and updated failure msg
@@ -20,21 +25,31 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
 $('.autosize').doValidation({rule:'general',prop:{autosize:true}});
 $('#URSRC_tb_loginid').doValidation({rule:'general',prop:{uppercase:false,autosize:true}});
@@ -158,6 +173,8 @@ $('input:radio[name=URSRC_radio_basicroles1]').attr('checked',false);
 //LOGIN SEARCH/UPDATE CLICK FUNCTION
 $('#URSRC_radio_loginsearchupdate').click(function(){
 $('#URSRC_lbl_header').text("LOGIN SEARCH/UPDATE").show()
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 $('#URSRC_tb_loginid').val("");
 $('#URSRC_lbl_nodetails_err').hide()
@@ -188,7 +205,9 @@ google.script.run.withFailureHandler(URSRC_error).withSuccessHandler(URSRC_load_
 });
 //ROLE SEARCH/UPDATE CLICK
 $('#URSRC_radio_rolesearchupdate').click(function(){
-$('#URSRC_lbl_header').text("ROLE SEARCH/UPDATE").show()
+$('#URSRC_lbl_header').text("ROLE SEARCH/UPDATE").show();
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 $('#URSRC_btn_submitbutton').val('UPDATE').hide();
 $('#URSRC_tble_role').hide();
@@ -272,10 +291,16 @@ URSRC_basicrole_radio+='<tr><td><input type="radio" name=URSRC_radio_basicroles1
 }
 $('#URSRC_tble_roles').html(URSRC_role_radio);
 $('#URSRC_tble_basicroles').html(URSRC_basicrole_radio);
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 else{
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 var msg=URSRC_errorAarray[10].replace("[USERID]",UserStamp);
 $('#URSRC_form_user_rights').replaceWith('<p><label class="errormsg">'+msg+'</label></p>');
 }
@@ -289,6 +314,8 @@ $('#URSRC_tble_basicroles_chk').html(URSRC_basicroleprofile_radio);
 }
 //WEHN BASIC ROLE CLICK IN BASIC MENU CREATION AND SEARCH/UPDATE FORM 
 $(document).on("click",'.URSRC_class_basic', function (){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 var role=$(this).val()
 role=role.replace("_"," ")
@@ -297,9 +324,10 @@ google.script.run.withFailureHandler(URSRC_error).withSuccessHandler(URSRC_check
 function URSRC_check_basicrole(URSRC_check_basicrole_menu){
 if(URSRC_check_basicrole_menu=="false"){
 if($("input[name=URSRC_mainradiobutton]:checked").val()=="BASIC ROLE MENU CREATION"){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 google.script.run.withFailureHandler(URSRC_error).withSuccessHandler(URSRC_loadmenu_basicrole).URSRC_getmenu_folder(URSRC_basic_role);
-$(".preloader").show();
 $('#URSRC_lbl_basicrole_err').hide()
 }
 else{
@@ -530,6 +558,8 @@ $(this).replaceWith('<input type="button"   value="+" id='+sub_buttonid+'  heigh
 $('#URSRC_tb_customrole').blur(function(){
 
 if($(this).val()!=""){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 $('#URSRC_tble_roles').hide()
 $('#URSRC_tble_menu').hide();
@@ -708,11 +738,11 @@ $('#'+URSRC_report_id[k]+'fol').prop("checked", false);
 //FOR CUSTOMER
 var URSRC_customer_file_id1;
 for(var a=0;a<menu_values.length;a++){
-if((menu_values[a]=="CUSTOMER")||(URSRC_mainmenu_value=="CUSTOMER"||URSRC_mainmenu_value==14||URSRC_mainmenu_value==15||URSRC_mainmenu_value==16||URSRC_mainmenu_value==17)){
+if((menu_values[a]=="CUSTOMER")||(URSRC_mainmenu_value=="CUSTOMER"||URSRC_mainmenu_value==14||URSRC_mainmenu_value==15||URSRC_mainmenu_value==16||URSRC_mainmenu_value==17||URSRC_mainmenu_value==58)){
 var flag=0
 var flag1=0;
 for(var h=0;h<submenu1_values.length;h++){
-if((submenu1_values[h]==14)||(submenu1_values[h]==15)||(submenu1_values[h]==16)||(submenu1_values[h]==17)){
+if((submenu1_values[h]==14)||(submenu1_values[h]==15)||(submenu1_values[h]==16)||(submenu1_values[h]==17)||(submenu1_values[h]==58)){
  flag=1;
  flag1=1;
 if((submenu1_values[h]==14))
@@ -723,6 +753,8 @@ if((submenu1_values[h]==16))
 var URSRC_customer_file_id=$('#fp_id16').val();
 if((submenu1_values[h]==17))
 var URSRC_customer_file_id=$('#fp_id17').val();
+if((submenu1_values[h]==58))
+var URSRC_customer_file_id=$('#fp_id58').val();
 var URSRC_customer_file_id1=URSRC_customer_file_id.split(',')
 var  URSRC_customer_file_id1_length=URSRC_customer_file_id1.length
 for(var i=0;i<URSRC_customer_file_id1.length;i++){
@@ -890,12 +922,24 @@ $('#URSRC_btn_submitbutton').attr("disabled","disabled");
 }
 //Basic Role/Search&update/Role Creation and Update  button click
 $(document).on('click','#URSRC_btn_submitbutton',function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 var URSRC_radio_button_select_value=$("input[name=URSRC_mainradiobutton]:checked").val();
 google.script.run.withFailureHandler(URSRC_error).withSuccessHandler(URSRC_clear).URSRC_role_creation_save(document.getElementById('URSRC_form_user_rights'));
 });
 function URSRC_clear(URSRC_chkflag){
+if(URSRC_chkflag.match("SCRIPT EXCEPTION:"))
+{
 $(".preloader").hide();
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_chkflag,position:$('#URSRC_btn_login_submitbutton').position()}});
+}
+else if(URSRC_chkflag==0){
+$(".preloader").hide();
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16],position:$('#URSRC_btn_login_submitbutton').position()}})
+}
+else
+{
 var URSRC_radio_button_select_value=$("input[name=URSRC_mainradiobutton]:checked").val();
 if(URSRC_radio_button_select_value=="BASIC ROLE MENU CREATION"){
 $('input:radio[name=URSRC_radio_basicroles1]').attr('checked',false);
@@ -908,13 +952,11 @@ $('#URSRC_tble_basicroles_chk').hide();
 $('input[name=URSRC_mainradiobutton]:checked').attr('checked',false);
 $('#URSRC_lbl_header').hide();
 if(URSRC_chkflag==1){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[12]}})
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[12],position:{top:150,left:500}}})
 }
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16]}})
+
 }
-}
-if(URSRC_radio_button_select_value=="BASIC ROLE MENU SEARCH UPDATE"){
+else if(URSRC_radio_button_select_value=="BASIC ROLE MENU SEARCH UPDATE"){
 $('input:radio[name=URSRC_radio_basicroles1]').attr('checked',false);
 $('input:radio[name=URSRC_cb_basicroles1]').attr('checked',false);
 $('#URSRC_tble_basicroles_chk').hide();
@@ -922,13 +964,10 @@ $('#URSRC_tble_menu').hide();
 $('#URSRC_tble_folder').hide();
 $('#URSRC_btn_submitbutton').hide();
 if(URSRC_chkflag==1){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[13]}});
-}
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16]}})
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[13],position:{top:150,left:500}}});
 }
 }
-if(URSRC_radio_button_select_value=="ROLE CREATION"){
+else if(URSRC_radio_button_select_value=="ROLE CREATION"){
 $('#URSRC_tble_menu').hide();
 $('#URSRC_tble_folder').hide();
 $('#URSRC_tble_roles').hide();
@@ -938,10 +977,7 @@ $('#URSRC_tb_customrole').val("");
 $('input[name=URSRC_mainradiobutton]:checked').attr('checked',false);
 $('#URSRC_lbl_header').hide();
 if(URSRC_chkflag==1){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[4]}});
-}
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16]}})
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[4],position:{top:150,left:500}}});
 }
 }
 else if(URSRC_radio_button_select_value=="ROLE SEARCH UPDATE"){
@@ -952,13 +988,11 @@ $('#URSRC_tble_rolecreation').hide()
 $('#URSRC_btn_submitbutton').hide();
 $('#URSRC_lb_selectrole').prop('selectedIndex',0);
 if(URSRC_chkflag==1){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[7]}});
-}
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16]}})
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[7],position:{top:150,left:500}}});
 }
 }
 else if(URSRC_radio_button_select_value=="LOGIN CREATION"){
+ if(URSRC_chkflag==1){
 $('#URSRC_tble_login').hide();
 $('#URSRC_tble_rolesearch').hide();
 $('#URSRC_tb_joindate').val("");
@@ -967,13 +1001,9 @@ var msg=URSRC_errorAarray[5].replace("[NAME]",name)
 var finalmsg=msg.replace("[NAME]",name)
 $('input[name=URSRC_mainradiobutton]:checked').attr('checked',false);
 $('#URSRC_lbl_header').hide();
-if(URSRC_chkflag==1){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:finalmsg}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:finalmsg,position:{top:150,left:500}}});
 $('#URSRC_tb_loginid').val("");
 $('#URSRC_tb_loginid').prop("size","20");
-}
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16]}})
 }
 }
 else if(URSRC_radio_button_select_value=="LOGIN SEARCH UPDATE"){
@@ -985,11 +1015,10 @@ $('#URSRC_lb_selectloginid').prop('selectedIndex',0);
 $('#URSRC_btn_login_submitbutton').hide()
 var msg=URSRC_errorAarray[6].replace("[NAME]",name)
 if(URSRC_chkflag==1){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:msg}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:msg,position:{top:150,left:500}}});
 }
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16]}})
 }
+$(".preloader").hide();
 }
 }
 function URSRC_error(err){
@@ -1000,25 +1029,24 @@ err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
 $('#URSRC_form_user_rights').replaceWith('<center><label class="dberrormsg">'+err+'</label></center>');
 }
 else if((err=='ReferenceError: "Calendar" is not defined.')||(err=='ScriptError: Access Not Configured. Please use Google Developers Console to activate the API for your project.')){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[17]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[17],position:{top:150,left:500}}});
 }
 else if(err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.'){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[18]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[18],position:{top:150,left:500}}});
 }
-
 else if((err=='ScriptError: Forbidden')||(err=='ScriptError: You do not have permission to perform that action.')){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[20]}});
-
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[20],position:{top:150,left:500}}});
 }
 else if((err=='ScriptError: Not Found')||(err=='Not Found')){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[19]}});
-
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[19],position:{top:150,left:500}}});
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:err,position:{top:150,left:500}}});
 }
 }
 $('#URSRC_tb_loginid').blur(function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 var URSRC_login_id=$(this).val();
  var atpos=URSRC_login_id.indexOf("@");
@@ -1129,6 +1157,8 @@ $('#URSRC_btn_login_submitbutton').val("CREATE").show();
 $('#URSRC_lb_selectloginid').change(function(){
 var URSRC_login_id=$(this).val();
 if(URSRC_login_id!="SELECT"){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 $('#URSRC_tble_rolecreation').hide();
 $('#URSRC_tble_rolecreation tr').remove();
@@ -1181,6 +1211,8 @@ dateFormat:"dd-mm-yy",changeYear:true,changeMonth:true
 $( '.datepicker' ).datepicker( "option", "maxDate", new Date() );
 //LOGIN CREATE/UPDATE BUTTON CLICK
 $('#URSRC_btn_login_submitbutton').click(function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 var value=$("input[name=URSRC_mainradiobutton]:checked").val();
 google.script.run.withFailureHandler(URSRC_error).withSuccessHandler(URSRC_clear).URSRC_login_creation_save(document.getElementById('URSRC_form_user_rights'));
@@ -1188,6 +1220,8 @@ google.script.run.withFailureHandler(URSRC_error).withSuccessHandler(URSRC_clear
 //ROLE CHANGE FUNCTION FOR ROLE SEARCH AND UPDATE 
 $('#URSRC_lb_selectrole').change(function(){
 if($(this).val()!='SELECT'){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 google.script.run.withFailureHandler(URSRC_error).withSuccessHandler(URSRC_load_roledetails).URSRC_get_roledetails($(this).val());
 }
@@ -1256,7 +1290,7 @@ $('#URSRC_btn_submitbutton').hide();
 <!--HEAD TAG START-->
 <!--BODY TAG START-->
 <body>
-<?!=include('HTML-MENU') ?>
+<?!=include('HTML-MENU') ?> 
 <div class="wrapper">
 <div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
 <div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>ACCESS RIGHTS-SEARCH/UPDATE</h3><p></div></div>

@@ -1,6 +1,10 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************PERSONAL EXPENSE ENTRY*********************************************//
+//DONE BY PUNI
+//VER 1.6-SD:09/10/2014 ED:09/10/2014,TRACKER NO:736,1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //DONE BY SARADAMBAL
+//VER 1.5-SD:21/09/2014 ED:21/09/2014,TRACKER NO:736,changed script for db validation n removed trime function invitem n comments except inv from n removed preloader position script
+//VER 1.4-SD:05/08/2014 ED:01/09/2014,TRACKER NO:736,implemented script for inv from and inv item by adding ^^ & pass in sp,updated new links,script for autogrow
 //VER 1.3-SD:11/06/2014 ED:11/06/2014,TRACKER NO:736,implemented script for commit and failure function 
 //VER 1.2-SD:06/06/2014 ED:06/06/2014,TRACKER NO:736,updated new link
 //VER 1.1-SD:28/05/2014 ED:29/05/2014,TRACKER NO:736//cleared issue (http network connection) changed type=submit as type=button
@@ -52,12 +56,12 @@ try
     var PDLY_INPUT_invoiceDate=PDLY_INPUT_formallid.PDLY_INPUT_db_invdate;
     var PDLY_INPUT_in_items=PDLY_INPUT_formallid.PDLY_INPUT_ta_invitem;
     var PDLY_INPUT_invoiceAmount=PDLY_INPUT_formallid.PDLY_INPUT_tb_incamtrp;
-    var PDLY_INPUT_comments=PDLY_INPUT_formallid.PDLY_INPUT_tb_invfrom;
+    var PDLY_INPUT_inv_from=PDLY_INPUT_formallid.PDLY_INPUT_tb_invfrom;
     var PDLY_INPUT_comments1=PDLY_INPUT_formallid.PDLY_INPUT_tb_comments;
-    var PDLY_INPUT_comments_split='';
+    var PDLY_INPUT_comments_split='';var PDLY_INPUT_invfrom_split='';var PDLY_INPUT_invitem_split='';
     var PDLY_INPUT_ref_invoicefrom=[];
-    if((Array.isArray(PDLY_INPUT_comments1))==true){
-      for(var i=0;i<PDLY_INPUT_comments1.length;i++)
+    if((Array.isArray(PDLY_INPUT_inv_from))==true){
+      for(var i=0;i<PDLY_INPUT_inv_from.length;i++)
       {
         if(PDLY_INPUT_comments1[i]==''){
           if(i==0)
@@ -65,35 +69,42 @@ try
             else
               PDLY_INPUT_comments_split +='^^'+' '; }
         else{
-          if(i==0)
+          if(i==0){
             PDLY_INPUT_comments_split +=eilib.ConvertSpclCharString(PDLY_INPUT_comments1[i]);
-          else
+          }
+          else{
             PDLY_INPUT_comments_split +='^^'+eilib.ConvertSpclCharString(PDLY_INPUT_comments1[i]);
-        }  
-        PDLY_INPUT_in_items[i]=eilib.ConvertSpclCharString(PDLY_INPUT_in_items[i]);
-        PDLY_INPUT_comments[i]=eilib.ConvertSpclCharString(PDLY_INPUT_comments[i]);
+          }  }
+        if(i==0){
+          PDLY_INPUT_invitem_split +=eilib.ConvertSpclCharString(PDLY_INPUT_in_items[i]);
+          PDLY_INPUT_invfrom_split +=eilib.ConvertSpclCharString(PDLY_INPUT_inv_from[i]);
+        }
+        else{
+          PDLY_INPUT_invitem_split +='^^'+eilib.ConvertSpclCharString(PDLY_INPUT_in_items[i]);
+          PDLY_INPUT_invfrom_split +='^^'+eilib.ConvertSpclCharString(PDLY_INPUT_inv_from[i]);
+        }
         PDLY_INPUT_invoiceDate[i]=eilib.SqlDateFormat(PDLY_INPUT_invoiceDate[i]);
       }}
     else
     {
       if(PDLY_INPUT_comments1=='')
-        PDLY_INPUT_comments_split=' ';
+        PDLY_INPUT_comments_split='';
       else
         PDLY_INPUT_comments_split=eilib.ConvertSpclCharString(PDLY_INPUT_comments1);
-      PDLY_INPUT_comments=eilib.ConvertSpclCharString(PDLY_INPUT_comments);
-      PDLY_INPUT_in_items=eilib.ConvertSpclCharString(PDLY_INPUT_in_items);
+      PDLY_INPUT_invfrom_split=eilib.ConvertSpclCharString(PDLY_INPUT_inv_from);
+      PDLY_INPUT_invitem_split=eilib.ConvertSpclCharString(PDLY_INPUT_in_items);
       PDLY_INPUT_invoiceDate=eilib.SqlDateFormat(PDLY_INPUT_invoiceDate);
     }
     if(PDLY_INPUT_typelistdb==36)
     {       
-      var PDLY_INPUT_insertintoExpense_Baby_withComment = "CALL SP_PERSONALBABY_INSERT('"+PDLY_INPUT_expenselist+"','"+PDLY_INPUT_invoiceDate+"','"+PDLY_INPUT_invoiceAmount+"','"+PDLY_INPUT_in_items+"','"+PDLY_INPUT_comments+"','"+PDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
+      var PDLY_INPUT_insertintoExpense_Baby_withComment = "CALL SP_PERSONALBABY_INSERT('"+PDLY_INPUT_expenselist+"','"+PDLY_INPUT_invoiceDate+"','"+PDLY_INPUT_invoiceAmount+"','"+PDLY_INPUT_invitem_split+"','"+PDLY_INPUT_invfrom_split+"','"+PDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
       var PDLY_INPUT_stmtstaff = PDLY_INPUT_conn.createStatement();
       PDLY_INPUT_stmtstaff.execute(PDLY_INPUT_insertintoExpense_Baby_withComment);
       PDLY_INPUT_stmtstaff.close();
     }
     if(PDLY_INPUT_typelistdb==37)
     {
-      var  PDLY_INPUT_ExpensePersonal_withComment = "CALL SP_PERSONAL_INSERT('"+PDLY_INPUT_expenselist+"','"+PDLY_INPUT_invoiceDate+"','"+PDLY_INPUT_invoiceAmount+"','"+PDLY_INPUT_in_items+"','"+PDLY_INPUT_comments+"','"+PDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
+      var  PDLY_INPUT_ExpensePersonal_withComment = "CALL SP_PERSONAL_INSERT('"+PDLY_INPUT_expenselist+"','"+PDLY_INPUT_invoiceDate+"','"+PDLY_INPUT_invoiceAmount+"','"+PDLY_INPUT_invitem_split+"','"+PDLY_INPUT_invfrom_split+"','"+PDLY_INPUT_comments_split+"','"+UserStamp+"',@FLAG_INSERT)";
       var PDLY_INPUT_stmtstaff = PDLY_INPUT_conn.createStatement();
       PDLY_INPUT_stmtstaff.execute(PDLY_INPUT_ExpensePersonal_withComment);
       PDLY_INPUT_stmtstaff.close();
@@ -114,7 +125,6 @@ try
     var PDLY_INPUT_conn=eilib.db_GetConnection();
     PDLY_INPUT_conn.setAutoCommit(false);
     var PDLY_INPUT_typelist=PDLY_INPUT_formallid.PDLY_INPUT_lb_typelist;
-    var PDLY_INPUT_beforeprimaryid=PDLY_INPUT_getmaxprimaryid(PDLY_INPUT_typelist)
     if(PDLY_INPUT_typelist==35)
     {
       var PDLY_INPUT_expenselist=PDLY_INPUT_formallid.PDLY_INPUT_lb_carcategory;
@@ -152,11 +162,7 @@ try
     }
     PDLY_INPUT_conn.commit();
     PDLY_INPUT_conn.close();
-    var PDLY_INPUT_afterprimaryid=PDLY_INPUT_getmaxprimaryid(PDLY_INPUT_typelist)
-    if(PDLY_INPUT_afterprimaryid>PDLY_INPUT_beforeprimaryid)
-      return 1;
-    else
-      return 0; 
+    return 1;
   }
   //GET THE INVOICE FROM THE PERSONAL TABLE//
   function PDLY_INPUT_getinvoicefrom()
@@ -174,19 +180,6 @@ try
     PDLY_INPUT_stmt.close();
     PDLY_INPUT_conn.close();
     return PDLY_INPUT_dataArray;
-  }
-  /*--------------------------------------FUNCTION TO CHECK WHETHER THE DATA INSERTED OR NOT---------------------------------------*/
-  function PDLY_INPUT_getmaxprimaryid(PDLY_INPUT_profile_names){
-    var PDLY_INPUT_conn =eilib.db_GetConnection();
-    var PDLY_INPUT_twodimen={35:['EC_ID','EXPENSE_CAR'],38:['ECL_ID','EXPENSE_CAR_LOAN']                                          
-                            }
-    var PDLY_INPUT_stmt_primaryid = PDLY_INPUT_conn.createStatement();
-    var PDLY_INPUT_select="SELECT MAX("+PDLY_INPUT_twodimen[PDLY_INPUT_profile_names][0]+") AS PRIMARY_ID FROM "+PDLY_INPUT_twodimen[PDLY_INPUT_profile_names][1]+"";
-    var PDLY_INPUT_rs_primaryid=PDLY_INPUT_stmt_primaryid.executeQuery(PDLY_INPUT_select);
-    while(PDLY_INPUT_rs_primaryid.next())
-      var PDLY_INPUT_primaryid=PDLY_INPUT_rs_primaryid.getString("PRIMARY_ID");
-    PDLY_INPUT_rs_primaryid.close();PDLY_INPUT_stmt_primaryid.close();
-    return PDLY_INPUT_primaryid;        
   }
 }
 catch(err)

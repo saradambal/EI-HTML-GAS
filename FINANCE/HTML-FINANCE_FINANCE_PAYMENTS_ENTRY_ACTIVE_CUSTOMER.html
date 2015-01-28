@@ -1,6 +1,12 @@
 <!--**************************************PAYMENT ENTRY FOR ACTIVE CUSTOMER*************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.08- SD:20/10/2014 ED:20/10/2014,TRACKER NO:787,changed input parameter when calling save sp-changed comma instead of & operator
+//DONE BY:PUNI
+//VER 1.07- SD:07/10/2014 ED:07/10/2014,TRACKER NO:787,1.added script to hide preloader after menu n form loads,2.Corrected some preloader and msgbox position 
+//DONE BY:KUMAR
+//VER 1.06- SD:19/09/2014 ED:19/09/2014,TRACKER NO:787,Implemented preloader and msgbox position script 
+//VER 1.05- SD:22/08/2014 ED:22/08/2014,TRACKER NO:787 Updated new jquery and css links and add autogrow line.
 //VER 1.04- SD:28/06/2014 ED:28/06/2014,TRACKER NO:787 did delete row button validation and changed amount box maximum digits 4 to 5.
 //VER 1.03- SD:18/06/2014 ED:18/06/2014,TRACKER NO:787 Cleared form validations issues and did paiddate validation in payment entry form.
 //VER 1.02- SD:08/06/2014 ED:08/06/2014,TRACKER NO:787 cleared submit button validation issue.
@@ -21,24 +27,35 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function () {
+$('.autogrow_comments1').autogrow({onInitialize: true});
   $('#FIN_Entry_form').hide();
   $('#Fin_entry_customerlistboxerror').hide();
   var unit=[];
@@ -55,6 +72,8 @@ $(document).ready(function () {
     if(FIN_ENTRY_unit!="SELECT")
     {
       $(".preloader").show(); 
+      var  newPos= adjustPosition($('.FIN_ENTRY_class_unit').position(),100,350);
+      resetPreloader(newPos);
       google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_CustomerResponse).FIN_ENTRY_Customer(FIN_ENTRY_unit,FIN_ENTRY_no[1]);
     }
     else
@@ -94,7 +113,10 @@ $(document).ready(function () {
       var paymentuniterrormsg='<p><label class="errormsg">'+errormsg[2]+'</label></p>';
       $('#FIN_ENTRY_errormessagetable').append(paymentuniterrormsg);
     }
-    $(".preloader").hide();
+    //TO HIDE PRELOADER START
+    SubPage=0;
+    CheckPageStatus();
+    //TO HIDE PRELOADER END
   }
   /*******************************AMOUNTBOX,FORPERIOD,PAIDDATE BOX VALIDATION***************************/
   $(document).on('click','.amtonly',function() {
@@ -237,7 +259,7 @@ $(document).ready(function () {
     oCell.innerHTML = "<input   class='datepickpaiddate submultivalid datemandtry' type='text' name ='FIN_ENTRY_db_paiddate' id='"+"FIN_ENTRY_db_paiddate-"+newid+"'  style='width:75px;' />";
     
     oCell = newRow.insertCell(9);
-    oCell.innerHTML = "<textarea row='2' name ='FIN_ENTRY_ta_comments' id='"+"FIN_ENTRY_ta_comments"+newid+"'></textarea>";
+    oCell.innerHTML = "<textarea row='2' name ='FIN_ENTRY_ta_comments' id='"+"FIN_ENTRY_ta_comments"+newid+"' class='autogrow_comments1'></textarea>";
     
     oCell = newRow.insertCell(10);
     oCell.innerHTML = "<input type='button' value='+' class='addbttn' alt='Add Row' height='30' width='30' name ='FIN_ENTRY_add[]' id='"+"FIN_ENTRY_add"+newid+"' disabled>";
@@ -281,7 +303,7 @@ $(document).ready(function () {
         at: "center bottom",
         of: $(this)
       });
-    });  
+    }); 
     $('#FIN_ENTRY_db_period-'+newid).datepicker("option","maxDate",changedmonth);
     $('#FIN_ENTRY_db_paiddate-'+newid).datepicker({
       dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true 
@@ -418,6 +440,8 @@ $(document).ready(function () {
     if(customer!="SELECT" && customer!="" && customer!=undefined)
     {
     $(".preloader").show(); 
+     var  newPos= adjustPosition($('.customernamecheck').position(),100,230);
+      resetPreloader(newPos);
      google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_multipleCustomerResponse).FIN_ENTRY_Customer(unit,splitedid[1]);
     }
   });
@@ -426,7 +450,9 @@ $(document).ready(function () {
  var customer_array=response[0];
  var splitedid=response[1]
   $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
-  $(".preloader").show(); 
+  $(".preloader").show();
+  var  newPos= adjustPosition($('.customernamecheck').position(),100,230);
+   resetPreloader(newPos);
     var splitedid=response[1];
     var customer=$('#FIN_ENTRY_lb_customer-'+splitedid).val();
     var unit=$('#FIN_ENTRY_lb_unit-'+splitedid).val();
@@ -460,6 +486,8 @@ $(document).ready(function () {
       else
       {
         $(".preloader").show();
+        var  newPos= adjustPosition($('.customernamecheck').position(),100,230);
+        resetPreloader(newPos);
         $('#multiplecustomer-'+id).hide();
         customername_id=customername_array[0];
         var unit=customername_id.unit;
@@ -507,7 +535,9 @@ $(document).ready(function () {
     var rowlength=splitedid[5];
     $('#customerid-'+id).val(customer);
     $('#FIN_ENTRY_recheckinflag-'+id).hide();
-    $(".preloader").show(); 
+    $(".preloader").show();
+    var  newPos= adjustPosition($('.FIN_ENTRY_showlist').position(),100,230);
+      resetPreloader(newPos);
     google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_FORPERIOD_Response).FIN_ENTRY_FORPERIOD_validation(unit,customer,id);
   });
   /*******************************PAID FORPERIOD VALIDATION***************************/
@@ -519,7 +549,9 @@ $(document).ready(function () {
     var FIN_ENTRY_no=FIN_ENTRY_id.split("-");
     if((FIN_ENTRY_unit!="SELECT")&&(FIN_ENTRY_unit!=""))
     {
-      $(".preloader").show(); 
+      $(".preloader").show();
+      var  newPos= adjustPosition($('.showlist').position(),100,230);
+      resetPreloader(newPos);
       google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_CustomerResponse).FIN_ENTRY_Customer(FIN_ENTRY_unit,FIN_ENTRY_no[1]);
     }
     else
@@ -530,6 +562,14 @@ $(document).ready(function () {
       $('#FIN_ENTRY_btn_savebutton').attr("disabled", "disabled");
     }
   });
+  /*************UNIQUE FUNCTION*********************/  
+function unique(a) {
+var result = [];
+$.each(a, function(i, e) {
+if ($.inArray(e, result) == -1) result.push(e);
+});
+return result;
+}
   /**************CUSTOMER LIST BOX LOAD FUNCTION ******************/
   var customer_array=[];
   function FIN_ENTRY_CustomerResponse(response)
@@ -540,11 +580,18 @@ $(document).ready(function () {
     customer_array=response[0];
     if(customer_array.length!=0)
     {
+    var length=customer_array.length;
+    var customername_array=[];
+    for(var s=0;s<length;s++)
+    {
+    customername_array.push(customer_array[s].customername);
+    }
+      customername_array=unique(customername_array);
       var options ='<option value="">SELECT</option>';
-      for (var i = 0; i < customer_array.length; i++) 
+      for (var i = 0; i < customername_array.length; i++) 
       {
-        var customername=customer_array[i].customername;
-        options += '<option value="' + customer_array[i].customername + '">' + customername + '</option>';
+        var customername=customername_array[i];
+        options += '<option value="' + customername_array[i] + '">' + customername + '</option>';
       }
       $('#FIN_ENTRY_lb_customer-'+no).html(options);
       $('#FIN_ENTRY_lb_customer-'+no).show();
@@ -559,7 +606,9 @@ $(document).ready(function () {
     $(".preloader").hide(); 
   }
   $('#FIN_ENTRY_btn_savebutton').click(function(){
-    $(".preloader").show(); 
+    $(".preloader").show();
+     var  newPos= adjustPosition($('#FIN_ENTRY_btn_savebutton').position(),100,350);
+     resetPreloader(newPos);
     google.script.run.withFailureHandler(FIN_ENTRY_error_message).withSuccessHandler(FIN_ENTRY_rentalconformation).FIN_ENTRY_input_details(document.getElementById('FIN_Entry_form'));
   });
   /*******************************AMOUNT CHECKBOX***************************/
@@ -580,11 +629,11 @@ $(document).ready(function () {
   {
     if(response==null || response=="" || response=='null')
     {
-      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:errormsg[1]}});
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:errormsg[1],position:$('#FIN_ENTRY_btn_savebutton').position()}});
     }
     else
     {
-      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:response}});
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:response,position:$('#FIN_ENTRY_btn_savebutton').position()}});
     }
     $('#FIN_entry_form tr').remove();
     var tableheader='<tr> <td><label id="FIN_ENTRY_lbl_unit" >UNIT</label><em>*</em></td><td ><label  id="FIN_ENTRY_lbl_customer">CUSTOMER</label><em>*</em></td><td></td><td></td><td ><label  id="FIN_ENTRY_lbl_recver">LEASE PERIOD</label><em>*</em></td><td > <label id="FIN_ENTRY_lbl_payment">PAYMENT</label><em>*</em></td><td ><label id="FIN_ENTRY_lbl_amount">AMOUNT</label><em>*</em></td><td ><label id="FIN_ENTRY_lbl_forperiod" >FOR PERIOD</label><em>*</em></td><td ><label id="FIN_ENTRY_lbl_paiddate">PAID DATE</label><em>*</em></td><td ><label id="FIN_ENTRY_lbl_comments" >BANKREF COMMENTS</label> </td><td ><label id="FIN_ENTRY_lbl_add"></label></td><td ><label id="FIN_ENTRY_lbl_del"></label></td></tr>';
@@ -597,7 +646,7 @@ $(document).ready(function () {
     +'<td><table><tr><td><input  class="amtonly submultivalid"  type="text" name ="FIN_ENTRY_tb_amount" id="FIN_ENTRY_tb_amount1" style="width:60px;" /> </td><td><input type="checkbox" class="amountcheckbox" name="checkbox" id="payment_hilighted-1"/></td><td><input  type="text" name="FIN_ENTRY_tb_checkboxamount" id="FIN_ENTRY_tb_checkboxamount-1" style="width:10px;"hidden/></td></tr></table></td>'
     +'<td><input  class="datepickperiod submultivalid paidforperiodvalidation datemandtry" type="text" name ="FIN_ENTRY_db_period" id="FIN_ENTRY_db_period-1" style="width:105px;" /> </td><td>'
     +'<input  class="datepickpaiddate submultivalid datemandtry"  type="text" name ="FIN_ENTRY_db_paiddate" id="FIN_ENTRY_db_paiddate-1" style="width:75px;"/> </td><td>'
-    +'<textarea row="2" name ="FIN_ENTRY_ta_comments" id="FIN_ENTRY_ta_comments1"></textarea> </td><td>'
+    +'<textarea row="2" name ="FIN_ENTRY_ta_comments" id="FIN_ENTRY_ta_comments1" class="autogrow_comments1"></textarea> </td><td>'
     +'<input type="button" value="+" class="addbttn" alt="Add Row" height="30" width="30" name ="add[]" id="FIN_ENTRY_add1" disabled > </td><td>'
     +'<input  type="button" value="-" class="deletebttn" alt="delete Row" height="30" width="30" name ="delete[]" id="FIN_ENTRY_del1" disabled></td>'
     +'</tr>';
@@ -659,7 +708,7 @@ $(document).ready(function () {
   }
   else
   {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:FIN_ENTRY_err}});
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT ENTRY",msgcontent:FIN_ENTRY_err,position:{top:150,left:500}}});
   }
   $(".preloader").hide(); 
   }
@@ -689,7 +738,7 @@ $(document).ready(function () {
 <table id='FIN_ENTRY_errormessagetable'>
 </table>
 </form>
-<form onsubmit="return StopSubmit();" class="content" id='FIN_Entry_form'>
+<form  class="content" id='FIN_Entry_form'>
 <table id="FIN_entry_form" cellpadding="10" cellspacing="2"> 
 <tr> <td><label id="FIN_ENTRY_lbl_unit" >UNIT</label><em>*</em></td>
 <td ><label  id="FIN_ENTRY_lbl_customer">CUSTOMER</label><em>*</em></td>
@@ -713,7 +762,7 @@ $(document).ready(function () {
 <td><table><tr><td><input  class="amtonly submultivalid"  type="text" name ="FIN_ENTRY_tb_amount" id="FIN_ENTRY_tb_amount1" style="width:60px;" /> </td><td><input type="checkbox" class="amountcheckbox" name="checkbox" id="payment_hilighted-1"/></td><td><input  type="text" name="FIN_ENTRY_tb_checkboxamount" id="FIN_ENTRY_tb_checkboxamount-1" style="width:10px;"hidden/></td></tr></table></td>
 <td><input  class='datepickperiod submultivalid paidforperiodvalidation datemandtry'  type="text" name ="FIN_ENTRY_db_period" id="FIN_ENTRY_db_period-1" style="width:105px;" /> </td><td>
 <input  class='datepickpaiddate submultivalid datemandtry'  type="text" name ="FIN_ENTRY_db_paiddate" id="FIN_ENTRY_db_paiddate-1" style="width:75px;"/> </td><td>
-<textarea row="2" name ="FIN_ENTRY_ta_comments" id="FIN_ENTRY_ta_comments1"></textarea> </td><td>
+<textarea row="2" name ="FIN_ENTRY_ta_comments" id="FIN_ENTRY_ta_comments1" class="autogrow_comments1"></textarea> </td><td>
 <input type='button' value='+' class='addbttn' alt='Add Row' height='30' width='30' name ='add[]' id='FIN_ENTRY_add1' disabled> </td><td>
 <input  type='button' value='-' class='deletebttn' alt='delete Row' height='30' width='30' name ='delete[]' id='FIN_ENTRY_del1' disabled ></td>
 </tr>
@@ -723,7 +772,7 @@ $(document).ready(function () {
 </td><td>
 <table class ="button_tableid" id="button_table" cellpadding="10" cellspacing="2"> 
 <div class="button_area">
-<tr><td><input type="submit" class='btn' name="save" value="SAVE" id="FIN_ENTRY_btn_savebutton"  disabled/> </td><td ><label  id="Fin_entry_customerlistboxerror" class="errormsg">NO CUSTOMER(S) FOR SELECTED UNIT</label></tr>
+<tr><td><input type="button" class='btn' name="save" value="SAVE" id="FIN_ENTRY_btn_savebutton"  disabled/> </td><td ><label  id="Fin_entry_customerlistboxerror" class="errormsg">NO CUSTOMER(S) FOR SELECTED UNIT</label></tr>
 </div>
 </table>
 </form>

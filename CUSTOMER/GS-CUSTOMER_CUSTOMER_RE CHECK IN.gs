@@ -1,6 +1,13 @@
 //******************************************CUSTOMER RECHECK IN*************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 2.1-SD:08/10/2014 ED:08/10/2014,TRACKER NO:833-corrected preloader position
 //DONE BY:KUMAR
+//VER 2.00-SD:06/10/2014 ED:06/10/2014,TRACKER NO:833-updated proloader and message box position.
+//VER 1.09-SD:13/09/2014 ED:13/09/2014,TRACKER NO:833-Did notice period validation.
+//VER 1.08- sd:06/09/2014 ed:06/09/2014,TRACKER updated card error message in recheck in form
+//VER 1.07- SD:28/08/2014 ED:28/08/2014,TRACKER NO:833- in catch block get log method implemented.
+//VER 1.06- SD:11/08/2014 ED:11/08/2014,TRACKER NO:814-implemented rollback and commit comment in script side.
 //VER 1.05- SD:03/07/2014 ED:03/07/2014,TRACKER NO:681-changed processing fee amount text box max digits 5 to 4.
 //VER 1.04- SD:17/06/2014 ED:17/06/2014,TRACKER NO:681-Updated error msg if calendar or inv or contract doc id wrong means and updated new email id validation script And ep date and passport date validation.
 //VER 1.03- SD:05/06/2014 ED:05/06/2014,TRACKER NO:681-updated new common jquery link and set max date for epdate and passport date.
@@ -21,6 +28,17 @@
 //*********************************************************************************************************//
 try
 {
+  var CR_customer_id;
+  var CR_calendarname;
+  var CR_checkstatusflag;
+  var CR_invoiceflag;
+  var CR_CCRE_expconn;
+  var CR_temptablename;
+  var CR_calevent_array;
+  //  function doGet()
+  //  {
+  //    return HtmlService.createTemplateFromFile('HTML-CUSTOMER_CUSTOMER_RE_CHECK_IN').evaluate();
+  //  }
   /**********************************FUNCTION TO GET TERMINATED CUSTOMER FOR SELECTED UNIT*********************************************/
   function CRCHK_Customer(unit)
   {
@@ -133,8 +151,34 @@ try
     CRCHK_chkproflag=eilib.CUST_chkProrated(CRCHK_startdate, CRCHK_enddate)
     return CRCHK_chkproflag;
   }
-  /**********************************CUSTOMER CREATION SAVING PART*********************************************/
-  function CRCHK_processFormSubmit(recheckin)
+  function CRCHK_customerrecheckin_commonvalues(nounit)
+  {
+    var CRCHK_conn=eilib.db_GetConnection();
+    /**********************************ERROR MESSAGE*********************************************/
+    var CRCHK_error_code ='1,2,6,33,34,35,36,37,38,321,324,248,339,342,343,344,345,346,347,348,400,443,444,458,459,460,461';
+    var CRCHK_error_array=eilib.GetErrorMessageList(CRCHK_conn, CRCHK_error_code);
+    var CRCHK_nation_array =eilib.CUST_getNationality(CRCHK_conn);
+    var CRCHK_option_array =eilib.CUST_getOptionValue(CRCHK_conn);
+    var CRCHK_mail_array =eilib.getProfileEmailId(CRCHK_conn,'RECHECKIN');
+    var CRCHK_timearray=eilib.CUST_getCalendarTime(CRCHK_conn);
+    var proratedwaived=eilib.CUST_getProratedWaivedValue(CRCHK_conn);
+    /**********************************UNIT*********************************************/
+    var CRCHK_unit_array=CRCHK_Customer('nounit')
+    /********************************** ACTIVE UNIT LIST*********************************************/
+    var CRCHK_active_unit_array=eilib.GetActiveUnit(CRCHK_conn);
+    var CRCHK_customerSD=eilib.getCustomerStartdate(CRCHK_conn);
+    var CRCHK_RESULTS={prorated:proratedwaived,activeunit:CRCHK_active_unit_array,unit:CRCHK_unit_array,time:CRCHK_timearray,email:CRCHK_mail_array,ccoption:CRCHK_option_array,nation:CRCHK_nation_array,error:CRCHK_error_array.errormsg,CustomerSD:CRCHK_customerSD}
+    CRCHK_conn.close();
+    return CRCHK_RESULTS;
+  }
+}
+catch(err)
+{
+}
+/**********************************CUSTOMER CREATION SAVING PART*********************************************/
+function CRCHK_processFormSubmit(recheckin)
+{
+  try
   {
     var CRCHK_conn = eilib.db_GetConnection();
     var CRCHK_name1=recheckin.CRCHK_tb_firstname;
@@ -162,13 +206,13 @@ try
     {    CRCHK_companypostalcode=null;  }else{CRCHK_companypostalcode="'"+CRCHK_companypostalcode+"'";}
     var CRCHK_mobile=recheckin.CRCHK_tb_mobile;
     if(CRCHK_mobile=="")
-    {    CRCHK_mobile=null;  }else{CRCHK_mobile="'"+CRCHK_mobile+"'";}
+    {    CRCHK_mobile=null; var cal_mobile="" }else{cal_mobile=CRCHK_mobile;CRCHK_mobile="'"+CRCHK_mobile+"'";}
     var CRCHK_intmobile=recheckin.CRCHK_tb_intmobile;
     if(CRCHK_intmobile=="")
-    {    CRCHK_intmobile=null;  }else{CRCHK_intmobile="'"+CRCHK_intmobile+"'";}
+    {    CRCHK_intmobile=null;var cal_intmobile=""  }else{cal_intmobile=CRCHK_intmobile;CRCHK_intmobile="'"+CRCHK_intmobile+"'";}
     var CRCHK_office=recheckin.CRCHK_tb_office;
     if(CRCHK_office=="")
-    {    CRCHK_office=null;  }else{CRCHK_office="'"+CRCHK_office+"'";}
+    {    CRCHK_office=null; var cal_office="" }else{cal_office=CRCHK_office;CRCHK_office="'"+CRCHK_office+"'";}
     var CRCHK_epno=recheckin.CRCHK_tb_epno;
     if(CRCHK_epno=="")
     {    CRCHK_epno=null;var epno=""; }else{epno=CRCHK_epno;CRCHK_epno="'"+CRCHK_epno+"'";}
@@ -183,7 +227,7 @@ try
     if(CRCHK_noticeno=="")
     {    CRCHK_noticeno=null;var noticeno="";}else{noticeno=CRCHK_noticeno;CRCHK_noticeno="'"+CRCHK_noticeno+"'"}
     var CRCHK_noticedate=recheckin.CRCHK_db_noticedate;
-    if(CRCHK_noticedate=="")
+    if(CRCHK_noticedate=="" || CRCHK_noticedate==undefined) 
     {    CRCHK_noticedate=null; var noticedate=""; }else{noticedate=CRCHK_noticedate;CRCHK_noticedate="'"+eilib.SqlDateFormat(CRCHK_noticedate)+"'";}
     var CRCHK_quarterlyfee=recheckin.CRCHK_tb_quarterlyfee;
     if(CRCHK_quarterlyfee=="")
@@ -304,21 +348,27 @@ try
     var CRCHK_quators  = eilib.quarterCalc(new Date(CRCHK_sdate[0],CRCHK_sdate[1]-1,CRCHK_sdate[2]),new Date(CRCHK_edate[0],CRCHK_edate[1]-1,CRCHK_edate[2])); 
     var CRCHK_Leaseperiod  = eilib.leasePeriodCalc(new Date(CRCHK_sdate[0],CRCHK_sdate[1]-1,CRCHK_sdate[2]),new Date(CRCHK_edate[0],CRCHK_edate[1]-1,CRCHK_edate[2]));
     var CRCHK_customerstmt=CRCHK_conn.createStatement();
-    var CRCHK_recheckininsertquery="CALL SP_CUSTOMER_RECHECKIN_INSERT("+CRCHK_customerid+",'"+CRCHK_name1+"','"+CRCHK_name2+"',"+CRCHK_companyname+","+CRCHK_companyaddress+","+CRCHK_companypostalcode+","+CRCHK_office+","+CRCHK_unit+",'"+CRCHK_roomtype+"','"+CRCHK_startdate_starttime+"','"+CRCHK_startdate_endtime+"','"+CRCHK_enddate_starttime+"','"+CRCHK_enddate_endtime+"','"+CRCHK_Leaseperiod+"',"+CRCHK_quators+","+CRCHK_process_check+","+CRCHK_prorated+","+CRCHK_noticeno+","+CRCHK_noticedate+","+CRCHK_rent+","+CRCHK_deposit+","+CRCHK_process+","+CRCHK_airconfixed+","+CRCHK_quarterlyfee+","+CRCHK_electricity+","+CRCHK_cleaning+","+CRCHK_drycleaning+",'"+CRCHK_accesscard+"','"+CRCHK_startdate+"','"+UserStamp+"','"+CRCHK_startdate+"','"+CRCHK_enddate+"','"+CRCHK_guestcard+"','"+CRCHK_nationality+"',"+CRCHK_mobile+","+CRCHK_intmobile+",'"+CRCHK_customermailid+"',"+CRCHK_passportno+","+CRCHK_passportdate+","+CRCHK_dateofbirth+","+CRCHK_epno+","+CRCHK_epdate+",'"+CRCHK_comments+"',@CUSTOMER_RECHECKIN_FLAG)"
+    var CRCHK_recheckininsertquery="CALL SP_CUSTOMER_RECHECKIN_INSERT("+CRCHK_customerid+",'"+CRCHK_name1+"','"+CRCHK_name2+"',"+CRCHK_companyname+","+CRCHK_companyaddress+","+CRCHK_companypostalcode+","+CRCHK_office+","+CRCHK_unit+",'"+CRCHK_roomtype+"','"+CRCHK_startdate_starttime+"','"+CRCHK_startdate_endtime+"','"+CRCHK_enddate_starttime+"','"+CRCHK_enddate_endtime+"','"+CRCHK_Leaseperiod+"',"+CRCHK_quators+","+CRCHK_process_check+","+CRCHK_prorated+","+CRCHK_noticeno+","+CRCHK_noticedate+","+CRCHK_rent+","+CRCHK_deposit+","+CRCHK_process+","+CRCHK_airconfixed+","+CRCHK_quarterlyfee+","+CRCHK_electricity+","+CRCHK_cleaning+","+CRCHK_drycleaning+",'"+CRCHK_accesscard+"','"+CRCHK_startdate+"','"+UserStamp+"','"+CRCHK_startdate+"','"+CRCHK_enddate+"','"+CRCHK_guestcard+"','"+CRCHK_nationality+"',"+CRCHK_mobile+","+CRCHK_intmobile+",'"+CRCHK_customermailid+"',"+CRCHK_passportno+","+CRCHK_passportdate+","+CRCHK_dateofbirth+","+CRCHK_epno+","+CRCHK_epdate+",'"+CRCHK_comments+"',@CUSTOMER_RECHECKIN_TEMPTBLNAME,@CUSTOMER_RECHECKIN_FLAG)"
     CRCHK_customerstmt.execute(CRCHK_recheckininsertquery);
-    var returnflagresult=CRCHK_customerstmt.executeQuery("SELECT @CUSTOMER_SUCCESSFLAG");
+    var returnflagresult=CRCHK_customerstmt.executeQuery("SELECT @CUSTOMER_RECHECKIN_TEMPTBLNAME,@CUSTOMER_RECHECKIN_FLAG");
     if(returnflagresult.next())
     {
-      var returnflag=returnflagresult.getString(1);
+      var returnflag=returnflagresult.getString(2);
+      var temptablename=returnflagresult.getString(1);
     }
     returnflagresult.close();
     CRCHK_customerstmt.close();
-    var returnflag=1;
     if(returnflag==1)
     {
+      CR_CCRE_expconn=CRCHK_conn;
+      CR_temptablename=temptablename;
+      CR_customer_id=CRCHK_customerid;
       var CRCHK_customername=CRCHK_name1+' '+CRCHK_name2;
       var calenderIDcode=eilib.CUST_getCalenderId(CRCHK_conn);
-      eilib.CUST_customercalendercreation(CRCHK_customerid, calenderIDcode, CRCHK_startdate, CRCHK_startdate_starttime, CRCHK_startdate_endtime, CRCHK_enddate, CRCHK_enddate_starttime, CRCHK_enddate_endtime, CRCHK_name1, CRCHK_name2, CRCHK_mobile, CRCHK_intmobile, CRCHK_office, CRCHK_customermailid, CRCHK_unit,CRCHK_roomtype,' ')
+      CR_calendarname=calenderIDcode
+      eilib.CUST_customercalendercreation(CRCHK_customerid, calenderIDcode, CRCHK_startdate, CRCHK_startdate_starttime, CRCHK_startdate_endtime, CRCHK_enddate, CRCHK_enddate_starttime, CRCHK_enddate_endtime, CRCHK_name1, CRCHK_name2, cal_mobile, cal_intmobile, cal_office, CRCHK_customermailid, CRCHK_unit,CRCHK_roomtype,' ')
+      CR_checkstatusflag=1;
+      CR_calevent_array=[[CRCHK_startdate, CRCHK_startdate_starttime, CRCHK_startdate_endtime],[CRCHK_enddate, CRCHK_enddate_starttime, CRCHK_enddate_endtime]]
       var cust_config_array=eilib.CUST_invoice_contractreplacetext(CRCHK_conn);
       var CRCHK_invoiceid=cust_config_array[9];
       var CRCHK_contractid=cust_config_array[10];
@@ -341,30 +391,34 @@ try
     }
     var CRCHK_unit_array=CRCHK_Customer('nounit');
     var recheckin_returnvalues=[returnflag,CRCHK_unit_array];
+    var rollbackstmt=CRCHK_conn.createStatement();
+    rollbackstmt.execute("DROP TABLE IF EXISTS "+temptablename+"");
+    rollbackstmt.close();
+    CRCHK_conn.commit();
     return recheckin_returnvalues;
     CRCHK_conn.close();
   }
-  function CRCHK_customerrecheckin_commonvalues(nounit)
+  catch(err)
   {
-    var CRCHK_conn=eilib.db_GetConnection();
-    /**********************************ERROR MESSAGE*********************************************/
-    var CRCHK_error_code ='1,2,6,33,34,35,36,37,38,321,324,248,339,342,343,344,345,346,347,348,400,443,444,458,459,460,461';
-    var CRCHK_error_array=eilib.GetErrorMessageList(CRCHK_conn, CRCHK_error_code);
-    var CRCHK_nation_array =eilib.CUST_getNationality(CRCHK_conn);
-    var CRCHK_option_array =eilib.CUST_getOptionValue(CRCHK_conn);
-    var CRCHK_mail_array =eilib.getProfileEmailId(CRCHK_conn,'RECHECKIN');
-    var CRCHK_timearray=eilib.CUST_getCalendarTime(CRCHK_conn);
-    var proratedwaived=eilib.CUST_getProratedWaivedValue(CRCHK_conn);
-    /**********************************UNIT*********************************************/
-    var CRCHK_unit_array=CRCHK_Customer('nounit')
-    /********************************** ACTIVE UNIT LIST*********************************************/
-    var CRCHK_active_unit_array=eilib.GetActiveUnit(CRCHK_conn);
-    var CRCHK_customerSD=eilib.getCustomerStartdate(CRCHK_conn);
-    var CRCHK_RESULTS={prorated:proratedwaived,activeunit:CRCHK_active_unit_array,unit:CRCHK_unit_array,time:CRCHK_timearray,email:CRCHK_mail_array,ccoption:CRCHK_option_array,nation:CRCHK_nation_array,error:CRCHK_error_array.errormsg,CustomerSD:CRCHK_customerSD}
-    CRCHK_conn.close();
-    return CRCHK_RESULTS;
+    Logger.log("SCRIPT EXCEPTION:"+err)
+    CR_CCRE_expconn.rollback();
+    var rollbackstmt=CR_CCRE_expconn.createStatement();
+    rollbackstmt.execute("DROP TABLE IF EXISTS "+CR_temptablename+"");
+    rollbackstmt.close();
+    if(CR_checkstatusflag==1)
+    {
+      eilib.CUST_CREATION_customercalenderdeletion(CR_customer_id,CR_calendarname,CR_calevent_array);
+    }   
+    var invoice=eilib.invoiceid();
+    var contract=eilib.contractid();
+    if(invoice!=undefined)
+    {
+      eilib.CUST_UNSHARE_FILE(invoice);
+    }
+    if(contract!=undefined)
+    {
+      eilib.CUST_UNSHARE_FILE(contract);
+    }
+    return (Logger.getLog());
   }
-}
-catch(err)
-{
 }

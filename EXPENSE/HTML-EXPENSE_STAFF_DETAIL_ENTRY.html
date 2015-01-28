@@ -1,7 +1,9 @@
-<!--*********************************************GLOBAL DECLARATION*******************************************-->
-<!--**********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //****************************************STAFF EXPENSE DETAIL ENTRY******************************************//
+//DONE BY:PUNI
+//VER 1.2-SD:09/10/2014 ED:09/10/2014,TRACKER NO:488:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.1-SD:21/08/2014 ED:21/08/2014,TRACKER NO:488,updated new links,autogrow
 //DONE BY:LALITHA
 //VER 1.0-SD:09/06/2014 ED:13/06/2014,TRACKER NO:488,Updated commit funct,Changed failure funct,Changed btn name(submit to save)
 //VER 0.09-SD:06/06/2014 ED:06/06/2014,Changed jquery link ,Updated parse float for amount fields,Added preloader for already exit funct of cpf number
@@ -18,21 +20,31 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function STDTL_INPUT_onFailure(STDTL_INPUT_error) {
 $(".preloader").hide();
@@ -43,7 +55,7 @@ $('#STDTL_INPUT_form_employeename').replaceWith('<center><label class="dberrorms
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL ENTRY",msgcontent:STDTL_INPUT_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL ENTRY",msgcontent:STDTL_INPUT_error.message,position:{top:150,left:500}}});
 }
 }
 //FAILURE FUNCTION END
@@ -58,7 +70,6 @@ var STDTL_INPUT_errorMsg_array=[];
 //SUCCESS FUNCTION FOR GET STAFF EMPLOYEE NAME,ERROR MESSAGE
 function STDTL_INPUT_getempname_errresult(STDTL_INPUT_getempname_errresult_response)
 {
-$(".preloader").hide();
 $('#STDTL_INPUT_form_employeename').show();
 STDTL_INPUT_expensearr_employeename=STDTL_INPUT_getempname_errresult_response.STDTL_INPUT_employeenameid;
 STDTL_INPUT_errorMsg_array=STDTL_INPUT_getempname_errresult_response.STDTL_INPUT_errormsg;
@@ -84,6 +95,10 @@ STDTL_INPUT_expensearray_employeename += '<option value="' + STDTL_INPUT_expense
 }
 }
 $('#STDTL_INPUT_lb_employeename').html(STDTL_INPUT_expensearray_employeename).show();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //FUNCTION FOR UNIQUE NAME AND ID
 function unique(a) {
@@ -97,6 +112,7 @@ return result;
 $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
 $(".amountonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
 $(".alphanumeric").doValidation({rule:'alphanumeric',prop:{realpart:9}});
+$('textarea').autogrow({onInitialize: true});
 //JQUERY LIB VALIDATION END
 //GET EMPLOYEE ID FOR THE SELECTED EMPLOYEE NAME
 $('#STDTL_INPUT_lb_employeename').change(function()
@@ -161,7 +177,7 @@ var STDTL_INPUT_CpfNo=$("#STDTL_INPUT_tb_cpfnumber").val();
 if(STDTL_INPUT_CpfNo=='')
 {
 $("#STDTL_INPUT_lbl_cpfamount").hide();
-$("#STDTL_INPUT_tb_cpfamount").hide();
+$("#STDTL_INPUT_tb_cpfamount").val("").hide();
 $('#STDTL_INPUT_lbl_validamount').hide();
 }
 else
@@ -179,6 +195,8 @@ $("#STDTL_INPUT_btn_save").attr("disabled","disabled");
 $('#STDTL_INPUT_lbl_validamount').hide();
 if(STDTL_INPUT_CpfNo.length==9)
 {
+var  newPos= adjustPosition($(this).position(),100,220);
+resetPreloader(newPos);
 $('#STDTL_INPUT_lbl_validamount').hide();
 google.script.run.withSuccessHandler(STDTL_INPUT_already_result).withFailureHandler(STDTL_INPUT_onFailure).STDTL_INPUT_already(STDTL_INPUT_Empname,STDTL_INPUT_CpfNo);
 $(".preloader").show();
@@ -327,7 +345,9 @@ $('#STDTL_INPUT_lbl_validamount').hide();
 }
 });
 //CLICK EVENT FOR SAVE BUTTON
-$("#STDTL_INPUT_btn_save").click(function(){ 
+$("#STDTL_INPUT_btn_save").click(function(){
+var  newPos= adjustPosition($(this).position(),100,280);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var STDTL_INPUT_employeenameid=$('#STDTL_INPUT_lb_employeename').val();
 google.script.run.withSuccessHandler(STDTL_INPUT_save_result).withFailureHandler(STDTL_INPUT_onFailure).STDTL_INPUT_save(document.getElementById('STDTL_INPUT_form_employeename'));
@@ -340,7 +360,7 @@ if((STDTL_INPUT_response!=false)&&(STDTL_INPUT_response!=undefined))
 {
 var STDTL_INPUT_employeename=$('#STDTL_INPUT_lb_employeename').val();
 //MESSAGE BOX FOR SAVE SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL ENTRY",msgcontent:STDTL_INPUT_errorMsg_array[1]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL ENTRY",msgcontent:STDTL_INPUT_errorMsg_array[1],position:{top:150,left:500}}}); 
 google.script.run.withSuccessHandler(STDTL_INPUT_getempname_errresult).withFailureHandler(STDTL_INPUT_onFailure).STDTL_INPUT_getempname_err();
 $('#STDTL_INPUT_tble_employid').hide();
 $('#STDTL_INPUT_div_employid').hide();
@@ -349,7 +369,7 @@ STDTL_INPUT_employeedetailrset();
 else
 {
 //MESSAGE BOX FOR NOT SAVED SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:STDTL_INPUT_errorMsg_array[5]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:STDTL_INPUT_errorMsg_array[5],position:{top:150,left:500}}}); 
 }
 }
 //CLICK EVENT FUCNTION FOR RESET
@@ -366,6 +386,7 @@ $('#STDTL_INPUT_lbl_validnumber').hide();
 $('#STDTL_INPUT_tble_employid').hide();
 $("#STDTL_INPUT_lbl_cpfamount").hide();
 $("#STDTL_INPUT_tb_cpfamount").hide();
+$("textarea").height(20);
 $("#STDTL_INPUT_tb_cpfamount").removeClass('invalid')
 $("#STDTL_INPUT_tb_cpfnumber").removeClass('invalid')
 $("#STDTL_INPUT_btn_save").attr("disabled", "disabled");

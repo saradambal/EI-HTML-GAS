@@ -1,6 +1,10 @@
 //<!--//*******************************************FILE DESCRIPTION*********************************************
 //*******************************************DEPOSIT DEDUCTION CALCULATIONS*********************************************
+//DONE BY PUNI
+//VER 1.8  -SD:07/10/2014 ED:07/10/2014;TRACKER NO: 517//Corrected script for some preloader pos n updated prod lib links
 //DONE BY SARADAMBAL M
+//VER 1.7  -SD:18/09/2014 ED:18/09/2014;TRACKER NO: 517//implemented script for preloader,msgbox,implemented script for style to submit button instead of div -style
+//VER 1.6- SD:14/08/2014 ED:14/08/2014,TRACKER NO: 517//updated new links
 //VER 1.5 -SD:10/07/2014 ED:10/07/2014;TRACKER NO: 517//updated err msg ,if any sheet err,removed hypen for duplicate customer,hide cb for one lp
 //VER 1.4 -SD:27/06/2014 ED:05/07/2014;TRACKER NO: 517//implemented script for add editors (from the old ss)if new SS created,if current SS not having template and sending email sheet means it ll create from the old SS,implemented eilib for add editors and script for wrap func,changed aircon,chkout and dryclean functionalities,for quater fee implemnted script to groupthe rec ver
 //VER 1.3 -SD:25/06/2014 ED:25/06/2014;TRACKER NO: 517//implemented err msg ,if no permission to access SS
@@ -653,7 +657,7 @@ try
           DDC_depositeunpaid_rec[k]= DDC_depositeunpaid[k].key;
           var rentalcase=3;
         }
-        var depcomment="DEPO NT PAID FR LEAST PERIOD "+DDC_depositeunpaid_rec
+        var depcomment="DEPO NT PAID FR LEASE PERIOD "+DDC_depositeunpaid_rec
       }
       var dep_temp = temp_sheet.getRange(ur+4,1,1,1);
       var dep_row = output_sheet.getRange(output_sheet.getLastRow()+1,1,1,1);

@@ -1,6 +1,9 @@
 <!--***********************************OPL AND ACTIVE CUSTOMER LIST**********************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.03:SD:19/09/2014 ED:19/09/2014,TRACKER NO:748,Implemented preloader and msgbox position script and  changed conformation message
+//VAR 1.02-SD:23/08/2014 ED:23/08/2014,TRACKER NO:748,OPL sp splited into 2 parts and sp name updated in script side.
+//VER 1.01-SD:19/08/2014 ED:19/08/2014,TRACKER NO:748,Gave warning message for if opl list empty and updated new jquery and css links
 //VER 1.00-SD:07/08/2014 ED:07/08/2014,TRACKER NO 748,changed template monthname and year;
 //VER 0.09-SD:08/07/2014 ED:08/07/2014,TRACKER NO:748,Clered document shared id issue.
 //VER 0.08-SD:28/06/2014 ED:28/06/2014,TRACKER NO:748,cleared active customer list sorted sheet max recver issue.
@@ -22,23 +25,33 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
 $(".preloader").show();
 $('#FIN_OPL_errormessageform').hide();
@@ -67,7 +80,9 @@ else
 $('#FIN_OPL_outstanding_form').show();
 $('#FIN_OPL_errormessageform').hide();
 }
-$(".preloader").hide();
+ //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 }
 $('#FIN_OPL_outstanding_form').change(function(){
 FIN_OPL_formvalidation()
@@ -102,6 +117,8 @@ $("#FIN_OPL_db_period").datepicker(
    $('#FIN_OPL_db_period').datepicker("option","minDate",new Date(2010,00));
 $('#FIN_OPL_btn_save').click(function(){
 $(".preloader").show(); 
+var  newPos= adjustPosition($('#FIN_OPL_btn_save').position(),100,230);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(FIN_OPL_error_message).withSuccessHandler(FIN_OPL_oplresponse).FIN_OPL_opllist(document.getElementById('FIN_OPL_outstanding_form'));
 });
 $('#FIN_OPL_btn_reset').click(function(){
@@ -117,15 +134,23 @@ function oplreset()
 }
  function FIN_OPL_oplresponse(response)
  {
- $(".preloader").hide(); 
+ $(".preloader").hide();
+ var selectedmonth=$("#FIN_OPL_db_period").val();
  oplreset();
  if(response=='OPL')
  {
- $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:"EMAIL SENT WITH THE CURRENT OUSTANDING PAYEES LIST"}});
+ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:"EMAIL SENT WITH THE CURRENT OUTSTANDING PAYEES LIST",position:$('#FIN_OPL_btn_save').position()}});
  }
  if(response=="ACTIVECCLIST")
   {
- $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACTIVE CUSTOMER LIST",msgcontent:"EMAIL SENT WITH THE CURRENT ACTIVE CUSTOMER LIST"}});
+ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACTIVE CUSTOMER LIST",msgcontent:"EMAIL SENT WITH THE CURRENT ACTIVE CUSTOMER LIST",position:$('#FIN_OPL_btn_save').position()}});
+ }
+ if(response=="EMPTYOPL")
+ {
+ var emptyerrormessage="THERE IS NO OUTSTANDING PAYEES FOR <MONTH-YEAR>"
+ emptyerrormessage=emptyerrormessage.replace('<MONTH-YEAR>',selectedmonth);
+ emptyerrormessage=emptyerrormessage.toUpperCase();
+ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:emptyerrormessage,position:$('#FIN_OPL_btn_save').position()}});
  }
  }
  function FIN_OPL_error_message(FIN_OPL_err)
@@ -137,7 +162,7 @@ function oplreset()
   }
   else
   {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:FIN_OPL_err}});
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:FIN_OPL_err,position:$('#FIN_OPL_btn_save').position()}});
   }
  $(".preloader").hide(); 
  }
@@ -166,7 +191,7 @@ function oplreset()
 <table id='FIN_OPL_errormessagetable'>
 </table>
 </form>
-<form method="post" onsubmit="return FIN_OPL_StopSubmit();" class="content" action="" id="FIN_OPL_outstanding_form" name="FIN_OPL_outstanding_form">
+<form class="content" action="" id="FIN_OPL_outstanding_form" name="FIN_OPL_outstanding_form">
      <table cellspacing="20px"style="width=200px;">
 	 <tr>
 	 <td><label id="body">SELECT THE OPTION</label><em>*</em></td><td>
@@ -182,9 +207,10 @@ function oplreset()
 	 </tr>
       </table>
      <table><td width="50px">
-       <td><input type="submit" class="btn" name="FIN_OPL_btn_save" id="FIN_OPL_btn_save" disabled value="SUBMIT" /></td>
+       <td><input  type="button" class="btn" name="FIN_OPL_btn_save" id="FIN_OPL_btn_save" disabled value="SUBMIT" /></td>
       <td><input type="button" class="btn" name="FIN_OPL_btn_reset" id="FIN_OPL_btn_reset"  value="RESET" /></td>
       </table>
      </form>
      </body>
 	 </html>
+	 

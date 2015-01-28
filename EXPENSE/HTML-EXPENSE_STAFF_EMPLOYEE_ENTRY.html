@@ -1,8 +1,11 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************EMPLOYEE DETAIL ENTRY****************************************//
+//DONE BY:PUNI
+//VER 1.2-SD:09/10/2014 ED:09/10/2014,TRACKER NO:705:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.1-SD:23/08/2014 ED:23/08/2014,TRACKER NO:705,updated new links,autogrow,removed one function,changed query for getting active unit
 //DONE BY:LALITHA
+//VER 1.0-SD:04/08/2014 ED:05/08/2014,TRACKER NO:705,updated script to show error msg if active card is assigned returned from sp,Passed varchar for mobile no,Tested sp wth auto cmmt
 //VER 0.09-SD:14/06/2014 ED:17/06/2014,TRACKER NO:705,Changed failure funct,Removed mandatory symbol,Changed btn name(submit to save),Changed the email id to lowercase for only valid emailid 
 //VER 0.08 SD:07/06/2014 ED:07/06/2014,TRACKER NO:705,Changed jquery link,Updated parseInt for mobile number,Updated autosize for email id,Hide the invalid email err msg,After reset nd submit clicked means resize the(cust frst name,last name,emailid txt bxs),After reset nd submit btn clicked hide the card details,Updated maxlength for cust frst nd last name
 //VER 0.07 SD:22/05/2014 ED:22/05/2014,Updated the space in b/w emp frst nd last name,Removed the bold tag for title
@@ -17,25 +20,36 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={EmailId:'Invalid'}
 //DOCUMENT READY FUNCTION START
 $(document).ready(function(){
 $(".preloader").show(); 
+$('textarea').autogrow({onInitialize: true});
 var EMP_ENTRY_multi_array=[];
 google.script.run.withFailureHandler(EMP_error).withSuccessHandler(EMP_ENTRY_getempdomain_errresult).EMP_ENTRY_getempdomain_err();
 var EMP_ENTRY_emparr_employeedesig=[];
@@ -73,7 +87,10 @@ var uniterrormsg='<p><label class="errormsg">'+EMP_ENTRY_errorMsg_array[5]+'</la
 $('#EMP_ENTRY_table_errormsg').append(uniterrormsg);
 }
 }
-$(".preloader").hide(); 
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //CLASS USED FOR TREE VIEW//
 $(document).on("click",'.exp,.collapse', function (){
@@ -193,6 +210,8 @@ $("#EMP_ENTRY_btn_save").attr("disabled","disabled");
 });
 //CLICK EVENT FOR SAVE BUTTON
 $("#EMP_ENTRY_btn_save").click(function(){ 
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var EMP_ENTRY_mobilenolength=$('#EMP_ENTRY_tb_mobile').val();
 if(EMP_ENTRY_mobilenolength.length<6 ||EMP_ENTRY_mobilenolength=="" )
@@ -213,18 +232,23 @@ $(".preloader").hide();
 var EMP_ENTRY_multi_array=[];
 EMP_ENTRY_multi_array=response.EMP_ENTRY_multi_arrayre;
 var EMP_ENTRY_flagrslt=response.EMP_ENTRY_getresultdate;
-EMP_ENTRY_multitreeview(EMP_ENTRY_multi_array);
-//MESSAGE BOX FOR SAVE BUTTON
-EMP_ENTRY_employeedetailrset();
 if(EMP_ENTRY_flagrslt==1)
 {
+EMP_ENTRY_multitreeview(EMP_ENTRY_multi_array);
 //MESSAGE BOX FOR SAVED SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_errorMsg_array[4]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_errorMsg_array[4],position:{top:150,left:500}}}); 
+EMP_ENTRY_employeedetailrset();
+}
+else{
+//MESSAGE BOX FOR NOT SAVED 
+if(EMP_ENTRY_flagrslt==0){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_errorMsg_array[7],position:{top:150,left:500}}}); 
 }
 else
 {
-//MESSAGE BOX FOR NOT SAVED 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_errorMsg_array[7]}}); 
+//CARD SHOULD NOT BE ASSIGNED
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_flagrslt,position:{top:150,left:500}}});
+}
 }
 }
 //SHOW THE TREE VIEW FORMATE//
@@ -239,7 +263,7 @@ var EMPENTRY_multi_array=[];
 EMPENTRY_multi_array=EMP_ENTRY_multi_arraynew
 EMP_ENTRY_multi_array=EMPENTRY_multi_array;
 }
-if(EMP_ENTRY_multi_array.length==0 || EMP_ENTRY_multi_array.length==null)
+if(EMP_ENTRY_multi_array==""||EMP_ENTRY_multi_array.length==0 || EMP_ENTRY_multi_array.length==null)
 {
 $('#EMP_ENTRY_lbl_cardno').hide();
 if($('#EMP_ENTRY_radio_selectcard').is(":checked")==true)
@@ -317,6 +341,7 @@ $('#EMP_ENTRY_lbl_shwcardno').hide();
 $('#EMP_ENTRY_radio_selectcard').hide();
 $('#EMP_ENTRY_radio_null').hide();
 $('#EMP_ENTRY_tble_menu').hide();
+$('textarea').height(20);
 }
 //ERROR MESSAGE//
 function EMP_error(err)
@@ -329,7 +354,7 @@ $('#EMP_ENTRY_form_employeename').replaceWith('<center><label class="dberrormsg"
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:err.message}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:err.message,position:{top:150,left:500}}}); 
 }
 }
 //VALIDATION FOR SUB MENU CHECK BOX CLICKING

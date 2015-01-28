@@ -1,5 +1,9 @@
 //*******************************************CONFIGURATION SEARCH/UPDATE/DELETE*********************************************//
+//DONE BY:PUNI
+//VER 1.9-SD:03/10/2014 ED:03/10/2014 TRACKER NO;689:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //DONE BY:SARADAMBAL,SAFI,PUNI
+//VER 1.8-SD:13/08/2014 ED:13/08/2014 TRACKER NO;689 ; Implemented rollback script,logger script to show err in msg box,new jquery,css links- SARADAMBAL
+//VER 1.7-SD:21/07/2014 ED:21/07/2014 TRACKER NO;689 ; UPDATED DRIVEAPP AS DOCSLIST FOR SHARING/UNSHARING DOCS
 //VER 1.6-SD:04/07/2014 ED:05/07/2014 TRACKER NO:689:given err message if cal name is wrong n fake folder /file is given without updation in db n give acess and added cond. do not chk own acs level for calender by PUNI
 //VER 1.5-SD:24/06/2014 ED:26/06/2014 TRACKER NO:689:REMOVED ALERT IN HTML
 //VER 1.4-SD:21/06/2014 ED21/06/2014:TRACKER NO:689:UPDATED THE DRIVE LINK 
@@ -17,11 +21,9 @@
 //VER 0.02-SD:03/10/2013 ED:03/10/2013,updated eilib connection,message box,preloader,removed scriplet,convert blur function for all change function
 //VER 0.01-INITIAL VERSION,TRACKER NO:271,SD:31/07/2013,ED:21/8/2013
 //*********************************************************************************************************//
-//DO GET FUNCTION
 try
-{
-  
-   /*---------------------------------FETCH THE ERROR MESSAGE AND LOAD MODULE NAME -------------------------------------------------------------------------------*/
+{ 
+  /*---------------------------------FETCH THE ERROR MESSAGE AND LOAD MODULE NAME -------------------------------------------------------------------------------*/
   function CONFSRC_UPD_DEL_module_errormsg()
   {
     var CONFSRC_UPD_DEL_conn =eilib.db_GetConnection();
@@ -343,141 +345,153 @@ try
     return [CONFSRC_UPD_DEL_twodimen[CONFSRC_UPD_DEL_selProfile][3],CONFSRC_UPD_DEL_twodimen[CONFSRC_UPD_DEL_selProfile][1],CONFSRC_UPD_DEL_twodimen[CONFSRC_UPD_DEL_selProfile][2],CONFSRC_UPD_DEL_twodimen[CONFSRC_UPD_DEL_selProfile][0],CONFSRC_UPD_DEL_twodimen[CONFSRC_UPD_DEL_selProfile][4]]}    
   /*------------------------------------------FUNCTION FOR INSERT THE CONFIGURATION_ENTRY FORM--------------------------*/
   function CONFSRC_UPD_DEL_updateData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_updateData,CONFSRC_UPD_DEL_tb_UpdSubtype,CONFSRC_UPD_DEL_dataId,CONFSRC_UPD_DEL_lbType,CONFSRC_UPD_DEL_flagData,CONFSRC_UPD_DEL_lb_Typeid,CONFSCR_UPD_DEL_data){
-    var CONFSRC_UPD_DEL_conn =eilib.db_GetConnection();
-    CONFSRC_UPD_DEL_conn.setAutoCommit(false);
-    var CONFSRC_UPD_DEL_arr_data=[]
-    var CONFSRC_UPD_DEL_detailsData=CONFSRC_UPD_DEL_gettablename(CONFSRC_UPD_DEL_selProfile)
-    /*-----------------------CODING TO UPDATE-----------------------------------------*/ 
-    var CONFSRC_UPD_DEL_stmt_ = CONFSRC_UPD_DEL_conn.createStatement();
-    if(CONFSRC_UPD_DEL_flagData=='CONFSRC_UPD_DEL_checkData')
-    {   
-      if(CONFSRC_UPD_DEL_lb_Typeid==42)
-        var CONFSRC_UPD_DEL_select="SELECT DDC_SUB_DATA FROM DEPOSIT_DEDUCTION_CONFIGURATION ";
-      else
-        var CONFSRC_UPD_DEL_select="SELECT "+CONFSRC_UPD_DEL_detailsData[2]+" FROM "+CONFSRC_UPD_DEL_detailsData[1]+" CCN WHERE CCN.CGN_ID=(SELECT C.CGN_ID FROM CONFIGURATION C WHERE C.CGN_TYPE='"+CONFSRC_UPD_DEL_lbType+"') ";
-      
-      var CONFSRC_UPD_DEL_rs=CONFSRC_UPD_DEL_stmt_.executeQuery(CONFSRC_UPD_DEL_select);
-      while(CONFSRC_UPD_DEL_rs.next())
-      {
-        CONFSRC_UPD_DEL_arr_data.push(CONFSRC_UPD_DEL_rs.getString(1))
-      }
-      CONFSRC_UPD_DEL_rs.close();  CONFSRC_UPD_DEL_stmt_.close();
-      CONFSRC_UPD_DEL_conn.commit();
-      CONFSRC_UPD_DEL_conn.close();    
-      return CONFSRC_UPD_DEL_arr_data;
-    }          
-    if(CONFSRC_UPD_DEL_flagData=='CONFSRC_UPD_DEL_updateData')
-    { 
-      var new_data=CONFSRC_UPD_DEL_updateData
-      if((CONFSRC_UPD_DEL_dataId==36&&CONFSRC_UPD_DEL_lbType=='CC FOLDER ID')||(CONFSRC_UPD_DEL_dataId==11&&CONFSRC_UPD_DEL_lbType=='CC CONTRACT TEMPLATE ID')||(CONFSRC_UPD_DEL_dataId==10&&CONFSRC_UPD_DEL_lbType=='CC INVOICE TEMPLATE ID')||(CONFSRC_UPD_DEL_dataId==29&&CONFSRC_UPD_DEL_lbType=='REPORT FOLDER ID')||(CONFSRC_UPD_DEL_dataId==1&&CONFSRC_UPD_DEL_lbType=='DEPOSIT CALCULATION FOLDER ID')||(CONFSRC_UPD_DEL_dataId==6&&CONFSRC_UPD_DEL_lbType=='ALIST FOLDER ID')||(CONFSRC_UPD_DEL_dataId==1&&CONFSRC_UPD_DEL_lbType=='OCBC CSV FOLDER ID')){
-        if(CONFSRC_UPD_DEL_dataId==11){
-          var fp_id=CONFSRC_UPD_DEL_detailsData[4][0];  
-          var update_file_profile="UPDATE FILE_PROFILE SET FP_FILE_ID='"+new_data+"' WHERE FP_ID="+fp_id+"";
-        }
-        else if(CONFSRC_UPD_DEL_dataId==10){
-          var fp_id=CONFSRC_UPD_DEL_detailsData[4][1]; 
-          var update_file_profile="UPDATE FILE_PROFILE SET FP_FILE_ID='"+new_data+"' WHERE FP_ID="+fp_id+""
-        }
-        else {
-          if(CONFSRC_UPD_DEL_dataId==36){         
-            var fp_id=CONFSRC_UPD_DEL_detailsData[4][2];
-          }
-          else{         
-            var fp_id=CONFSRC_UPD_DEL_detailsData[4];
-          }
-          if(CONFSRC_UPD_DEL_dataId==1&&CONFSRC_UPD_DEL_lbType=='DEPOSIT CALCULATION FOLDER ID')
-          {
-            var update_file_profile="UPDATE FILE_PROFILE SET FP_FOLDER_ID='"+new_data+"' WHERE FP_FOLDER_ID='"+CONFSCR_UPD_DEL_data+"'";
-          }
-          else
-          {
-            var update_file_profile="UPDATE FILE_PROFILE SET FP_FOLDER_ID='"+new_data+"' WHERE FP_ID="+fp_id+"";
-          }
-        }
-        var old_file_editors=[]
-        var new_file_editors=[];
-        var old_Folder_editor=DriveApp.getFileById(CONFSCR_UPD_DEL_data).getEditors();
-        for(var l=0;l<old_Folder_editor.length;l++){
-          old_file_editors.push(old_Folder_editor[l].getEmail().toLowerCase())
-        }  
-        DriveApp.getFolderById(new_data).getEditors();
-        for(var i=0;i<old_file_editors.length;i++){
-          if(old_file_editors[i]==''||old_file_editors[i]==UserStamp)continue;
-          var remov_Folder=DriveApp.getFileById(CONFSCR_UPD_DEL_data).removeEditor(old_file_editors[i]);
-          var shar_Folder=DriveApp.getFolderById(new_data).addEditor(old_file_editors[i]);
-        } 
-        DriveApp.getFileById(CONFSCR_UPD_DEL_data).removeEditor(UserStamp);
-        var CONFSRC_UPD_DEL_stmt_FILE_PROFILE_execute=CONFSRC_UPD_DEL_stmt_.execute(update_file_profile);
-      }     
-      if((CONFSRC_UPD_DEL_detailsData[1]=='USER_RIGHTS_CONFIGURATION')&&(CONFSRC_UPD_DEL_lbType=='SITE LINK')){
-        var old_sitelink=SitesApp.getSiteByUrl(CONFSCR_UPD_DEL_data); 
-        var new_sitelink=SitesApp.getSiteByUrl(new_data); 
-        var viewer=old_sitelink.getViewers();
-        for(var j=0;j<viewer.length;j++){       
-          old_sitelink.removeViewer(viewer[j]);
-          new_sitelink.addViewer(viewer[j]);
-        }
-      }
-      if(((CONFSRC_UPD_DEL_detailsData[1]=='CUSTOMER_CONFIGURATION')&&(CONFSRC_UPD_DEL_lbType=='CALENDER ID'))||((CONFSRC_UPD_DEL_detailsData[1]=='CUSTOMER_CONFIGURATION')&&(CONFSRC_UPD_DEL_lbType=='CALENDER NAME'))){
-        var URSRC_loginid_stmt = CONFSRC_UPD_DEL_conn.createStatement();
-        var URSRC_loginid_array=[];     
-        var URSRC_select_loginid='select * from VW_ACCESS_RIGHTS_TERMINATE_LOGINID ORDER BY ULD_LOGINID'
-        var URSRC_loginid_result=URSRC_loginid_stmt.executeQuery(URSRC_select_loginid);
-        while(URSRC_loginid_result.next()){
-          URSRC_loginid_array.push(URSRC_loginid_result.getString("ULD_LOGINID"));
-        } 
-        URSRC_loginid_result.close();
-        URSRC_loginid_stmt.close();
-        if((CONFSRC_UPD_DEL_detailsData[1]=='CUSTOMER_CONFIGURATION')&&(CONFSRC_UPD_DEL_lbType=='CALENDER ID')){
-          var CONFSCR_UPD_DEL_data=CONFSCR_UPD_DEL_data;
-        }
-        else{
-          CONFSCR_UPD_DEL_data = CalendarApp.getCalendarsByName(CONFSCR_UPD_DEL_data)[0].getId();  
-          new_data=CalendarApp.getCalendarsByName(new_data)[0].getId();
-        }
-        var oldowncalid=CalendarApp.getOwnedCalendarById(CONFSCR_UPD_DEL_data);
-        var newowncalid=CalendarApp.getOwnedCalendarById(new_data);
-        for(var k=0;k<URSRC_loginid_array.length;k++){
-          if(oldowncalid!=null&&URSRC_loginid_array[k]==UserStamp)continue;
-          var acl = {
-            scope: {
-              type: 'user',
-              value:URSRC_loginid_array[k]
-            },
-            role:'none'
-          };
-          Calendar.Acl.insert(acl,CONFSCR_UPD_DEL_data);  
-        }      
-        for(var k=0;k<URSRC_loginid_array.length;k++){
-          if(oldowncalid!=null&&URSRC_loginid_array[k]==UserStamp)continue;
-          var acl = {
-            scope: {
-              type: 'user',
-              value:URSRC_loginid_array[k]
-            },
-            role: 'writer'
-          };
-          Calendar.Acl.insert(acl, new_data);  
-        }
-      }      
+    try{
+      var CONFSRC_UPD_DEL_conn =eilib.db_GetConnection();
+      CONFSRC_UPD_DEL_conn.setAutoCommit(false);
+      var CONFSRC_UPD_DEL_arr_data=[]
+      var CONFSRC_UPD_DEL_detailsData=CONFSRC_UPD_DEL_gettablename(CONFSRC_UPD_DEL_selProfile)
+      /*-----------------------CODING TO UPDATE-----------------------------------------*/ 
+      var CONFSRC_UPD_DEL_stmt_ = CONFSRC_UPD_DEL_conn.createStatement();
       if(CONFSRC_UPD_DEL_lb_Typeid!=42)      
         CONFSRC_UPD_DEL_updateData=eilib.ConvertSpclCharString(CONFSRC_UPD_DEL_updateData);
-      if(CONFSRC_UPD_DEL_lb_Typeid==42)
-        var CONFSRC_UPD_DEL_update = "UPDATE DEPOSIT_DEDUCTION_CONFIGURATION SET DDC_DATA="+CONFSRC_UPD_DEL_updateData+",DDC_SUB_DATA='"+CONFSRC_UPD_DEL_tb_UpdSubtype+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE DDC_ID="+CONFSRC_UPD_DEL_dataId+"";
-      else if(CONFSRC_UPD_DEL_selProfile==14)
-        var CONFSRC_UPD_DEL_update = "UPDATE  "+CONFSRC_UPD_DEL_detailsData[1]+" SET "+CONFSRC_UPD_DEL_detailsData[2]+"='"+CONFSRC_UPD_DEL_updateData+"',URC_USERSTAMP='"+UserStamp+"' WHERE URC_ID="+CONFSRC_UPD_DEL_dataId+"";
-      else
-        var CONFSRC_UPD_DEL_update = "UPDATE "+CONFSRC_UPD_DEL_detailsData[1]+" SET "+CONFSRC_UPD_DEL_detailsData[2]+"='"+CONFSRC_UPD_DEL_updateData+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE "+CONFSRC_UPD_DEL_detailsData[3]+"="+CONFSRC_UPD_DEL_dataId+"";
-      var CONFSRC_UPD_DEL_stmt_customer_execute=CONFSRC_UPD_DEL_stmt_.execute(CONFSRC_UPD_DEL_update);
-      /*--------------------------------------------REFRESH FORM AFTER UPDATION---------------------------------------------------*/
-      var CONFSRC_UPD_DEL_parentFunction="CONFSRC_UPD_DEL_update";
-      CONFSRC_UPD_DEL_stmt_.close();
-      CONFSRC_UPD_DEL_conn.commit();
-      CONFSRC_UPD_DEL_conn.close();    
-      var CONFSRC_UPD_DEL_ref=[];
-      var CONFSRC_UPD_DEL_ref= CONFSRC_UPD_DEL_selectData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_lbType,CONFSRC_UPD_DEL_parentFunction,'CONFSRC_UPD_DEL_flagupdate');
-      return CONFSRC_UPD_DEL_ref;      
-    }     
+      if(CONFSRC_UPD_DEL_flagData=='CONFSRC_UPD_DEL_checkData')
+      {   
+        if(CONFSRC_UPD_DEL_lb_Typeid==42)
+          var CONFSRC_UPD_DEL_select="SELECT DDC_SUB_DATA FROM DEPOSIT_DEDUCTION_CONFIGURATION ";
+        else
+          var CONFSRC_UPD_DEL_select="SELECT "+CONFSRC_UPD_DEL_detailsData[2]+" FROM "+CONFSRC_UPD_DEL_detailsData[1]+" CCN WHERE CCN.CGN_ID=(SELECT C.CGN_ID FROM CONFIGURATION C WHERE C.CGN_TYPE='"+CONFSRC_UPD_DEL_lbType+"') ";
+        var CONFSRC_UPD_DEL_rs=CONFSRC_UPD_DEL_stmt_.executeQuery(CONFSRC_UPD_DEL_select);
+        while(CONFSRC_UPD_DEL_rs.next())
+        {
+          CONFSRC_UPD_DEL_arr_data.push(CONFSRC_UPD_DEL_rs.getString(1))
+        }
+        CONFSRC_UPD_DEL_rs.close();  CONFSRC_UPD_DEL_stmt_.close();
+        CONFSRC_UPD_DEL_conn.commit();
+        CONFSRC_UPD_DEL_conn.close();    
+        return CONFSRC_UPD_DEL_arr_data;
+      }          
+      if(CONFSRC_UPD_DEL_flagData=='CONFSRC_UPD_DEL_updateData')
+      { 
+        if(CONFSRC_UPD_DEL_lb_Typeid==42)
+          var CONFSRC_UPD_DEL_update = "UPDATE DEPOSIT_DEDUCTION_CONFIGURATION SET DDC_DATA="+CONFSRC_UPD_DEL_updateData+",DDC_SUB_DATA='"+CONFSRC_UPD_DEL_tb_UpdSubtype+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE DDC_ID="+CONFSRC_UPD_DEL_dataId+"";
+        else if(CONFSRC_UPD_DEL_selProfile==14)
+          var CONFSRC_UPD_DEL_update = "UPDATE  "+CONFSRC_UPD_DEL_detailsData[1]+" SET "+CONFSRC_UPD_DEL_detailsData[2]+"='"+CONFSRC_UPD_DEL_updateData+"',URC_USERSTAMP='"+UserStamp+"' WHERE URC_ID="+CONFSRC_UPD_DEL_dataId+"";
+        else
+          var CONFSRC_UPD_DEL_update = "UPDATE "+CONFSRC_UPD_DEL_detailsData[1]+" SET "+CONFSRC_UPD_DEL_detailsData[2]+"='"+CONFSRC_UPD_DEL_updateData+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE "+CONFSRC_UPD_DEL_detailsData[3]+"="+CONFSRC_UPD_DEL_dataId+"";
+        var CONFSRC_UPD_DEL_stmt_customer_execute=CONFSRC_UPD_DEL_stmt_.execute(CONFSRC_UPD_DEL_update);
+        var new_data=CONFSRC_UPD_DEL_updateData
+        if((CONFSRC_UPD_DEL_dataId==36&&CONFSRC_UPD_DEL_lbType=='CC FOLDER ID')||(CONFSRC_UPD_DEL_dataId==11&&CONFSRC_UPD_DEL_lbType=='CC CONTRACT TEMPLATE ID')||(CONFSRC_UPD_DEL_dataId==10&&CONFSRC_UPD_DEL_lbType=='CC INVOICE TEMPLATE ID')||(CONFSRC_UPD_DEL_dataId==29&&CONFSRC_UPD_DEL_lbType=='REPORT FOLDER ID')||(CONFSRC_UPD_DEL_dataId==1&&CONFSRC_UPD_DEL_lbType=='DEPOSIT CALCULATION FOLDER ID')||(CONFSRC_UPD_DEL_dataId==1&&CONFSRC_UPD_DEL_lbType=='ALIST FOLDER ID')||(CONFSRC_UPD_DEL_dataId==1&&CONFSRC_UPD_DEL_lbType=='OCBC CSV FOLDER ID')){
+          if(CONFSRC_UPD_DEL_dataId==11){
+            var fp_id=CONFSRC_UPD_DEL_detailsData[4][0];  
+            var update_file_profile="UPDATE FILE_PROFILE SET FP_FILE_ID='"+new_data+"' WHERE FP_ID="+fp_id+"";
+          }
+          else if(CONFSRC_UPD_DEL_dataId==10){
+            var fp_id=CONFSRC_UPD_DEL_detailsData[4][1]; 
+            var update_file_profile="UPDATE FILE_PROFILE SET FP_FILE_ID='"+new_data+"' WHERE FP_ID="+fp_id+""
+          }
+          else {
+            if(CONFSRC_UPD_DEL_dataId==36){         
+              var fp_id=CONFSRC_UPD_DEL_detailsData[4][2];
+            }
+            else{         
+              var fp_id=CONFSRC_UPD_DEL_detailsData[4];
+            }
+            if(CONFSRC_UPD_DEL_dataId==1&&CONFSRC_UPD_DEL_lbType=='DEPOSIT CALCULATION FOLDER ID')
+            {
+              var update_file_profile="UPDATE FILE_PROFILE SET FP_FOLDER_ID='"+new_data+"' WHERE FP_FOLDER_ID='"+CONFSCR_UPD_DEL_data+"'";
+            }
+            else
+            {
+              var update_file_profile="UPDATE FILE_PROFILE SET FP_FOLDER_ID='"+new_data+"' WHERE FP_ID="+fp_id+"";
+            }
+          }
+          var CONFSRC_UPD_DEL_stmt_FILE_PROFILE_execute=CONFSRC_UPD_DEL_stmt_.execute(update_file_profile);
+          var old_file_editors=[];
+          var new_file_editors=[];
+          var file_type=DriveApp.getFileById(CONFSCR_UPD_DEL_data).getMimeType();
+          if(file_type.match('folder')){
+            var old_Folder_editor=DocsList.getFolderById(CONFSCR_UPD_DEL_data).getEditors();
+          }
+          else{            
+            var old_Folder_editor=DocsList.getFileById(CONFSCR_UPD_DEL_data).getEditors(); 
+          }
+          //        var old_Folder_editor=DriveApp.getFileById(CONFSCR_UPD_DEL_data).getEditors();
+          for(var l=0;l<old_Folder_editor.length;l++){
+            old_file_editors.push(old_Folder_editor[l].getEmail().toLowerCase());
+          }  
+          DriveApp.getFolderById(new_data).getEditors();
+          for(var i=0;i<old_file_editors.length;i++){
+            if(old_file_editors[i]==''||old_file_editors[i]==UserStamp)continue;
+            var remov_Folder=DriveApp.getFileById(CONFSCR_UPD_DEL_data).removeEditor(old_file_editors[i]);
+            var shar_Folder=DriveApp.getFolderById(new_data).addEditor(old_file_editors[i]);
+          } 
+          DriveApp.getFileById(CONFSCR_UPD_DEL_data).removeEditor(UserStamp);
+        }     
+        if((CONFSRC_UPD_DEL_detailsData[1]=='USER_RIGHTS_CONFIGURATION')&&(CONFSRC_UPD_DEL_lbType=='SITE LINK')){
+          var old_sitelink=SitesApp.getSiteByUrl(CONFSCR_UPD_DEL_data); 
+          var new_sitelink=SitesApp.getSiteByUrl(new_data); 
+          var viewer=old_sitelink.getViewers();
+          for(var j=0;j<viewer.length;j++){       
+            old_sitelink.removeViewer(viewer[j]);
+            new_sitelink.addViewer(viewer[j]);
+          }
+        }
+        if(((CONFSRC_UPD_DEL_detailsData[1]=='CUSTOMER_CONFIGURATION')&&(CONFSRC_UPD_DEL_lbType=='CALENDER ID'))||((CONFSRC_UPD_DEL_detailsData[1]=='CUSTOMER_CONFIGURATION')&&(CONFSRC_UPD_DEL_lbType=='CALENDER NAME'))){
+          var URSRC_loginid_stmt = CONFSRC_UPD_DEL_conn.createStatement();
+          var URSRC_loginid_array=[];     
+          var URSRC_select_loginid='select * from VW_ACCESS_RIGHTS_TERMINATE_LOGINID ORDER BY ULD_LOGINID'
+          var URSRC_loginid_result=URSRC_loginid_stmt.executeQuery(URSRC_select_loginid);
+          while(URSRC_loginid_result.next()){
+            URSRC_loginid_array.push(URSRC_loginid_result.getString("ULD_LOGINID"));
+          } 
+          URSRC_loginid_result.close();
+          URSRC_loginid_stmt.close();
+          if((CONFSRC_UPD_DEL_detailsData[1]=='CUSTOMER_CONFIGURATION')&&(CONFSRC_UPD_DEL_lbType=='CALENDER ID')){
+            var CONFSCR_UPD_DEL_data=CONFSCR_UPD_DEL_data;
+          }
+          else{
+            CONFSCR_UPD_DEL_data = CalendarApp.getCalendarsByName(CONFSCR_UPD_DEL_data)[0].getId();  
+            new_data=CalendarApp.getCalendarsByName(new_data)[0].getId();
+          }
+          var oldowncalid=CalendarApp.getOwnedCalendarById(CONFSCR_UPD_DEL_data);
+          var newowncalid=CalendarApp.getOwnedCalendarById(new_data);
+          for(var k=0;k<URSRC_loginid_array.length;k++){
+            if(oldowncalid!=null&&URSRC_loginid_array[k]==UserStamp)continue;
+            var acl = {
+              scope: {
+                type: 'user',
+                value:URSRC_loginid_array[k]
+              },
+              role:'none'
+            };
+            Calendar.Acl.insert(acl,CONFSCR_UPD_DEL_data);  
+          }      
+          for(var k=0;k<URSRC_loginid_array.length;k++){
+            if(oldowncalid!=null&&URSRC_loginid_array[k]==UserStamp)continue;
+            var acl = {
+              scope: {
+                type: 'user',
+                value:URSRC_loginid_array[k]
+              },
+              role: 'writer'
+            };
+            Calendar.Acl.insert(acl, new_data);  
+          }
+        }      
+        /*--------------------------------------------REFRESH FORM AFTER UPDATION---------------------------------------------------*/
+        var CONFSRC_UPD_DEL_parentFunction="CONFSRC_UPD_DEL_update";
+        CONFSRC_UPD_DEL_stmt_.close();
+        CONFSRC_UPD_DEL_conn.commit();
+        CONFSRC_UPD_DEL_conn.close();    
+        var CONFSRC_UPD_DEL_ref= CONFSRC_UPD_DEL_selectData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_lbType,CONFSRC_UPD_DEL_parentFunction,'CONFSRC_UPD_DEL_flagupdate');
+        return CONFSRC_UPD_DEL_ref;      
+      }}
+    catch(err){
+      CONFSRC_UPD_DEL_conn.rollback();
+      CONFSRC_UPD_DEL_conn.close();
+      Logger.log("SCRIPT ERROR:"+err);
+      return Logger.getLog();
+    }
   }
   /*-------------------------------------------DELETE DATA FROM THE TABLE-----------------------------------------------------------------*/
   function CONFSRC_UPD_DEL_deleteData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_lbType,CONFSRC_UPD_DEL_dataId,CONFSRC_UPD_DEL_UpdData,CONFSRC_UPD_DEL_Updsubdata)

@@ -1,5 +1,9 @@
 /*//*******************************************FILE DESCRIPTION*********************************************
 //*******************************************ACCESS CARD SEARCH AND UPDATE***************************************************
+//DONE BY:PUNI
+VER 1.0-SD:09/10/2014 ED:09/10/2014;TRACKER NO:781;1.added script to hide preloader after menu n form loads,2.Changed preloader n msgbox position
+//DONE BY:SARADAMBAL.M
+VER 0.09-SD:27/08/2014 ED:27/08/2014;TRACKER NO:781;UPDATED NEW LINKS,AUTOGROW,CHECKED TICKLER PART
 //DONE BY:SAFIYULLAH.M
 VER 0.08-SD:09/06/2014 ED:09/06/2014;TRACKER NO:781;UPDATED SQL ENHANCEMENT and updated reset function 
 VER 0.07-SD:06/06/2014 ED:06/06/2014;TRACKER NO:781;CHANGED JQUERY LINK
@@ -12,7 +16,6 @@ VER 0.02 - SD:05/11/2013 ED:30/11/2013;TRACKER NO: 530-Tickler Table Updation
 *********************************************************************************************************
 */
 //****************FUNCTION TO RETURN INITIAL VALUE'S*****************************//
-
 try{ 
   function CACS_SRC_get_initial_values(){    
     var CACS_SRC_conn =eilib.db_GetConnection();
@@ -65,7 +68,7 @@ try{
       CACS_SRC_comment=eilib.ConvertSpclCharString(CACS_SRC_comment)      
     }
     var CACS_SRC_savedetails_stmt = CACS_SRC_conn.createStatement(); 
-    CACS_SRC_savedetails_stmt.execute(" CALL SP_ACCESS_CARD_UPDATE("+CACS_SRC_custid+","+CACS_SRC_cardno+",'"+CACS_SRC_reason+"','"+CACS_SRC_comment+"','"+UserStamp+"',@replace_search_flag)");
+    CACS_SRC_savedetails_stmt.execute("CALL SP_ACCESS_CARD_UPDATE("+CACS_SRC_custid+","+CACS_SRC_cardno+",'"+CACS_SRC_reason+"','"+CACS_SRC_comment+"','"+UserStamp+"',@replace_search_flag)");
     CACS_SRC_savedetails_stmt.close();
     var CACS_SRC_return_flag_stmt=CACS_SRC_conn.createStatement();
     var CACS_SRC_getresult= CACS_SRC_return_flag_stmt.executeQuery("SELECT @replace_search_flag");

@@ -1,6 +1,10 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 <!--//*****************************************STAFF EXPENSE DAILY ENTRY*********************************************//
+//DONE BY:PUNI
+//VER 1.9 SD:09/10/2014 ED:09/10/2014, TRACKER NO:701//1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//VER 1.8 SD:27/09/2014 ED:27/09/2014, TRACKER NO:701//COMMENT:31,1.implemented staff salary new sp for duplicate month record,2.removed preloader n msgbox position,3.corrected submit button validatn when clicking same emp radio btn
 //DONE BY:SARADAMBAL M
+//VER 1.7 SD:01/09/2014 ED:01/09/2014, TRACKER NO:701//updated new links,n script for autogrow
 //VER 1.6 SD:10/06/2014 ED:10/06/2014, TRACKER NO:701//implemented script for commit,failure function
 //VER 1.5 SD:07/06/2014 ED:07/06/2014, TRACKER NO:701//updated new link
 //VER 1.4 SD:02/06/2014 ED:03/02/2014, TRACKER NO:701//changed amt digit for agent-4,staff-3 and salary,levy,cpf-5
@@ -25,21 +29,30 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!--SCRIPT TAG START-->
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //READY FUNCTION.................
 $(document).ready(function(){
 var STDLY_INPUT_categorytypearray=[];
@@ -48,6 +61,7 @@ var STDLY_INPUT_currentcpf='';
 var STDLY_INPUT_currentlevy='';
 var STDLY_SEARCH_arr_employeeRadio=[];
 //VALIDATION CLASS//
+$('textarea').autogrow({onInitialize: true});
 $(".numonly").doValidation({rule:'numbersonly',prop:{realpart:5}});
 $("#STDLY_INPUT_tb_amount").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
 $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
@@ -81,7 +95,6 @@ var STDLY_SEARCH_liststaffvaluesarray;
 var STDLY_SEARCH_liststaffidvaluesarray
 function STDLY_SEARCH_loadtypeofexpense(STDLY_SEARCH_loadtypeofexpense)
 {
-$(".preloader").hide(); 
 STDLY_SEARCH_checktable=STDLY_SEARCH_loadtypeofexpense[1];
 STDLY_SEARCH_emcmsg=STDLY_SEARCH_loadtypeofexpense[2];
 STDLY_SEARCH_empdtltable=STDLY_SEARCH_loadtypeofexpense[3];
@@ -98,6 +111,10 @@ $('#STDLY_INPUT_lb_typelist').html(options);
 STDLY_INPUT_Sortit('STDLY_INPUT_lb_typelist')
 $('#STDLY_INPUT_lb_typelist').show();
 $('#STDLY_INPUT_lbl_type').show();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 function STDLY_INPUT_unique(a) {
 var result = [];
@@ -108,6 +125,7 @@ return result;
 }
 //LOADING FORM IF CHANGE THE FIRST  TYPE OF EXPENSE//
 $('#STDLY_INPUT_lb_typelist').change(function(){ 
+$('textarea').height(20);
 var STDLY_INPUT_listvalue=$('#STDLY_INPUT_lb_typelist').val();
 $('#STDLY_INPUT_lbl_erromsg').hide();
 $('#STDLY_INPUT_tble_multipleemployee').empty();
@@ -531,6 +549,7 @@ STDLY_INPUT_loadamt(STDLY_INPUT_arr_loadamt);
 }}});
 /*-------------------------------------CLICK FUNCTION FOR SAME EMPLOYEE NAME-----------------------------------*/
 $(document).on('click','.STDLY_INPUT_class_sameemployee',function(){
+$('#STDLY_INPUT_btn_sbutton').attr("disabled", "disabled");
 STDLY_INPUT_func_employeename();
 for (var i=0;i<STDLY_SEARCH_arr_employeeRadio.length;i++) {
 if(STDLY_SEARCH_arr_employeeRadio[i].STDLY_INPUT_employeeid==$(this).val()){
@@ -1105,14 +1124,19 @@ $('#STDLY_INPUT_tb_hidecpf1').val('');
 $('#STDLY_INPUT_btn_addbtn1').attr("disabled", "disabled");
 $('#STDLY_INPUT_btn_staffsbutton').attr("disabled", "disabled");
 }
+$('#STDLY_INPUT_ta_comment,#STDLY_INPUT_ta_salarycommentsbox,#STDLY_INPUT_tb_comments1,#STDLY_INPUT_ta_invitem1').height(20);
 });
 //SAVE  AND GET CONFORM MESSAGE FROM TABLE......................
 $('#STDLY_INPUT_btn_staffsbutton').click(function(){
+var  newPos= adjustPosition($(this).position(),100,280);
+resetPreloader(newPos);
 $(".preloader").show(); 
 google.script.run.withFailureHandler(STDLY_INPUT_onFailure).withSuccessHandler(STDLY_INPUT_showconformmsg).STDLY_INPUT_savestaff(document.getElementById('STDLY_INPUT_form_staffdaily'))
 });
 //SAVE  AND GET CONFORM MESSAGE FROM TABLE FOR FLEX TABLE.....................
 $('#STDLY_INPUT_btn_sbutton').click(function(){
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $(".preloader").show(); 
 google.script.run.withFailureHandler(STDLY_INPUT_onFailure).withSuccessHandler(STDLY_INPUT_showconformmsg).STDLY_INPUT_savedata(document.getElementById('STDLY_INPUT_form_staffdaily'))
 });
@@ -1185,13 +1209,13 @@ $('input[name="STDLY_INPUT_radio_levyamt"]').prop('checked', false);
 //SHOW THE CONFORMATION MESSAGE //
 function STDLY_INPUT_showconformmsg(STDLY_INPUT_response)
 {$(".preloader").hide(); 
+$("textarea").height(20); 
 if(STDLY_INPUT_response[0]==1){
 if($('#STDLY_INPUT_lb_typelist').val()==40)
 STDLY_SEARCH_checktable=STDLY_INPUT_response[1][1];
 var STDLY_INPUT_savemsg=$('#STDLY_INPUT_lb_typelist').val()
 var PDLY_INPUT_expensetype=$('#STDLY_INPUT_lb_typelist').find('option:selected').text();
 var STDLY_INPUT_CONFSAVEMSG = STDLY_SEARCH_emcmsg[0].replace('[TYPE]', PDLY_INPUT_expensetype); 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:STDLY_INPUT_CONFSAVEMSG}});
 $('#STDLY_INPUT_db_selectdate').val('');
 $('#STDLY_INPUT_tb_amount').val('');
 $('#STDLY_INPUT_ta_comment').val('');
@@ -1217,6 +1241,7 @@ $('#STDLY_INPUT_db_fromdate') .datepicker( "option", "maxDate", new Date());
 $('#STDLY_INPUT_db_todate') .datepicker( "option", "maxDate", new Date());
 $('#STDLY_INPUT_db_todate') .datepicker( "option", "minDate",null );
 if($('#STDLY_INPUT_lb_typelist').val()==41){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:STDLY_INPUT_CONFSAVEMSG,position:{top:150,left:500}}});
 $('#STDLY_INPUT_tble_multi').empty();
 $('<tr><td style="width:240"><label id="STDLY_INPUT_lbl_expense" >CATEGORY OF EXPENSE<em>*</em></label> </td><td style="width:150"><label  id="STDLY_INPUT_lbl_invdate" >INVOICE DATE<em>*</em></label></td><td style="width:125" ><label id="STDLY_INPUT_lbl_invamt" >INVOICE AMOUNT<em>*</em></label> </td><td style="width:150" ><label id="STDLY_INPUT_lbl_invitm" >INVOICE ITEMS<em>*</em></label> </td><td style="width:150" ><label id="STDLY_INPUT_lbl_invfrom" >INVOICE FROM<em>*</em></label> </td><td style="width:150"><label id="STDLY_INPUT_lbl_invcmt">COMMENTS</label></td></tr><tr><td> <select class="submultivalid"   name="STDLY_INPUT_lb_category" id="STDLY_INPUT_lb_category1"  ><option >SELECT</option></select> </td> <td><input class="submultivalid datemandtry"   type="text" name ="STDLY_INPUT_db_invdate" id="STDLY_INPUT_db_invdate1" style="width:80px;"  /> </td><td><input   type="text" name ="STDLY_INPUT_lb_incamtrp" id="STDLY_INPUT_lb_incamtrp1"  class="amtonly submultivalid" style="width:40px;"  /></td> <td><textarea class="submultivalid"  type="text" name="STDLY_INPUT_ta_invitem" id="STDLY_INPUT_ta_invitem1"   ></textarea></td><td><input class="submultivalid autosize"  type="text" name ="STDLY_INPUT_tb_invfrom" id="STDLY_INPUT_tb_invfrom1"  /></td><td><textarea   type="text" name ="STDLY_INPUT_tb_comments" id="STDLY_INPUT_tb_comments1"  ></textarea></td><td><input enabled type="button" disabled value="+" class="addbttn" alt="Add Row" height="30" width="30" name ="STDLY_INPUT_btn_addbtn" id="STDLY_INPUT_btn_addbtn1"  disabled/></td><td><input  type="button" value="-" class="deletebttn" alt="delete Row" height="30" width="30" name ="STDLY_INPUT_btn_delbtn" id="STDLY_INPUT_btn_delbtn1" disabled /></td></tr>').appendTo($('#STDLY_INPUT_tble_multi'))
 $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
@@ -1226,6 +1251,8 @@ changeYear: true,
 changeMonth: true});
 STDLY_INPUT_categorytyperesult();
 }
+else
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:STDLY_INPUT_CONFSAVEMSG,position:{top:150,left:500}}});
 //STDLY_INPUT_clear_staff();
 $('#STDLY_INPUT_lb_category1').val('');
 $('#STDLY_INPUT_db_invdate1').val('');
@@ -1239,10 +1266,14 @@ $('#STDLY_INPUT_btn_addbtn1').attr("disabled", "disabled");
 $('#STDLY_INPUT_tble_multipleemployee').empty();
 }
 else{
-if($('#STDLY_INPUT_lb_typelist').val()==41)
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:STDLY_SEARCH_emcmsg[3]+STDLY_INPUT_response[0]}});
-else
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:STDLY_SEARCH_emcmsg[3]}});
+if($('#STDLY_INPUT_lb_typelist').val()==40&&STDLY_INPUT_response[0]!="")
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:STDLY_INPUT_response[0],position:{top:150,left:500}}});
+}
+else if($('#STDLY_INPUT_lb_typelist').val()==41){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:STDLY_SEARCH_emcmsg[3]+STDLY_INPUT_response[0],position:{top:150,left:500}}});}
+else{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:STDLY_SEARCH_emcmsg[3],position:{top:150,left:500}}});}
 }}
 //<!--LOAD THE AMOUNT FOR THE LEVY ,SALARY AND CPF   -->
 function STDLY_INPUT_loadamt(cpfamt)
@@ -1292,7 +1323,7 @@ errmessg="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
 $('#STDLY_INPUT_form_staffdaily').replaceWith('<center><label class="dberrormsg">'+errmessg+'</label></center>');
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:errmessg}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY",msgcontent:errmessg,position:{top:150,left:500}}});
 }}
 });
 </script>
@@ -1379,10 +1410,10 @@ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY 
 <tr><td><input    type="text" name ="STDLY_INPUT_hidetablerowid" id="STDLY_INPUT_hidetablerowid" hidden /> </td></tr>
 <tr><td><input type="button"   id="STDLY_INPUT_btn_staffsbutton"   value="SAVE" class="btn submit" hidden disabled/></td></tr>
 </table>
-<div style="position:relative;left:90px;">
+<div>
 <table id="PDLY_INPUT_tble_button">
-<tr><td><input type="button"   id="STDLY_INPUT_btn_sbutton"   value="SAVE" class="btn submit" hidden disabled/></td>
-<td><input type="button"  id="STDLY_INPUT_btn_rbutton" value="RESET" class="btn resetsubmit" hidden /></td></tr>
+<tr><td align="right" style="width:200px"><input type="button"   id="STDLY_INPUT_btn_sbutton"   value="SAVE" class="btn submit" hidden disabled/></td>
+<td align="left"><input type="button"  id="STDLY_INPUT_btn_rbutton" value="RESET" class="btn resetsubmit" hidden /></td></tr>
 </table>
 </div>
 <table>

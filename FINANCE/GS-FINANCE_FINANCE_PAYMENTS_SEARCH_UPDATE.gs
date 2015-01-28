@@ -1,9 +1,13 @@
 //********************************************PAYMENT SEARCH/UPDATE*********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 2.02- SD:07/10/2014 ED:07/10/2014,TRACKER NO:786,Corrected preloader and msgbox position
 //DONE BY:KUMAR
+//VER 2.01- SD:19/09/2014 ED:19/09/2014,TRACKER NO:786,Implemented preloader and msgbox position script
+//VER 2.00- SD:22/08/2014 ED:22/08/2014,TRACKER NO:786 Updated new jquery and css links and add autogrow line and reduced payment extract function script lines.
 //VER 1.09- SD:11/08/2014 ED:11/08/2014,TRACKER NO 786 Cleared for period search button validation issue.
 //VER 1.08- SD:25/07/2014 ED:25/07/2014,TRACKER NO 786 partial amount hightlighted in payment history spreadsheet.
-//VER 1.07- SD:11/07/2014 ED:11/07/2014,TRACKER NO 786 Cleared paiddate search max date issue and amountrange search validation issue.
+//VER 1.07- SD:11/07/2014 ED:11/07/2014,TRACKER NO 786 Cleared paiddate search max date issue and amountrange search validation issue
 //VER 1.06- SD:30/06/2014 ED:30/06/2014,TRACKER NO 786 added filesharing function and amount box max digits 4 to 5.
 //VER 1.05- SD:18/06/2014 ED:18/06/2014,TRACKER NO 786 Added conn error message and did paiddate validation(set paiddate min date as customer 1st recver date - 1year)
 //VER 1.04- SD:09/06/2014 ED:09/06/2014,TRACKER NO 786 Added commit() command after updating filefolder id in file access table.
@@ -31,31 +35,31 @@ try
     if(label==2)
     {
       var temptablequery="CALL SP_PAYMENT_SEARCH_TEMP_TABLE('"+searchinput1+"',"+emptyinput+","+emptyinput+","+emptyinput+","+emptyinput+","+label+",'"+UserStamp+"',@FINALTABLENAME)";
-      var FIN_SRC_searchquery="SELECT RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND U.UNIT_NO='"+searchinput1+"' AND RD.ULD_ID=ULD.ULD_ID ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
+      var FIN_SRC_searchquery="SELECT RD.PP_ID,RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND U.UNIT_NO='"+searchinput1+"' AND RD.ULD_ID=ULD.ULD_ID ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
     }
     if(label==3)
     {
       var temptablequery="CALL SP_PAYMENT_SEARCH_TEMP_TABLE("+searchinput1+",'"+searchinput2+"',"+emptyinput+","+emptyinput+","+emptyinput+","+label+",'"+UserStamp+"',@FINALTABLENAME)";
-      FIN_SRC_searchquery="SELECT RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND RD.ULD_ID=ULD.ULD_ID ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
+      FIN_SRC_searchquery="SELECT RD.PP_ID,RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND RD.ULD_ID=ULD.ULD_ID ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
     }
     if(label==4)
     {
       var forperiodreturnvalues=eilib.GetForperiodDateFormat(searchinput1,searchinput2)
       var temptablequery="CALL SP_PAYMENT_SEARCH_TEMP_TABLE('"+forperiodreturnvalues.frmdate+"','"+forperiodreturnvalues.todate+"',"+emptyinput+","+emptyinput+","+emptyinput+","+label+",'"+UserStamp+"',@FINALTABLENAME)";
-      FIN_SRC_searchquery="SELECT RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND RD.ULD_ID=ULD.ULD_ID  ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
+      FIN_SRC_searchquery="SELECT RD.PP_ID,RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND RD.ULD_ID=ULD.ULD_ID  ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
     }
     if(label==5)
     {
       var PAYMENT_fromdate =eilib.SqlDateFormat(searchinput1);
       var PAYMENT_todate =eilib.SqlDateFormat(searchinput2);
       var temptablequery="CALL SP_PAYMENT_SEARCH_TEMP_TABLE('"+PAYMENT_fromdate+"','"+PAYMENT_todate+"',"+emptyinput+","+emptyinput+","+emptyinput+","+label+",'"+UserStamp+"',@FINALTABLENAME)";
-      FIN_SRC_searchquery="SELECT RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND RD.ULD_ID=ULD.ULD_ID ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
+      FIN_SRC_searchquery="SELECT RD.PP_ID,RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND RD.ULD_ID=ULD.ULD_ID ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
     }
     if(label==6)
     {
       var forperiodreturnvalues=eilib.GetForperiodDateFormat(searchinput2,searchinput3)
       var temptablequery="CALL SP_PAYMENT_SEARCH_TEMP_TABLE("+searchinput1+",'"+forperiodreturnvalues.frmdate+"','"+forperiodreturnvalues.todate+"','"+searchinput4+"','"+searchinput5+"',"+label+",'"+UserStamp+"',@FINALTABLENAME)";
-      FIN_SRC_searchquery="SELECT RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND RD.ULD_ID=ULD.ULD_ID ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
+      FIN_SRC_searchquery="SELECT RD.PP_ID,RD.PD_ID,U.UNIT_NO,RD.CUSTOMER_ID,RD.CED_REC_VER,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,RUFD.PD_PAYMENT,RD.PD_HIGHLIGHT_FLAG,RUFD.PD_DEPOSIT,RUFD.PD_PROCESSING_FEE,RUFD.PD_CLEANING_FEE,RUFD.PD_DEPOSIT_REFUND,RD.PD_FOR_PERIOD,RD.PD_PAID_DATE,RD.PD_COMMENTS,ULD.ULD_lOGINID,DATE_FORMAT(CONVERT_TZ(RD.PD_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS RD_TIME_STAMP FROM TEMP_PAYMENT_FEE_DETAIL RUFD,PAYMENT_DETAILS RD ,UNIT U,CUSTOMER C,USER_LOGIN_DETAILS ULD WHERE RUFD.PD_ID=RD.PD_ID AND C.CUSTOMER_ID=RD.CUSTOMER_ID AND RD.CUSTOMER_ID=RUFD.CUSTOMER_ID AND RD.UNIT_ID=U.UNIT_ID AND RUFD.UNIT_ID=RD.UNIT_ID AND RD.ULD_ID=ULD.ULD_ID ORDER BY U.UNIT_NO,C.CUSTOMER_FIRST_NAME,PD_FOR_PERIOD"; 
     }
     var FIN_SRC_unittempstmt=FIN_SRC_UPD_DEL_conn.createStatement();
     FIN_SRC_unittempstmt.execute(temptablequery);
@@ -74,6 +78,7 @@ try
     var FIN_SRC_unitsearcharray=[];
     while(FIN_SRC_unitsearchresult.next())
     {
+      var paymentid=FIN_SRC_unitsearchresult.getString("PP_ID");
       var FIN_SRC_id=FIN_SRC_unitsearchresult.getString("PD_ID");
       var FIN_SRC_rec_ver=FIN_SRC_unitsearchresult.getString("CED_REC_VER");
       var FIN_SRC_custid=FIN_SRC_unitsearchresult.getString("CUSTOMER_ID");
@@ -103,7 +108,7 @@ try
       {  FIN_SRC_comments="";  }
       var FIN_SRC_userstamp=FIN_SRC_unitsearchresult.getString("ULD_LOGINID");
       var FIN_SRC_timestamp=FIN_SRC_unitsearchresult.getString("RD_TIME_STAMP");
-      var FIN_SRC_unitresult={RENTALID:FIN_SRC_id,UNIT:FIN_SRC_unit,CUSTOMER_ID:FIN_SRC_custid,REC_VER:FIN_SRC_rec_ver,CUSTOMER:FIN_SRC_customer,RENTAL:FIN_SRC_rental,DEPOSIT:FIN_SRC_deposit,PROCESS:FIN_SRC_process,CLEAN:FIN_SRC_cleaning,REFUND:FIN_SRC_refund,amountflag:amount_flag,FORPERIOD:FIN_SRC_forperiod,PAIDDATE:FIN_SRC_paiddate,COMMENTS:FIN_SRC_comments,USER:FIN_SRC_userstamp,TIME:FIN_SRC_timestamp};
+      var FIN_SRC_unitresult={PPID:paymentid,RENTALID:FIN_SRC_id,UNIT:FIN_SRC_unit,CUSTOMER_ID:FIN_SRC_custid,REC_VER:FIN_SRC_rec_ver,CUSTOMER:FIN_SRC_customer,RENTAL:FIN_SRC_rental,DEPOSIT:FIN_SRC_deposit,PROCESS:FIN_SRC_process,CLEAN:FIN_SRC_cleaning,REFUND:FIN_SRC_refund,amountflag:amount_flag,FORPERIOD:FIN_SRC_forperiod,PAIDDATE:FIN_SRC_paiddate,COMMENTS:FIN_SRC_comments,USER:FIN_SRC_userstamp,TIME:FIN_SRC_timestamp};
       FIN_SRC_unitsearcharray.push(FIN_SRC_unitresult);
     }
     FIN_SRC_unitsearchresult.close();
@@ -236,17 +241,8 @@ try
   function FIN_SRC_paymentdeletion(id)
   {
     var FIN_SRC_UPD_DEL_conn=eilib.db_GetConnection();
-    var FIN_SRC_UPD_DEL_paystmt=FIN_SRC_UPD_DEL_conn.createStatement();
-    var payemnt_del_query="CALL SP_SINGLE_TABLE_ROW_DELETION(18, "+id+",'"+UserStamp+"',@DELETION_FLAG)";
-    FIN_SRC_UPD_DEL_paystmt.execute(payemnt_del_query);
-    var returnflagresult=FIN_SRC_UPD_DEL_paystmt.executeQuery("SELECT @DELETION_FLAG");
-    if(returnflagresult.next())
-    {
-      var returnflag=returnflagresult.getString(1);
-    }
-    returnflagresult.close();
+    var returnflag=eilib.DeleteRecord(FIN_SRC_UPD_DEL_conn, 18, id);
     return returnflag;
-    FIN_SRC_UPD_DEL_paystmt.close();
     FIN_SRC_UPD_DEL_conn.close();
   }
   function FIN_SRC_commonvalues()
@@ -298,6 +294,7 @@ try
     }
     FIN_SRC_DDsheetresult.close();
     FIN_SRC_DDsheetstmt.close();
+    var widtharray=[50,250,150,75,150,130,150,100,100,300,150,250];
     /*********************CHECKING FOR SS ALREADY EXISTING OR NOT IN FOLDER***********************/
     var year=Utilities.formatDate(new Date(), TimeZone,'yyyy');
     var SSname='EI_DEPOSIT_DEDUCTIONS_'+year;
@@ -326,7 +323,7 @@ try
         }
       }
     }
-    var ssheaders=['UNIT','CUSTOMER NAME','RENTAL AMOUNT','CLEANINGFEE','PROCESSING FEE','DEPOSIT','DEPOSIT REFUND','FORPERIOD','PAIDDATE','COMMENTS','TIMESTAMP','USERSTAMP']
+    var ssheaders=['UNIT','CUSTOMER NAME','PAYMENT AMOUNT','DEPOSIT','PROCESSING FEE','CLEANINGFEE','DEPOSIT REFUND','FORPERIOD','PAIDDATE','COMMENTS','TIMESTAMP','USERSTAMP']
     /*************************ALREADY EXISTING SS DELETE OLD RECORDS AND RELOAD ALL DETAILS*****************************/
     if(SSexistflag==1 && Sexistflag==1)
     {
@@ -373,13 +370,10 @@ try
       var newddsheetlastrow=paymentsheet.getLastRow()+1;
       for(var k=0;k<ssheaders.length;k++)
       {
-        paymentsheet.getRange(newddsheetlastrow,k+1).setValue(ssheaders[k]); 
+        paymentsheet.getRange(newddsheetlastrow,k+1).setValue(ssheaders[k]);
+        paymentsheet.setColumnWidth(k+1,widtharray[k]);
       }
-      var paymentlastrow1=paymentsheet.getLastRow()+1;
-      paymentsheet.getRange(paymentlastrow1,1).setValue('end');
-      paymentsheet.getRange(paymentlastrow1, 1, 1, 12).setBackground('#000000');
-      paymentsheet.setFrozenRows(1);
-      paymentsheet.getRange(1, 1, 1, paymentsheet.getLastColumn()).setBackground('#498af3').setFontColor('white').setFontSize(12).setFontStyle('BOLD');
+      PaymentHeaderbgcolorsetting(paymentsheet)
     }
     /**********************************CREATE NEW SS AND SHEET AND INSERTING HEADERS****************************/
     else if(SSexistflag==0 && Sexistflag==0)
@@ -397,13 +391,10 @@ try
       var newddsheetlastrow=paymentsheet.getLastRow()+1;
       for(var k=0;k<ssheaders.length;k++)
       {
-        paymentsheet.getRange(newddsheetlastrow,k+1).setValue(ssheaders[k]); 
+        paymentsheet.getRange(newddsheetlastrow,k+1).setValue(ssheaders[k]);
+        paymentsheet.setColumnWidth(k+1,widtharray[k]);
       }
-      var paymentlastrow1=paymentsheet.getLastRow()+1;
-      paymentsheet.getRange(paymentlastrow1,1).setValue('end');
-      paymentsheet.getRange(paymentlastrow1, 1, 1, 12).setBackground('#000000');
-      paymentsheet.setFrozenRows(1);
-      paymentsheet.getRange(1, 1, 1, paymentsheet.getLastColumn()).setBackground('#498af3').setFontColor('white').setFontSize(12).setFontStyle('BOLD');
+      PaymentHeaderbgcolorsetting(paymentsheet);
       eilib.Deposit_Deduction_fileSharing(paymentsheetid,DDsheetid);
       eilib.SetDocOwner(paymentsheetid,CCRE_docowner,UserStamp);
     }
@@ -414,53 +405,39 @@ try
       var paymentlastrow=paymentsheet.getLastRow()+1;
       var rowvalue=customerdetails[i];
       paymentsheet.getRange(paymentlastrow,1).setValue("'"+rowvalue.UNIT);
-      paymentsheet.setColumnWidth(1, 50)
       paymentsheet.getRange(paymentlastrow,2).setValue(rowvalue.CUSTOMER);
-      paymentsheet.setColumnWidth(2, 250)
-      if(rowvalue.amountflag=='X' && rowvalue.RENTAL!="")
-      {
-        paymentsheet.getRange(paymentlastrow,3).setBackground('#FF0000').setFontColor('white'); 
-      }
+      var amountflagvalue=rowvalue.amountflag;
+      var paymentid=rowvalue.PPID;
       paymentsheet.getRange(paymentlastrow,3).setValue(rowvalue.RENTAL);
-      paymentsheet.setColumnWidth(3, 130);
-      if(rowvalue.amountflag=='X' && rowvalue.CLEAN!="")
-      {
-        paymentsheet.getRange(paymentlastrow,4).setBackground('#FF0000').setFontColor('white'); 
-      }
-      paymentsheet.getRange(paymentlastrow,4).setValue(rowvalue.CLEAN);
-      paymentsheet.setColumnWidth(4, 130);
-      if(rowvalue.amountflag=='X' && rowvalue.PROCESS!="")
-      {
-        paymentsheet.getRange(paymentlastrow,5).setBackground('#FF0000').setFontColor('white'); 
-      }
+      paymentsheet.getRange(paymentlastrow,4).setValue(rowvalue.DEPOSIT);
       paymentsheet.getRange(paymentlastrow,5).setValue(rowvalue.PROCESS);
-      paymentsheet.setColumnWidth(5, 150);
-      if(rowvalue.amountflag=='X' && rowvalue.DEPOSIT!="")
-      {
-        paymentsheet.getRange(paymentlastrow,6).setBackground('#FF0000').setFontColor('white'); 
-      }
-      paymentsheet.getRange(paymentlastrow,6).setValue(rowvalue.DEPOSIT);
-      paymentsheet.setColumnWidth(6, 75);
-      if(rowvalue.amountflag=='X' && rowvalue.REFUND!="")
-      {
-        paymentsheet.getRange(paymentlastrow,7).setBackground('#FF0000').setFontColor('white'); 
-      }
+      paymentsheet.getRange(paymentlastrow,6).setValue(rowvalue.CLEAN);
       paymentsheet.getRange(paymentlastrow,7).setValue(rowvalue.REFUND);
-      paymentsheet.setColumnWidth(7, 150)
       paymentsheet.getRange(paymentlastrow,8).setValue("'"+rowvalue.FORPERIOD);
       paymentsheet.getRange(paymentlastrow,9).setValue("'"+rowvalue.PAIDDATE);
       paymentsheet.getRange(paymentlastrow,10).setValue(rowvalue.COMMENTS);
-      paymentsheet.setColumnWidth(10, 300)
       paymentsheet.getRange(paymentlastrow,11).setValue("'"+rowvalue.TIME);
-      paymentsheet.setColumnWidth(11, 150)
       paymentsheet.getRange(paymentlastrow,12).setValue(rowvalue.USER);
-      paymentsheet.setColumnWidth(12, 250);      
+      if(rowvalue.amountflag=='X')
+      {
+        var coumnnumber=parseInt(paymentid)+2;
+        paymentsheet.getRange(paymentlastrow,coumnnumber).setBackground('#FF0000').setFontColor('white'); 
+      }
     }
     paymentsheet
     var paymentlastrow1=paymentsheet.getLastRow()+1;
     paymentsheet.getRange(paymentlastrow1,1).setValue('end');
     paymentsheet.getRange(paymentlastrow1, 1, 1, 12).setBackground('#000000');
+    var totalcolumns=paymentsheet.getLastColumn();
     FIN_SRC_conn.close();
+  }
+  function PaymentHeaderbgcolorsetting(paymentsheet)
+  {
+    var paymentlastrow1=paymentsheet.getLastRow()+1;
+    paymentsheet.getRange(paymentlastrow1,1).setValue('end');
+    paymentsheet.getRange(paymentlastrow1, 1, 1, 12).setBackground('#000000');
+    paymentsheet.setFrozenRows(1);
+    paymentsheet.getRange(1, 1, 1, paymentsheet.getLastColumn()).setBackground('#498af3').setFontColor('white').setFontSize(12).setFontStyle('BOLD');
   }
 }
 catch(err)

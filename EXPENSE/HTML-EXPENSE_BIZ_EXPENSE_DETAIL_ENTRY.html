@@ -1,7 +1,10 @@
 <!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 <!--//*******************************************BIZ EXPENSE DETAIL ENTRY*********************************************//
+<!--DONE BY:PUNITHA
+VER 1.6 -SD:10/10/2014 ED:10/10/2014,TRACKER NO:479,1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 <!--DONE BY:SARADAMBAL
+VER 1.5 -SD:18/08/2014 ED:18/08/2014,TRACKER NO:479,updated new links,implemented autogrow,rollback if any issue in calendar or sp,checked sp
 VER 1.4-SD:20/06/2014 ED:20/06/2014,TRACKER NO:479,implemented script for commit and failure function ,put err msg for calendar,retrieve month from config db and updated in dp,removed arr concept for already exist and put eilib function (aircon service by)
 VER 1.3-SD:07/06/2014 ED:07/06/2014,TRACKER NO:479,updated new link
 VER 1.2-SD:22/04/2014 ED:23/04/2014,TRACKER NO:479,implemented dp validation for cable sdate and edate,appl date and internet sdate and edate
@@ -20,26 +23,37 @@ VER 0.01-INITIAL VERSION,TRACKER NO:479,SD:05/09/2013,ED:11/09/2013-->
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 /*-------------------------------------FUNCTION FOR CHANGE DATE FORMAT---------------------------*/
 function BDTL_FormTableDateFormat(BDTL_inputdate){
 var BDTL_string  = BDTL_inputdate.split("-");
 return BDTL_string[2]+'-'+ BDTL_string[1]+'-'+BDTL_string[0];
 }
 $(document).ready(function(){
+$(".preloader").show();
 var BDTL_flag_date=1;
 /*----------------------------------------------- FAILURE FUNTION FOR UNIT TERMINATION----------------------------------*/
 function BDTL_INPUT_onFailure(BDTL_INPUT_error){
@@ -54,7 +68,7 @@ if(BDTL_INPUT_error=='TypeError: Cannot call method "getEvents" of undefined.'||
 {
 BDTL_INPUT_error=BDTL_INPUT_errorarr[7];
 }
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL ENTRY",msgcontent:BDTL_INPUT_error}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL ENTRY",msgcontent:BDTL_INPUT_error,position:{top:150,left:500}}});
 }}
 var BDTL_INPUT_errorarr=[];
 var BDTL_INPUT_expensearr=[];
@@ -90,9 +104,15 @@ BDTL_INPUT_expense_options += '<option value="' + BDTL_INPUT_expensearr[i].BDTL_
 $('#BDTL_INPUT_lb_expense_type').html(BDTL_INPUT_expense_options);
 $('#BDTL_INPUT_form_biz_detail').show();
 $("#BDTL_INPUT_tb_exp_digivoiceno").prop("title",BDTL_INPUT_errorarr[1])
-}}
+}
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
+}
 var BDTL_INPUT_flag_newaircon='';
 /*-----------------------------------------VALIDATION FOR CHARACTER,NUMBERS AND ALPHA NUMERIC--------------------------------------------------------*/
+$('textarea').autogrow({onInitialize: true});
 $(".charonly").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
 $(".alphanumeric").doValidation({rule:'alphanumeric'});
 $(".alphanumericdot").doValidation({rule:'alphanumeric',prop:{allowdot:true}});
@@ -130,6 +150,7 @@ $('#BDTL_INPUT_db_internet_enddate').datepicker("option","minDate",BDTL_newsDate
 }});
 /*----------------------------------------------------CHANGE FUNCTION FOR EXPENSE TYPE-----------------------------------------------------*/    
 $('#BDTL_INPUT_lb_expense_type').change(function(){
+$("textarea").height(20);
 $('#BDTL_INPUT_form_biz_detail').find('input:text').val('');
 $('textarea').val('');
 $('#BDTL_INPUT_div_errmsg_aircon,#BDTL_INPUT_div_exp_detail_err').text('');
@@ -149,6 +170,8 @@ $('#BDTL_INPUT_lb_airconservicedby').val('SELECT');
 $('#BDTL_INPUT_tble_btn').hide();
 if(BDTL_INPUT_all_expense_types!='SELECT')
 {
+var  newPos= adjustPosition($(this).position(),100,120); 
+resetPreloader(newPos);
 $(".preloader").show();
 google.script.run.withSuccessHandler(BDTL_INPUT_loadunitno).withFailureHandler(BDTL_INPUT_onFailure).BDTL_INPUT_all_exp_types_unitno(BDTL_INPUT_all_expense_types);
 }
@@ -241,6 +264,7 @@ $('#BDTL_INPUT_div_starhub').hide();
 $('#BDTL_INPUT_btn_save').attr("disabled", "disabled");
 $('#BDTL_INPUT_form_biz_detail').find('input:text').val('');
 $('textarea').val('');
+$("textarea").height(20);
 $('#BDTL_INPUT_div_errmsg_aircon').text('');
 $('#BDTL_INPUT_lb_digital_invoiceto').val('SELECT');
 $('#BDTL_INPUT_lb_starhub_invoiceto').val('SELECT');
@@ -406,13 +430,18 @@ google.script.run.withSuccessHandler(BDTL_INPUT_bizSuccess).withFailureHandler(B
 /*------------------------------------------SUCCESS FUNCTION FOR INSERTING ------------------------------------------*/
 function BDTL_INPUT_bizSuccess(BDTL_INPUT_response){
 $(".preloader").hide();
+if(BDTL_INPUT_response.toString().match("SCRIPT ERROR:"))
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CONFIGURATION SEARCH/UPDATE/DELETE",msgcontent:BDTL_INPUT_response,position:{top:150,left:500}}});
+}
+else{
 if(BDTL_INPUT_response[1]==1){
 var BDTL_INPUT_expensetypes='';
 if($('#BDTL_INPUT_lb_expense_type').val()==16){
 BDTL_INPUT_arr_aircon=BDTL_INPUT_response[0];
 }
 var BDTL_INPUT_errormsg_replace = BDTL_INPUT_errorarr[3].replace("[TYPE]",$('#BDTL_INPUT_lb_expense_type').find('option:selected').text());
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL ENTRY",msgcontent:BDTL_INPUT_errormsg_replace}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL ENTRY",msgcontent:BDTL_INPUT_errormsg_replace,position:{top:150,left:500}}});
 $(':input,textarea','#BDTL_INPUT_form_biz_detail')
 .not(':button')
 .val('')
@@ -428,8 +457,8 @@ $('#BDTL_INPUT_tble_btn').hide();
 BDTL_INPUT_reset();
 }
 else
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL ENTRY",msgcontent:BDTL_INPUT_errorarr[6]}});
-}
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DETAIL ENTRY",msgcontent:BDTL_INPUT_errorarr[6],position:{top:150,left:500}}});
+}}
 /*----------------------------------------------------COMMON FUNCTION FOR CLEARING ALL VALUES------------------------------------*/
 function BDTL_INPUT_reset(){
 var BDTL_startdate = new Date( Date.parse( BDTL_glb_startdate) ); 
@@ -450,6 +479,7 @@ $("#BDTL_INPUT_lb_digital_invoiceto").val('SELECT');
 $("#BDTL_INPUT_lb_airconservicedby").val('SELECT');
 $(':input[type=text]','#BDTL_INPUT_form_biz_detail').val('').not(':button');
 $("textarea").val('');
+$("textarea").height(20);
 BDTL_INPUT_reset();
 if($('#BDTL_INPUT_lb_airconservicedby').val()==undefined)
 {

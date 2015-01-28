@@ -1,6 +1,10 @@
 <!--*******************************************FILE DESCRIPTION*********************************************//
 <!--*******************************************STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE*********************************************//
+//DONE BY:PUNI
+//VER 1.7-SD:09/10/2014 ED:09/10/2014,TRACKER NO:459:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//VER 1.6-SD:27/09/2014 ED:27/09/2014,TRACKER NO:459,comment 51,1.removed trim for invitem n comments textarea search,2.hided del n srch btn while clicking srch btn,3.corrected issue when clicking cpf no srch,4.implemented staff salary new sp fr the duplicate month record
 //DONE BY:SARADAMBAL
+//VER 1.5-SD:13/08/2014 ED:13/08/2014,TRACKER NO:459,implemented script for reset normal size after updation,updated new links,checked after autocommit  
 //VER 1.4-SD:11/06/2014 ED:11/06/2014,TRACKER NO:459,implemented script for commit and failure function ,implemented script show msg box for update after loading flex table,added general rule for comts,inv item
 //VER 1.3 SD:03/06/2014 ED:03/06/2014, TRACKER NO:459//corrected err msg,updated link,change amt digit agent-4,staff exp-3,staff sal-5 
 //VER 1.2 SD:12/04/2014 ED:21/03/2014, TRACKER NO:459//put maxdate as sysdate in srch form,checked migration data with updation and deletion,corrected validation for salaary,cpf n levy amt,put class for dp
@@ -22,28 +26,41 @@
 <!--HTML TAG START-->
 <html>
 <!--HEAD TAG START-->
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<head>
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={AmountCompare:'InValid'}
 $(document).ready(function(){
+var STDLY_STFSALMSG="";
 var STDLY_SEARCH_category_exp='';
 var STDLY_SEARCH_salary='';
 var STDLY_SEARCH_levy='';
 var STDLY_SEARCH_cpfamt='';
 var STDLY_SEARCH_flag_srchUpdDel=0;
+$('textarea').autogrow({onInitialize: true});
 $(".numonly").doValidation({rule:'numbersonly',prop:{realpart:5}});
 $("#STDLY_SEARCH_tb_amount").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
 $("#STDLY_SEARCH_lb_incamtrp1").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
@@ -52,7 +69,7 @@ $("#STDLY_SEARCH_tb_fromamount").doValidation({rule:'numbersonly',prop:{realpart
 $("#STDLY_SEARCH_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'STDLY_SEARCH_tb_fromamount'}}).width(60);
 $(".preloader").show(); 
 $('#STDLY_SEARCH_tb_invfrom1').doValidation({rule:'general',prop:{uppercase:true,autosize:true}});
-$(".STDLY_SEARCH_ta_cmtItem").doValidation({rule:'general',prop:{uppercase:false}});
+//$(".STDLY_SEARCH_ta_cmtItem").doValidation({rule:'general',prop:{uppercase:false}});
 $(document).on('click','#STDLY_SEARCH_tbl_htmltable tr td input[type="radio"]',function() {
 $('#STDLY_SEARCH_tbl_htmltable tr').removeClass('higlightrow');
 $(this).closest('tr').addClass('higlightrow');
@@ -279,6 +296,8 @@ $('#STDLY_SEARCH_lbl_headermesg').hide();
 });
 //LOAD THE START FOR BY AGENT COMMISSION...................
 $('#STDLY_SEARCH_lb_searchoption').change(function(){
+$('.datebox') .datepicker( "option", "minDate", null);
+$('.datebox') .datepicker( "option", "minDate", new Date(1969, 10 , 19));
 $('#STDLY_SEARCH_lbl_amounterrormsg').text('');
 $('#STDLY_SEARCH_lbl_errmsg').text('');
 $('#STDLY_SEARCH_tb_cpfno').hide();
@@ -516,6 +535,7 @@ $('#STDLY_SEARCH_tb_invitemcomt').attr("disabled", "disabled").attr('placeholder
 }
 // STARTING AGENT SEARCH BUTTON VALIDATION..................... 
 $(".submitvalagent").change(function(){
+$('textarea').height(20);
 $('#STDLY_SEARCH_ta_salarycommentsbox').hide();
 $('#STDLY_SEARCH_lbl_salarycomments').hide();
 $('#STDLY_SEARCH_lbl_nodataerrormsg').hide();
@@ -956,7 +976,12 @@ $('#STDLY_SEARCH_btn_staffbutton').attr("disabled", "disabled");
 });
 //SEND VALUES TO GS FOR LOAD THE FLEX TABLES.....................
 $('#STDLY_SEARCH_btn_agentsbutton').click(function(){
+var  newPos= adjustPosition($(this).position(),100,120);
+resetPreloader(newPos);
+$('#STDLY_SEARCH_btn_searchbutton').hide();
+$('#STDLY_SEARCH_btn_deletebutton').hide();
 STDLY_SEARCH_agentsearching();
+STDLY_SEARCH_hideagent();
 });
 function STDLY_SEARCH_agentsearching()
 {
@@ -1422,7 +1447,7 @@ var STDLY_SEARCH_expensestaffsalary;
 var STDLY_SEARCH_expensestaff;
 google.script.run.withFailureHandler(STDLY_SEARCH_onFailure).withSuccessHandler(STDLY_SEARCH_loadtypeofexpenseinlistbox).STDLY_INPUT_loademployeename()
 function STDLY_SEARCH_loadtypeofexpenseinlistbox(STDLY_SEARCH_initialvalue)
-{$(".preloader").hide(); 
+{
 STDLY_SEARCH_expenseArray=STDLY_SEARCH_initialvalue[0].STDLY_SEARCH_expenseArray;
 STDLY_SEARCH_errorArray=STDLY_SEARCH_initialvalue[0].STDLY_SEARCH_errorArray;
 STDLY_SEARCH_expenseArrayallid=STDLY_SEARCH_initialvalue[0].STDLY_SEARCH_expenseArrayallid;
@@ -1477,7 +1502,12 @@ $('#STDLY_SEARCH_lb_typelist').show();
 $('#STDLY_SEARCH_lbl_type').show();
 $('#STDLY_SEARCH_btn_agentsbutton').hide();
 $('#STDLY_SEARCH_btn_salarybutton').hide();
-$('#STDLY_SEARCH_btn_staffbutton').hide();}
+$('#STDLY_SEARCH_btn_staffbutton').hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
+}
 //SALARY RADIO BUTTON VALIDATION .....................................
 $("#STDLY_SEARCH_db_paiddate").datepicker({
 dateFormat: "dd-mm-yy", 
@@ -1672,10 +1702,11 @@ $('#STDLY_SEARCH_btn_sbutton').attr("disabled", "disabled");
 }});
 //CALL BY STAFF SELECTED OPTION..................
 $('#STDLY_SEARCH_lb_staffsearchoption').change(function(){ 
+$('.datebox') .datepicker( "option", "minDate", null); 
+$('.datebox') .datepicker( "option", "minDate", new Date(1969, 10 , 19));
 $('#STDLY_SEARCH_lbl_errmsg').text('');
 $('#STDLY_SEARCH_lbl_byemployeename').hide();
 $('#STDLY_SEARCH_lbl_salaryheadermesg').hide();
-
 $(".preloader").show(); 
 $('#STDLY_SEARCH_lbl_searchbydiv').hide();
 $('#STDLY_SEARCH_ta_salarycommentsbox').hide();
@@ -1945,6 +1976,8 @@ $('#STDLY_SEARCH_lbl_emp').hide();
 $('#STDLY_SEARCH_btn_agentsbutton').hide();
 //SEARCHING SALARY SEARCH OPTION .................... 
 $('#STDLY_SEARCH_lb_salarysearchoption').change(function(){
+$('.datebox') .datepicker( "option", "minDate", null);
+$('.datebox') .datepicker( "option", "minDate", new Date(1969, 10 , 19));
 $('#STDLY_SEARCH_lbl_errmsg').text('');
 $('#STDLY_SEARCH_lbl_byemployeename').hide();
 $('#STDLY_SEARCH_ta_salarycommentsbox').hide();
@@ -2134,8 +2167,6 @@ $('#STDLY_SEARCH_db_enddate').val('').show();
 $('#STDLY_SEARCH_lbl_fromamount').show();
 $('#STDLY_SEARCH_tb_fromamount').val('').show();
 $('#STDLY_SEARCH_tb_toamount').val('').show();
-//$("#STDLY_SEARCH_tb_fromamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'STDLY_SEARCH_tb_toamount'}}).width(60);
-//$("#STDLY_SEARCH_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'STDLY_SEARCH_tb_fromamount'}}).width(60);
 $('#STDLY_SEARCH_lbl_toamount').show();
 $('#STDLY_SEARCH_lbl_searchbyemployeename').hide();
 $('#STDLY_SEARCH_lb_searchbyemployeename').hide();
@@ -2440,9 +2471,12 @@ $('#STDLY_SEARCH_tb_hidecpf1').val('');
 $('#STDLY_SEARCH_btn_addbtn1').attr("disabled", "disabled");
 $('#STDLY_SEARCH_btn_sbutton').attr("disabled", "disabled");
 }
+$('#STDLY_SEARCH_ta_salarycommentsbox,#STDLY_SEARCH_ta_comment,#STDLY_SEARCH_tb_comments1,#STDLY_SEARCH_ta_invitem1').height(20);
 });
 $('#STDLY_SEARCH_btn_sbutton').click(function()
 {
+var  newPos= adjustPosition($(this).position(),100,280);
+resetPreloader(newPos);
 STDLY_SEARCH_flag_srchUpdDel=1;
 $(".preloader").show(); 
 google.script.run.withFailureHandler(STDLY_SEARCH_onFailure).withSuccessHandler(STDLY_SEARCH_btn_sbuttonresult).STDLY_SEARCH_savealldetails(document.getElementById('STDLY_SEARCH_form_staffdaily'));
@@ -2485,14 +2519,17 @@ $(".preloader").hide();
 var STDLY_SEARCH_listoption=$('#STDLY_SEARCH_lb_typelist').val();
 if(STDLY_SEARCH_listoption==39)
 {
+STDLY_STFSALMSG="";
 STDLY_SEARCH_agentsearching();
 }
 if(STDLY_SEARCH_listoption==40)
 {
+STDLY_STFSALMSG=STDLY_SEARCH_upd_res[2];
 STDLY_SEARCH_salaryfunction();
 }
 if(STDLY_SEARCH_listoption==41)
 {
+STDLY_STFSALMSG="";
 STDLY_SEARCH_staffsearching();
 }
 }
@@ -2536,6 +2573,8 @@ $('#STDLY_SEARCH_btn_sbutton').removeAttr("disabled");
 });
 //SEARCHING THE SALARY  SEARCH OPTION FROM THE  TABLES......................
 $('#STDLY_SEARCH_btn_salarybutton').click(function(){
+var  newPos= adjustPosition($(this).position(),100,120);
+resetPreloader(newPos);
 STDLY_SEARCH_salaryfunction();
 });
 function STDLY_SEARCH_salaryfunction()
@@ -2834,17 +2873,34 @@ $('#STDLY_SEARCH_lbl_nodataerrormsg').hide();
 }
 if(STDLY_SEARCH_flag_srchUpdDel==1){
 var replacetype=STDLY_SEARCH_errorArray[1].replace('[TYPE]', $('#STDLY_SEARCH_lb_typelist').find('option:selected').text());
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype}});
+if($('#STDLY_SEARCH_lb_typelist').val()==40&&STDLY_STFSALMSG==1)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype,position:{top:150,left:500}}});
+}
+else if($('#STDLY_SEARCH_lb_typelist').val()==40&&STDLY_STFSALMSG!="")
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:STDLY_STFSALMSG,position:{top:150,left:500}}});
+}
+else if($('#STDLY_SEARCH_lb_typelist').val()==40&&STDLY_STFSALMSG=="")
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:STDLY_SEARCH_errorArray[35],position:{top:150,left:500}}});
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype,position:{top:150,left:500}}});
+}
 STDLY_SEARCH_flag_srchUpdDel=0;
 }
 else if(STDLY_SEARCH_flag_srchUpdDel==2){
 var replacetype=STDLY_SEARCH_errorArray[2].replace('[TYPE]', $('#STDLY_SEARCH_lb_typelist').find('option:selected').text());
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype,position:{top:150,left:500}}});
 STDLY_SEARCH_flag_srchUpdDel=0;
 }
 }
 //SEARCHING BY  STAFF CATEGORY FOR FLEX TABLE..................
 $('#STDLY_SEARCH_btn_staffbutton').click(function(){
+var  newPos= adjustPosition($(this).position(),100,120);
+resetPreloader(newPos);
 STDLY_SEARCH_flag_srchUpdDel=0;
 STDLY_SEARCH_staffsearching();
 });
@@ -3060,12 +3116,12 @@ $('#STDLY_SEARCH_lbl_nodataerrormsg').hide();
 }
 if(STDLY_SEARCH_flag_srchUpdDel==1){
 var replacetype=STDLY_SEARCH_errorArray[1].replace('[TYPE]', $('#STDLY_SEARCH_lb_typelist').find('option:selected').text());
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype,position:{top:150,left:500}}});
 STDLY_SEARCH_flag_srchUpdDel=0;
 }
 else if(STDLY_SEARCH_flag_srchUpdDel==2){
 var replacetype=STDLY_SEARCH_errorArray[2].replace('[TYPE]', $('#STDLY_SEARCH_lb_typelist').find('option:selected').text());
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype,position:{top:150,left:500}}});
 STDLY_SEARCH_flag_srchUpdDel=0;
 }
 }
@@ -3078,23 +3134,25 @@ var STDLY_SEARCH_arr_td_salary=[];
 var STDLY_SEARCH_radiovalue_sal ='';
 //CLICK THE RADIO BUTTON IN THE FLEX TABLE....................
 $(document).on('click','.radiosearch',function() {
+STDLY_SEARCH_hideagent();
+$('#STDLY_SEARCH_btn_searchbutton').show();
+$('#STDLY_SEARCH_btn_deletebutton').show();
+});
+function STDLY_SEARCH_hideagent(){
 $('#STDLY_SEARCH_ta_salarycommentsbox').hide();
 $('#STDLY_SEARCH_lbl_salarycomments').hide();
 $('#STDLY_SEARCH_tbl_salaryupdatetable').hide();
-var STDLY_SEARCH_id=$(this).attr('id');
 $('#STDLY_SEARCH_tble_agentupdateform').hide();
-var STDLY_SEARCH_sourceradioid=$(this).val();
-$('#STDLY_SEARCH_btn_searchbutton').show();
-$('#STDLY_SEARCH_btn_deletebutton').show();
 $('#STDLY_SEARCH_btn_searchbutton').removeAttr("disabled");
 $('#STDLY_SEARCH_btn_deletebutton').removeAttr("disabled");
 $('#STDLY_SEARCH_tble_agentupdateform').hide();
 $('#STDLY_SEARCH_tble_multi').hide();
 $('#STDLY_SEARCH_btn_sbutton').hide();
 $('#STDLY_SEARCH_btn_rbutton').hide();
-});
+}
 //SEARCH THE DATA  FROM THR FLEX TABLE................
 $('#STDLY_SEARCH_btn_searchbutton').click(function(){
+$('textarea').height(20);
 var STDLY_SEARCH_typrval=$("#STDLY_SEARCH_lb_typelist").val()
 if(STDLY_SEARCH_typrval==39)
 {
@@ -3137,9 +3195,11 @@ var STDLY_SEARCH_radiovalue = $('input:radio[name=STDLY_SEARCH_radio_salaryflexr
 });
 //DELETE THE  ROW PRESENT IN THE TABLE.............................
 $('#STDLY_SEARCH_btn_deletebutton').click(function(){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:STDLY_SEARCH_errorArray[31],confirmation:true}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:STDLY_SEARCH_errorArray[31],confirmation:true,position:$(this).position()}});
 });
 $(document).on('click','.messageconfirm',function(){
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var STDLY_SEARCH_typrval=$("#STDLY_SEARCH_lb_typelist").val()
 var STDLY_SEARCH_obj_rowvalue=[];
@@ -3192,7 +3252,6 @@ function STDLY_SEARCH_highlightSearchText() {
 var STDLY_SEARCH_fromcomt=$('#STDLY_SEARCH_tb_searchcomments').val();
 var STDLY_SEARCH_conformsg=STDLY_SEARCH_errorArray[16];
 var STDLY_SEARCH_CONFSAVEMSG = STDLY_SEARCH_conformsg.replace('[COMTS]', STDLY_SEARCH_fromcomt); 
-//$('#STDLY_SEARCH_lbl_babyshowcomments').text(STDLY_SEARCH_CONFSAVEMSG).show();
 $.ui.autocomplete.prototype._renderItem = function( ul, item) {
 var re = new RegExp(this.term, "i") ;
 var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
@@ -3268,7 +3327,6 @@ function STDLY_SEARCH_highlightSearchTextitem() {
 var STDLY_SEARCH_fromcomt=$('#STDLY_SEARCH_tb_searchcomments').val();
 var STDLY_SEARCH_conformsg=STDLY_SEARCH_errorArray[16];
 var STDLY_SEARCH_CONFSAVEMSG = STDLY_SEARCH_conformsg.replace('[COMTS]', STDLY_SEARCH_fromcomt); 
-//$('#STDLY_SEARCH_lbl_babyshowcomments').text(STDLY_SEARCH_CONFSAVEMSG).show();
 $.ui.autocomplete.prototype._renderItem = function( ul, item) {
 var re = new RegExp(this.term, "i") ;
 var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
@@ -3428,12 +3486,12 @@ $('#STDLY_SEARCH_btn_deletebutton').hide();
 }
 if(STDLY_SEARCH_flag_srchUpdDel==1){
 var replacetype=STDLY_SEARCH_errorArray[1].replace('[TYPE]', $('#STDLY_SEARCH_lb_typelist').find('option:selected').text());
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype,position:{top:150,left:500}}});
 STDLY_SEARCH_flag_srchUpdDel=0;
 }
 else if(STDLY_SEARCH_flag_srchUpdDel==2){
 var replacetype=STDLY_SEARCH_errorArray[2].replace('[TYPE]', $('#STDLY_SEARCH_lb_typelist').find('option:selected').text());
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:replacetype,position:{top:150,left:500}}});
 STDLY_SEARCH_flag_srchUpdDel=0;
 }}
 //SHOWS THE DELETE MESSAGE.....................
@@ -3507,7 +3565,7 @@ $('#STDLY_SEARCH_lbl_salarycomments').hide();
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:STDLY_SEARCH_errorArray[30]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:STDLY_SEARCH_errorArray[30],position:{top:150,left:500}}});
 }}
 //LOAD ALL STAFF CATEGORY.......................
 function STDLY_SEARCH_staffallcategory()//STDLY_SEARCH_category
@@ -3681,12 +3739,10 @@ $('#STDLY_SEARCH_tb_cpfno').val(STDLY_SEARCH_cpfno);
 $('#STDLY_SEARCH_tb_cpfno').attr("size",STDLY_SEARCH_cpfno.length+3);
 $('#STDLY_SEARCH_tb_cpfno').show();
 $('#STDLY_SEARCH_lbl_paid').show();
-//var STDLY_SEARCH_cpaiddate=FormTableDateFormat(STDLY_SEARCH_paiddate);
 $('#STDLY_SEARCH_db_paiddate').datepicker("option","maxDate",new Date()); 
 $('#STDLY_SEARCH_db_paiddate').val(STDLY_SEARCH_paiddate);
 $('#STDLY_SEARCH_db_paiddate').show();
 $('#STDLY_SEARCH_lbl_from').show();
-//var STDLY_SEARCH_cfromperiod=FormTableDateFormat(STDLY_SEARCH_fromperiod);
 $('#STDLY_SEARCH_db_fromdate').val(STDLY_SEARCH_fromperiod);
 $('#STDLY_SEARCH_db_fromdate').show();
 var STDLY_SEARCH_dp_invoice=$('#STDLY_SEARCH_db_paiddate').datepicker('getDate'); 
@@ -3928,7 +3984,7 @@ errvalue="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
 $('#STDLY_SEARCH_form_staffdaily').replaceWith('<center><label class="dberrormsg">'+errvalue+'</label></center>');
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:errvalue}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE",msgcontent:errvalue,position:{top:150,left:500}}});
 }}
 //SORTING FUNCTION
 function STDLY_SEARCH_Sortit(lbid) {

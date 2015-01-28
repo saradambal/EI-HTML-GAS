@@ -1,5 +1,9 @@
 //***********************************************FILE DESCRIPTION*********************************************//
 //*************************************************EMAIL TEMPLATE ENTRY***************************************//
+//DONE BY:PUNI
+//VER 1.7-SD:03/10/2014 ED:03/10/2014 TRACKER NO:422:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position,3.corrected btn validation
+//DONE BY:SARADAMBAL
+//VER 1.6-SD:21/08/2014 ED:21/08/2014,TRACKER NO:422,updated new links,autogrow
 //DONE BY:LALITHA
 //VER 1.5-SD:11/07/2014 ED:11/07/2014,TRACKER NO:422,preloader hide before shwn err msg
 //VER 1.4-SD:20/06/2014 ED:21/06/2014,TRACKER NO:422,Changed failure funct,Changed btn name(submit to save),Updated trim function manually written for txt area,empty the hidden txt while calling insert nd after insertion,Changed validation,alredy exit funt calling time preloader showned,In gs side(Changed userstamp in global funct,while loop for resultset)

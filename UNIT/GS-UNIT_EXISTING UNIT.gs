@@ -1,7 +1,12 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //********************************************EXISTING UNIT***********************************************//
+//<!--DONE BY:PUNI
+////VER 1.6 -SD:06/10/2014,ED:06/10/2014,TRACKER NO:244,Corrected some preloader,msgbox position
 //DONE BY:SARADAMBAL
-//VER 1.2 -SD:12/06/2014 ED:12/06/2014,TRACKER NO:244,updated failure function,implemented doorcode & login validation,checked tickler after removed trigger for login details
+//VER 1.5 -SD:13/09/2014 ED:13/09/2014,TRACKER NO:244,implemented script for preloader,msgbox
+//VER 1.4 -SD:18/09/2014 ED:18/09/2014,TRACKER NO:244,modify the failure function for doorcodeweblogin function
+//VER 1.3 -SD:18/08/2014 ED:18/08/2014,TRACKER NO:244,updated new links,checked sp after updation of rollback,implemented script for textarea 
+//VER 1.2 -SD:12/06/2014 ED:12/06/2014,TRACKER NO:244,updated failure function,implemented doorcode & login validation
 //VER 1.1 -SD:06/06/2014 ED:06/06/2014,TRACKER NO:244,updated new link 
 //VER 1.0 -SD:09/04/2014 ED:09/04/2014,TRACKER NO:244,implemented class for stampdutydate
 //VER 0.09-SD:15/02/2014 ED:01/03/2014,TRACKER NO:244,updated sp for returning flag and updated erormsg for not updating data,checked sp after changing the uldid instead of userstamp
@@ -59,8 +64,8 @@ try
       UEXST_stamptype_rs.close();UEXST_stmt_stamp.close();
     }
     var UEXST_result={"UEXST_errarray":UEXST_errorarray.errormsg,"UEXST_roomtype":UEXST_TB_roombox,"UEXST_stamp":UEXST_TB_stampbox,"UEXST_unitno":UEXST_unitnoarr,"UEXST_nonactive":UEXST_arr_nonactive,"UEXST_unitno_flag":UEXST_unitno,"UEXST_unitno_err_roomstamp_flag":UEXST_flag_unitno_err_roomstamp};      
-    return [UEXST_result];
     UEXST_conn.close();
+    return [UEXST_result];
   }     
   /*------------------------------------FUNCTION FOR UPDATING LOGIN,ACCOUNTS AND OTHERS DETAILS------------------*/
   function UEXST_updateForm(UEXST_existingUnit){
@@ -125,11 +130,7 @@ try
       UEXST_accesscard=null;
     else
       var UEXST_alreadyexist_flag_card=UEXST_alreadyexists(UEXST_accesscard,'UEXST_tb_accesscard') ;
-    if(UEXST_weblogin!='')
-      var UEXST_alreadyexist_flag_login=UEXST_alreadyexists(UEXST_weblogin,'UNIT_tb_weblogin') ;
-    if(UEXST_doorcode!='')
-      var UEXST_alreadyexist_flag_code=UEXST_alreadyexists(UEXST_doorcode,'UNIT_tb_doorcode') ;
-    if((UEXST_alreadyexist_flag_card==true)||(UEXST_alreadyexist_flag_stamp==true)||(UEXST_alreadyexist_flag_room==true)||(UEXST_alreadyexist_flag_login!=undefined && UEXST_alreadyexist_flag_login[0]==0)||(UEXST_alreadyexist_flag_code!=undefined && UEXST_alreadyexist_flag_code[0]==0)){
+    if((UEXST_alreadyexist_flag_card==true)||(UEXST_alreadyexist_flag_stamp==true)||(UEXST_alreadyexist_flag_room==true)){
       var UEXST_alreadyexist_flag=true;
       return {"UEXST_obj_flag_existing":UEXST_alreadyexist_flag};
     }
@@ -162,12 +163,13 @@ try
     var UEXST_flag_rs=UEXST_stmt_flag.executeQuery("SELECT @FLAG");
     while(UEXST_flag_rs.next())
       if(UEXST_flag_rs.getString("@FLAG")==0)
-        return {"UEXST_obj_flag":0}
+        var UEXST_obj_final= {"UEXST_obj_flag":0}
         else
-          return {"UEXST_obj_flag":1,"UEXST_obj_no":UEXST_unitnumber,"UEXST_obj_flag_existing":false}  
+          var UEXST_obj_final= {"UEXST_obj_flag":1,"UEXST_obj_no":UEXST_unitnumber,"UEXST_obj_flag_existing":false}  
           UEXST_flag_rs.close();UEXST_stmt_flag.close();
     UEXST_stmt.close();
     UEXST_conn.close();
+    return UEXST_obj_final;
   }
   /*-----------------------------FUNCTION FOR RETRIEVE LOGIN,OTHERS AND ACCOUNTS DETAILS FROM TABLE-----------------------------*/
   function UEXST_login_acct_others(UEXST_unitnumber,UEXST_source){  
@@ -194,7 +196,7 @@ try
         var UEXST_webpass = UEXST_login_rs.getString("ULDTL_WEBPWD");
       }
       UEXST_array_login={"UEXST_dcode":UEXST_doorcode,"UEXST_weblogin":UEXST_weblogin,"UEXST_webpass":UEXST_webpass}; 
-      UEXST_login_rs.close();
+      UEXST_login_rs.close();UEXST_stmt.close();UEXST_conn.close();
       return UEXST_array_login;
     }
     else if(UEXST_source=='UEXST_radio_acctdetails')
@@ -212,7 +214,7 @@ try
         UEXST_bankaddrs = UEXST_radio_rs.getString("UACD_BANK_ADDRESS");
       }
       UEXST_array_acct={"UEXST_acctnum":UEXST_acctno,"UEXST_acctname":UEXST_acctname,"UEXST_bankcode":UEXST_bankcode,"UEXST_branchcode":UEXST_branchcode,"UEXST_bankaddress":UEXST_bankaddrs}; 
-      UEXST_radio_rs.close();
+      UEXST_radio_rs.close();UEXST_stmt.close();UEXST_conn.close();
       return UEXST_array_acct;
     }
     else if(UEXST_source=='UEXST_radio_others')
@@ -228,10 +230,9 @@ try
       }
       UEXST_others_rs.close();
       var UEXST_deposit_roomstamp=UEXST_getroomstamp_err(UEXST_unitnumber,'UEXST_flag_deposit_roomstamp')
+      UEXST_stmt.close();UEXST_conn.close();
       return [UEXST_deposit_roomstamp[0],UEXST_deposit];
     }
-    UEXST_stmt.close();
-    UEXST_conn.close();
   }
   /*-----------------------------------FUNCTION FOR CHECKING ALREADY EXISTS DATA FOR ACCESS CARD, ROOM TYPE AND STAMP TYPE-----------------------*/
   function UEXST_alreadyexists(UEXST_alreadyexist,UEXST_source)
@@ -246,7 +247,8 @@ try
           UEXST_flag=eilib.Check_ExistsStampduty(UEXST_conn,UEXST_alreadyexist);
     else if((UEXST_source=="UNIT_tb_doorcode")||(UEXST_source=="UNIT_tb_weblogin")){
       UEXST_flag[0]=1;
-      UEXST_flag=eilib.Check_ExistsDoorcodeLogin(UEXST_conn,UEXST_alreadyexist,UEXST_source)}
+      UEXST_flag=eilib.Check_ExistsDoorcodeLogin(UEXST_conn,UEXST_alreadyexist,UEXST_source)
+    }
     UEXST_conn.close();
     return UEXST_flag;
   }  

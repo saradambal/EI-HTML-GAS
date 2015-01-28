@@ -1,6 +1,9 @@
 <!--****************************************CHEQUE ENTRY**************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.03- SD:19/09/2014 ED:19/09/2014,TRACKER NO:676,Implemented preloader and msgbox position script
+//VER 1.02- SD:22/08/2014 ED:22/08/2014,TRACKER NO:676 Updated new jquery and css links and add autogrow line.
+//VER 1.01- SD:20/06/2014 ED:20/06/2014,TRACKER NO:676,Removed Datebox when cheque status is cancelled.
 //VER 1.00- SD:19/06/2016 ED:19/06/2014,TRACKER NO,676,Did cheque date validation(mindate as jan-2005 and maxdate as sysdate+2years)and added conn error message.
 //VER 0.09- SD:06/06/2014 ED:06/06/2014,TRACKER NO:676,changed preloader and jquery,css links.
 //VER 0.08- SD:19/04/2014 ED:19/04/2014,TRACKER NO :676 Restricted DP manual input using jquery common class.
@@ -17,29 +20,40 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
+$('#CHEQUE_ENTRY_ta_comments').autogrow({onInitialize: true});
   $(".preloader").show(); 
   var errormsg=[];
   $("#CHEQUE_ENTRY_tb_chequeno").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
   $(".autosize").doValidation({rule:'alphanumeric',prop:{whitespace:true,autosize:true}});
-  $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+  $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
   $(".numonly").doValidation({rule:'numbersonly'});
   $( "#CHEQUE_ENTRY_db_date").datepicker({dateFormat:'dd-mm-yy',changeYear: true,changeMonth: true});
   $('#CHEQUE_ENTRY_db_date').datepicker("option","maxDate",new Date());
@@ -50,7 +64,9 @@ $(document).ready(function() {
     errormsg=CHEQUE_ENTRY_result.errormessage;
     $('#CHEQUE_ENTRY_tb_chequeno').prop('title',errormsg[0])
     $('#CHEQUE_ENTRY_tb_amount').prop('title',errormsg[0])
-    $(".preloader").hide(); 
+    //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus(); 
     $('#CHEQUE_ENTRY_form_mainform').show();
   }
   $('.chequeformvalidation').blur(function(){
@@ -65,6 +81,8 @@ $(document).ready(function() {
   });
   $('#CHEQUE_ENTRY_btn_savebutton').click(function(){
     $(".preloader").show(); 
+    var  newPos= adjustPosition($('#CHEQUE_ENTRY_btn_savebutton').position(),100,230);
+    resetPreloader(newPos);
     var chequedate=$('#CHEQUE_ENTRY_db_date').val();
     var chequeno=$('#CHEQUE_ENTRY_tb_chequeno').val();
     var chequeto=$('#CHEQUE_ENTRY_tb_chequeto').val();
@@ -82,11 +100,11 @@ $(document).ready(function() {
     $('#CHEQUE_ENTRY_form_mainform').find('input[type=text]').val('');
     $('#CHEQUE_ENTRY_ta_comments').val('');
     $("#CHEQUE_ENTRY_btn_savebutton").attr("disabled", "disabled");
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:errormsg[1]}});
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:errormsg[1],position:$('#CHEQUE_ENTRY_btn_savebutton').position()}});
     }
     else
     {
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:errormsg[2]}});
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:errormsg[2],position:$('#CHEQUE_ENTRY_btn_savebutton').position()}});
     }
     $(".preloader").hide(); 
   }
@@ -105,7 +123,7 @@ $(document).ready(function() {
   }
   else
   {
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:CHEQUE_ENTRY_err}});
+    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:CHEQUE_ENTRY_err,position:$('#CHEQUE_ENTRY_form_mainform').position()}});
   }
   $(".preloader").hide(); 
   }
@@ -151,7 +169,7 @@ $(document).ready(function() {
 <tr>
 <td><label >COMMENTS</label></td><td><textarea  name="CHEQUE_ENTRY_ta_comments" id="CHEQUE_ENTRY_ta_comments"rows="5" cols="20" style = 'width = 2000px;' class="chequeformvalidation"></textarea></td>
 </tr>
-<tr><td><input type="button" class="btn chequeformvalidation"  value="SAVE"  id="CHEQUE_ENTRY_btn_savebutton" disabled  /></td><td>  <input type="button" class="btn chequeformvalidation"  name="reset" id="CHEQUE_ENTRY_btn_reset" onclick="CHEQUE_ENTRY_formreset()"  value="RESET" /></td></tr> 
+<tr><td><input type="button" class="btn chequeformvalidation"  value="SAVE"  id="CHEQUE_ENTRY_btn_savebutton" disabled  /></td><td>  <input type="button" class="btn chequeformvalidation"  name="reset" id="CHEQUE_ENTRY_btn_reset"  value="RESET" /></td></tr> 
 </table>
 </form>
 </body>

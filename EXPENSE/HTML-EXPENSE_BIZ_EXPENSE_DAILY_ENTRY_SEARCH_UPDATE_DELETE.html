@@ -1,6 +1,13 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 /*********************************BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE*******************************/
-//DONE BY:PRADAP,PUNITHA
+//DONE BY:PUNI
+//VER 1.9-SD:09/10/2014 ED:09/10/2014,TRACKER NO:511,corrected script for preloader,msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.8-SD:15/09/2014 ED:15/09/2014,TRACKER NO:511,implemented script for preloader,msgbox
+//VER 1.7-SD:28/08/2014 ED:28/08/2014,TRACKER NO:511,updated data table version 1.10.2
+//VER 1.6-SD:13/08/2014 ED:13/08/2014,TRACKER NO:511,implemented script for reset normal size after updation,updated new links,checked autocommit  
+//VER 1.5-SD:27/07/2014 ED:27/07/2014,TRACKER NO:511,implemented script for starhub DP validation, autocomplete for unit category
+//VER 1.4-SD:21/07/2014 ED:21/07/2014,TRACKER NO:511,implemented coding to sort asc,desc for inv date,from period,to period, timestamp and forperiod- DONE BY SARADAMBAL
 //VER 1.3-SD:11/07/2014 ED:12/07/2014,TRACKER NO:511,implemented sp to get inv,sdate & edate for dynamic dp validation using eilib,removed script for dynamic dp validation- DONE BY SARADAMBAL
 //VER 1.2-SD:25/06/2014 ED:25/06/2014,TRACKER NO:511,implemented err msg if the record not having within unit validation period,corrected some err msg
 //VER 1.1-SD:19/06/2014 ED:19/06/2014,TRACKER NO:511,removed alais(as) for inv date,from period and to period for temp table(electricity)
@@ -11,40 +18,51 @@
 //VER 0.06-SD:07/05/2014 ED:07/05/2014,TRACKER NO:511,put success function in seperate,implemented dynamic temp for electricity type search
 //VER 0.05-SD:21/04/2014 ED:21/04/2014,TRACKER NO:511,changed sp name for unit deletion,to show err msg if no customer in unit in datatable update form-SARADAMBAL
 //VER 0.04-SD:16/04/2014 ED:16/04/2014,TRACKER NO:511,checked migration data and after lp changes,corrected and replaced error msg for description,implemented script for dp validation,implemented script for update validation,hide preloader while getting migration type in unit expense-SARADAMBAL
+//DONE BY:PRADAP,PUNITHA
 //VER 0.03-SD:29/03/2014 ED:04/04/2014,TRACKER NO:511,corrected srchbtn validation,error msg(no table entry),sp(unit expense),dp(invoice,forperiod)
 //VER 0.02-SD:22/01/2014 ED:15/03/2014,TRACKER NO:511,corrected all select query,fileterd active unit condition in all search n updated validation,err msgs by PUNI
 //VER 0.01-INITIAL VERSION, SD:3/11/2013 ED:29/11/2013,TRACKER NO:511 by PRADAP.
 //*********************************************************************************************************-->
 <html>
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--TO SUPPORT DATATABLE FUNCTIONALITIES-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/DataTable1.10.0.js"></script> 
+<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/DataTable1.10.2.js"></script> 
 <script src="http://jquery-datatables-editable.googlecode.com/svn/trunk/media/js/jquery.dataTables.min.js"></script>
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").fadeOut(500);
+}
 //FUNCTION TO ALERT EXCEPTION ERROR
 function onFailure(BDLY_SRC_error) {
 $(".preloader").fadeOut(500);
 if(BDLY_SRC_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
 {
+var BDLY_SRC_position=$("#DDC_lb_unitselect").position();
 BDLY_SRC_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
 $('#BDLY_SRC_form').replaceWith('<center><label class="dberrormsg">'+BDLY_SRC_error+'</label></center>');
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_error}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_error,position:{top:400,left:550}}}); 
 }}
 //ERROR MESSAGE CODES
 var BDLY_SRC_errormessagecodes={126:[115,109],125:[119,113,406],124:[220,221,404],131:[115,109],191:[18,22,407,8,10],197:[312,313],
@@ -92,11 +110,13 @@ BDLY_SRC_unitenddate=null,
 BDLY_SRC_unitstartdate=null,
 BDLY_SRC_unitinvdate=null,
 BDLY_DT_flg_date=1,
-BDLY_SRC_confirmmessages=[];
+BDLY_SRC_confirmmessages=[],
+BDLY_SRC_arr_unitcmts=[];
 var BDLY_SRC_flag_autocom='';
 // This function will run when the page is loaded.
 $(document).ready(function() {
 $(".preloader").show();
+$('textarea').autogrow({onInitialize: true});
 var seclectFormtype;
 //CALL GS FUNCTION TO GET EXPENSE LIST,UNIT EXP CATEGORY,ERR MESSAGES
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_result_getInitialvalue).BDLY_SRC_getInitialvalue();
@@ -135,7 +155,9 @@ options +='<option value="'+ExpenseList[i].key +'">' + ExpenseList[i].value + '<
 }
 $('#BDLY_SRC_lb_ExpenseList').append(options);
 }
-$(".preloader").fadeOut(500);
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 }
 /*------------------------------------------TO GET SEARCH OPTION LIST FOR SELECTED EXPENSE----------------------------------------------------*/
 $("#BDLY_SRC_lb_ExpenseList").change(function(){
@@ -146,14 +168,14 @@ $("#BDLY_SRC_tr_serachopt").hide();
 var selectedexpense = $(this).val();
 //CHECK EACH TABLE OF EXPENSE
 var BDLY_SRC_twodim_chktble={
-9:[BDLY_SRC_arr_chkexp[0],BDLY_SRC_confirmmessages[10],BDLY_SRC_arr_chkexp[1],BDLY_SRC_confirmmessages[9]],
-8:[BDLY_SRC_arr_chkexp[2],BDLY_SRC_confirmmessages[11],BDLY_SRC_arr_chkexp[3],BDLY_SRC_confirmmessages[7]],
-5:[BDLY_SRC_arr_chkexp[4],BDLY_SRC_confirmmessages[12],BDLY_SRC_arr_chkexp[5],BDLY_SRC_confirmmessages[8]],
-1:[BDLY_SRC_arr_chkexp[8],BDLY_SRC_confirmmessages[13],BDLY_SRC_arr_chkexp[9],BDLY_SRC_confirmmessages[6]],
-4:[BDLY_SRC_arr_chkexp[11],BDLY_SRC_confirmmessages[14],1,1],11:[BDLY_SRC_arr_chkexp[15],BDLY_SRC_confirmmessages[15],1,1],
-12:[BDLY_SRC_arr_chkexp[16],BDLY_SRC_confirmmessages[16],1,1],7:[BDLY_SRC_arr_chkexp[12],BDLY_SRC_confirmmessages[18],1,1],
-10:[BDLY_SRC_arr_chkexp[14],BDLY_SRC_confirmmessages[19],1,1],6:[BDLY_SRC_arr_chkexp[13],BDLY_SRC_confirmmessages[20],1,1],
-2:[BDLY_SRC_arr_chkexp[6],BDLY_SRC_confirmmessages[21],BDLY_SRC_arr_chkexp[7],BDLY_SRC_confirmmessages[5]],3:[BDLY_SRC_arr_chkexp[10],BDLY_SRC_confirmmessages[22],1,1]};
+9:[BDLY_SRC_arr_chkexp[0],BDLY_SRC_confirmmessages[12],BDLY_SRC_arr_chkexp[1],BDLY_SRC_confirmmessages[11]],
+8:[BDLY_SRC_arr_chkexp[2],BDLY_SRC_confirmmessages[13],BDLY_SRC_arr_chkexp[3],BDLY_SRC_confirmmessages[9]],
+5:[BDLY_SRC_arr_chkexp[4],BDLY_SRC_confirmmessages[14],BDLY_SRC_arr_chkexp[5],BDLY_SRC_confirmmessages[10]],
+1:[BDLY_SRC_arr_chkexp[8],BDLY_SRC_confirmmessages[15],BDLY_SRC_arr_chkexp[9],BDLY_SRC_confirmmessages[8]],
+4:[BDLY_SRC_arr_chkexp[11],BDLY_SRC_confirmmessages[16],1,1],11:[BDLY_SRC_arr_chkexp[15],BDLY_SRC_confirmmessages[17],1,1],
+12:[BDLY_SRC_arr_chkexp[16],BDLY_SRC_confirmmessages[18],1,1],7:[BDLY_SRC_arr_chkexp[12],BDLY_SRC_confirmmessages[20],1,1],
+10:[BDLY_SRC_arr_chkexp[14],BDLY_SRC_confirmmessages[21],1,1],6:[BDLY_SRC_arr_chkexp[13],BDLY_SRC_confirmmessages[22],1,1],
+2:[BDLY_SRC_arr_chkexp[6],BDLY_SRC_confirmmessages[23],BDLY_SRC_arr_chkexp[7],BDLY_SRC_confirmmessages[7]],3:[BDLY_SRC_arr_chkexp[10],BDLY_SRC_confirmmessages[24],1,1]};
 if((BDLY_SRC_twodim_chktble[selectedexpense][0]==0)||(BDLY_SRC_twodim_chktble[selectedexpense][2]==0)){
 if(BDLY_SRC_twodim_chktble[selectedexpense][0]==0)
 $("#BDLY_SRC_lbl_errmsg_exp").html(BDLY_SRC_twodim_chktble[selectedexpense][1]+'<br>')
@@ -164,6 +186,8 @@ $('#BDLY_SRC_tr_serachopt').hide();
 else{
 if(selectedexpense!=""){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_LoadSearchOption).BDLY_SRC_getSearchOptions(selectedexpense);
 }
 $("#BDLY_SRC_div_searchresult").text("");
@@ -224,6 +248,8 @@ BDLY_SRC_getAllErrorMessages(BDLY_SRC_finalerrrcodes);
 if(selectedSearchopt==198)
 {
 $(".preloader").show();
+//var  newPos= adjustPosition($(this).position(),100,180);
+//resetPreloader(newPos);
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_UpdateDataTable).BDLY_SRC_getAnyTypeExpData(document.getElementById('BDLY_SRC_form'));
 }
 else
@@ -365,9 +391,15 @@ $('#BDLY_SRC_dynamicarea').append(TempStart_DateTR+TempEnd_DateTR+TempUnitTR);
 break;
 }
 }
+var maxinidate= new Date();
+                var maxdatyr =maxinidate.getFullYear()+2;
+                maxdatyr=new Date(maxinidate.setFullYear(maxdatyr));
 $(".BDLY_class_sedatechange").datepicker({dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true});
+$('.BDLY_class_sedatechange').datepicker("option","minDate",new Date(1969, 10 , 19));
 if((selectedSearchopt!=129)&&(selectedSearchopt!=130)&&(selectedSearchopt!=155)&&(selectedSearchopt!=158)&&(selectedSearchopt!=162)&&(selectedSearchopt!=166)&&(selectedSearchopt!=180)&&(selectedSearchopt!=183)&&(selectedSearchopt!=184))
 $('#BDLY_SRC_enddate,#BDLY_SRC_startdate').datepicker("option","maxDate",new Date());
+else
+$('#BDLY_SRC_enddate,#BDLY_SRC_startdate').datepicker("option","maxDate",maxdatyr);
 $( ".BDLY_SRC_class_dynamicrows" ).hide();
 }}
 //APPEND DYNAMIC ELEMENTS BASED ON THE SEARCH OPTION GROUPED END
@@ -399,6 +431,8 @@ if(selectedexpense==11&&selectedSearchopt==142){
 if(BDLY_SRC_getsearch_optiontypeval=="FOR PERIOD DURATION"&&BDLY_SRC_servicedue!="")
 {
 $(".preloader").show();
+//var  newPos= adjustPosition($(this).position(),100,230);
+//resetPreloader(newPos);
 $( ".BDLY_SRC_class_dynamicrows" ).show();
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_success_exp_cleanername).BDLY_SRC_get_cleanername(BDLY_SRC_servicedue,BDLY_SRC_servicedue,selectedSearchopt);
 }
@@ -412,6 +446,7 @@ $("#ui-datepicker-div").position({ my: "left top", at: "left bottom", of: $(this
 }
 /*------------------------------------------SEARCH FORM SEARCH BUTTON VALIDATION --------------------------------------------------------*/
 $(document).on('change blur','.BDLY_SCR_Field',function(){
+$('textarea').height(20);
 $('#BDLY_SRC_div_searchresult_head').text("")
 $('#BDLY_SRC_div_searchresult').text("")
 var BDLY_SRC_btn_validation = true;
@@ -574,6 +609,8 @@ $(".preloader").fadeOut(500);
 $(document).on('change','#BDLY_SRC_lb_category',function(){
 if($(this).val()==23 && startdate!="" && enddate!=""){
 $(".preloader").show();
+//var  newPos= adjustPosition($(this).position(),100,230);
+//resetPreloader(newPos);
 $('#BDLY_SRC_btn_search').attr("disabled", "disabled");
 $('#BDLY_SRC_tr_searchopt_cusname').show();
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_success_cusname).BDLY_SRC_get_cusname(null,startdate,enddate);
@@ -766,6 +803,8 @@ $('#BDLY_SRC_enddate').datepicker("option","minDate",BDLY_SRC_in_sdate);
 if(startdate!="" && enddate!=""){
 if(BDLY_SRC_searchoptionarr[selectedexpense].indexOf(parseInt(selectedSearchopt))>-1)
 {
+var  newPos= adjustPosition($(this).position(),100,190);
+resetPreloader(newPos);
 $(".preloader").show();
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_success_autodata).BDLY_SRC_get_autocomplete(document.getElementById('BDLY_SRC_form'));
 }
@@ -773,6 +812,8 @@ else
 {
 if(BDLY_SRC_getsearch_optiontypearray.indexOf(BDLY_SRC_getsearch_optiontypeval)>-1)
 {
+var  newPos= adjustPosition($(this).position(),100,190);
+resetPreloader(newPos);
 $(".preloader").show();
 }
 if(BDLY_SRC_getsearch_optiontypeval=="CATEGORY"){
@@ -875,6 +916,8 @@ $('#BDLY_SRC_btn_search').attr("disabled", "disabled");
 });
 /*----------------------------------FUNCTION TO GET SEARCH RESULT OF INPUT VALUES---------------------------------------------*/
 $(document).on('click','#BDLY_SRC_btn_search',function(){
+var  newPos= adjustPosition($(this).position(),100,190);
+resetPreloader(newPos);
 $(".preloader").show();
 BDLY_SRC_sucsval=0;
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_UpdateDataTable).BDLY_SRC_getAnyTypeExpData(document.getElementById('BDLY_SRC_form'));
@@ -893,6 +936,7 @@ return BDLY_SRC_errormessage;
 var oTable;
 //FUNCTION TO UPDATE DATA TABLE DYNAMICALLY FOR THE SEARCH RESULT
 function BDLY_SRC_UpdateDataTable(reaponse){
+BDLY_SRC_arr_unitcmts=reaponse[3];
 $('#BDLY_SRC_div_searchresult_head').text("")
 var selectedSearchopt=$("#BDLY_SRC_lb_serachopt").val(),
 BDLY_SRC_selectedexptype=$("#BDLY_SRC_lb_ExpenseList").val(),
@@ -943,6 +987,12 @@ if(headerwidth!=undefined)
 {
 if(Header=='SNO')
 $("<th style='width:"+headerwidth+"px;display:none'>"+Header+"</th>").addClass(resultarray[1][key]).appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
+else if((Header=='INVOICE&nbsp;DATE')||(Header=='INVOICE&nbsp;DATE<em>*</em>')||(Header=='FROM&nbsp;PERIOD<em>*</em>')||(Header=='TO&nbsp;PERIOD<em>*</em>')||(Header=='WORK&nbsp;DATE<em>*</em>')||(Header=='PAID&nbsp;DATE<em>*</em>'))
+$("<th style='width:"+headerwidth+"px'>"+Header+"</th>").addClass(resultarray[1][key]).addClass("uk-date-column").appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
+else if(Header=='FOR&nbsp;PERIOD<em>*</em>')
+$("<th style='width:"+headerwidth+"px'>"+Header+"</th>").addClass(resultarray[1][key]).addClass("uk-forperiod-column").appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
+else if(Header=='TIMESTAMP')
+$("<th style='width:"+headerwidth+"px'>"+Header+"</th>").addClass(resultarray[1][key]).addClass("uk-timestp-column").appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
 else
 $("<th style='width:"+headerwidth+"px'>"+Header+"</th>").addClass(resultarray[1][key]).appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
 }
@@ -950,6 +1000,12 @@ else
 {
 if(Header=='SNO')
 $("<th style='display:none'>"+Header+"</th>").addClass(resultarray[1][key]).appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
+else if((Header=='INVOICE&nbsp;DATE')||(Header=='INVOICE&nbsp;DATE<em>*</em>')||(Header=='FROM&nbsp;PERIOD<em>*</em>')||(Header=='TO&nbsp;PERIOD<em>*</em>')||(Header=='WORK&nbsp;DATE<em>*</em>')||(Header=='PAID&nbsp;DATE<em>*</em>'))
+$("<th style='width:"+headerwidth+"px'>"+Header+"</th>").addClass(resultarray[1][key]).addClass("uk-date-column").appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
+else if(Header=='FOR&nbsp;PERIOD<em>*</em>')
+$("<th style='width:"+headerwidth+"px'>"+Header+"</th>").addClass(resultarray[1][key]).addClass("uk-forperiod-column").appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
+else if(Header=='TIMESTAMP')
+$("<th style='width:"+headerwidth+"px'>"+Header+"</th>").addClass(resultarray[1][key]).addClass("uk-timestp-column").appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
 else
 $("<th style='width:"+headerwidth+"px'>"+Header+"</th>").addClass(resultarray[1][key]).appendTo("#BDLY_SRC_tb_DataTableId > thead >tr");
 }
@@ -967,10 +1023,10 @@ if (index < 2) return;
 var tr = $("#BDLY_SRC_tb_DataTableId >tbody").append("<tr></tr>");
 var eachcell;
 $.each( row, function( key, cell ) {
+var selectedSearchopt = $('#BDLY_SRC_lb_serachopt').val();
 if(key==0)
 var keyid=cell;
 var cell = ((cell==null)?"":cell);
-var selectedSearchopt = $('#BDLY_SRC_lb_serachopt').val();
 if((key==0)&&(selectedSearchopt!=142))
 eachcell +='<td style="display:none;">'+cell+'</td>';
 else if(key==1)
@@ -994,6 +1050,41 @@ if(selectedSearchopt!=142)
 $("#BDLY_SRC_tb_DataTableId >tbody >tr:last").append('<td><input type="button" class="multirowbtn edit" value="Edit">'+BDLY_SRC_delbtn+'</td>'); //myButton
 }
 });
+jQuery.fn.dataTableExt.oSort['uk_date-asc']  = function(a,b) { 
+   var x = new Date( Date.parse(FormTableDateFormat(a))); 
+    var y = new Date( Date.parse(FormTableDateFormat(b)) ); 
+    return ((x < y) ? -1 : ((x > y) ?  1 : 0)); 
+};  
+jQuery.fn.dataTableExt.oSort['uk_date-desc'] = function(a,b) { 
+    var x = new Date( Date.parse(FormTableDateFormat(a))); 
+    var y = new Date( Date.parse(FormTableDateFormat(b)) ); 
+    return ((x < y) ? 1 : ((x > y) ?  -1 : 0)); 
+} 
+jQuery.fn.dataTableExt.oSort['uk_timestp-asc']  = function(a,b) { 
+    var x = new Date( Date.parse(FormTableDateFormat(a.split(' ')[0]))).setHours(a.split(' ')[1].split(':')[0],a.split(' ')[1].split(':')[1],a.split(' ')[1].split(':')[2]); 
+    var y = new Date( Date.parse(FormTableDateFormat(b.split(' ')[0]))).setHours(b.split(' ')[1].split(':')[0],b.split(' ')[1].split(':')[1],b.split(' ')[1].split(':')[2]); 
+    return ((x < y) ? -1 : ((x > y) ?  1 : 0));     
+    }; 
+jQuery.fn.dataTableExt.oSort['uk_timestp-desc'] = function(a,b) { 
+  var x = new Date( Date.parse(FormTableDateFormat(a.split(' ')[0]))).setHours(a.split(' ')[1].split(':')[0],a.split(' ')[1].split(':')[1],a.split(' ')[1].split(':')[2]); 
+  var y = new Date( Date.parse(FormTableDateFormat(b.split(' ')[0]))).setHours(b.split(' ')[1].split(':')[0],b.split(' ')[1].split(':')[1],b.split(' ')[1].split(':')[2]); 
+    return ((x < y) ? 1 : ((x > y) ?  -1 : 0)); 
+}; 
+// UK Date Sorting 
+jQuery.fn.dataTableExt.oSort['uk_forperiod-asc']  = function(a,b) { 
+    var ukDatea = a.split('-'); var ukDateb = b.split('-'); 
+        var monthArr={January:['00'],February:['01'],March:['02'],April:['03'],May:['04' ],June:['05'],July:['06'],August:['07'],September:['08'],October:['09'],November:['10'],December:['11']};
+var x = new Date( ukDatea[1],monthArr[ukDatea[0]][0],1); 
+var y = new Date( ukDateb[1],monthArr[ukDateb[0]][0],1); 
+    return ((x < y) ? -1 : ((x > y) ?  1 : 0)); 
+};  
+jQuery.fn.dataTableExt.oSort['uk_forperiod-desc'] = function(a,b) { 
+    var ukDatea = a.split('-');  var ukDateb =b.split('-'); 
+        var monthArr={January:['00'],February:['01'],March:['02'],April:['03'],May:['04' ],June:['05'],July:['06'],August:['07'],September:['08'],October:['09'],November:['10'],December:['11']};
+var x = new Date( ukDatea[1],monthArr[ukDatea[0]][0],1); 
+var y = new Date( ukDateb[1],monthArr[ukDateb[0]][0],1);    
+return ((x < y) ? 1 : ((x > y) ?  -1 : 0)); 
+}; 
 switch (BDLY_SRC_getsearch_optiontypeval)
 {
 case "DURATION":
@@ -1251,15 +1342,16 @@ oTable= $('#BDLY_SRC_tb_DataTableId').dataTable({
 "aaSorting": [],
 "pageLength": 25,
 "sPaginationType":"full_numbers",
-});
-}
+        "aoColumnDefs" : [ 
+               { "aTargets" : ["uk-date-column"] , "sType" : "uk_date"}, { "aTargets" : ["uk-timestp-column"] , "sType" : "uk_timestp"},{ "aTargets" : ["uk-forperiod-column"] , "sType" : "uk_forperiod"} ]
+});}
 if(BDLY_SRC_sucsval==1)
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[0].replace('[TYPE]',$('#BDLY_SRC_lb_ExpenseList').find('option:selected').text())}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[0].replace('[TYPE]',$('#BDLY_SRC_lb_ExpenseList').find('option:selected').text()),position:{top:150,left:500}}}); 
 }
 if(BDLY_SRC_sucsval==2)
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[1].replace('[TYPE]',$('#BDLY_SRC_lb_ExpenseList').find('option:selected').text())}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[1].replace('[TYPE]',$('#BDLY_SRC_lb_ExpenseList').find('option:selected').text()),position:{top:150,left:500}}}); 
 }
 $(".preloader").fadeOut(500);
 }
@@ -1291,12 +1383,12 @@ $('#BDLY_SCR_lbl_err_durationmin').html('')
 else{
 BDLY_SRC_updatebtnflag=0;
 $('.hrs').addClass('invalid')
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_finalerrr[4]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_finalerrr[4],position:{top:150,left:500}}});
 }}
 else if((BDLY_SRC_durhrs>24)||(BDLY_SRC_durhrs==24 && BDLY_SRC_durmin!=0 && BDLY_SRC_durmin<60)){
 BDLY_SRC_updatebtnflag=0;
-$('.hrs').addClass('invalid')
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_finalerrr[3]}});
+$('.hrs').addClass('invalid');
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_finalerrr[3],position:{top:150,left:500}}});
 }}}
 if(selectedSearchopt==198)
 {
@@ -1307,11 +1399,13 @@ if((inputval!=""&&(inputval).toString().length<4&&parseInt(inputval)!=0))
 BDLY_SRC_updatebtnflag=0;
 $(this).addClass('invalid');
 //CHECK UNIT NO LENGTH==4
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_finalerrr[1]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_finalerrr[1],position:{top:150,left:500}}}); 
 }
 else if((inputval!=""&&(inputval).toString().length==4&&parseInt(inputval)!=0)&&BDLY_SCR_DT_currentfield_hkp_unitno!=inputval)
 {
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,420);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_check_access_cardOrUnitnoresult).BDLY_SRC_check_access_cardOrUnitno(inputval,BDLY_SRC_selectedexptype);
 }
 }
@@ -1336,12 +1430,14 @@ if((BDLY_SCR_DT_access_card!=""&&(BDLY_SCR_DT_access_card).toString().length<4&&
 {
 BDLY_SRC_purchasecard=0;
 $(this).addClass('invalid');
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_cardlenerr}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_cardlenerr,position:{top:150,left:500}}}); 
 }
 else if(BDLY_SCR_DT_currentfield_access_card!=BDLY_SCR_DT_access_card)
 {
 if(BDLY_SCR_DT_access_card!='' && (BDLY_SCR_DT_access_card!=""&&(BDLY_SCR_DT_access_card).toString().length>=4&&parseInt(BDLY_SCR_DT_access_card)!=0)){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,350);
+resetPreloader(newPos);
 BDLY_SRC_purchasecard=1;
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_check_access_cardOrUnitnoresult).BDLY_SRC_check_access_cardOrUnitno(BDLY_SCR_DT_access_card,BDLY_SRC_selectedexptype);
 }
@@ -1365,13 +1461,13 @@ if(BDLY_SRC_selectedexptype==6)
 {BDLY_SRC_purchasecard=0;
 //CHECK CARD NO EXISTS OR NOT
 $('.tb_access_card').addClass('invalid');
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_cardalexistserr}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_cardalexistserr,position:{top:150,left:500}}}); 
 }
 else
 {
 //CHECK UNIT NO ALREADY EXISTS OR NOT
 $('.unittextbox').addClass('invalid');
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_finalerrr[2]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_finalerrr[2],position:{top:150,left:500}}}); 
 }
 }
 else if($('.tb_access_card').hasClass('invalid')){
@@ -1395,6 +1491,18 @@ $(".sdate").datepicker( "option", "maxDate",smindate);
 }});
 $(document).on('change','.sdate',function(){
 var smindate= new Date( Date.parse(FormTableDateFormat($(this).val())) ); 
+if($("#BDLY_SRC_lb_ExpenseList").val()==2){
+  var BDLY_INPUT_smonth=smindate.getMonth()+3;  var BDLY_INPUT_syear=smindate.getFullYear();
+  var BDLY_INPUT_startdate = new Date(BDLY_INPUT_syear,BDLY_INPUT_smonth);
+  var enddate=new Date(BDLY_INPUT_startdate.getFullYear(),BDLY_INPUT_startdate.getMonth(),BDLY_INPUT_startdate.getDate()-1);
+  var BDLY_SRC_sh_maxdate='';
+var BIZDLY_SRC_enddate = new Date( Date.parse(BDLY_SRC_unitenddate) ); 
+if(enddate>BIZDLY_SRC_enddate)
+BDLY_SRC_sh_maxdate=BIZDLY_SRC_enddate;
+else
+BDLY_SRC_sh_maxdate=enddate;
+$(".edate").datepicker( "option", "maxDate",BDLY_SRC_sh_maxdate); 
+}
 smindate.setDate( smindate.getDate() );  
 var smindate = smindate.toDateString(); 
 smindate = new Date( Date.parse( smindate ) );
@@ -1435,13 +1543,15 @@ BDLY_DT_row_old_vals.push(html)
 $('.edit').removeAttr("disabled").next().removeAttr("disabled");
 var dbrowid=$(this).closest("tr").children("td:first").html();
 BDLY_SRC_DeleteKey=dbrowid;
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[4],confirmation:true}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[4],confirmation:true,position:{top:500,left:2080}}}); 
 BDLY_SRC_CurrentTR=$(this).closest("tr");
 }
 });
 /*------------------------------------------------TO DELETE EACH ROW FROM TABLE AFTER CONFIRMATION----------------------------*/
 $(document).on('click','.messageconfirm',function(){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 var selectedexpense=$('#BDLY_SRC_lb_ExpenseList').val();
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_DT_success_deleterow).BDLY_SRC_DeleteRowData(BDLY_SRC_DeleteKey,selectedexpense);
 });
@@ -1471,7 +1581,7 @@ if(BDLY_SRC_sucsval==2)
 {
 $("#BDLY_SRC_div_searchresult,#BDLY_SRC_div_searchresult_head,#BDLY_SRC_nodyndataerr").html('');
 $(".preloader").fadeOut(500);
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[1].replace('[TYPE]',$('#BDLY_SRC_lb_ExpenseList').find('option:selected').text())}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[1].replace('[TYPE]',$('#BDLY_SRC_lb_ExpenseList').find('option:selected').text()),position:{top:150,left:500}}}); 
 }
 }
 else
@@ -1485,7 +1595,7 @@ $(".preloader").fadeOut(500);
 var BDLY_SRC_err_deletion=BDLY_SRC_confirmmessages[2];
 if($('#BDLY_SRC_lb_ExpenseList').val()==6)
 BDLY_SRC_err_deletion=BDLY_SRC_confirmmessages[25];
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_err_deletion}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_err_deletion,position:{top:150,left:500}}}); 
 }
 }
 $(document).on('click','.required,.invalid',function() {
@@ -1534,6 +1644,18 @@ $(".edate").datepicker( "option", "maxDate",CEXTN_db_chkindate1);
 else{
 var BIZDLY_SRC_enddate = new Date( Date.parse(BDLY_SRC_unitenddate) ); 
 $(".sdate").datepicker( "option", "maxDate",BIZDLY_SRC_enddate);
+if($("#BDLY_SRC_lb_ExpenseList").val()==2){
+var CEXTN_db_sdate = new Date( Date.parse($(".sdate").parent().find('input').datepicker( 'getDate')) );
+var BDLY_INPUT_smonth=CEXTN_db_sdate.getMonth()+3;  var BDLY_INPUT_syear=CEXTN_db_sdate.getFullYear();
+var BDLY_INPUT_startdate = new Date(BDLY_INPUT_syear,BDLY_INPUT_smonth);
+var enddate=new Date(BDLY_INPUT_startdate.getFullYear(),BDLY_INPUT_startdate.getMonth(),BDLY_INPUT_startdate.getDate()-1)
+var BDLY_SRC_sh_maxdate='';
+if(enddate>BIZDLY_SRC_maxdate)
+BDLY_SRC_sh_maxdate=BIZDLY_SRC_maxdate;
+else
+BDLY_SRC_sh_maxdate=enddate;
+$(".edate").datepicker( "option", "maxDate",BDLY_SRC_sh_maxdate); 
+}else
 $(".edate").datepicker( "option", "maxDate",BIZDLY_SRC_enddate);
 }
 var CEXTN_db_sdate = new Date( Date.parse($(".sdate").parent().find('input').datepicker( 'getDate')) );
@@ -1556,7 +1678,7 @@ if(BDLY_DT_flg_date==0){
 var BDLY_SRC_sdate_err_tostring=BDLY_SRC_confirmmessages[6].toString();
 var BDLY_SRC_sdate=BDLY_SRC_sdate_err_tostring.replace("[SD]",FormTableDateFormat(BDLY_SRC_unitstartdate));
 var BDLY_SRC_date_err=BDLY_SRC_sdate.replace("[ED]", FormTableDateFormat(BDLY_SRC_unitinvdate))
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_date_err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_date_err,position:{top:150,left:500}}});
 var td =$('.update').closest("tr").children("td");
 $(td).each(function () {
 if($(this).index()<td.length-3){
@@ -1572,6 +1694,8 @@ oTable.fnUpdate(record, 1);}
 }
 /*-----------------------------------ACTON TO EDIT EACH ROW IN DATA TABLE---------------------*/
 $(document).on('click','.edit',function() {
+var  newPos= adjustPosition($(this).position(),100,-190);
+resetPreloader(newPos);
 $(".preloader").show();
 var BDLY_DT_wrongendate='';
 var tr = $(this).closest("tr").index()+1;
@@ -1614,9 +1738,9 @@ $(".ndate").datepicker({dateFormat: "dd-mm-yy",changeMonth: true,changeYear:true
 }
 if((thtext=='date')||(thtext=='edate')||(thtext=='sdate')){
 $(".datepickerbox").datepicker({dateFormat: "dd-mm-yy",changeMonth: true,changeYear:true});
+}
 if(requiredindex!=-1)
 $(this).find('input').addClass('required').addClass('prevent');
-}
 }
 else if(thtext=='unittextbox')
 {
@@ -1629,9 +1753,9 @@ $(this).find('input').addClass('required');
 }
 else if(thtext=='textbox')
 {
-var input = $('<input type="text" required class="textbox" maxlength="200"/>');
+var input = $('<input type="text"  class="textbox autocom" maxlength="200"/>');
 var tbinputlen=((BDLY_DT_row_old_vals1[(BDLY_DT_row_old_vals1.length)-1]).toString().length)+3;
-var input = $('<input type="text" required class="textbox" maxlength="200"  size='+tbinputlen+' />');
+var input = $('<input type="text"  class="textbox autocom" maxlength="200"  size='+tbinputlen+' />');
 input.val(BDLY_DT_row_old_vals1[(BDLY_DT_row_old_vals1.length)-1]);
 $(this).html(input);
 if(requiredindex!=-1)
@@ -1785,7 +1909,7 @@ if(selectedexpense==3)
 {
 $(".textbox").doValidation({rule:'general',prop:{autosize:true}});//unit exp invoice from autosize textbox
 }
-if((selectedexpense==3&&BDLY_SRC_lb_category!=''&&BDLY_SRC_lb_category!=23)||(selectedexpense!=3))
+if(($('#BDLY_SRC_lb_ExpenseList').val()==10)||($('#BDLY_SRC_lb_ExpenseList').val()==11)||($('#BDLY_SRC_lb_ExpenseList').val()==12))
 {
 $(".preloader").fadeOut(500);
 }
@@ -1794,7 +1918,6 @@ $(".tb_access_card").doValidation({rule:'numbersonly',prop:{realpart:7}}).width(
 });
 $(this).next().show().val('Cancel');
 $('.edit').attr("disabled", "disabled").next().attr("disabled", "disabled");
-//oTable.fnUpdate(record, 1);
 var td =  $(this).closest("tr").children("td");
 $(td).each(function () {
 var tdid =$(this).index();
@@ -1804,10 +1927,20 @@ BDLY_SRC_unitenddate=null,
 BDLY_SRC_unitstartdate=null,
 BDLY_SRC_unitinvdate=null;
 $(".preloader").show();
+//var  newPos= adjustPosition($(this).position(),100,230);
+//resetPreloader(newPos);
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_succ_Unitdate).BDLY_SRC_getUnitDate($(this).html());}
 });
-//}
+if($('#BDLY_SRC_lb_ExpenseList').val()==3)
+auto();
 });
+function auto(){
+highlightSearchText();
+$('.autocom').autocomplete({
+source: BDLY_SRC_arr_unitcmts,
+select:AutoCompleteSelectHandler
+});
+}
 //FUNCTION TO VALIDATE AMOUNT TEXT BOX HAVING MORE THAN ONE AMT FOR ELECTRICITY,FACILITY USE
 $(document).on('keypress keydown','#optionalamnt1,#optionalamnt2,#optionalamnt3',function() {
 if($(this).attr('id')=='optionalamnt1'){
@@ -1836,6 +1969,8 @@ if(BDLY_DT_unit_category_lb==23){
 var BDLY_DT_getunit_no =$(this).parent().parent().find('td.unitno').html();
 var  input = $('<select id="DT_unitexp_cus_name_lb" class="listbox"></select>');
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_DT_success_cusname).BDLY_SRC_get_cusname(BDLY_DT_getunit_no);
 $(this).parent().next().html(input);
 }
@@ -1847,7 +1982,7 @@ var options;
 if(Unit_Exp_Cusname_global.length==0){
 BDLY_SRC_purchasecard=0;
 $('#DT_unitexp_cus_name_lb').hide().removeClass('required');
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[26]}}); }
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[26],position:{top:150,left:500}}}); }
 else{
 BDLY_SRC_purchasecard=1;
 for (var i = 0; i <Unit_Exp_Cusname_global.length; i++) {
@@ -1863,6 +1998,7 @@ options +='<option value="'+Unit_Exp_Cusname_global[i].key +'">' +firstname_last
 }
 $('#DT_unitexp_cus_name_lb').html(options).show().addClass('required');
 }
+if(BDLY_SRC_unitenddate!=null && BDLY_SRC_unitenddate!='null' )
 $(".preloader").fadeOut(500);
 }
 $(document).on('focus','#DT_unitexp_cus_name_lb, #DT_unit_category_lb',function() {
@@ -1874,6 +2010,8 @@ $("#DT_unit_category_lb option[value='']").remove();
 /*--------------------------------------------------update each row in database--------------------*/
 $(document).on('click','.update',function() {
 var allGood = true;
+$( ".autocom" ).autocomplete( "destroy" );
+$('.ui-autocomplete-input').removeClass('ui-autocomplete-input').removeClass("autocom");
 var requiredtd =  $(this).closest("tr").children("td").find(".required");
 requiredtd.each(function(){
 var val =$.trim($(this).val());
@@ -1885,6 +2023,8 @@ allGood = false;
 if(allGood==false)
 return false;
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,-190);
+resetPreloader(newPos);
 BDLY_DT_row_new_vals=[];
 var td =  $(this).closest("tr").children("td");
 var BDLY_SRC_selectedexptype=$("#BDLY_SRC_lb_ExpenseList").val()
@@ -1896,9 +2036,10 @@ if(tdid==0)
 BDLY_DT_row_new_vals.push($(this).html())
 if(tdid>0 && tdid<totallenght-3){
 var oldinput= $(this).children();
-if(oldinput.length)
-BDLY_DT_row_new_vals.push(oldinput.val())
-else BDLY_DT_row_new_vals.push($(this).html())
+if(oldinput.length){
+BDLY_DT_row_new_vals.push(oldinput.val())}
+else {BDLY_DT_row_new_vals.push($(this).html());
+}
 if(oldinput.hasClass('listbox'))
 var val =oldinput.find('option:selected').text();
 else var val =oldinput.val();
@@ -1944,7 +2085,7 @@ $("#BDLY_SRC_div_searchresult,#BDLY_SRC_div_searchresult_head,#BDLY_SRC_nodyndat
 if(BDLY_SRC_sucsval==1)
 {
 $(".preloader").fadeOut(500);
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[0].replace('[TYPE]',$('#BDLY_SRC_lb_ExpenseList').find('option:selected').text())}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[0].replace('[TYPE]',$('#BDLY_SRC_lb_ExpenseList').find('option:selected').text()),position:{top:150,left:500}}}); 
 }
 }
 else
@@ -1955,7 +2096,9 @@ google.script.run.withFailureHandler(onFailure).withSuccessHandler(BDLY_SRC_Upda
 else
 {
 $(".preloader").fadeOut(500);
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_SRC_confirmmessages[3]}}); 
+if(BDLY_successflag==0)
+var BDLY_successflag=BDLY_SRC_confirmmessages[3];
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE",msgcontent:BDLY_successflag,position:{top:150,left:500}}}); 
 }
 }
 });

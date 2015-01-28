@@ -1,3 +1,12 @@
+//FUNCTION TO DROP TEMP TABLE
+function DropTempTable(conn,tablename)  
+{
+  var temp_stmt= conn.createStatement();
+  var temp_query = "DROP TABLE IF EXISTS "+tablename+""; 
+  temp_stmt.execute(temp_query);
+  temp_stmt.close();
+}
+
 //DD FILE SHARING FUNCTION//
 function Deposit_Deduction_fileSharing(newsheetid,templatefolderid) {
   var year=Utilities.formatDate(new Date(), TimeZone,'yyyy');
@@ -174,15 +183,14 @@ function GetForperiodDateFormat(fromInputDate,toInputDate){
   var fromMonth=splitFromInputDate[0];
   var toMonth=splitToInputDate[0];
   for(var i=0;i<=monthArr.length;i++)
+  {    if(monthArr[i]==fromMonth)
   {
-    if(monthArr[i]==fromMonth)
-    {
-      var getfromMonth=i;
-    }
-    if(monthArr[i]==toMonth)
-    {
-      var gettoMonth=i;
-    }
+    var getfromMonth=i;
+  }
+   if(monthArr[i]==toMonth)
+   {
+     var gettoMonth=i;
+   }
   } 
   var getFromDate=Utilities.formatDate(new Date(splitFromInputDate[1],getfromMonth), TimeZone, 'yyyy-MM-dd');
   var endMonthDate=new Date(splitFromInputDate[1],parseInt(gettoMonth)+1).getDate();
@@ -848,4 +856,18 @@ function gettimezone24HRS()
   var sec=(now.getSeconds()).toString();
   if(sec.length==1){sec='0'+sec};
   return [day +'-'+month+'-'+now.getFullYear()+' '+hours+':'+min+':'+sec];
+}    //GET THE INVOICE FROM THE EXPENSE UNIT TABLE//
+function BDLY_getinvoicefrom(conn)
+{
+  var BDLY_dataArray=[];
+  var BDLY_stmt=conn.createStatement();
+  var BDLY_INPUT_expperquery="SELECT EU_INVOICE_FROM FROM EXPENSE_UNIT";
+  var BDLY_rs = BDLY_stmt.executeQuery(BDLY_INPUT_expperquery);
+  while(BDLY_rs.next()) {
+    if((BDLY_rs.getString('EU_INVOICE_FROM')!=null)&&(BDLY_rs.getString('EU_INVOICE_FROM')!=''))
+    BDLY_dataArray.push(BDLY_rs.getString('EU_INVOICE_FROM'));
+  }
+  BDLY_rs.close();
+  BDLY_stmt.close();
+  return BDLY_dataArray;
 }

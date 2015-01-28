@@ -1,11 +1,15 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 /**********************************************CUSTOMER EXTENSION******************************************/
-//DONE BY:PUNITHA,KUMAR
+//DONE BY:PUNITHA
+//VER 1.3-SD:08/10/2014 ED:08/10/2014,TRACKER NO:813,changed preloader n msgbox position
+//VER 1.2-SD:12/08/2014 ED:22/08/2014,TRACKER NO:813,Updated new links in html,implemented commit n rollback,updated sp to show msg for payment for same month extn BY PUNI
 //VER 1.1-SD:03/07/2014 ED:03/07/2014,TRACKER NO:813,changed processing cost 5 digits real to 4 digits for amt validation,added numbers only tooltip for amt fields by PUNI
 //VER 1.0-SD:18/06/2014 ED:19/06/2014,TRACKER NO:813,added passport date n ep date validation greater than chk out date n checked userstamp n timestamp updation by PUNI
 //VER 0.09-SD:04/06/2014 ED:04/06/2014,TRACKER NO:813,ep date n pass date max date is fixed,added err msg if cal name is wrong n doc id is wrong,changed new drive link BY PUNI
 //VER 0.08-SD:28/05/2014 ED:28/05/2014,TRACKER NO:813,corrected checkout date DP format,changed query to set max check out date after ptd in between lp n extnd because of card assign view changes by PUNI
+//DONE BY:KUMAR
 //VER 0.07-SD:29/04/2014 ED:29/04/2014,TRACKER NO:813,Added one input parameter in Extension fee temp table.done by kumar
+//DONE BY:PUNITHA
 //VER 0.06-SD:12/04/2014 ED:22/04/2014,TRACKER NO:813,updated validation to clear dp when diff unit is selected n chked tickler table updation sp n updated script to show error msg if active card is assigned returned from sp n checked with corrected term sp BY PUNI
 //VER 0.05-SD:17/03/2014 ED:12/04/2014,TRACKER NO:813,updated validation for passport no,ep no if expiry date entered n updated some form validation to set check out date after ptd in the middle of some lps,changed extension sp to reorder lps when extn after ptd,changed table name as per new changes BY PUNI
 //VER 0.04-SD:17/03/2014 ED:17/03/2014,TRACKER NO:731,issue fixed n cr updated-updated uld id,taken err msg from eilib,changed eilib cal event to cal time from id,implemented array concept,added flag to show confirm mesg,updatd mobile,office,ep no,pass no validation BY PUNI
@@ -18,26 +22,37 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //JQUERY FUNCTIONALITIES
 $(document).ready(function() 
 {
+$('textarea').autogrow({onInitialize: true});
 //FUNCTION TO ALERT TRY CATCH ERROR MESSAGE
 function onFailure(CEXTN_error) {
 $(".preloader").hide();
@@ -57,7 +72,7 @@ else if(CEXTN_error=='ScriptError: No item with the given ID could be found, or 
 {
 CEXTN_error=CEXTN_errmsgs[26];
 }
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_error}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_error,position:{top:150,left:500}}}); 
 }
 }
 $(".preloader").show();
@@ -234,7 +249,10 @@ CEXTN_calentimeres += '<option value="' + calentime[i] + '">' + calentime[i] + '
 $('#CEXTN_lb_chkoutfromtime').html(CEXTN_calentimeres);
 $('#CEXTN_lb_chkinfromtime').html(CEXTN_calentimeres);
 }
-$(".preloader").hide(); 
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //GET CUSTOMER NAME FOR THE SELECTED UNIT
 $('#CEXTN_lb_unitno').change(function()
@@ -247,6 +265,8 @@ var CEXTN_lbl_custname=$('#CEXTN_lbl_custname').hide();
 var CEXTN_lb_custname=$('#CEXTN_lb_custname').hide();
 if(CEXTN_lb_unitno!='SELECT')
 {
+var  newPos= adjustPosition($(this).position(),100,150);
+resetPreloader(newPos);
 $(".preloader").show(); 
 //CALL FUNCTION TO GET UNIT NOS,ERROR MSGS,PRORATED N WAIVED VALUE
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCustomerNameId_result).CEXTN_getCustomerNameId(CEXTN_lb_unitno);
@@ -351,6 +371,8 @@ $('#CEXTN_div_sameamt').hide();
 });
 //UNIT RADIO BUTTON VALIDATION
 $("input[name='CEXTN_radio_unit']").on("change", function () {
+var  newPos= adjustPosition($(this).position(),100,150);
+resetPreloader(newPos);
 $(".preloader").show(); 
 $('#CEXTN_div_custerrmsg').hide();
 var CEXTN_rmtype=$('#CEXTN_tb_sameunitsamermrmtype').val();
@@ -524,12 +546,16 @@ var CEXTN_lb_unitno=$('#CEXTN_lb_diffunituno').val();
 var CEXTN_rmtype="";
 if(CEXTN_lb_unitno!="SELECT")
 {
+var  newPos= adjustPosition($(this).position(),100,80);
+resetPreloader(newPos);
 $(".preloader").show(); 
 //ADD DIFF UNIT ROOM TYPE
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getRoomType_result).CEXTN_getRoomType(CEXTN_lb_unitno,CEXTN_rmtype);
 }
 });
 $("input[name='CEXTN_radio_difunitcard']").on("change", function () {
+var  newPos= adjustPosition($(this).position(),100,60);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var CEXTN_tb_firstname=$('#CEXTN_tb_firstname').val();
 var CEXTN_tb_lastname=$('#CEXTN_tb_lastname').val();
@@ -801,7 +827,6 @@ $('#CEXTN_lbl_chkoutto').hide();
 //FUNCTION TO VALIDATE FORM
 $(document).on("change blur",'#CEXTN_form', function ()
 {
- $( "p" ).text("");
 var CEXTN_validinput=1;
 var CEXTN_validoutput=CEXTN_validateinputform(CEXTN_validinput);
 CEXTN_validatesubmitbtn(CEXTN_validoutput);
@@ -1234,6 +1259,8 @@ $("#CEXTN_btn_save").removeAttr("disabled");
 //FUNCTION FOR ON CLICK OF CUST ID 
 $(document).on("change",'.CEXTN_class_custid', function ()
 {
+var  newPos= adjustPosition($(this).position(),100,150);
+resetPreloader(newPos);
 $(".preloader").show(); 
 CEXTN_Show_ExtensionForm()
 });
@@ -1486,6 +1513,7 @@ else
 $('#CEXTN_cb_sameamtwaived').prop('checked',false);
 $("#CEXTN_hidden_sameamtwaived").val("");
 }
+$('#CEXTN_ta_comments').height(20);
 $("#CEXTN_ta_comments").val(CEXTN_custdtls.cust_comts);
 //SET NOTICE PERIOD DATE
 if(CEXTN_custdtls.cust_noticedate!="")
@@ -1664,6 +1692,8 @@ $("#CEXTN_btn_save").attr("disabled","disabled");
 //FUNCTION TO CALL SAVE FUNCTION
 $("#CEXTN_btn_save").click(function()
 {
+var  newPos= adjustPosition($("#CEXTN_div_save").position(),100,150);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var CEXTN_validinput=1;
 var CEXTN_validoutput=CEXTN_validateinputform(CEXTN_validinput);
@@ -1683,29 +1713,48 @@ function CEXTN_SaveDetails_result(saveresult)
 var CEXTN_tb_firstname=$("#CEXTN_tb_firstname").val();
 var CEXTN_tb_lastname=$("#CEXTN_tb_lastname").val();
 var CEXTN_successmsg=CEXTN_errmsgs[7];
+if(saveresult.match("SCRIPT EXCEPTION:"))
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:saveresult,position:$("#CEXTN_div_save").position()}}); 
+$(".preloader").hide(); 
+}
+else
+{
+var paymentchkmsg=saveresult.split("_")[1];
+var saveresult=saveresult.split("_")[0];
 if(saveresult==1)
 {
 CEXTN_clearForm();
 CEXTN_successmsg=CEXTN_successmsg.replace('[FIRST NAME]',CEXTN_tb_firstname)
 CEXTN_successmsg=CEXTN_successmsg.replace('[LAST NAME]',CEXTN_tb_lastname)
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_successmsg}}); 
+if(paymentchkmsg!='null')
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_successmsg+"<br>"+paymentchkmsg,position:{top:150,left:500}}}); 
 }
 else
 {
-if(saveresult!=0||saveresult!=undefined)
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:saveresult}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_successmsg,position:{top:150,left:500}}}); 
+}
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_errmsgs[21]}}); 
+if(saveresult.toString()=='0')
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_errmsgs[21],position:$("#CEXTN_div_save").position()}}); 
+}
+else
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:saveresult,position:$("#CEXTN_div_save").position()}}); 
 }
 $(".preloader").hide(); 
+}
 }
 }
 //FUNCTION TO CLEAR LIST BOX FIELD
 function CEXTN_clearForm()
 {
+var  newPos= adjustPosition($('#CEXTN_lb_unitno').position(),100,150);
+resetPreloader(newPos);
 $(".preloader").show();
 CEXTN_clearerrmsg();
 $('#CEXTN_lbl_custname').hide();
@@ -1719,6 +1768,7 @@ google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getComm
 //RESET FORM FIELDS
 $("#CEXTN_btn_reset").click(function(){
 CEXTN_clearForm();
+$('#CEXTN_ta_comments').height(20);
 });
 //FUNCTION TO CLEAR ERR MSG
 function CEXTN_clearerrmsg()
@@ -1766,14 +1816,14 @@ $("#CEXTN_passdate_err").text("");
 <div>
 <table id="CEXTN_tble_first" >
 <tr>
-<td style="width:220px;">
+<td style="width:225px;">
 <label name="CEXTN_lbl_unitno" id="CEXTN_lbl_unitno">UNIT NUMBER<em>*</em></label>
 <td >
 <select id="CEXTN_lb_unitno" name="CEXTN_lb_unitno" class="CEXTN_btn_validate_class"><option>SELECT</option>
 </select>
 </tr>
 <tr>
-<td style="width:220px;">
+<td style="width:225px;">
 <label name="CEXTN_lbl_custname" id="CEXTN_lbl_custname" hidden>CUSTOMER NAME<em>*</em></label>
 <td >
 <select id="CEXTN_lb_custname" name="CEXTN_lb_custname"  class="CEXTN_btn_validate_class" hidden>
@@ -2046,7 +2096,7 @@ $("#CEXTN_passdate_err").text("");
 </table>
 <table style="width:675px;">
 </table>
-<div style="position:relative;left:105px;">
+<div style="position:relative;left:105px;" id="CEXTN_div_save">
 <table>
 <tr>
 <td> <input  type="button" value="EXTEND" id="CEXTN_btn_save" class="btn" disabled /></td><td><input type="button" value="RESET"  id="CEXTN_btn_reset" class="btn"/></td> 

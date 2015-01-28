@@ -1,9 +1,13 @@
 <!--****************************************PAYMENT SEARCH/UPDATE*********************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 2.02- SD:07/10/2014 ED:07/10/2014,TRACKER NO:786,Corrected preloader and msgbox position
 //DONE BY:KUMAR
+//VER 2.01- SD:19/09/2014 ED:19/09/2014,TRACKER NO:786,Implemented preloader and msgbox position script
+//VER 2.00- SD:22/08/2014 ED:22/08/2014,TRACKER NO:786 Updated new jquery and css links and add autogrow line and reduced payment extract function script lines.
 //VER 1.09- SD:11/08/2014 ED:11/08/2014,TRACKER NO 786 Cleared for period search button validation issue.
 //VER 1.08- SD:25/07/2014 ED:25/07/2014,TRACKER NO 786 partial amount hightlighted in payment history spreadsheet.
-//VER 1.07- SD:11/07/2014 ED:11/07/2014,TRACKER NO 786 Cleared paiddate search max date issue and amountrange search validation issue.
+//VER 1.07- SD:11/07/2014 ED:11/07/2014,TRACKER NO 786 Cleared paiddate search max date issue and amountrange search validation issue
 //VER 1.06- SD:30/06/2014 ED:30/06/2014,TRACKER NO 786 added filesharing function and amount box max digits 4 to 5.
 //VER 1.05- SD:18/06/2014 ED:18/06/2014,TRACKER NO 786 Added conn error message and did paiddate validation(set paiddate min date as customer 1st recver date - 1year)
 //VER 1.04- SD:09/06/2014 ED:09/06/2014,TRACKER NO 786 Added commit() command after updating filefolder id in file access table.
@@ -27,25 +31,36 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+ //CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={AmountCompare:'InValid'}
 $(document).ready(function() {
+$('#FIN_SRC_UPD_DEL_ta_comments').autogrow({onInitialize: true});
 $(document).on('click','#FIN_SRC_UPD_DEL_tbl_htmltable tr td input[type="radio"]',function() {
 $('#FIN_SRC_UPD_DEL_tbl_htmltable tr').removeClass('higlightrow');
 $(this).closest('tr').addClass('higlightrow');
@@ -159,6 +174,9 @@ else
 $('#FIN_SRC_UPD_DEL_rentalsearchmain_form').show();
 $('#FIN_SRC_errormessageform').hide();
 }
+ //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 }
 //////////LISTBOX FUNCTION/////////////
 
@@ -373,7 +391,9 @@ $('#FIN_SRC_UPD_DEL_customerunitsearch_LB').change(function(){
 var unit = $(this).val();
 if(unit!="SELECT")
 {
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_customerunitsearch_LB').position(),100,200);
+ resetPreloader(newPos);
 google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(CustomerResponse).FIN_SRC_unitcustomerlist(unit);
 }
 else
@@ -520,6 +540,8 @@ $('#FIN_SRC_UPD_DEL_db_paiddate').datepicker("option","maxDate",new Date());
 ///////CUSTOMER NAME SEARCH CALL FUNCTION/////////////
 $('#FIN_SRC_UPD_DEL_btn_customersearchbutton').click(function(){
 $(".preloader").show(); 
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_customersearchbutton').position(),100,280);
+resetPreloader(newPos);
 $('#FIN_SRC_UPD_DEL_div_htmltable').hide();
 $('#FIN_SRC_UPD_DEL_lbl_error').hide();
 var FIN_SRC_UPD_DEL_unit=$('#FIN_SRC_UPD_DEL_customerunitsearch_LB').val();
@@ -529,7 +551,9 @@ google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(F
 });
 /////////UNIT SEARCH CALL FUNCTION///////////////
 $('#FIN_SRC_UPD_DEL_btn_unitsearchbutton').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_unitsearchbutton').position(),100,280);
+resetPreloader(newPos);
 $('#FIN_SRC_UPD_DEL_div_htmltable').hide();
 $('#FIN_SRC_UPD_DEL_lbl_error').hide();
 var FIN_SRC_UPD_DEL_unitvalue=$('#FIN_SRC_UPD_DEL_unitsearch_LB').val();
@@ -538,7 +562,9 @@ google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(F
 });
 //////////////FOR PERIOD SEARCH CALL FUNCTION////////////
 $('#FIN_SRC_UPD_DEL_btn_forperiodsearchbutton').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_forperiodsearchbutton').position(),100,280);
+resetPreloader(newPos);
 $('#FIN_SRC_UPD_DEL_div_htmltable').hide();
 $('#FIN_SRC_UPD_DEL_lbl_error').hide();
 var FIN_SRC_UPD_DEL_periodstartdate=$('#FIN_SRC_UPD_DEL_fromforperiod_DB').val();
@@ -548,7 +574,9 @@ google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(F
 });
 //////////PAIDDATE SEARCH CALL FUNCTION/////////////
 $('#FIN_SRC_UPD_DEL_btn_paiddatesearchbutton').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_paiddatesearchbutton').position(),100,280);
+resetPreloader(newPos);
 $('#FIN_SRC_UPD_DEL_div_htmltable').hide();
 $('#FIN_SRC_UPD_DEL_lbl_error').hide();
 var FIN_SRC_UPD_DEL_paiddatestartdate=$('#FIN_SRC_UPD_DEL_frompaiddate_DB').val();
@@ -558,7 +586,9 @@ google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(F
 });
 /////////AMOUNT RANGE SEARCH CALL FUNCTION////////////////
 $('#FIN_SRC_UPD_DEL_btn_amountrangesearchbutton').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_amountrangesearchbutton').position(),100,280);
+resetPreloader(newPos);
 $('#FIN_SRC_UPD_DEL_div_htmltable').hide();
 $('#FIN_SRC_UPD_DEL_lbl_error').hide();
 var FIN_SRC_UPD_DEL_lbl_amountrangelabel=$('#FIN_SRC_UPD_DEL_main_LB').val();
@@ -772,12 +802,16 @@ $('#buttontable').hide();
 $(this).closest('tr').find('.colortext').css("color","red")
 var PAYMENT_SRC_id=$("input[name=radiobuttons]:checked").val();
 var paymentidsplit=PAYMENT_SRC_id.split('-');
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_rentalsearch').position(),100,280);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_SRC_RentalupdateresultResponse).FIN_SRC_Paymentupdationdetails(paymentidsplit[0],paymentidsplit[1],paymentidsplit[2]);
 });
 ///////////UPDATE FORM LOAD FUNCTION///////////////
 $('#FIN_SRC_UPD_DEL_btn_rentalupdate').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_rentalupdate').position(),100,280);
+resetPreloader(newPos);
 var id=$('#FIN_SRC_UPD_DEL_tempid').val();
 var unit=$('#FIN_SRC_UPD_DEL_tb_tempunit').val();
 var customer=$('#FIN_SRC_UPD_DEL_tb_tempcustomer').val();
@@ -865,10 +899,12 @@ return finaldate;
 }
 //////////////PAYMENT ROW DELETE FUNCTION/////////
 $('#FIN_SRC_UPD_DEL_btn_rentaldelete').click(function(){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH/UPDATE/DELETE",msgcontent:errormsg[6],confirmation:true}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH/UPDATE/DELETE",msgcontent:errormsg[6],position:$('#FIN_SRC_UPD_DEL_btn_rentalsearch').position(),confirmation:true}});
 });
 $(document).on('click','.messageconfirm',function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_rentaldelete').position(),100,230);
+resetPreloader(newPos);
 var PAYMENT_SRC_id=$("input[name=radiobuttons]:checked").val();
 var paymentidsplit=PAYMENT_SRC_id.split('-');
 google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_SRC_UPD_DEL_updatedeleteconformation).FIN_SRC_paymentdeletion(paymentidsplit[0]);
@@ -965,15 +1001,15 @@ function FIN_SRC_UPD_DEL_updatedeleteconformation(updateresponse)
 {
 if(updateresponse=="UPDATION")
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:errormsg[3]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:errormsg[3],position:$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').position()}});
 }
 else if(updateresponse==1)
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:errormsg[1]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:errormsg[1],position:$('#FIN_SRC_UPD_DEL_rentalsearchmain_form').position()}});
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:updateresponse}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:updateresponse,position:$('#FIN_SRC_UPD_DEL_btn_rentalsearch').position()}});
 }
 $('#FIN_SRC_UPD_DEL_div_htmltable').hide();
 $('#rentalupdate_table').hide();
@@ -1029,12 +1065,14 @@ return dateformat;
 }
 $('#FIN_SRC_UPD_DEL_btn_paymentextract').click(function(){
 $(".preloader").show();
+var  newPos= adjustPosition($('#FIN_SRC_UPD_DEL_btn_paymentextract').position(),100,130);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(FIN_SRC_error_message).withSuccessHandler(FIN_SRC_UPD_DEL_extractconformation).FIN_SRC_CustomerPaymentDetails(SS_customerExtract_array);
 });
 function FIN_SRC_UPD_DEL_extractconformation()
 {
 $(".preloader").hide();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:"SELECTED CUSTOMER DETAILS EXTRACTED IN SPREADSHEET"}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:"SELECTED CUSTOMER DETAILS EXTRACTED IN SPREADSHEET",position:$('#FIN_SRC_UPD_DEL_btn_paymentextract').position()}});
 }
 function FIN_SRC_error_message(FIN_SRC_err)
 {
@@ -1045,7 +1083,7 @@ $('#FIN_SRC_UPD_DEL_rentalsearchmain_form').replaceWith('<center><label class="d
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:FIN_SRC_err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PAYMENT SEARCH AND UPDATE",msgcontent:FIN_SRC_err,position:{top:150,left:500}}});
 }
 $(".preloader").hide(); 
 }
@@ -1101,7 +1139,7 @@ $(".preloader").hide();
 </tr>
 <tr>
 <td>
-<input type="button" id="FIN_SRC_UPD_DEL_btn_unitsearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_unitsearch()"/>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_unitsearchbutton" class="maxbtn" value="SEARCH" disabled />
 </td>
 </tr>
 </table>
@@ -1137,7 +1175,7 @@ $(".preloader").hide();
 </tr>
 <tr>
 <td>
-<input type="button" id="FIN_SRC_UPD_DEL_btn_customersearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_customernamesearch()"/>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_customersearchbutton" class="maxbtn" value="SEARCH" disabled />
 </td>
 </tr>
 </table>
@@ -1165,7 +1203,7 @@ $(".preloader").hide();
 </tr>
 <tr>
 <td>
-<input type="button" id="FIN_SRC_UPD_DEL_btn_forperiodsearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_forperiodsearch()"/>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_forperiodsearchbutton" class="maxbtn" value="SEARCH" disabled />
 </td>
 </tr>
 </table>
@@ -1193,7 +1231,7 @@ $(".preloader").hide();
 </tr>
 <tr>
 <td>
-<input type="button" id="FIN_SRC_UPD_DEL_btn_paiddatesearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_paiddatesearch()"/>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_paiddatesearchbutton" class="maxbtn" value="SEARCH" disabled />
 </td>
 </tr>
 </table>
@@ -1249,7 +1287,7 @@ $(".preloader").hide();
 </tr>
 <tr>
 <td>
-<input type="button" id="FIN_SRC_UPD_DEL_btn_amountrangesearchbutton" class="maxbtn" value="SEARCH" disabled onclick="FIN_SRC_UPD_DEL_amountrangesearch()"/>
+<input type="button" id="FIN_SRC_UPD_DEL_btn_amountrangesearchbutton" class="maxbtn" value="SEARCH" disabled />
 </td>
 </tr>
 </table>

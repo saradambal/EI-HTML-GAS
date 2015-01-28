@@ -1,6 +1,10 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //****************************************DOOR CODE:SEARCH/UPDATE***********************************************//
+//<!--DONE BY:PUNI
+//VER 1.8-SD:06/10/2014 ED:06/10/2014,TRACKER NO:726,Changed some preloader n msgbox position
 //DONE BY:SARADAMBAL
+//VER 1.7 -SD:13/09/2014 ED:13/09/2014,TRACKER NO:726,implemented script for preloader,msgbox
+//VER 1.6-SD:14/08/2014 ED:14/08/2014, TRACKER NO:726,updated new links,checked sp after updation of rollback
 //VER 1.5 -SD:11/07/2014 ED:11/07/2014,TRACKER NO:726,checked sp through form,rename id for doorcode and login (same id for creation to get eilib func)
 //VER 1.4 -SD:30/06/2014 ED:30/06/2014,TRACKER NO:726,updated already exists for doorcode,weblogin,implemented script for update button validation
 //VER 1.3 -SD:13/06/2014 ED:13/06/2014,TRACKER NO:726,updated failure function
@@ -23,7 +27,7 @@ try
   function USRC_UPDCODE_getunitno_err()
   {
     var USRC_UPDCODE_conn =eilib.db_GetConnection();
-    var USRC_UPDCODE_errorid='2,18,22,324,396,401,463,464,466,467'
+    var USRC_UPDCODE_errorid='2,18,22,324,396,401,463,464,466,467';
     var USRC_UPDCODE_errorarray =  eilib.GetErrorMessageList(USRC_UPDCODE_conn,USRC_UPDCODE_errorid);
     var USRC_UPDCODE_unitnoarr=eilib.GetActiveUnit(USRC_UPDCODE_conn);
     var USRC_UPDCODE_result={"USRC_UPDCODE_errorarray":USRC_UPDCODE_errorarray.errormsg,"USRC_UPDCODE_unitno":USRC_UPDCODE_unitnoarr};      

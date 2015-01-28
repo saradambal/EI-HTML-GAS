@@ -1,6 +1,10 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE*********************************************//
+//DONE BY:PUNI
+//VER 1.7-SD:09/10/2014 ED:09/10/2014,TRACKER NO:459:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//VER 1.6-SD:27/09/2014 ED:27/09/2014,TRACKER NO:459,comment 51,1.removed trim for invitem n comments textarea search,2.hided del n srch btn while clicking srch btn,3.corrected issue when clicking cpf no srch,4.implemented staff salary new sp fr the duplicate month record
 //DONE BY:SARADAMBAL
+//VER 1.5-SD:13/08/2014 ED:13/08/2014,TRACKER NO:459,implemented script for reset normal size after updation,updated new links,checked after autocommit  
 //VER 1.4-SD:11/06/2014 ED:11/06/2014,TRACKER NO:459,implemented script for commit and failure function ,implemented script show msg box for update after loading flex table,added general rule for comts,inv item
 //VER 1.3 SD:03/06/2014 ED:03/06/2014, TRACKER NO:459//corrected err msg,updated link,change amt digit agent-4,staff exp-3,staff sal-5 
 //VER 1.2 SD:12/04/2014 ED:21/03/2014, TRACKER NO:459//put maxdate as sysdate in srch form,checked migration data with updation and deletion,corrected validation for salaary,cpf n levy amt,put class for dp
@@ -17,7 +21,6 @@
 //VER 0.02 SD:18/11/2013 ED:22/11/2013,TRACKER NO:459//CHANGE THE WAY TO LOAD THE UPDATEFORMS,CHANGES THE TIMEZONE FORMATE,VALIDATION ,CHANGE THE DATEFORMAT IN DATEPICKER AND  FLEXTABLE.
 //VER 0.01-INITIAL VERSION, SD:2/09/2013 ED:14/9/2013,TRACKER NO:459
 //*********************************************************************************************************//
-//DO GET FUNCTION
 try
 {  
   //GET DATA BY AGENT SEARCH......................
@@ -50,6 +53,7 @@ try
       var STDLY_SEARCH_result={'STDLY_SEARCH_agentid':STDLY_SEARCH_agentexepnse_id,'STDLY_SEARCH_agentdate':STDLY_SEARCH_agent_date,'STDLY_SEARCH_agentcommamount':STDLY_SEARCH_agent_amount,'STDLY_SEARCH_agentcomments':STDLY_SEARCH_agent_comments,'STDLY_SEARCH_agentuserstamp':STDLY_SEARCH_agent_userstamp,'STDLY_SEARCH_agenttimestamp':STDLY_SEARCH_agent_timestamp}
       STDLY_SEARCH_fulltable.push(STDLY_SEARCH_result);
     }
+    STDLY_SEARCH_agentvalue.close();
     STDLY_SEARCH_stmt.close();
     STDLY_SEARCH_conn.close();
     return STDLY_SEARCH_fulltable;
@@ -58,16 +62,16 @@ try
   function STDLY_SEARCH_loadcpfno(STDLY_SEARCH_salarysearchoption)
   {
     var STDLY_SEARCH_conn=eilib.db_GetConnection();
-    var STDLY_SEARCH_cpfno = STDLY_SEARCH_conn.createStatement();
+    var STDLY_SEARCH_cpfnostmt = STDLY_SEARCH_conn.createStatement();
     var STDLY_SEARCH_cpfnoarray=[];
     var STDLY_SEARCH_cpfno_selectquery = "SELECT DISTINCT EDSS_CPF_NUMBER FROM EXPENSE_DETAIL_STAFF_SALARY EDSS,EXPENSE_STAFF_SALARY ESS WHERE (ESS.EDSS_ID=EDSS.EDSS_ID) AND EDSS_CPF_NUMBER IS NOT NULL ORDER BY EDSS_CPF_NUMBER ASC";
-    var STDLY_SEARCH_cpfresult = STDLY_SEARCH_cpfno.executeQuery(STDLY_SEARCH_cpfno_selectquery);
+    var STDLY_SEARCH_cpfresult = STDLY_SEARCH_cpfnostmt.executeQuery(STDLY_SEARCH_cpfno_selectquery);
     while(STDLY_SEARCH_cpfresult.next())
     {
       var STDLY_SEARCH_cpfno = STDLY_SEARCH_cpfresult.getString("EDSS_CPF_NUMBER");
       STDLY_SEARCH_cpfnoarray.push(STDLY_SEARCH_cpfno);
     }
-    STDLY_SEARCH_cpfresult.close();
+    STDLY_SEARCH_cpfresult.close();STDLY_SEARCH_cpfnostmt.close();STDLY_SEARCH_conn.close();
     return STDLY_SEARCH_cpfnoarray;
   }
   //UPDATE SALARY ENTRY FORM  DATAS........................... 
@@ -149,10 +153,18 @@ try
       {
         STDLY_SEARCH_salaryamount=STDLY_SEARCH_hidensalaryamount;
       }
-      var STDLY_SEARCH_updatesalary_all = "UPDATE EXPENSE_STAFF_SALARY SET ESS_INVOICE_DATE='"+STDLY_SEARCH_paiddate+"',ESS_FROM_PERIOD='"+STDLY_SEARCH_fromperiod+"',ESS_TO_PERIOD='"+STDLY_SEARCH_toperiod+"',ESS_CPF_AMOUNT="+STDLY_SEARCH_cpfamount+",ESS_LEVY_AMOUNT="+STDLY_SEARCH_levyamount+",ESS_SALARY_AMOUNT="+STDLY_SEARCH_salaryamount+",ESS_SALARY_COMMENTS="+STDLY_SEARCH_comments+",ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE ESS_ID='"+STDLY_SEARCH_id+"'";
+      var STDLY_SEARCH_updatesalary_all="CALL SP_STAFFDLY_STAFF_SALARY_UPDATE("+STDLY_SEARCH_id+",'"+STDLY_SEARCH_paiddate+"','"+STDLY_SEARCH_fromperiod+"','"+STDLY_SEARCH_toperiod+"',"+STDLY_SEARCH_cpfamount+","+STDLY_SEARCH_levyamount+","+STDLY_SEARCH_salaryamount+","+STDLY_SEARCH_comments+",'"+UserStamp+"',@SUCCESS_MSG);"
       var STDLY_SEARCH_updateform = STDLY_SEARCH_conn.createStatement();
       STDLY_SEARCH_updateform.execute(STDLY_SEARCH_updatesalary_all);
       STDLY_SEARCH_updateform.close();
+      var STDLY_SEARCH_stmt_bscprfsveflag=STDLY_SEARCH_conn.createStatement();
+      var STDLY_SEARCH_flag_bscprfsveselect="SELECT @SUCCESS_MSG";
+      var STDLY_SEARCH_flag_bscprfsvers=STDLY_SEARCH_stmt_bscprfsveflag.executeQuery(STDLY_SEARCH_flag_bscprfsveselect);
+      while(STDLY_SEARCH_flag_bscprfsvers.next())
+        var STDLY_SEARCH_flag_UPDFLAG=STDLY_SEARCH_flag_bscprfsvers.getString(1);
+      STDLY_SEARCH_flag_bscprfsvers.close();
+      STDLY_SEARCH_stmt_bscprfsveflag.close();
+      
     }
     if(STDLY_SEARCH_lbtypeofexpense==41)
     {
@@ -184,7 +196,7 @@ try
     var STDLY_INPUT_arr_comments=[];
     if((STDLY_SEARCH_searchoption==77)||(STDLY_SEARCH_searchoption==85)||(STDLY_SEARCH_searchoption==79)||(STDLY_SEARCH_searchoption==82)||(STDLY_SEARCH_searchoption==83))
     STDLY_INPUT_arr_comments=STDLY_SEARCH_func_comments(STDLY_SEARCH_updateformid.STDLY_SEARCH_db_startdate,STDLY_SEARCH_updateformid.STDLY_SEARCH_db_enddate,STDLY_SEARCH_lbtypeofexpense,STDLY_SEARCH_searchoption)
-    return [STDLY_INPUT_arr_comments,STDLY_SEARCH_searchoption];
+    return [STDLY_INPUT_arr_comments,STDLY_SEARCH_searchoption,STDLY_SEARCH_flag_UPDFLAG];
   }
   //DELETE THE  RECORD IN THE TABLE...........................
   function STDLY_SEARCH_deleterow(STDLY_SEARCH_deleteid,STDLY_SEARCH_typrval,STDLY_SEARCH_db_startdate,STDLY_SEARCH_db_enddate,STDLY_SEARCH_srchoption) {    
@@ -195,6 +207,7 @@ try
       STDLY_SEARCH_deleteid=STDLY_SEARCH_deleteid.split('-');
       STDLY_SEARCH_deleteid=STDLY_SEARCH_deleteid[0];}
     var STDLY_SEARCH_flag_delete=eilib.DeleteRecord(STDLY_SEARCH_conn,STDLY_SEARCH_twodimen[STDLY_SEARCH_typrval][1],STDLY_SEARCH_deleteid)
+    STDLY_SEARCH_conn.close();
     var STDLY_INPUT_arr_comments=[];     
     if((STDLY_SEARCH_srchoption==77)||(STDLY_SEARCH_srchoption==85)||(STDLY_SEARCH_srchoption==79)||(STDLY_SEARCH_srchoption==82)||(STDLY_SEARCH_srchoption==83))
     STDLY_INPUT_arr_comments=STDLY_SEARCH_func_comments(STDLY_SEARCH_db_startdate,STDLY_SEARCH_db_enddate,STDLY_SEARCH_typrval,STDLY_SEARCH_srchoption)
@@ -254,7 +267,7 @@ try
      var STDLY_SEARCH_salary_timestamp = STDLY_SEARCH_salaryentrydata.getString("TIMESTMP");
      var STDLY_SEARCH_result={'STDLY_SEARCH_salary_id':STDLY_SEARCH_salary_id,'STDLY_SEARCH_salary_cpfno':STDLY_SEARCH_cpfno,'STDLY_SEARCH_salary_fname':STDLY_SEARCH_fname,'STDLY_SEARCH_salary_lname':STDLY_SEARCH_lname,'STDLY_SEARCH_salary_cpfamount':STDLY_SEARCH_cpfamount,'STDLY_SEARCH_salary_levyamount':STDLY_SEARCH_levyamount,'STDLY_SEARCH_salary_salaryamount':STDLY_SEARCH_salaryamount,'STDLY_SEARCH_salary_paiddate':STDLY_SEARCH_paiddate,'STDLY_SEARCH_salary_fromperiod':STDLY_SEARCH_fromperiod,'STDLY_SEARCH_salary_toperiod':STDLY_SEARCH_toperiod,'STDLY_SEARCH_salary_comments':STDLY_SEARCH_salary_comments,'STDLY_SEARCH_salary_userstamp':STDLY_SEARCH_salary_userstamp,'STDLY_SEARCH_salary_timestamp':STDLY_SEARCH_salary_timestamp}
      STDLY_SEARCH_sendallsalarydata.push(STDLY_SEARCH_result)
-    }
+    }STDLY_SEARCH_salaryentrydata.close();
     STDLY_SEARCH_searchstm.close();
     STDLY_SEARCH_conn.close();
     return STDLY_SEARCH_sendallsalarydata;
@@ -270,6 +283,10 @@ try
     var STDLY_SEARCH_stmtexp = STDLY_SEARCH_conn.createStatement();
     if(STDLY_SEARCH_searchcomments!='' && STDLY_SEARCH_searchcomments!=null)
       STDLY_SEARCH_searchcomments=eilib.ConvertSpclCharString(STDLY_SEARCH_searchcomments);  
+    if(STDLY_SEARCH_invitemcom!='' && STDLY_SEARCH_invitemcom!=null)
+      STDLY_SEARCH_invitemcom=eilib.ConvertSpclCharString(STDLY_SEARCH_invitemcom);  
+    if(STDLY_SEARCH_invfromcomt!='' && STDLY_SEARCH_invfromcomt!=null)
+      STDLY_SEARCH_invfromcomt=eilib.ConvertSpclCharString(STDLY_SEARCH_invfromcomt);  
     STDLY_SEARCH_staffexpense_selectquery[80] = "SELECT ES.ES_ID,EXPCONFIG.ECN_DATA,ES.ES_INVOICE_DATE,ES.ES_INVOICE_AMOUNT,ES.ES_INVOICE_ITEMS,ES.ES_INVOICE_FROM,ES.ES_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(ES.ES_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP FROM EXPENSE_STAFF ES,EXPENSE_CONFIGURATION EXPCONFIG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=ES.ULD_ID AND (ES.ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_startdate+"' AND '"+STDLY_SEARCH_enddate+"') AND (EXPCONFIG.ECN_DATA='"+STDLY_SEARCH_staffexpansecategory+"') AND (EXPCONFIG.ECN_ID=ES.ECN_ID)ORDER BY ES.ES_INVOICE_DATE ASC";
     STDLY_SEARCH_staffexpense_selectquery[84] = "SELECT ES.ES_ID,EXPCONFG.ECN_DATA,ES.ES_INVOICE_DATE,ES.ES_INVOICE_AMOUNT,ES.ES_INVOICE_ITEMS,ES.ES_INVOICE_FROM,ES.ES_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(ES.ES_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP FROM EXPENSE_STAFF ES,EXPENSE_CONFIGURATION EXPCONFG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=ES.ULD_ID AND (ES.ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_startdate+"' AND '"+STDLY_SEARCH_enddate+"') AND (ES.ES_INVOICE_AMOUNT BETWEEN '"+STDLY_SEARCH_fromamount+"' AND '"+STDLY_SEARCH_toamount+"') AND (ES.ECN_ID=EXPCONFG.ECN_ID) ORDER BY ES.ES_INVOICE_DATE ASC";
     STDLY_SEARCH_staffexpense_selectquery[81]= "SELECT ES.ES_ID,EXPCONFG.ECN_DATA,ES.ES_INVOICE_DATE,ES.ES_INVOICE_AMOUNT,ES.ES_INVOICE_ITEMS,ES.ES_INVOICE_FROM,ES.ES_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(ES.ES_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTMP FROM EXPENSE_STAFF ES,EXPENSE_CONFIGURATION EXPCONFG ,USER_LOGIN_DETAILS ULD WHERE ULD.ULD_ID=ES.ULD_ID AND (ES.ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_startdate+"' AND '"+STDLY_SEARCH_enddate+"') AND (ES.ECN_ID=EXPCONFG.ECN_ID) ORDER BY ES.ES_INVOICE_DATE ASC"; 
@@ -296,7 +313,7 @@ try
       var STDLY_SEARCH_timestamp = STDLY_SEARCH_staff.getString("TIMESTMP");
       var STDLY_SEARCH_result={'STDLY_SEARCH_staff_id':STDLY_SEARCH_staff_id,'STDLY_SEARCH_type':STDLY_SEARCH_type,'STDLY_SEARCH_date':STDLY_SEARCH_date,'STDLY_SEARCH_amount':STDLY_SEARCH_amount,'STDLY_SEARCH_items':STDLY_SEARCH_items,'STDLY_SEARCH_from':STDLY_SEARCH_from,'STDLY_SEARCH_comments':STDLY_SEARCH_comments,'STDLY_SEARCH_userstamp':STDLY_SEARCH_userstamp,'STDLY_SEARCH_timestamp':STDLY_SEARCH_timestamp}
       STDLY_SEARCH_sensallstaffdata.push(STDLY_SEARCH_result);
-    }
+    }STDLY_SEARCH_staff.close();
     STDLY_SEARCH_stmtexp.close();
     STDLY_SEARCH_conn.close();
     return STDLY_SEARCH_sensallstaffdata;
@@ -321,12 +338,13 @@ try
       STDLY_SEARCH_employeeNameArray.push(STDLY_SEARCH_employee_Name_List);
       STDLY_SEARCH_employeeNameArray.push(STDLY_SEARCH_employee_Name_List1);
     }
-    STDLY_SEARCH_employeeName.close();
-    var STDLY_SEARCH_errmsgids="45,106,107,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,169,170,315,377,378,379";
+    STDLY_SEARCH_employeeName.close();STDLY_SEARCH_stmtname.close();
+    var STDLY_SEARCH_errmsgids="45,106,107,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,169,170,315,377,378,379,401";
     var STDLY_SEARCH_errorArray=[];
     STDLY_SEARCH_errorArray=eilib.GetErrorMessageList(STDLY_SEARCH_conn,STDLY_SEARCH_errmsgids);
     var STDLY_SEARCH_expenseArray = [];
     var STDLY_SEARCH_expenseArrayallid = [];
+    var STDLY_SEARCH_stmtname= STDLY_SEARCH_conn.createStatement();
     var STDLY_SEARCH_selectTypeofexpense = "SELECT DISTINCT ECN_ID,ECN_DATA FROM EXPENSE_CONFIGURATION WHERE ECN_ID BETWEEN 76 AND 93 OR CGN_ID IN (23,26)ORDER BY ECN_ID ASC";
     var STDLY_SEARCH_typeofexpense = STDLY_SEARCH_stmtname.executeQuery(STDLY_SEARCH_selectTypeofexpense);
     while(STDLY_SEARCH_typeofexpense.next())
@@ -336,9 +354,10 @@ try
       STDLY_SEARCH_expenseArray.push(STDLY_SEARCH_expenselist);
       STDLY_SEARCH_expenseArrayallid.push(STDLY_SEARCH_expenselistid)
     }
-    STDLY_SEARCH_typeofexpense.close();
+    STDLY_SEARCH_typeofexpense.close();STDLY_SEARCH_stmtname.close();
     var STDLY_SEARCH_expenseagentArray = [];
     var STDLY_SEARCH_arr_eacomments=[];
+    var STDLY_SEARCH_stmtname= STDLY_SEARCH_conn.createStatement();
     var STDLY_SEARCH_expenseagentquery = "SELECT EA_ID,EA_COMMENTS FROM EXPENSE_AGENT";
     var STDLY_SEARCH_expenseagentres = STDLY_SEARCH_stmtname.executeQuery(STDLY_SEARCH_expenseagentquery);
     while(STDLY_SEARCH_expenseagentres.next())
@@ -348,9 +367,10 @@ try
       if(STDLY_SEARCH_expenseagentres.getString('EA_COMMENTS')!=null)
         STDLY_SEARCH_arr_eacomments.push(STDLY_SEARCH_expenseagentres.getString('EA_COMMENTS'));
     }  
-    STDLY_SEARCH_expenseagentres.close();
+    STDLY_SEARCH_expenseagentres.close();STDLY_SEARCH_stmtname.close();
     //CHECK EXPENSE EMPLOYEE DETAIL//
     var STDLY_SEARCH_employeedetailsArray = [];
+    var STDLY_SEARCH_stmtname= STDLY_SEARCH_conn.createStatement();
     var STDLY_SEARCH_employeedetailsquery = "SELECT * FROM EMPLOYEE_DETAILS";
     var STDLY_SEARCH_employeedetailsres = STDLY_SEARCH_stmtname.executeQuery(STDLY_SEARCH_employeedetailsquery);
     while(STDLY_SEARCH_employeedetailsres.next())
@@ -358,9 +378,10 @@ try
       var STDLY_SEARCH_employeedetailsdate = STDLY_SEARCH_employeedetailsres.getString("EMP_ID");
       STDLY_SEARCH_employeedetailsArray.push(STDLY_SEARCH_employeedetailsdate);
     } 
-    STDLY_SEARCH_employeedetailsres.close();
+    STDLY_SEARCH_employeedetailsres.close();STDLY_SEARCH_stmtname.close();
     //CHECK EXPENSE_DETAIL_STAFF_SALARY//
     var STDLY_SEARCH_employeedetailstaffsalaryArray = [];
+    var STDLY_SEARCH_stmtname= STDLY_SEARCH_conn.createStatement();
     var STDLY_SEARCH_employeedetailstaffsalaryquery = "SELECT EDSS_ID FROM EXPENSE_DETAIL_STAFF_SALARY";
     var STDLY_SEARCH_employeedetailstaffsalaryres = STDLY_SEARCH_stmtname.executeQuery(STDLY_SEARCH_employeedetailstaffsalaryquery);
     while(STDLY_SEARCH_employeedetailstaffsalaryres.next())
@@ -368,10 +389,11 @@ try
       var STDLY_SEARCH_employeedetailstaffsalarydate = STDLY_SEARCH_employeedetailstaffsalaryres.getString("EDSS_ID");
       STDLY_SEARCH_employeedetailstaffsalaryArray.push(STDLY_SEARCH_employeedetailstaffsalarydate);
     }  
-    STDLY_SEARCH_employeedetailstaffsalaryres.close();
+    STDLY_SEARCH_employeedetailstaffsalaryres.close();STDLY_SEARCH_stmtname.close();
     //CHECK EXPENSE_DETAIL_STAFF_SALARY//
     var STDLY_SEARCH_expensestaffsalaryArray = [];
     var STDLY_SEARCH_arr_salcomments = [];
+    var STDLY_SEARCH_stmtname= STDLY_SEARCH_conn.createStatement();
     var STDLY_SEARCH_expensestaffsalaryquery = "SELECT ESS_ID,ESS_SALARY_COMMENTS FROM EXPENSE_STAFF_SALARY";
     var STDLY_SEARCH_expensestaffsalaryres = STDLY_SEARCH_stmtname.executeQuery(STDLY_SEARCH_expensestaffsalaryquery);
     while(STDLY_SEARCH_expensestaffsalaryres.next())
@@ -381,12 +403,13 @@ try
       if(STDLY_SEARCH_expensestaffsalaryres.getString('ESS_SALARY_COMMENTS')!=null)
         STDLY_SEARCH_arr_salcomments.push(STDLY_SEARCH_expensestaffsalaryres.getString('ESS_SALARY_COMMENTS'));
     } 
-    STDLY_SEARCH_expensestaffsalaryres.close();
+    STDLY_SEARCH_expensestaffsalaryres.close();STDLY_SEARCH_stmtname.close();
     //CHECK EXPENSE_STAFF//
     var STDLY_SEARCH_expensestaffArray = [];
     var STDLY_SEARCH_arr_escomments = [];
     var STDLY_SEARCH_arr_esinvoicefrom = [];
     var STDLY_SEARCH_arr_esinvoiceitems = [];
+    var STDLY_SEARCH_stmtname= STDLY_SEARCH_conn.createStatement();
     var STDLY_SEARCH_expensestaffquery = "SELECT ES_ID,ES_COMMENTS,ES_INVOICE_FROM,ES_INVOICE_ITEMS FROM EXPENSE_STAFF";
     var STDLY_SEARCH_expensestaffres = STDLY_SEARCH_stmtname.executeQuery(STDLY_SEARCH_expensestaffquery);
     while(STDLY_SEARCH_expensestaffres.next())
@@ -400,7 +423,7 @@ try
       if(STDLY_SEARCH_expensestaffres.getString('ES_INVOICE_ITEMS')!=null)
         STDLY_SEARCH_arr_esinvoiceitems.push(STDLY_SEARCH_expensestaffres.getString('ES_INVOICE_ITEMS'));
     }
-    STDLY_SEARCH_expensestaffres.close();
+    STDLY_SEARCH_expensestaffres.close();STDLY_SEARCH_stmtname.close();STDLY_SEARCH_conn.close();
     var STDLY_SEARCH_result={'STDLY_SEARCH_expensestaffArray':STDLY_SEARCH_expensestaffArray,'STDLY_SEARCH_employeedetailstaffsalaryArray':STDLY_SEARCH_employeedetailstaffsalaryArray,'STDLY_SEARCH_expensestaffsalaryArray':STDLY_SEARCH_expensestaffsalaryArray,'STDLY_SEARCH_expensestaffsalaryArray':STDLY_SEARCH_expensestaffsalaryArray,'STDLY_SEARCH_expenseagentArray':STDLY_SEARCH_expenseagentArray,'STDLY_SEARCH_employeedetailsArray':STDLY_SEARCH_employeedetailsArray,'STDLY_SEARCH_expenseArrayallid':STDLY_SEARCH_expenseArrayallid,'STDLY_SEARCH_expenseArray':STDLY_SEARCH_expenseArray,'STDLY_SEARCH_employeeNameArray':STDLY_SEARCH_employeeNameArray,'STDLY_SEARCH_errorArray':STDLY_SEARCH_errorArray.errormsg,'STDLY_SEARCH_obj_eacomments':STDLY_SEARCH_arr_eacomments,'STDLY_SEARCH_obj_salcomments':STDLY_SEARCH_arr_salcomments,'STDLY_SEARCH_obj_escomments':STDLY_SEARCH_arr_escomments,'STDLY_SEARCH_obj_esinvoicefrom':STDLY_SEARCH_arr_esinvoicefrom,'STDLY_SEARCH_obj_esinvoiceitems':STDLY_SEARCH_arr_esinvoiceitems}//,'STDLY_SEARCH_errorArrayefirst':STDLY_SEARCH_errorArrayefirst,'STDLY_SEARCH_amtvalidatoionfirst':STDLY_SEARCH_amtvalidatoionfirst}
     STDLY_SEARCH_mainArray.push(STDLY_SEARCH_result);
     return STDLY_SEARCH_mainArray;
@@ -412,18 +435,18 @@ try
     var STDLY_SEARCH_db_startdate= eilib.SqlDateFormat(STDLY_SEARCH_db_startdate);
     var STDLY_SEARCH_db_enddate= eilib.SqlDateFormat(STDLY_SEARCH_db_enddate);
     var STDLY_SEARCH_stmt_comments = STDLY_SEARCH_conn.createStatement();
-    STDLY_SEARCH_comments_twodim[77] = "SELECT EA_COMMENTS  FROM EXPENSE_AGENT WHERE EA_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
-    STDLY_SEARCH_comments_twodim[85] = "SELECT  ESS_SALARY_COMMENTS FROM EXPENSE_STAFF_SALARY WHERE ESS_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
-    STDLY_SEARCH_comments_twodim[79] = "SELECT ES_COMMENTS FROM EXPENSE_STAFF WHERE ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
-    STDLY_SEARCH_comments_twodim[82] = "SELECT ES_INVOICE_FROM FROM EXPENSE_STAFF WHERE ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
-    STDLY_SEARCH_comments_twodim[83] = "SELECT ES_INVOICE_ITEMS FROM EXPENSE_STAFF WHERE ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
+    STDLY_SEARCH_comments_twodim[77] = "SELECT DISTINCT EA_COMMENTS  FROM EXPENSE_AGENT WHERE EA_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
+    STDLY_SEARCH_comments_twodim[85] = "SELECT  DISTINCT ESS_SALARY_COMMENTS FROM EXPENSE_STAFF_SALARY WHERE ESS_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
+    STDLY_SEARCH_comments_twodim[79] = "SELECT DISTINCT ES_COMMENTS FROM EXPENSE_STAFF WHERE ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
+    STDLY_SEARCH_comments_twodim[82] = "SELECT DISTINCT ES_INVOICE_FROM FROM EXPENSE_STAFF WHERE ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
+    STDLY_SEARCH_comments_twodim[83] = "SELECT DISTINCT ES_INVOICE_ITEMS FROM EXPENSE_STAFF WHERE ES_INVOICE_DATE BETWEEN '"+STDLY_SEARCH_db_startdate+"' AND '"+STDLY_SEARCH_db_enddate+"'";
     var STDLY_SEARCH_comments_rs = STDLY_SEARCH_stmt_comments.executeQuery( STDLY_SEARCH_comments_twodim[STDLY_SEARCH_lb_salarysearchoption] );
     while(STDLY_SEARCH_comments_rs.next())
     {           
       
       if(STDLY_SEARCH_comments_rs.getString(1)!=null)     
         STDLY_SEARCH_arr_comments.push(STDLY_SEARCH_comments_rs.getString(1)); 
-    }
+    }STDLY_SEARCH_comments_rs.close();STDLY_SEARCH_stmt_comments.close();STDLY_SEARCH_conn.close();
     return[STDLY_SEARCH_arr_comments,STDLY_SEARCH_lb_salarysearchoption]
   }
 }

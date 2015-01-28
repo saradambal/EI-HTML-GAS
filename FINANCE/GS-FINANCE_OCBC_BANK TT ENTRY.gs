@@ -1,6 +1,10 @@
-//*****************************************************BANK TT*********************************//
+//*****************************************************BANK TT ENTRY*********************************//
 //*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.06- SD:07/10/2014 ED:07/10/2014,TRACKER NO:674,Corrected some preloader n msgbox position
 //DONE BY:KUMAR
+//VER 1.05- SD:19/09/2014 ED:19/09/2014,TRACKER NO:674,Implemented preloader and msgbox position script
+//VER 1.04-SD:22/08/2014 ED:22/08/2014,TRACKER NO:674,Updated new jquery and css links and did rollback and commit.
 //VER 1.03- SD:13/08/2014 ED:13/08/2014,TRACKER NO:674,changed bankcode and branch code prefix accepting zero.
 //VER 1.02- SD:23/07/2014 ED:23/07/2014,TRACKER NO:674,showing all customer name in customer list for selected unit and all units.
 //VER 1.01- SD:21/06/2014 ED:21/06/2014,TRACKER NO:674,SET min and max date for banktt DP(MIN DATE AS SYSDATE-1 YEAR AND MAX DATE AS SYSDATE) AND implemented connection error message.
@@ -17,12 +21,13 @@
 //*********************************************************************************************************//
 try
 {
+  var BANKTT_ENTRYconn;
   function BANKTT_ENTRY_Customer(unit)
   {
     var BANKTT_ENTRYcustomername_array=[];
     var BANKTT_ENTRY_conn=eilib.db_GetConnection();
     var BANKTT_ENTRYstmt = BANKTT_ENTRY_conn.createStatement();
-    var BANKTT_ENTRYactivecustomerquery="SELECT DISTINCT C.CUSTOMER_ID,CONCAT(CUSTOMER_FIRST_NAME,' ',CUSTOMER_LAST_NAME)AS CUSTOMERNAME FROM UNIT U,CUSTOMER_ENTRY_DETAILS CED,CUSTOMER C WHERE C.CUSTOMER_ID=CED.CUSTOMER_ID AND CED.UNIT_ID=U.UNIT_ID AND U.UNIT_NO="+unit+""
+    var BANKTT_ENTRYactivecustomerquery="SELECT DISTINCT C.CUSTOMER_ID,CONCAT(CUSTOMER_FIRST_NAME,' ',CUSTOMER_LAST_NAME)AS CUSTOMERNAME FROM UNIT U,CUSTOMER_ENTRY_DETAILS CED,CUSTOMER C WHERE C.CUSTOMER_ID=CED.CUSTOMER_ID AND CED.UNIT_ID=U.UNIT_ID AND U.UNIT_NO="+unit+" ORDER BY CUSTOMER_FIRST_NAME ASC "
     var BANKTT_ENTRY_customerresult = BANKTT_ENTRYstmt.executeQuery(BANKTT_ENTRYactivecustomerquery);//3.CUSTOMER
     while(BANKTT_ENTRY_customerresult.next())
     {
@@ -76,9 +81,17 @@ try
     return BANKTT_ENTRY_RESULTS;
     BANKTT_ENTRY_conn.close();
   }
-  function BANKTT_ENTRY_processFormSubmit(BANKTT_ENTRY_DETAILS)
+}
+catch(err)
+{
+}
+/****************ENTRY DETAILS ***************************/
+function BANKTT_ENTRY_processFormSubmit(BANKTT_ENTRY_DETAILS)
+{
+  try
   {
     var BANKTT_ENTRY_conn =eilib.db_GetConnection();
+    BANKTT_ENTRYconn=BANKTT_ENTRY_conn;
     var tttype=BANKTT_ENTRY_DETAILS.BANKTT_ENTRY_lb_tttype;
     var modelname=BANKTT_ENTRY_DETAILS.BANKTT_ENTRY_lb_modelname;
     if(modelname=="SELECT")    { var mailmodelname='';   modelname=null;  }
@@ -169,10 +182,14 @@ try
       var advancedArgs={cc:bankttmailid[1],name:displayname,htmlBody:message};
       MailApp.sendEmail(banktttomailid,emailsubject,message ,advancedArgs);
     }
-    return returnflag;
+    BANKTT_ENTRY_conn.commit();
     BANKTT_ENTRY_conn.close();
+    return returnflag;
   }
-}
-catch(err)
-{
+  catch(err)
+  {
+    Logger.log(BANKTT_ENTRYconn)
+    BANKTT_ENTRYconn.rollback();
+    Logger.log(err)
+  }
 }

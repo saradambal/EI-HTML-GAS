@@ -1,30 +1,37 @@
 <!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 <!--***********************************************CHARTS***********************************************//-->
+<!--DONE BY:PUNI
+//VER 1.1- TRACKER NO:585,SD:06/10/2014,ED:06/10/2014,corrected some preloader n msgbox position
 <!--DONE BY:SARADAMBAL
-VER 0.08-INITIAL VERSION,TRACKER NO:585,SD:03/07/2014,ED:03/07/2014,checked biz net revenue sp and implemented script for adding header 
-VER 0.07-INITIAL VERSION,TRACKER NO:585,SD:19/06/2014,ED:19/06/2014,Updated failure function
-VER 0.06-INITIAL VERSION,TRACKER NO:585,SD:07/06/2014,ED:07/06/2014,Updated new link
-VER 0.05-INITIAL VERSION,TRACKER NO:585,SD:31/05/2014,ED:31/05/2014 give class name for dp,cleared personal net revenue issue(show net instead of gross)
-VER 0.04-INITIAL VERSION,TRACKER NO:585,SD:14/05/2014,ED:21/05/2014 CHECKED TEMP TABLE SP THROUGH FORM,cleared issue for chart and data table for second time coming
-VER 0.03-INITIAL VERSION,TRACKER NO:585,SD:08/05/2014,ED:08/05/2014 ADDED RETURN FUNCTION
-VER 0.02-INITIAL VERSION,TRACKER NO:585,SD:21/02/2014,ED:25/02/2014 add the google api for chart and data table
+VER 1.0- TRACKER NO:585,SD:20/09/2014 ED:20/09/2014,implemented script for preloader,msgbox 
+VER 0.09-TRACKER NO:585,SD:14/08/2014 ED:14/08/2014,updated new links,cheked sp after changed in decimal (10,2)
+VER 0.08-TRACKER NO:585,SD:03/07/2014,ED:03/07/2014,checked biz net revenue sp and implemented script for adding header 
+VER 0.07-TRACKER NO:585,SD:19/06/2014,ED:19/06/2014,Updated failure function
+VER 0.06-TRACKER NO:585,SD:07/06/2014,ED:07/06/2014,Updated new link
+VER 0.05-TRACKER NO:585,SD:31/05/2014,ED:31/05/2014 give class name for dp,cleared personal net revenue issue(show net instead of gross)
+VER 0.04-TRACKER NO:585,SD:14/05/2014,ED:21/05/2014 CHECKED TEMP TABLE SP THROUGH FORM,cleared issue for chart and data table for second time coming
+VER 0.03-TRACKER NO:585,SD:08/05/2014,ED:08/05/2014 ADDED RETURN FUNCTION
+VER 0.02-TRACKER NO:585,SD:21/02/2014,ED:25/02/2014 add the google api for chart and data table
 VER 0.01-INITIAL VERSION,TRACKER NO:585,SD:03/12/2013,ED:05/09/2013-->
 <html>
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <style type="text/css">
 .ui-datepicker-calendar {
@@ -32,16 +39,22 @@ display: none;
 }
 </style>
 <script type="text/javascript">
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
 /*----------------------------------------------- FAILURE FUNTION FOR UNIT TERMINATION----------------------------------*/
 function CHART_onFailure(CHART_error){
-$(".preloader").hide();
+$(".preloader").fadeOut(500);
 if(CHART_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
 {
 CHART_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
 $('#CHART_form_chart').replaceWith('<center><label class="dberrormsg">'+CHART_error+'</label></center>');
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHARTS",msgcontent:CHART_error}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHARTS",msgcontent:CHART_error,position:{top:150,left:500}}});
 }} 
 /*------------------------------------------------FUNCTION TO GET COLUMN CHART AND LINE CHART-----------------------------*/
 function drawChart(twoarr,CHART_errormsg,CHART_linebar) {
@@ -75,7 +88,7 @@ var CHART_flag_chart=0;
 /*------------------------------------SUCCESS FUNCTION FOR CHART-------------------------------------*/
 function CHART_success_chartexpense(CHART_response_chart){
 $("#CHART_div_errmsg_chart,#CHART_div,#CHART_table").empty();
-$(".preloader").hide();
+$(".preloader").fadeOut(500);
 var twodim=CHART_response_chart.CHART_obj_flexarr;
 /*----------------------------------------------ERROR MSG-----------------------------------------------*/
 if(twodim.length==1)
@@ -162,9 +175,14 @@ var CHART_arr_errormsg=[];
 var CHART_arr_unitno=[];
 var CHART_db_dataId=null,CHART_srch_type=null,CHART_arr_srch_data=null,CHART_sel_srchtype='';
 var CHART_sel_unitno ='<option>SELECT</option>';
+$(".preloader").show(); 
 google.script.run.withSuccessHandler(CHART_success_srchtype_err).withFailureHandler(CHART_onFailure).CHART_func_srchtype_errmsg()
 /*------------------------------------FUNCTION TO LOAD ERROR MSG AND SRCH TYPE----------------------*/
 function CHART_success_srchtype_err(CHART_response_srchtype){
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 CHART_arr_errormsg=CHART_response_srchtype.CHART_obj_errmsg;
 CHART_srch_type=CHART_response_srchtype.CHART_obj_srchtype;
 CHART_arr_unitno=CHART_response_srchtype.CHART_obj_unitno;
@@ -186,6 +204,8 @@ $('#CHART_lbl_chartname').show();
 /*------------------------------------CHANGE FUNCTION FOR SEARCH TYPE---------------------------------------------*/
 $(document).on('change','#CHART_lb_srchtype',function(){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,150);
+resetPreloader(newPos);
 $("#CHART_tble_allperunit,#CHART_tble_selmonth_range,#CHART_div_errmsg_chart,#CHART_tble_unit").html('')
 $('#CHART_table,#CHART_div').empty();
 var CHART_val_srchtype =$(this).val();
@@ -194,7 +214,7 @@ google.script.run.withSuccessHandler(CHART_success_srchdata).withFailureHandler(
 });
 /*---------------------------------------------SUCCESS FUNCTION FOR CHART SEARCH DATA--------------------*/
 function CHART_success_srchdata(CHART_response_srchdata){
-$(".preloader").hide();
+$(".preloader").fadeOut(500);
 CHART_arr_srch_data=CHART_response_srchdata;
 $("#CHART_tr_srchdata").html('')
 var CHART_srchdata_options ='<option value="">SELECT</option>';
@@ -244,10 +264,14 @@ else
 CHART_flag_daterange='CHART_flag_daterange_allunit'
 if(($("#CHART_db_frmrange").val()!='')&&($("#CHART_db_frmrange").val()!=undefined)&&($("#CHART_db_torange").val()!=undefined)&&($("#CHART_db_torange").val()!='')){
 $(".preloader").show();
+var  newPos= adjustPosition($("#CHART_db_frmrange").position(),100,-100);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(CHART_success_chartexpense).withFailureHandler(CHART_onFailure).CHART_func_expense_perunit($("#CHART_lb_unitno").val(),$("#CHART_db_frmrange").val(),$("#CHART_db_torange").val(),$("#CHART_lb_srchdata").val(),CHART_flag_daterange)
 }
 if(($("#CHART_db_month").val()!='')&&($("#CHART_db_month").val()!=undefined)){
 $(".preloader").show();
+var  newPos= adjustPosition($("#CHART_db_month").position(),100,-200);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(CHART_success_chartexpense).withFailureHandler(CHART_onFailure).CHART_func_expense_perunit($("#CHART_lb_unitno").val(),$("#CHART_db_month").val(),$("#CHART_db_month").val(),$("#CHART_lb_srchdata").val(),CHART_flag_daterange)
 }},
 beforeShow : function(selected) {

@@ -1,5 +1,9 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //***********************************************EMAIL TEMPLATE SEARCH/UPDATE*********************************//
+//DONE BY:PUNI
+//VER 1.7-SD:03/10/2014 ED:03/10/2014 TRACKER NO:422:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.6-SD:21/08/2014 ED:21/08/2014,TRACKER NO:422,updated new links,autogrow
 //DONE BY:LALITHA
 //VER 1.5-SD:11/07/2014 ED:11/07/2014,TRACKER NO:422,In script name change funct set success flag zero,Updated HTML tag,preloader hide before shwn err msg,Increased the timestamp width
 //VER 1.4-SD:20/06/2014 ED:21/06/2014,TRACKER NO:422,Updated commit funct,Changed failure funct,Updated dovalidation for triming the all txt area,Updated frst shown reloaded flex tble nd thn err msg showned

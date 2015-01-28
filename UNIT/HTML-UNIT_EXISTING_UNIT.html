@@ -1,8 +1,13 @@
 <!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*************************************************EXISTING UNIT***********************************************//
+//<!--DONE BY:PUNI
+//VER 1.6 -SD:06/10/2014,ED:06/10/2014,TRACKER NO:244,Corrected some preloader,msgbox position
 <!--DONE BY:SARADAMBAL
-VER 1.2 -SD:12/06/2014 ED:12/06/2014,TRACKER NO:244,updated failure function,implemented doorcode & login validation,checked tickler after removed trigger for login details
+VER 1.5 -SD:13/09/2014 ED:13/09/2014,TRACKER NO:244,implemented script for preloader,msgbox
+VER 1.4 -SD:18/09/2014 ED:18/09/2014,TRACKER NO:244,modify the failure function for doorcodeweblogin function
+VER 1.3 -SD:18/08/2014 ED:18/08/2014,TRACKER NO:244,updated new links,checked sp after updation of rollback,implemented script for textarea 
+VER 1.2 -SD:12/06/2014 ED:12/06/2014,TRACKER NO:244,updated failure function,implemented doorcode & login validation
 VER 1.1 -SD:06/06/2014 ED:06/06/2014,TRACKER NO:244,updated new link 
 VER 1.0 -SD:09/04/2014 ED:09/04/2014,TRACKER NO:244,implemented class for stampdutydate
 VER 0.09-SD:15/02/2014 ED:03/03/2014,TRACKER NO:244,updated sp for returning flag and updated erormsg for not updating data,checked sp after changing the uldid instead of userstamp
@@ -19,14 +24,22 @@ VER 0.01-INITIAL VERSION,TRACKER NO:244,SD:24/08/2013,ED:04/09/2013-->
 <!--HEAD TAG START-->
 <head>
 <!--COMMON JQUERY LINKS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
+<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
 <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT CUSTOMIZED JQUERY LIB-->
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script>
 /*------------------------------------------------FAILURE FUNCTION ----------------------------------------------------*/
 function UEXST_onFailure(UEXST_error) {
@@ -38,8 +51,14 @@ $('#UEXST_form_existingUnit').replaceWith('<center><label class="dberrormsg">'+U
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_error,position:{top:150,left:500}}});
 }}
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
 $(document).ready(function(){
 var UEXST_room_arr=[];
 var UEXST_errorMsg_array=[];
@@ -59,7 +78,9 @@ $(".preloader").show();
 google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_getroomstamp_err(UEXST_unitno,'UEXST_flag_unitno_errormsg');
 /*----------------------------------------------SUCCESS FUNCTION FOR LOAD STAMP,ROOM TYPE PLUS ERROR MSG--------------------------------------------------------*/
 function UEXST_result(UEXST_response_arr){
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 var UEXST_response=UEXST_response_arr[0];
 var UEXST_unitno=UEXST_response.UEXST_unitno_flag;
 if(UEXST_response.UEXST_unitno_err_roomstamp_flag=='UEXST_flag_unitno_errormsg'){
@@ -146,6 +167,7 @@ this.value = this.value.substring(0, UEXST_max);
 $("#UEXST_tb_stampamount").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
 $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
 $(".numonly").doValidation({rule:'numbersonly',prop:{leadzero:true}});
+$('textarea').autogrow({onInitialize: true});
 /*-------------------------------------------DATE FUNCTION FOR STAMPDUTYDATE------------------------------------------*/
 $("#UEXST_db_stampdutydate").datepicker({dateFormat:"dd-mm-yy",changeYear: true,changeMonth: true});
 $("#UEXST_tb_accesscard,#UEXST_tb_unitdeposite").doValidation({rule:'numbersonly',prop:{leadzero:false}});
@@ -165,6 +187,8 @@ if((($("#UEXST_tb_unitdeposite").val()=='')||($("#UEXST_tb_unitdeposite").val()=
 UEXST_flag_unit=0;
 google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_getroomstamp_err(UEXST_unitno,'UEXST_flag_roomtype');
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,-150);
+resetPreloader(newPos);
 $('#UEXST_tb_newroomtype').replaceWith('<select id="UEXST_lb_oldroomtype" name="UEXST_lb_oldroomtype" class="UEXST_class_validupdate"><option>SELECT</option></select>');
 $(this).replaceWith('<input type="button" name="UEXST_btn_addroomtype" value="ADD" id="UEXST_btn_addroomtype" class="btn UEXST_class_validupdate"/>');
 }
@@ -185,6 +209,8 @@ $("#UEXST_tb_newroomtype").removeClass('invalid');
 }
 else if(UEXST_newroom.length>0){
 $(".preloader").show(); 
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(UEXST_roomresult).withFailureHandler(UEXST_onFailure).UEXST_alreadyexists(UEXST_newroom,UEXST_source);
 }
 });
@@ -204,6 +230,8 @@ if((UEXST_unit_source=='UEXST_radio_activeunit')&&(($("#UEXST_tb_unitdeposite").
 UEXST_flag_unit=0;
 google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_getroomstamp_err(UEXST_unitno,'UEXST_flag_stamptype');
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,-150);
+resetPreloader(newPos);
 $('#UEXST_tb_newstamptype').replaceWith('<select id="UEXST_lb_oldstamptype" name="UEXST_lb_oldstamptype"class="UEXST_class_validupdate" ><option>SELECT</option></select>');
 $(this).replaceWith('<input type="button" name="UEXST_btn_addstamptype" value="ADD" id="UEXST_btn_addstamptype" class="btn UEXST_class_validupdate">');
 }
@@ -225,6 +253,8 @@ $("#UEXST_tb_newstamptype").removeClass('invalid');
 }
 else if(UEXST_newstamp.length>0){
 $(".preloader").show(); 
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(UEXST_stampresult).withFailureHandler(UEXST_onFailure).UEXST_alreadyexists(UEXST_newstamp,UEXST_source);
 }});
 /*------------------------------------------SUCCESS FUNCTION FOR ROOM TYPE ALREADY EXISTS--------------------------------*/ 
@@ -299,6 +329,8 @@ $("#UEXST_tb_newstamptype").removeClass('invalid');
 $(".UEXST_td_webotheraccount").hide();
 $(".UEXST_class_nonstampdetail").hide();
 $(".preloader").show(); 
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_login_acct_others($("#UEXST_lb_unitnumber").val(),'UEXST_radio_others');
 }}
 else{
@@ -335,6 +367,8 @@ var UEXST_unitnumber=$("#UEXST_lb_unitnumber").val();
 /*-------------------------------------------CLICK EVENT FUNCTION FOR LOGIN DETAILS-----------------------------------*/
 if(UEXST_source=='UEXST_radio_doorloginpswd'){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $("#UEXST_div_acctdetails").hide();
 $("#UEXST_div_others").hide();
 $("#UEXST_div_errmsg").text('');
@@ -344,6 +378,8 @@ google.script.run.withSuccessHandler(UEXST_loginSuccess).withFailureHandler(UEXS
 /*-------------------------------------------CLICK EVENT FUNCTION FOR ACCOUNT DETAILS-----------------------------------*/
 else if(UEXST_source=='UEXST_radio_acctdetails'){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),50,230);
+resetPreloader(newPos);
 $("#UEXST_div_errmsg").text('');
 $("#UEXST_div_others").hide();
 $("#UEXST_div_doorloginpwsd").hide();
@@ -353,6 +389,8 @@ google.script.run.withSuccessHandler(UEXST_acctSuccess).withFailureHandler(UEXST
 /*-------------------------------------------CLICK EVENT FUNCTION FOR OTHERS DETAILS-----------------------------------*/
 else if(UEXST_source=='UEXST_radio_others'){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_login_acct_others(UEXST_unitnumber,UEXST_source);
 var UEXST_unitno=$('#UEXST_lb_unitnumber').val();
 $("#UEXST_div_acctdetails").hide();
@@ -463,6 +501,8 @@ $('#UEXST_tb_bankaddrs').attr("size",UEXST_bankaddr.length);
 /*-----------------------------------------------CLICK FUNCTION FOR UPDATION-------------------------------------------------*/
 $(document).on('click','#UEXST_btn_update',function(){ 
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 if($('#UEXST_radio_doorloginpswd').is(':checked')) { 
 $("#UEXST_hidden_flag").val('UEXST_doorlogpwd');
 }
@@ -475,13 +515,14 @@ $("#UEXST_hidden_flag").val('UEXST_others');
 if(UEXST_unit_source=='UEXST_radio_nonactiveunit')
 $("#UEXST_hidden_flag").val('UEXST_others');
 google.script.run.withSuccessHandler(UEXST_updateSuccess).withFailureHandler(UEXST_onFailure).UEXST_updateForm(document.getElementById('UEXST_form_existingUnit'));
+$('textarea').height(20);
 });
 /*----------------------------------------SUCCESS FUNCTION FOR WHICH ARE INSERTING VALUES --------------------------------*/ 
 function UEXST_updateSuccess(UEXST_response){
 $(".preloader").hide();
 if((UEXST_response.UEXST_obj_flag==1)&&(UEXST_response.UEXST_obj_flag_existing==false)){
 var UEXST_errorMsg=UEXST_errorMsg_array[7].replace('[UNIT NO]',UEXST_response.UEXST_obj_no);
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_errorMsg}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_errorMsg,position:{top:150,left:500}}});
 $(':input','#UEXST_form_existingUnit')
 .not(':button')
 .val('')
@@ -491,7 +532,7 @@ $("#UEXST_tble_unitno").hide();
 $('#UEXST_radio_activeunit,#UEXST_radio_nonactiveunit').attr('checked', false);
 }
 else if(UEXST_response.UEXST_obj_flag==0)
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_errorMsg_array[10]}});}
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EXISTING UNIT",msgcontent:UEXST_errorMsg_array[10],position:$(this).position()}});}
 /*--------------------------------------CHANGE FUNCTION FOR ACCESS CARD FOR ALREADY EXISTS DATA-------------------*/
 $(document).on("blur",'#UEXST_tb_accesscard',function(){ 
 var UEXST_access=$("#UEXST_tb_accesscard").val();
@@ -503,6 +544,8 @@ $('#UEXST_div_errasscard').text(UEXST_errorMsg_array[2]);
 }
 else if(parseInt($('#UEXST_tb_accesscard').val()).toString().length>=4){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(UEXST_accessresult).withFailureHandler(UEXST_onFailure).UEXST_alreadyexists(UEXST_access,UEXST_source);
 }
 if((parseInt($('#UEXST_tb_accesscard').val())==0)||($('#UEXST_tb_accesscard').val().length==0)){
@@ -599,8 +642,9 @@ UEXST_func_doorcode_login($(this).val(),$(this).attr('id'));
 }});
 function UEXST_func_doorcode_login(UCRE_value,UCRE_attrid){
 $(".preloader").show();
-$("#UCRE_btn_submit").attr("disabled", "disabled");
-google.script.run.withSuccessHandler(UEXST_SuccessLoginDoor).withFailureHandler(UCRE_onFailure).UEXST_alreadyexists(UCRE_value,UCRE_attrid);
+var  newPos= adjustPosition($("#UNIT_tb_weblogin").position(),100,180);
+resetPreloader(newPos);
+google.script.run.withSuccessHandler(UEXST_SuccessLoginDoor).withFailureHandler(UEXST_onFailure).UEXST_alreadyexists(UCRE_value,UCRE_attrid);
 }
 /*--------------------------------------------SUCCESS FUNCTION FOR DOORCODE AND WEBLOGIN----------------------*/
 function UEXST_SuccessLoginDoor(UEXST_response_Login){
@@ -655,9 +699,12 @@ $('#UEXST_lbl_doorcode,#UEXST_lbl_weblogin').text('');
 /*-----------------------------------------REPLACE OLDROOMTYPE & OLDSTAMPTYPE WHEN RESET BUTTON CLICKED---------------------------------*/
 if((($('#UEXST_lb_oldroomtype').val()==undefined)&&($('#UEXST_btn_removeroomtype').val()=='CLEAR'))||(($('#UEXST_btn_removestamptype').val()=='CLEAR')&&($('#UEXST_lb_oldstamptype').val()==undefined))){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 var UEXST_unitno=$('#UEXST_lb_unitnumber').val();
 google.script.run.withSuccessHandler(UEXST_result).withFailureHandler(UEXST_onFailure).UEXST_getroomstamp_err(UEXST_unitno,'UEXST_flag_roomstamp');
 }
+$('#UEXST_ta_comments,#UEXST_tb_bankaddrs').height(20);
 $('#UEXST_ta_comments,#UEXST_tb_bankaddrs').prop("rows",2).prop("cols",20);
 $(':input[type=text]:not([readonly])','#UEXST_form_existingUnit').prop("size","20");
 }

@@ -1,5 +1,14 @@
-<!--**********************************CUSTOMER SEARCH/UPDATE ***********************************************************************//-->
+<!--**********************************CUSTOMER SEARCH/UPDATE/DELETE ***********************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY PUNI
+//VER 2.1-SD:08/10/2014 ED:08/10/2014,TRACKER NO:833-Corrected proloader and message box position.
+//DONE BY KUMAR
+//VER 2.00-SD:06/10/2014 ED:06/10/2014,TRACKER NO:833-updated proloader and message box position.
+//VER 1.09-SD:13/09/2014 ED:13/09/2014,TRACKER NO:776-Did notice period validation.
+//VER 1.08- SD:02/09/2014 ED:02/09/2014,TRACKER NO:776-Cleared tracker 776 comments 85 all issues.
+//VER 1.07- SD:11/08/2014 ED:11/08/2014,TRACKER NO:776-implemented rollback and commit comment in script side and updated new jquery links.
+//VER 1.06-SD:06-08-2014 ED:06/08/2014,TRACKER NO:776,updated terminated customer notice period date readoly format and lp and quarter as null when sd and ed both are equal or sd>ed
+//VER 1.05-SD:25/07/2014 ED:25/07/2014,TRACKER NO:776,Cleared customer fee details updation issue and changed html header name and cleared intl mobile button not enable issue.
 //VER 1.04-SD:17/07/2014 ED:17/07/2014,TRACKER NO:776,cleared tickler company details updation issue and entry details old value empty issue.
 //VER 1.03-SD:12/07/2014 ED:12/07/2014,TRACKER NO:776,cleared checkin and checkout datepicker issue and tickler table issues html fields updated orderly.
 //VER 1.02-SD:25/06/2014 ED:25/06/2014,TRACKER NO:776,Did epdate and passport validation and implemented conn failure message.
@@ -20,25 +29,36 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={AmountCompare:'InValid'}
 $(document).ready(function() {
+$('.CSRC_ta_comments_auto').autogrow({onInitialize: true});
 $(document).on('click','#CSRC_tble_customer_table tr td input[type="radio"]',function() {
 $('#CSRC_tble_customer_table tr').removeClass('higlightrow');
 $(this).closest('tr').addClass('higlightrow');
@@ -131,6 +151,7 @@ changeMonth: true
 $( "#CSRC_db_passportdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
 $( "#CSRC_db_epdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
 $( "#CSRC_db_noticedate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+$( "#temp_CSRC_db_noticedate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
 var CCRE_date1 = new Date();
 var CCRE_day=CCRE_date1.getDate();
 CCRE_date1.setDate( CCRE_day + 1 );        
@@ -274,7 +295,9 @@ $('#CSRC_lbl_passportnodateerrormsg').text(errormsg[21]);
 $('#CSRC_lbl_epnodateerrormsg').text(errormsg[22])
 $('#CSRC_lbl_pportdateerrormsg').text(errormsg[26]);
 $('#CSRC_lbl_ep_dateerrormsg').text(errormsg[25]);
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 if(initialerrormessage==1)
 {
 $('#CSRC_searchnupdate').show();
@@ -508,6 +531,8 @@ if(searchoptionid==21)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_customersearchbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_customersearchbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_customersearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -515,6 +540,8 @@ if(searchoptionid==25)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_epnumberseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_epnumberseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_EPsearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -522,6 +549,8 @@ if(searchoptionid==18)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_cardnumberseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_cardnumberseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_cardnumbersearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -529,6 +558,8 @@ if(searchoptionid==19)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_companynameseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_companynameseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_companynamesearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -536,6 +567,8 @@ if(searchoptionid==20)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_commentsseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_commentsseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_commentssearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -543,6 +576,8 @@ if(searchoptionid==24)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_emailidseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_emailidseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_emailsearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -550,6 +585,8 @@ if(searchoptionid==26)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_mobilenoseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_mobilenoseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_mobilenosearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -557,6 +594,8 @@ if(searchoptionid==28)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_officenoseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_officenoseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_officenosearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -564,6 +603,8 @@ if(searchoptionid==29)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_passportnoseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_passportnoseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_passportnosearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -571,6 +612,8 @@ if(searchoptionid==32)
 {
 $('#customersearchoption-'+searchoptionid).hide();
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_intlmobileseachbutton').position(),100,350);
+resetPreloader(newPos);
 $("#CSRC_btn_intlmobileseachbutton").attr("disabled", "disabled");
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_intlmobilenosearchresponse).CSRC_autocompletesearchdetails(searchoptionid)
 }
@@ -956,7 +999,8 @@ $("#CSRC_btn_mobilenoseachbutton").attr("disabled", "disabled");
 }
 });
 ///************** INT' LMOBILE ERROR MESSAGE*********************/
-$('.intlmobile_noautovalidate').change(function(){
+//$('.intlmobile_noautovalidate').change(function(){
+$(document).on('change','.intlmobile_noautovalidate',function(){
 if(CSRC_intlmobileflag==1){
 $('#intlmobilenoautocompleteerrormsg').hide();
 }
@@ -1066,7 +1110,7 @@ if(CUSTOMER_SEARCH_listoptionsplit[1]==32)
 {
 CSRC_intlmobileflag=1;
 $('#intlmobilenoautocompleteerrormsg').hide();
-$('#CSRC_btn_intlmobilenoseachbutton').removeAttr("disabled");
+$('#CSRC_btn_intlmobileseachbutton').removeAttr("disabled");
 }
 }
 //////CARDNUMBER SEARCH CALL FUNCTION//////////////
@@ -1076,6 +1120,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_cardnumberseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_cardnumber,CSRC_null)
 });
 //////CUSTOMERNAME SEARCH CALL FUNCTION//////////////
@@ -1087,6 +1133,8 @@ var CSRC_null='';
 if(CSRC_customerid!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_customersearchbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_customerid,CSRC_null)
 }
 });
@@ -1102,6 +1150,8 @@ var CSRC_null='';
 if(CSRC_unitno!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_lb_unitlistbox').position(),100,230);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_unitno,CSRC_null)
 }
 });
@@ -1117,6 +1167,8 @@ var CSRC_null='';
 if(CSRC_nationality!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_lb_nationalitylistbox').position(),100,230);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_nationality,CSRC_null)
 }
 });
@@ -1137,6 +1189,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_mobilenoseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_mobileno,CSRC_null)
 });
 //////ROOM TYPE SEARCH CALL FUNCTION//////////////
@@ -1151,6 +1205,8 @@ var CSRC_null='';
 if(CSRC_roomtype!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_lb_roomtypelistbox').position(),100,230);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_roomtype,CSRC_null)
 }
 });
@@ -1161,6 +1217,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_companynameseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_companyname,CSRC_null)
 });
 //////EMAIL ID SEARCH CALL FUNCTION//////////////
@@ -1173,6 +1231,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_emailidseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_emailid,CSRC_null)
 });
 //////INTMOBILE SEARCH CALL FUNCTION//////////////
@@ -1182,6 +1242,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_intlmobileseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_intmobileno,CSRC_null)
 });
 //////OFFICE SEARCH CALL FUNCTION//////////////
@@ -1193,6 +1255,8 @@ var CSRC_null='';
 if(CSRC_oficeno!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_officenoseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_oficeno,CSRC_null)
 }
 });
@@ -1205,6 +1269,8 @@ var CSRC_null='';
 if(CSRC_passportno!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_passportnoseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_passportno,CSRC_null)
 }
 });
@@ -1217,6 +1283,8 @@ var CSRC_null='';
 if(CSRC_EPno!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_epnumberseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_EPno,CSRC_null)
 }
 });
@@ -1229,6 +1297,8 @@ var CSRC_null='';
 if(CSRC_cardno!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_lb_cardnumberlistbox').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_cardno,CSRC_null)
 }
 });
@@ -1240,6 +1310,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_dobseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,dob_startdate,dob_enddate)
 });
 //////DEPOSIT SEARCH CALL FUNCTION//////////////
@@ -1250,6 +1322,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_depositseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,dep_fromamt,dep_toamt)
 });
 //////RENT SEARCH CALL FUNCTION//////////////
@@ -1260,6 +1334,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_rentseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,rent_fromamt,rent_toamt)
 });
 //////LP SEARCH CALL FUNCTION//////////////
@@ -1269,6 +1345,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_LPseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,LP_startdate,"nullvalue")
 });
 ///////COMMENTS SEARCH CALL FUNCTION/////////////
@@ -1278,6 +1356,8 @@ var CSRC_searchoptionvalue=($('#CSRC_lb_selectoption').val()).split('-');
 var CSRC_searchoption=CSRC_searchoptionvalue[1]
 var CSRC_null='';
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_commentsseachbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_searchresponse).CSRC_searchdetails(CSRC_searchoption,CSRC_comments,CSRC_null)
 });
 var htmltable_array=[];
@@ -1351,6 +1431,8 @@ CSRC_table_value+='<tbody><tr class="td_color"><td style="text-align:center" cla
 }
 $('#CSRC_tble_customer_table').append(CSRC_table_value);
 }
+var CSRC_customer_acc_detailstitle="CUSTOMER ACCOUNT DETAILS - "
+var CSRC_customer_acc_detailsemptytitle="RECORDS NOT AVAILABLE FOR SELECTED " 
 /////////////////CUSTOMER TABLE//////////
 if(searchoption==21)
 {
@@ -1358,14 +1440,14 @@ var tableheader=$('#CSRC_tb_customernamesearch').val();
 if((searchoption==21)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED CUSTOMER : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" CUSTOMER NAME : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED CUSTOMER: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" CUSTOMER: "+tableheader
 }
 }
 /////////////UNIT TABLE/////////////
@@ -1374,14 +1456,14 @@ if(searchoption==31)
 if((searchoption==31)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED UNIT : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" UNIT : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED UNIT: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" UNIT: "+tableheader
 }
 }
 //////////////NATIONALITY//////////////
@@ -1390,14 +1472,14 @@ if(searchoption==27)
 if((searchoption==27)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED NATIONALITY : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" NATIONALITY : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED NATIONALITY: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" NATIONALITY: "+tableheader
 }
 }
 //////////////ROOM TYPE//////////////
@@ -1406,14 +1488,14 @@ if(searchoption==33)
 if((searchoption==33)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED ROOM TYPE : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" ROOM TYPE : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED ROOM TYPE: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" ROOM TYPE: "+tableheader
 }
 }
 /////////COMPANY NAME///////////
@@ -1422,14 +1504,14 @@ if(searchoption==19)
 if((searchoption==19)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED COMPANY NAME : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" COMPANY NAME : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED COMPANY NAME: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" COMPANY NAME: "+tableheader
 }
 }
 ////////EMAIL ID///////////
@@ -1438,14 +1520,14 @@ if(searchoption==24)
 if((searchoption==24)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED EMAIL ID : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" EMAIL ID : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED EMAIL ID: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" EMAIL ID: "+tableheader
 }
 }
 ////////MOBILE NO///////////
@@ -1454,14 +1536,14 @@ if(searchoption==26)
 if((searchoption==26)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED MOBILE NO : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" MOBILE NO : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED MOBILE NO: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" MOBILE NO: "+tableheader
 }
 }
 ////////INTMOBILE NO///////////
@@ -1470,14 +1552,14 @@ if(searchoption==32)
 if((searchoption==32)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED INT-MOBILE NO : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" INT-MOBILE NO : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED INT-MOBILE NO: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" INT-MOBILE NO: "+tableheader
 }
 }
 ////INTMOBILE NO///////////
@@ -1486,14 +1568,14 @@ if(searchoption==28)
 if((searchoption==28)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED INT-MOBILE NO : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" OFFICE NUMBER : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED INT-MOBILE NO: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" OFFICE NUMBER: "+tableheader
 }
 }
 ////////PASSPORT NO///////////
@@ -1502,14 +1584,14 @@ if(searchoption==29)
 if((searchoption==29)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED PASSPORT NO : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" PASSPORT NO : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED PASSPORT NO: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" PASSPORT NO: "+tableheader
 }
 }
 ////////EP NO///////////
@@ -1518,14 +1600,14 @@ if(searchoption==25)
 if((searchoption==25)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED EP NO : "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" EP NO : "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED EP NO: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" EP NO: "+tableheader
 }
 }
 ////////DOB///////////
@@ -1536,14 +1618,14 @@ var dobend=$('#CSRC_db_dobenddate').val();
 if((searchoption==23)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED DOB: "+dobstart+" To "+dobend
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" DOB: "+dobstart+" To "+dobend
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED DOB: "+dobstart+" To "+dobend
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" DOB: "+dobstart+" To "+dobend
 }
 }
 ////////DEPOSIT AMOUNT///////////
@@ -1554,14 +1636,14 @@ var depositto=$('#CSRC_tb_deptoamount').val();
 if((searchoption==22)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED DEPOSIT AMOUNT RANGE: "+depositfrom+" To "+depositto
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" DEPOSIT AMOUNT RANGE: "+depositfrom+" To "+depositto
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED DEPOSIT AMOUNT RANGE: "+depositfrom+" To "+depositto
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" DEPOSIT AMOUNT RANGE: "+depositfrom+" To "+depositto
 }
 }
 ////////PAYMENT AMOUNT///////////
@@ -1572,14 +1654,14 @@ var rentend=$('#CSRC_tb_renttoamount').val();
 if((searchoption==30)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED RENT AMOUNT RANGE: "+rentstart+" To "+rentend
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" RENT AMOUNT RANGE: "+rentstart+" To "+rentend
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 }
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED RENT AMOUNT RANGE: "+rentstart+" To "+rentend
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" RENT AMOUNT RANGE: "+rentstart+" To "+rentend
 }
 }
 ////////COMMENTS///////////
@@ -1588,7 +1670,7 @@ if(searchoption==20)
 if((searchoption==20)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED COMMENTS: "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" COMMENTS: "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 $('#CSRC_tble_personal_customer_table').show();
@@ -1597,7 +1679,7 @@ $('#CSRC_div_personal_customer_flextable').show();
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED COMMENTS: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" COMMENTS: "+tableheader
 }
 }
 ////////CARD NUMBER///////////
@@ -1606,7 +1688,7 @@ if(searchoption==18)
 if((searchoption==18)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED CARD NUMBER: "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" CARD NUMBER: "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 $('#CSRC_tble_personal_customer_table').show();
@@ -1615,7 +1697,7 @@ $('#CSRC_div_personal_customer_flextable').show();
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO CUSTOMER USED SELECTED CARD NUMBER: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" CARD NUMBER: "+tableheader
 }
 }
 ////////LEASE PERIOD///////////
@@ -1624,7 +1706,7 @@ if(searchoption==34)
 if((searchoption==34)&&(customersearchresult.length!=0))
 {
 var CSRC_errorflag=0;
-var CSRC_customerheader="DETAILS OF SELECTED LEASE PERIOD: "+tableheader
+var CSRC_customerheader=CSRC_customer_acc_detailstitle+" LEASE PERIOD: "+tableheader
 $('#CSRC_div_customer_flextable').show();
 $('#CSRC_tble_customer_table').show();
 $('#CSRC_tble_personal_customer_table').show();
@@ -1633,7 +1715,7 @@ $('#CSRC_div_personal_customer_flextable').show();
 else
 {
 CSRC_errorflag=1;
-CSRC_customerheader="NO DETAILS OF SELECTED LEASE PERIOD: "+tableheader
+CSRC_customerheader=CSRC_customer_acc_detailsemptytitle+" LEASE PERIOD: "+tableheader
 }
 }
 if(CSRC_errorflag==0)
@@ -1657,6 +1739,7 @@ $('#CSRC_lbl_error').addClass("errormsg").show();
 }
 $('#CSRC_searchnupdate').find('input[type=text]').val('');
 $('#CSRC_ta_commentssearch').val('')
+$('#CSRC_ta_commentssearch').height(20);
 $("#CSRC_btn_cardnumberseachbutton").attr("disabled", "disabled");
 $("#CSRC_btn_commentsseachbutton").attr("disabled", "disabled");
 $("#CSRC_btn_customersearchbutton").attr("disabled", "disabled");
@@ -1668,6 +1751,8 @@ $("#CSRC_btn_intlmobileseachbutton").attr("disabled", "disabled");
 $("#CSRC_btn_officenoseachbutton").attr("disabled", "disabled");
 $("#CSRC_btn_emailidseachbutton").attr("disabled", "disabled");
 $("#CSRC_btn_dobseachbutton").attr("disabled", "disabled");
+$('#CSRC_btn_rentseachbutton').attr("disabled", "disabled");
+$('#CSRC_btn_depositseachbutton').attr("disabled", "disabled");
 $('#CSRC_lbl_epnodateerrormsg').hide();
 $('#CSRC_lbl_passportnodateerrormsg').hide();
 htmltable_array.push(px1);
@@ -1685,30 +1770,62 @@ $(document).on('click','#CSRC_btn_formsearchbutton',function(){
 var CSRC_id=$("input[name=CSRC_radiobuttons_table]:checked").val();
 var CSRC_idsplit=CSRC_id.split('/');
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_btn_formsearchbutton').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_selectedcustomerrecverresponse).CSRC_selectedcustomerrecverdetails(CSRC_idsplit[0],CSRC_idsplit[1],CSRC_idsplit[2])
 });
 /*****************NOTICE PERIOD VALIDATION*********************/
 $(document).on('change','.noticeperiodvalidation',function(){
 if($('#CSRC_db_enddate').val()!="" && $('#CSRC_db_startdate').val()!="")
 {
-$('#CSRC_db_noticedate').val('');
+//$('#CSRC_db_noticedate').val('');
 var enddate=$('#CSRC_db_enddate').val();
 var startdate=$('#CSRC_db_startdate').val();
 var CCRE_db_chkindate1 = new Date( Date.parse(FormTableDateFormat(startdate)));
+var CSRC_SDdate=CCRE_db_chkindate1;
 CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate()+1);  
 var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
 CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 )); 
-$('#CSRC_db_noticedate').datepicker("option","minDate",CCRE_db_chkindate1);
-var CCRE_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(enddate)) ); 
+//$('#CSRC_db_noticedate').datepicker("option","minDate",CCRE_db_chkindate1);
+var CCRE_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(enddate))); 
 CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate()-1);  
 var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
-CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1 )); 
+CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1)); 
 var CCRE_chkoutdate=CCRE_db_chkoutdate1.getDate()-1;
 var CCRE_chkoutmonth=CCRE_db_chkoutdate1.getMonth()+1
-var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear()
+var CCRE_chkoutyear=CCRE_db_chkoutdate1.getFullYear();
 var CCRE_finnoticedate=CCRE_chkoutyear+"-"+CCRE_chkoutmonth+"-"+CCRE_chkoutdate;
 CCRE_finnoticedate = new Date( Date.parse( CCRE_finnoticedate ) );
+//$('#CSRC_db_noticedate').datepicker("option","maxDate",CCRE_db_chkoutdate1);
+var new_startdate=CCRE_db_chkoutdate1.getFullYear()+'-'+CCRE_db_chkoutdate1.getMonth()+'-'+CCRE_db_chkoutdate1.getDate();
+var new_Date=new Date().getFullYear()+'-'+new Date().getMonth()+'-'+new Date().getDate();
+if(CSRC_SDdate>new Date())
+{
+var curr_SDdate=new Date( Date.parse(FormTableDateFormat(startdate)));
+}
+else
+{
+curr_SDdate=new Date();
+}
+curr_SDdate.setDate(curr_SDdate.getDate()+1);  
+$('#CSRC_db_noticedate').datepicker("option","minDate",curr_SDdate);
 $('#CSRC_db_noticedate').datepicker("option","maxDate",CCRE_db_chkoutdate1);
+$('#temp_CSRC_db_noticedate').datepicker("option","minDate",curr_SDdate);
+$('#temp_CSRC_db_noticedate').datepicker("option","maxDate",CCRE_db_chkoutdate1);
+
+var noticestart_date=curr_SDdate.getFullYear()+'-'+curr_SDdate.getMonth()+'-'+curr_SDdate.getDate();
+var CCRE_dbchkoutdate = new Date( Date.parse(FormTableDateFormat(enddate))); 
+var noticeend_date=CCRE_dbchkoutdate.getFullYear()+'-'+CCRE_dbchkoutdate.getMonth()+'-'+CCRE_dbchkoutdate.getDate();
+if(noticestart_date==noticeend_date)
+{
+$('#CSRC_db_noticedate').val('');
+$('#temp_CSRC_db_noticedate').val('');
+$('#CSRC_db_noticedate').attr("disabled",'disabled');
+}
+else
+{
+$("#CSRC_db_noticedate").removeAttr("disabled");
+}
 }
 });
 function CCRE_startendtimevalues(endtime)
@@ -1924,7 +2041,7 @@ $('#CSRC_db_startdate').datepicker("option","minDate",CCRE_db_chkindate1);
 //////////////ENDDATE DATEPICKER LIMIT SETTINGS//////////////////
 var CCRE_date2=CSRC_checkoutdate;
 var CCRE_db_chkoutdate1 = new Date( Date.parse((CCRE_date2)) ); 
-CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate());
+CCRE_db_chkoutdate1.setDate( CCRE_db_chkoutdate1.getDate()-1);
 var CCRE_db_chkoutdate1 = CCRE_db_chkoutdate1.toDateString(); 
 CCRE_db_chkoutdate1 = new Date( Date.parse( CCRE_db_chkoutdate1 ));
 var checkenddate=new Date( Date.parse(updationrecords.end_date) ); 
@@ -2040,24 +2157,16 @@ if(i==0)
 {
 var CSRC_tb_startdate=cardarryvalue.cardstartdate;
 var CSRC_tb_enddate=cardarryvalue.cardenddate;
-var CCRE_value ='<tr><td width="100px"><label >'+cardarryvalue.card+'</label></td><td width="150px"><label id="CSRC_originamecustomername">'+updationrecords.firstname+' '+updationrecords.lastname+'</label></td><td><input value='+cardarryvalue.cardstartdate+' type="text" name="CSRC_db_cardstartdate" id="CSRC_db_cardstartdate-'+i+'" style="width:75px;height:20px" disabled/></td><td><input value='+cardarryvalue.cardstartdate+' type="text" name="CSRC_db_tempcardstartdate" id="CSRC_db_tempcardstartdate-'+i+'" style="width:75px;height:20px" hidden /></td><td><input value='+cardarryvalue.cardenddate+' type="text" class="guestenddatechange" name="CSRC_db_cardenddate" id="CSRC_db_cardenddate-'+i+'" style="width:75px;height:20px" disabled/></td><td><input value='+cardarryvalue.cardenddate+' type="text" name="CSRC_db_tempcardenddate" id="CSRC_db_tempcardenddate-'+i+'" style="width:75px;height:20px" hidden/></td><td><input value='+cardarryvalue.card+' type="text" name="CSRC_db_cardno" id="CSRC_db_cardno'+i+'" style="width:75px;height:20px" hidden/></td></tr>';
+var CCRE_value ='<tr><td width="100px"><label >'+cardarryvalue.card+'</label></td><td width="150px"><label id="CSRC_originamecustomername">'+updationrecords.firstname+' '+updationrecords.lastname+'</label></td><td><input value='+cardarryvalue.cardstartdate+' type="text" name="CSRC_db_cardstartdate" id="CSRC_db_cardstartdate-'+i+'" style="width:75px;height:20px" disabled/></td><td><input value='+cardarryvalue.cardstartdate+' type="text" name="CSRC_db_tempcardstartdate" id="CSRC_db_tempcardstartdate-'+i+'" style="width:75px;height:20px" hidden /></td><td><input value='+cardarryvalue.cardenddate+' type="text" class="guestenddatechange" name="CSRC_db_cardenddate" id="CSRC_db_cardenddate-'+i+'" style="width:75px;height:20px" disabled/></td><td><input value='+cardarryvalue.cardenddate+' type="text" name="CSRC_db_tempcardenddate" id="CSRC_db_tempcardenddate-'+i+'" style="width:75px;height:20px" hidden /></td><td><input value='+cardarryvalue.card+' type="text" name="CSRC_db_cardno" id="CSRC_db_cardno'+i+'" style="width:75px;height:20px" hidden/></td></tr>';
 }
 else
 {
-var CCRE_value ='<tr><td><label >'+cardarryvalue.card+'</label></td><td><label >GUEST '+i+'</label></td><td><input value='+cardarryvalue.cardstartdate+' type="text" name="CSRC_db_cardstartdate" id="CSRC_db_cardstartdate-'+i+'" style="width:75px;height:20px" disabled/></td><td><input value='+cardarryvalue.cardstartdate+' type="text" name="CSRC_db_tempcardstartdate" id="CSRC_db_tempcardstartdate-'+i+'" style="width:75px;height:20px" hidden /></td><td><input value='+cardarryvalue.cardenddate+' type="text" name="CSRC_db_cardenddate" id="CSRC_db_cardenddate-'+i+'" style="width:75px;height:20px" disabled/></td><td><input value='+cardarryvalue.cardenddate+' type="text" name="CSRC_db_tempcardenddate" id="CSRC_db_tempcardenddate-'+i+'" style="width:75px;height:20px" hidden/></td><td><input value='+cardarryvalue.card+' type="text" name="CSRC_db_cardno" id="CSRC_db_cardno'+i+'" style="width:75px;height:20px" hidden /></td></td></tr>';
+var CCRE_value ='<tr><td><label >'+cardarryvalue.card+'</label></td><td><label >GUEST '+i+'</label></td><td><input value='+cardarryvalue.cardstartdate+' type="text" name="CSRC_db_cardstartdate" id="CSRC_db_cardstartdate-'+i+'" style="width:75px;height:20px" disabled/></td><td><input value='+cardarryvalue.cardstartdate+' type="text" name="CSRC_db_tempcardstartdate" id="CSRC_db_tempcardstartdate-'+i+'" style="width:75px;height:20px" hidden /></td><td><input value='+cardarryvalue.cardenddate+' type="text" name="CSRC_db_cardenddate" id="CSRC_db_cardenddate-'+i+'" style="width:75px;height:20px" disabled/></td><td><input value='+cardarryvalue.cardenddate+' type="text" name="CSRC_db_tempcardenddate" id="CSRC_db_tempcardenddate-'+i+'" style="width:75px;height:20px" hidden /></td><td><input value='+cardarryvalue.card+' type="text" name="CSRC_db_cardno" id="CSRC_db_cardno'+i+'" style="width:75px;height:20px" hidden /></td></td></tr>';
 }
 $('#CSRC_tble_cardlisttable').append(CCRE_value);
 $('#CSRC_tble_cardlisttable').show();
 if(i!=0)
 {
-if((revenddate==0)&&(revstartdate==0))
-{
-$('#CSRC_db_noticedate').prop('disabled','disabled');
-}
-else
-{
-$('#CSRC_db_noticedate').removeAttr("disabled");
-}
 if(revenddate==0  || expense==1)
 {
 $('#CSRC_db_cardenddate-'+i).attr('disabled','disabled');
@@ -2089,6 +2198,7 @@ $('#CSRC_db_tempenddate').val(updationrecords.enddate);
 $('#CSRC_db_tempstartdate').val(updationrecords.startdate);
 $('#CSRC_db_cardenddate').val(updationrecords.enddate);
 $('#CSRC_db_cardstartdate').val(updationrecords.startdate);
+var noitice_enddate=CSRC_tb_enddate;
 }
 else
 {
@@ -2102,6 +2212,7 @@ else
 $("#CSRC_lb_unitselect").attr("disabled","disabled");
 }
 $('#CSRC_db_enddate').val(updationrecords.enddate);
+noitice_enddate=updationrecords.enddate;
 $('#CSRC_db_tempenddate').val(updationrecords.enddate);
 $('#CSRC_db_cardenddate').val(updationrecords.enddate);
 $('#CSRC_db_startdate').val(updationrecords.startdate);
@@ -2110,14 +2221,6 @@ $('#CSRC_db_cardstartdate').val(updationrecords.startdate);
 $('#CSRC_radio_null').prop('checked',true);
 $('#CSRC_radio_cardnumbers').prop('disabled','disabled').hide();
 $('#CSRC_radio_null').prop('disabled','disabled').hide();
-}
-if((revenddate==0)&&(revstartdate==0))
-{
-$('#CSRC_db_noticedate').prop('disabled','disabled');
-}
-else
-{
-$('#CSRC_db_noticedate').removeAttr("disabled");
 }
 if(revenddate==0 || expense==1)
 {
@@ -2164,8 +2267,18 @@ $('#CSRC_tb_noticeno').val(updationrecords.noticeperiod);
 var CCRE_db_chkindate1 = new Date();
 CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate() + 1 );  
 var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
-CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) );
+CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1));
+var dbstartdatesplit=start_date.split('-');
+var dbstartdatesplitdate=new Date(dbstartdatesplit[2],dbstartdatesplit[1]-1,dbstartdatesplit[0]+1);
+
+if(dbstartdatesplitdate>new Date())
+{
+$('#CSRC_db_noticedate').datepicker("option","minDate",dbstartdatesplitdate);
+}
+else
+{
 $('#CSRC_db_noticedate').datepicker("option","minDate",CCRE_db_chkindate1);
+}
 var CCRE_db_chkindate2 = new Date(Date.parse(end_date));   
 var CCRE_noiticechkoutdate=CCRE_db_chkindate2.getDate()-1
 var CCRE_noticechkoutmonth=CCRE_db_chkindate2.getMonth()+1
@@ -2174,6 +2287,7 @@ var CCRE_noticefinnoticedate=CCRE_noticechkoutyear+"-"+CCRE_noticechkoutmonth+"-
 CCRE_noticefinnoticedate = new Date( Date.parse( CCRE_noticefinnoticedate ) );
 $('#CSRC_db_noticedate').datepicker("option","maxDate",CCRE_noticefinnoticedate);
 $('#CSRC_db_noticedate').val(updationrecords.noticedate);
+$('#temp_CSRC_db_noticedate').val(updationrecords.noticedate);
 $('#CSRC_quarter').prop('checked',false);
 $('#CSRC_fixed_aircon').prop('checked',false)
 $('#CSRC_tb_quarterlyfee').val(updationrecords.airconquartelyfee).hide();
@@ -2197,6 +2311,29 @@ $('#CSRC_ta_comments').val(updationrecords.comments);
 $('#CSRC_tb_process').val(updationrecords.processingfee);
 $("#CSRC_lb_ccoptionselect")[0].selectedIndex = 0;
 $("#CSRC_lb_mailselect")[0].selectedIndex = 0;
+/****************noticeperiod***************************/
+var CCRE_dbchkoutdate = new Date(Date.parse( FormTableDateFormat(noitice_enddate))); 
+if(new Date() > CCRE_dbchkoutdate)
+{
+$("#CSRC_db_noticedate").prop('disabled',true);
+}
+else
+{
+$("#CSRC_db_noticedate").prop('disabled',false);
+var new_noticesddate=(updationrecords.startdate).split('-');
+var oldnoticedate=new Date(new_noticesddate[2],new_noticesddate[1]-parseInt(1),new_noticesddate[0]);
+if(oldnoticedate<new Date())
+{
+var no_newdate=new Date();
+no_newdate.setDate( no_newdate.getDate() + 1 );
+$('#CSRC_db_noticedate').datepicker("option","minDate",no_newdate);
+}
+else
+{
+oldnoticedate.setDate( oldnoticedate.getDate() + 1 );
+$('#CSRC_db_noticedate').datepicker("option","minDate",oldnoticedate);
+}
+}
 if(updationrecords.prorated_flag=="" || updationrecords.prorated_flag==undefined)
 {
 $('#proratedvalue').prop('checked',false);
@@ -2248,6 +2385,7 @@ $('#CSRC_tb_custmailid').removeClass('invalid');
 $('#CSRC_tble_updatefrom_part1').show();
 $('#CSRC_tble_updatefrom_part2').show();
 $('#CSRC_tble_button').show();
+//$("#CSRC_db_noticedate").removeAttr("disabled");
 $(".preloader").hide();
 }
 ////////////////UNIT CHANGE VALIDATION/////////////
@@ -2357,6 +2495,8 @@ $('#CSRC_lb_roomselect').hide();
 if(CSRC_unit!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CSRC_lb_unitselect').position(),100,350);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_handleMessageResponse).CSRC_Roomtype(CSRC_unit,CSRC_nullpara);
 }
 else
@@ -2440,11 +2580,9 @@ var CSRC_chkoutdate=CSRC_db_chkoutdate1.getDate()
 var CSRC_chkoutmonth=CSRC_db_chkoutdate1.getMonth()-CustomerSD;
 var CSRC_chkoutyear=CSRC_db_chkoutdate1.getFullYear();
 var CSRC_finnoticedate = new Date(CSRC_chkoutyear,CSRC_chkoutmonth,CSRC_chkoutdate);
-
-
 var CSRC_date1=unit_startenddate[0];
-var unitCSRC_db_chkindate1 = new Date( Date.parse(FormTableDateFormat(CSRC_date1)));
-
+var unitCSRC_db_chkin_date1 = new Date( Date.parse(FormTableDateFormat(CSRC_date1)));
+var unitCSRC_db_chkindate1=new Date(unitCSRC_db_chkin_date1.getFullYear(),unitCSRC_db_chkin_date1.getMonth(),unitCSRC_db_chkin_date1.getDate()-1)
 if(CSRC_finnoticedate > unitCSRC_db_chkindate1)
 {
 var CSRC_db_chkindate1=CSRC_finnoticedate;
@@ -2490,8 +2628,7 @@ else
 nullnewdate=new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()+1)
 }
 $('#CSRC_db_startdate').datepicker("option","maxDate",new Date(edminmax[2],edminmax[1]-1,edminmax[0]-1))
-$('#CSRC_db_enddate').datepicker("option","minDate",nullnewdate);
-
+//$('#CSRC_db_enddate').datepicker("option","minDate",nullnewdate);
 for(var i=1;i<accesscardarraylength;i++)
 {
 $('#CSRC_db_cardstartdate-'+i).val($('#CSRC_db_startdate').val());
@@ -2500,21 +2637,33 @@ $('#CSRC_db_tempcardstartdate-'+i).val($('#CSRC_db_startdate').val());
 $('#CSRC_db_tempcardenddate-'+i).val($('#CSRC_db_enddate').val());
 }
 });
+/**************update failure message********************/
+function CSRC_Update_error_message(CSRC_updateerr)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:CSRC_updateerr,position:{top:150,left:500}}});
+$(".preloader").hide();
+}
 /**************************UPDATE BUTTON FUNCTION****************************/
 $('#CSRC_btn_updatebutton').click(function(){
 $(".preloader").show();
-google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_updateResponse).CSRC_customer_update_getvalues(document.getElementById('CSRC_searchnupdate'))
+var  newPos= adjustPosition($('#CSRC_btn_updatebutton').position(),100,350);
+resetPreloader(newPos);
+google.script.run.withFailureHandler(CSRC_Update_error_message).withSuccessHandler(CSRC_updateResponse).CSRC_customer_update_getvalues(document.getElementById('CSRC_searchnupdate'))
 });
 function CSRC_updateResponse(res)
 {
 if(res==1)
 {
 updationreset();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[18]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[18],position:{top:150,left:500}}});
+}
+else if(res==0)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:"CUSTOMER DETAILS NOT UPDATED",position:$('#CSRC_btn_updatebutton').position()}});
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:"CUSTOMER DETAILS NOT UPDATED"}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:res,position:$('#CSRC_btn_updatebutton').position()}});
 }
 $(".preloader").hide();
 }
@@ -2539,6 +2688,7 @@ $("#CSRC_lb_endselect")[0].selectedIndex = 0;
 $("#CSRC_lb_ccoptionselect")[0].selectedIndex = 0;
 $("#CSRC_lb_mailselect")[0].selectedIndex = 0;
 $('#CSRC_ta_comments').val('');
+$('#CSRC_ta_comments').height(20);
 $('#waivedvalue').prop('checked',false);
 $('#proratedvalue').prop('checked',false);
 $('#tempproratedvalue').prop('checked',false);
@@ -2554,7 +2704,7 @@ function CSRC_error_message(CSRC_err)
 {
 if(CSRC_err=='TypeError: Cannot call method "getEvents" of undefined.')
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[23]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[23],position:$('#CSRC_btn_updatebutton').position()}});
 }
 else if(CSRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
 {
@@ -2563,11 +2713,11 @@ $('#CSRC_searchnupdate').replaceWith('<center><label class="dberrormsg">'+CSRC_e
 }
 else if(CSRC_err='No item with the given ID could be found, or you do not have permission to access it.')
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[24]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[24],position:$('#CSRC_btn_updatebutton').position()}});
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:CSRC_err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:CSRC_err,position:$('#CSRC_btn_updatebutton').position()}});
 }
 $(".preloader").hide();
 }
@@ -2589,26 +2739,37 @@ $(document).on('click','.messageconfirm',function(){
 var CSRC_id=$("input[name=CSRC_radiobuttons_table]:checked").val();
 var CSRC_idsplit=CSRC_id.split('/');
 $(".preloader").show();
-google.script.run.withFailureHandler(CSRC_error_message).withSuccessHandler(CSRC_customerrecorddeleteresponse).CSRC_customerrecord_delete(CSRC_idsplit[0])
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
+google.script.run.withFailureHandler(CSRC_Update_error_message).withSuccessHandler(CSRC_customerrecorddeleteresponse).CSRC_customerrecord_delete(CSRC_idsplit[0])
 });
 
 $('#CSRC_btn_formdeletebutton').click(function(){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[8],confirmation:true}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[8],confirmation:true,position:$(this).position()}});
 });
 
 function CSRC_customerrecorddeleteresponse(deleteresponse)
 {
-if(deleteresponse!=1)
+if(deleteresponse==0)
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[20]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[20],position:$("#CSRC_btn_formdeletebutton").position()}});
 }
-else
+if(deleteresponse==1)
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[19]}});
-}
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER SEARCH/UPDATE/DELETE",msgcontent:errormsg[19],position:{top:150,left:500}}});
 updationreset();
+}
+if(deleteresponse.match("SCRIPT EXCEPTION:"))
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:deleteresponse,position:{top:150,left:500}}}); 
+$(".preloader").hide(); 
+}
 $(".preloader").hide();
 }
+$(document).on('change blur','#CSRC_db_noticedate',function(){
+var noticedate=$('#CSRC_db_noticedate').val();
+$('#temp_CSRC_db_noticedate').val(noticedate);
+});
 });
 </script>
 <body bgcolor="#E6E6FA">
@@ -2742,7 +2903,7 @@ $(".preloader").hide();
 <label>COMPANY NAME</label>
 </td>
 <td>
-<input type="text" class="commonhideclass tableformclear autosize companynameautovalidate" name="CSRC_tb_companynamesearch" id="CSRC_tb_companynamesearch"/>
+<input type="text" class="commonhideclass tableformclear companynameautovalidate" name="CSRC_tb_companynamesearch" id="CSRC_tb_companynamesearch" style="width:400px"/>
 </td>
 <td><label id="companynameautocompleteerrormsg" class="errormsg" hidden></label></td>
 </tr>
@@ -2762,7 +2923,7 @@ $(".preloader").hide();
 <label>COMMENTS</label>
 </td>
 <td>
-<textarea name="CSRC_ta_commentssearch" class="commonhideclass tableformclear commentsautovalidate" id="CSRC_ta_commentssearch"></textarea>
+<textarea name="CSRC_ta_commentssearch" class="commonhideclass tableformclear commentsautovalidate CSRC_ta_comments_auto" id="CSRC_ta_commentssearch"></textarea>
 </td>
 <td><label id="commentsautocompleteerrormsg" class="errormsg" hidden></label></td>
 </tr>
@@ -2782,7 +2943,7 @@ $(".preloader").hide();
 <label>EMAIL ID<em>*</em></label>
 </td>
 <td>
-<input type="text" class="commonhideclass tableformclear emailidautovalidate" name="CSRC_tb_emailidsearch" id="CSRC_tb_emailidsearch"/>
+<input type="text" class="commonhideclass tableformclear emailidautovalidate" name="CSRC_tb_emailidsearch" id="CSRC_tb_emailidsearch" style="width:300px"/>
 </td>
 <td><label id="emailidautocompleteerrormsg" class="errormsg" hidden></label></td>
 </tr>
@@ -2822,7 +2983,7 @@ $(".preloader").hide();
 <label>INT'L MOBILE NO<em>*</em></label>
 </td>
 <td>
-<input type="text" class="commonhideclass tableformclear intlmobile_noautovalidate numonly" name="CSRC_tb_intlmobilenosearch" id="CSRC_tb_intlmobilenosearch" style="width:110px;" maxlength="15" />
+<input type="text" class="commonhideclass tableformclear intlmobile_noautovalidate" name="CSRC_tb_intlmobilenosearch" id="CSRC_tb_intlmobilenosearch" style="width:110px;" maxlength="15" />
 </td>
 <td><label id="intlmobilenoautocompleteerrormsg" class="errormsg" hidden></label></td>
 </tr>
@@ -3048,7 +3209,7 @@ $(".preloader").hide();
 <td>
 <table>
 <td>
-<input type="text" name="CSRC_tb_firstname" id="CSRC_tb_firstname" maxlength="50" class="autosize CSRC_class_customernamechange"/>
+<input type="text" name="CSRC_tb_firstname" id="CSRC_tb_firstname" maxlength="30" class="autosize CSRC_class_customernamechange"/>
 </td>
 <td>
 <input type="text" name="CSRC_tb_custid" id="CSRC_tb_custid" hidden>
@@ -3065,7 +3226,7 @@ $(".preloader").hide();
 <td>
 <table>
 <td>
-<input type="text" name="CSRC_tb_lastname" id="CSRC_tb_lastname" maxlength="50" class="autosize CSRC_class_customernamechange"/>
+<input type="text" name="CSRC_tb_lastname" id="CSRC_tb_lastname" maxlength="30" class="autosize CSRC_class_customernamechange"/>
 </td>
 </table>
 </tr>
@@ -3354,6 +3515,9 @@ $(".preloader").hide();
 <td>
 <input type="text" name="CSRC_db_noticedate" id="CSRC_db_noticedate" style="width:75px" class="datenonmandtry"/>
 </td>
+<td>
+<input type="text" name="temp_CSRC_db_noticedate" id="temp_CSRC_db_noticedate" style="width:75px" hidden/>
+</td>
 </tr>
 <tr>
 <td>
@@ -3493,7 +3657,7 @@ $(".preloader").hide();
 <label>COMMENTS</label>
 </td>
 <td>
-<textarea name="CSRC_ta_comments" id="CSRC_ta_comments" rows="5" cols="20" style 'width th 2000px;'></textarea>
+<textarea name="CSRC_ta_comments" id="CSRC_ta_comments" class="CSRC_ta_comments_auto" rows="5" cols="20" style ='width th 2000px;'></textarea>
 </td>
 </tr>
 <tr>

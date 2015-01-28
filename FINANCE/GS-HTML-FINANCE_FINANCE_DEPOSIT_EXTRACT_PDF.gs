@@ -1,6 +1,10 @@
 //*******************************************FILE DESCRIPTION*********************************************
 //*******************************************DEPOSIT DEDUCTION EXTRACTS********************************************
+//DONE BY PUNI
+//VER 1.8  -SD:07/10/2014 ED:07/10/2014;TRACKER NO: 517//Corrected script for preloader,msgbox position
 //DONE BY SARADAMBAL M
+//VER 1.7  -SD:18/09/2014 ED:18/09/2014;TRACKER NO: 517//implemented script for preloader,msgbox,implemented script for style to submit button instead of div -style
+//VER 1.6- SD:14/08/2014 ED:14/08/2014,TRACKER NO: 517//updated new links
 //VER 1.5 -SD:08/07/2014 ED:10/07/2014;TRACKER NO: 517//updated err msg ,if any sheet err,removed hypen for duplicate customer,sorted lp expcept for group LP,hide cb for single lp
 //VER 1.4 -SD:27/06/2014 ED:30/06/2014;TRACKER NO: 517//use single sheet for extraction,implemented script for wrap the text for rent row,removed script for getting sending email sheet
 //VER 1.3 -SD:25/06/2014 ED:25/06/2014;TRACKER NO: 517//implemented err msg ,if no permission to access SS
@@ -538,7 +542,7 @@ try
       newSpreadsheet.getSheetByName('sheet1').activate();
       var DDC_newspread_ssid=newSpreadsheet.getId();
       newSpreadsheet.deleteActiveSheet();
-      var contents = DriveApp.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
+      //      var contents = DriveApp.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
       var contents = DocsList.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
       var getattachfile={fileName:selectedunit+'-'+customername+".pdf", content:contents, mimeType:"application//pdf"};
       advancedArgs.push(getattachfile);

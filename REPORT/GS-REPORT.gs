@@ -1,6 +1,11 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************REPORT*******************************************************//
+//DONE BY:PUNI
+//VER 2.1-SD:06/10/2014,ED:06/10/2014,TRACKER NO:655,1.Changed script for preloader,msgbox position,2.corrected sort by for report name n report category
+//DONE BY:SARADAMBAL
+//VER 2.0-SD:22/08/2014 ED:22/08/2014,TRACKER NO:655,updated new links
 //DONE BY:LALITHA
+//VER 1.9-SD:31/07/2014 ED:31/07/2014,TRACKER NO:655,Updated to restrict the current mnth dp for expense nd erm leeds report,Atlast showned the emailid(changed validation),Changed alignmnt right side of amt nd date,Updated dp inside of same table(corrected alignment of dp),Removed repeated query
 //VER 1.8-SD:30/07/2014 ED:30/07/2014,TRACKER NO:655,Updated mandatory symbol for dp
 //VER 1.7-SD:30/07/2014 ED:30/07/2014,TRACKER NO:655,Changed Return Function,Changed the active unit expense spreadsheet for particular month wth dp,Updated parsefloat for amt,Changed validation,changed hypen for date 
 //VER 1.6-SD:11/07/2014 ED:12/07/2014,TRACKER NO:655,Updated column width for all spread sheet
@@ -27,7 +32,7 @@ try
   {
     var REP_conn=eilib.db_GetConnection();
     var REP_searchoptions_dataid=[];
-    var REP_select_catagotyreport_name="SELECT CGN_ID,CGN_TYPE FROM CONFIGURATION WHERE CGN_ID IN(59,60,61,73,82)";
+    var REP_select_catagotyreport_name="SELECT CGN_ID,CGN_TYPE FROM CONFIGURATION WHERE CGN_ID IN(59,60,61,73,82) ORDER BY CGN_TYPE ASC";
     var REP_catagoryreport_name_stmt=REP_conn.createStatement();
     var REP_catagoryreport_name_rs=REP_catagoryreport_name_stmt.executeQuery( REP_select_catagotyreport_name);
     while(REP_catagoryreport_name_rs.next())
@@ -42,7 +47,7 @@ try
     //REPORT NAME
     var REP_report_name_stmt=REP_conn.createStatement();
     var REP_report_name_arraydataid=[];
-    var REP_select_report_name="SELECT RCN_ID,RCN_DATA FROM REPORT_CONFIGURATION WHERE RCN_INITIALIZE_FLAG='X' "; 
+    var REP_select_report_name="SELECT RCN_ID,RCN_DATA FROM REPORT_CONFIGURATION WHERE RCN_INITIALIZE_FLAG='X' ORDER BY RCN_DATA ASC"; 
     var REP_report_name_rs=REP_report_name_stmt.executeQuery( REP_select_report_name);
     while(REP_report_name_rs.next())
     {
@@ -71,12 +76,9 @@ try
     var REP_stmt=REP_conn.createStatement();
     var REP_loaddata_arrdataid=[];
     var REP_selectquery=[];
-    REP_selectquery[59]="SELECT RCN_ID,RCN_DATA FROM REPORT_CONFIGURATION WHERE RCN_ID IN(1,2,3,4,5,30)";//UNIT
-    REP_selectquery[60]="SELECT RCN_ID,RCN_DATA FROM REPORT_CONFIGURATION WHERE RCN_ID=6";//EMPLOYEE
-    REP_selectquery[61]="SELECT RCN_ID,RCN_DATA FROM REPORT_CONFIGURATION WHERE RCN_ID IN(7,8,31)";//CUSTOMER
-    REP_selectquery[73]="SELECT RCN_ID,RCN_DATA FROM REPORT_CONFIGURATION WHERE RCN_ID=28";//EXPENSE
-    REP_selectquery[82]="SELECT RCN_ID,RCN_DATA FROM REPORT_CONFIGURATION WHERE RCN_ID=32";//ERM 
-    var REP_separate_rs=REP_stmt.executeQuery(REP_selectquery[REP_report_optionfetch]);
+    REP_selectquery[59]='1,2,3,4,5,30';REP_selectquery[60]='6';REP_selectquery[61]='7,8,31';REP_selectquery[73]='28';REP_selectquery[82]='32';
+    var REP_reportconfig="SELECT RCN_ID,RCN_DATA FROM REPORT_CONFIGURATION WHERE RCN_ID IN ("+REP_selectquery[REP_report_optionfetch]+") ORDER BY RCN_DATA ASC";
+    var REP_separate_rs=REP_stmt.executeQuery(REP_reportconfig);
     while(REP_separate_rs.next())
     {
       var REP_seperatereportname_id=REP_separate_rs.getString(1);
@@ -101,26 +103,26 @@ try
     var REP_stmt=REP_conn.createStatement();
     if(REP_id==32)//ERM LEEDS
     {
-    if(REP_dtepickmonth!=null)
-    {
-      var REP_dtepickmonth=REP_dtepickmonth.split('-');
-      var monthArr=['January','February','March','April','May','June','July','August','September','October','November','December'];
-      var fromMonth=REP_dtepickmonth[0];
-      var toMonth=REP_dtepickmonth[1];
-      for(var i=0;i<=monthArr.length;i++)
+      if(REP_dtepickmonth!=null)
       {
-        if(monthArr[i]==fromMonth)
+        var REP_dtepickmonth=REP_dtepickmonth.split('-');
+        var monthArr=['January','February','March','April','May','June','July','August','September','October','November','December'];
+        var fromMonth=REP_dtepickmonth[0];
+        var toMonth=REP_dtepickmonth[1];
+        for(var i=0;i<=monthArr.length;i++)
         {
-          var getfromMonth=i;
+          if(monthArr[i]==fromMonth)
+          {
+            var getfromMonth=i;
+          }
         }
+        var newdate=new Date(toMonth,getfromMonth)
+        var getdate=newdate.getDate();
+        var endnewdate=new Date(toMonth,getfromMonth,getdate-1);
+        var startdate=new Date(toMonth,getfromMonth-1);
+        var REP_utstrdte=Utilities.formatDate(new Date(startdate), TimeZone,'yyyy-MM-dd');
+        var REP_utenddte=Utilities.formatDate(new Date(endnewdate),TimeZone, 'yyyy-MM-dd');
       }
-      var newdate=new Date(toMonth,getfromMonth)
-      var getdate=newdate.getDate();
-      var endnewdate=new Date(toMonth,getfromMonth,getdate-1);
-      var startdate=new Date(toMonth,getfromMonth-1);
-      var REP_utstrdte=Utilities.formatDate(new Date(startdate), TimeZone,'yyyy-MM-dd');
-      var REP_utenddte=Utilities.formatDate(new Date(endnewdate),TimeZone, 'yyyy-MM-dd');
-    }
     }
     var REP_namemail=REP_emailid.toString();
     var REP_index=REP_namemail.indexOf("@");
@@ -411,9 +413,9 @@ try
       var REP_ssids=REP_newspread.getId();
       REP_Sheet.setFrozenRows(1);
       if(REP_id==28)//ACTIVE UNIT EXPENSE
-       {
-         REP_expense(REP_id,REP_name,REP_emailid,REP_Sheet,REP_newspread,REP_dtepickmonth);
-       }
+      {
+        REP_expense(REP_id,REP_name,REP_emailid,REP_Sheet,REP_newspread,REP_dtepickmonth);
+      }
     }
     if(REP_count!=0)
     {
@@ -505,7 +507,7 @@ try
     REP_rs_temptble.close();
     REP_stmt_temptble.close();
     var REP_stmt=REP_conn.createStatement();
-    var REP_flextable_query= "SELECT CUSTOMER_FIRST_NAME,CUSTOMER_LAST_NAME,UNIT_NO,LEASE_PERIOD,CED_RECHECKIN,CED_EXTENSION,CED_PRETERMINATE,CC_PAYMENT_AMOUNT,CC_DEPOSIT,CC_PROCESSING_FEE,CC_AIRCON_FIXED_FEE,CC_ELECTRICITY_CAP,CC_DRYCLEAN_FEE,CC_AIRCON_QUARTERLY_FEE,CC_CHECKOUT_CLEANING_FEE,DATE_FORMAT(CLP_STARTDATE,'%d-%m-%Y') AS CLP_STARTDATE,DATE_FORMAT(CLP_ENDDATE,'%d-%m-%Y') AS CLP_ENDDATE,DATE_FORMAT(CLP_PRETERMINATE_DATE,'%d-%m-%Y') AS CLP_PRETERMINATE_DATE,CLP_TERMINATE FROM "+REP_temptblename+" ORDER BY UNIT_NO";
+    var REP_flextable_query= "SELECT CUSTOMER_FIRST_NAME,CUSTOMER_LAST_NAME,UNIT_NO,LEASE_PERIOD,CED_RECHECKIN,CED_EXTENSION,CED_PRETERMINATE,CC_PAYMENT_AMOUNT,CC_DEPOSIT,CC_PROCESSING_FEE,CC_AIRCON_FIXED_FEE,CC_ELECTRICITY_CAP,CC_DRYCLEAN_FEE,CC_AIRCON_QUARTERLY_FEE,CC_CHECKOUT_CLEANING_FEE,DATE_FORMAT(CLP_STARTDATE,'%d/%m/%Y') AS CLP_STARTDATE,DATE_FORMAT(CLP_ENDDATE,'%d/%m/%Y') AS CLP_ENDDATE,DATE_FORMAT(CLP_PRETERMINATE_DATE,'%d/%m/%Y') AS CLP_PRETERMINATE_DATE,CLP_TERMINATE FROM "+REP_temptblename+" ORDER BY UNIT_NO";
     var REP_flex_rs=REP_stmt.executeQuery(REP_flextable_query);
     while (REP_flex_rs.next()) 
     {
@@ -675,19 +677,19 @@ try
           REP_valueset[14]="";
         }
         REP_Sheet.setColumnWidth(14, 220);
-        REP_Sheet.getRange(REP_counter,15).setValue(REP_valueset[14]);
+        REP_Sheet.getRange(REP_counter,15).setValue(REP_valueset[14]).setHorizontalAlignment("right");
         if(REP_valueset[15]=='null')
         {
           REP_valueset[15]="";
         }
         REP_Sheet.setColumnWidth(15, 100);
-        REP_Sheet.getRange(REP_counter,16).setValue(REP_valueset[15]);
+        REP_Sheet.getRange(REP_counter,16).setValue(REP_valueset[15]).setHorizontalAlignment("right");
         if(REP_valueset[16]=='null')
         {
           REP_valueset[16]="";
         }
         REP_Sheet.setColumnWidth(16, 80);
-        REP_Sheet.getRange(REP_counter,17).setValue(REP_valueset[16]);
+        REP_Sheet.getRange(REP_counter,17).setValue(REP_valueset[16]).setHorizontalAlignment("right");
         if(REP_valueset[17]=='null')
         {
           REP_valueset[17]="";
@@ -817,7 +819,7 @@ try
   {
     var REP_conn=eilib.db_GetConnection();
     var REP_stmt=REP_conn.createStatement();
-    var REP_flextable_query="SELECT U.UNIT_NO,DATE_FORMAT(UD_START_DATE,'%d-%m-%Y') AS UD_START_DATE,DATE_FORMAT(UD_END_DATE,'%d-%m-%Y') AS UD_END_DATE FROM UNIT U,UNIT_DETAILS UD WHERE UD_OBSOLETE IS NULL AND U.UNIT_ID=UD.UNIT_ID ORDER BY U.UNIT_NO";
+    var REP_flextable_query="SELECT U.UNIT_NO,DATE_FORMAT(UD_START_DATE,'%d/%m/%Y') AS UD_START_DATE,DATE_FORMAT(UD_END_DATE,'%d/%m/%Y') AS UD_END_DATE FROM UNIT U,VW_ACTIVE_UNIT VAU,UNIT_DETAILS UD WHERE UD_OBSOLETE IS NULL AND U.UNIT_ID=UD.UNIT_ID AND VAU.UNIT_ID=U.UNIT_ID AND UD.UNIT_ID=VAU.UNIT_ID ORDER BY U.UNIT_NO";
     var REP_flex_rs=REP_stmt.executeQuery(REP_flextable_query);
     while (REP_flex_rs.next()) 
     {
@@ -861,13 +863,13 @@ try
           REP_valueset[1]="";
         }
         REP_Sheet.setColumnWidth(1, 70);
-        REP_Sheet.getRange(REP_counter,2).setValue(REP_valueset[1]);
+        REP_Sheet.getRange(REP_counter,2).setValue(REP_valueset[1]).setHorizontalAlignment("right");
         if(REP_valueset[2]=='null')
         {
           REP_valueset[2]="";
         }
         REP_Sheet.setColumnWidth(2, 100);
-        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]);
+        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]).setHorizontalAlignment("right");
         if(REP_valueset[3]=='null')
         {
           REP_valueset[3]="";
@@ -896,7 +898,7 @@ try
     REP_rs_temptble.close();
     REP_stmt_temptble.close();
     var REP_stmt=REP_conn.createStatement();
-    var REP_flextable_query="SELECT TCCME.CUSTOMERFIRSTNAME,TCCME.CUSTOMERLASTNAME,TCCME.LEASEPERIOD,TCCME.UNITNO,DATE_FORMAT(TCCME.STARTDATE,'%d-%m-%Y') AS STARTDATE,DATE_FORMAT(TCCME.ENDDATE,'%d-%m-%Y') AS ENDDATE,DATE_FORMAT(TCCME.PRETERMINATEDATE,'%d-%m-%Y') AS PRETERMINATEDATE,TCCME.ROOMTYPE,TCCME.EXTENSIONFLAG,TCCME.RECHECKINGFLAG,TCCME.PAYMENT,TCCME.DEPOSIT,TCCME.PROCESSINGFEE,TCCME.COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(TCCME.EXPIRY_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTAMP FROM "+REP_temptblename+" TCCME,USER_LOGIN_DETAILS ULD WHERE TCCME.ULD_ID=ULD.ULD_ID ORDER BY TCCME.UNITNO";
+    var REP_flextable_query="SELECT TCCME.CUSTOMERFIRSTNAME,TCCME.CUSTOMERLASTNAME,TCCME.LEASEPERIOD,TCCME.UNITNO,DATE_FORMAT(TCCME.STARTDATE,'%d/%m/%Y') AS STARTDATE,DATE_FORMAT(TCCME.ENDDATE,'%d/%m/%Y') AS ENDDATE,DATE_FORMAT(TCCME.PRETERMINATEDATE,'%d/%m/%Y') AS PRETERMINATEDATE,TCCME.ROOMTYPE,TCCME.EXTENSIONFLAG,TCCME.RECHECKINGFLAG,TCCME.PAYMENT,TCCME.DEPOSIT,TCCME.PROCESSINGFEE,TCCME.COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(TCCME.EXPIRY_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTAMP FROM "+REP_temptblename+" TCCME,USER_LOGIN_DETAILS ULD WHERE TCCME.ULD_ID=ULD.ULD_ID ORDER BY TCCME.UNITNO";
     var REP_flex_rs=REP_stmt.executeQuery(REP_flextable_query);
     while (REP_flex_rs.next()) 
     {
@@ -984,13 +986,13 @@ try
           REP_valueset[2]="";
         }
         REP_Sheet.setColumnWidth(2, 250);
-        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]);
+        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]).setHorizontalAlignment("right");
         if(REP_valueset[3]=='null')
         {
           REP_valueset[3]="";
         }
         REP_Sheet.setColumnWidth(3, 100);
-        REP_Sheet.getRange(REP_counter,4).setValue(REP_valueset[3]);
+        REP_Sheet.getRange(REP_counter,4).setValue(REP_valueset[3]).setHorizontalAlignment("right");
         if(REP_valueset[4]=='null')
         {
           REP_valueset[4]="";
@@ -1026,19 +1028,19 @@ try
           REP_valueset[9]="";
         }
         REP_Sheet.setColumnWidth(9, 160);
-        REP_Sheet.getRange(REP_counter,10).setValue(REP_valueset[9]);
+        REP_Sheet.getRange(REP_counter,10).setValue(REP_valueset[9]).setHorizontalAlignment("right");
         if(REP_valueset[10]=='null')
         {
           REP_valueset[10]="";
         }
         REP_Sheet.setColumnWidth(10, 80);
-        REP_Sheet.getRange(REP_counter,11).setValue(REP_valueset[10]);
+        REP_Sheet.getRange(REP_counter,11).setValue(REP_valueset[10]).setHorizontalAlignment("right");
         if(REP_valueset[11]=='null')
         {
           REP_valueset[11]="";
         }
         REP_Sheet.setColumnWidth(11, 80);
-        REP_Sheet.getRange(REP_counter,12).setValue(REP_valueset[11]);
+        REP_Sheet.getRange(REP_counter,12).setValue(REP_valueset[11]).setHorizontalAlignment("right");
         if(REP_valueset[12]=='null')
         {
           REP_valueset[12]="";
@@ -1076,7 +1078,7 @@ try
   {
     var REP_conn=eilib.db_GetConnection();
     var REP_stmt=REP_conn.createStatement();
-    var REP_flextable_query="SELECT U.UNIT_NO,DATE_FORMAT(UD_START_DATE,'%d-%m-%Y') AS UD_START_DATE,DATE_FORMAT(UD_END_DATE,'%d-%m-%Y') AS UD_END_DATE FROM UNIT U,UNIT_DETAILS UD WHERE UD_OBSOLETE ='X' AND U.UNIT_ID=UD.UNIT_ID ORDER BY U.UNIT_NO";
+    var REP_flextable_query="SELECT U.UNIT_NO,DATE_FORMAT(UD_START_DATE,'%d/%m/%Y') AS UD_START_DATE,DATE_FORMAT(UD_END_DATE,'%d/%m/%Y') AS UD_END_DATE FROM UNIT U,UNIT_DETAILS UD WHERE UD_OBSOLETE ='X' AND U.UNIT_ID=UD.UNIT_ID ORDER BY U.UNIT_NO";
     var REP_flex_rs=REP_stmt.executeQuery(REP_flextable_query);
     while (REP_flex_rs.next()) 
     {
@@ -1120,13 +1122,13 @@ try
           REP_valueset[1]="";
         }
         REP_Sheet.setColumnWidth(1, 70);
-        REP_Sheet.getRange(REP_counter,2).setValue(REP_valueset[1]);
+        REP_Sheet.getRange(REP_counter,2).setValue(REP_valueset[1]).setHorizontalAlignment("right");
         if(REP_valueset[2]=='null')
         {
           REP_valueset[2]="";
         }
         REP_Sheet.setColumnWidth(2, 100);
-        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]);
+        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]).setHorizontalAlignment("right");
         if(REP_valueset[3]=='null')
         {
           REP_valueset[3]="";
@@ -1302,7 +1304,7 @@ try
     var REP_forperiod =eilib.GetForperiodDateFormat(REP_dtepickmonth,REP_dtepickmonth);
     var REP_startdate=REP_forperiod.frmdate;
     var  REP_enddate=REP_forperiod.todate;
-    var REP_flextable_query="SELECT U.UNIT_NO,EC.ECN_DATA,CONCAT(C.CUSTOMER_FIRST_NAME,' ',C.CUSTOMER_LAST_NAME) AS NAME,DATE_FORMAT(EU.EU_INVOICE_DATE,'%d-%m-%Y') AS INVOICE,EU.EU_AMOUNT,EU.EU_INVOICE_ITEMS,EU.EU_INVOICE_FROM,EU.EU_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(EU.EU_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTAMP  FROM USER_LOGIN_DETAILS ULD,EXPENSE_UNIT AS EU JOIN VW_ACTIVE_UNIT U ON U.UNIT_ID=EU.UNIT_ID LEFT JOIN CUSTOMER C ON C.CUSTOMER_ID=EU.CUSTOMER_ID JOIN EXPENSE_CONFIGURATION EC ON EU.ECN_ID=EC.ECN_ID WHERE EU.ULD_ID=ULD.ULD_ID AND EU.EU_INVOICE_DATE BETWEEN '"+REP_startdate+"' AND '"+REP_enddate+"' ORDER BY U.UNIT_NO,EU.EU_INVOICE_DATE ASC";  
+    var REP_flextable_query="SELECT U.UNIT_NO,EC.ECN_DATA,CONCAT(C.CUSTOMER_FIRST_NAME,' ',C.CUSTOMER_LAST_NAME) AS NAME,DATE_FORMAT(EU.EU_INVOICE_DATE,'%d/%m/%Y') AS INVOICE,EU.EU_AMOUNT,EU.EU_INVOICE_ITEMS,EU.EU_INVOICE_FROM,EU.EU_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(EU.EU_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTAMP  FROM USER_LOGIN_DETAILS ULD,EXPENSE_UNIT AS EU JOIN VW_ACTIVE_UNIT U ON U.UNIT_ID=EU.UNIT_ID LEFT JOIN CUSTOMER C ON C.CUSTOMER_ID=EU.CUSTOMER_ID JOIN EXPENSE_CONFIGURATION EC ON EU.ECN_ID=EC.ECN_ID WHERE EU.ULD_ID=ULD.ULD_ID AND EU.EU_INVOICE_DATE BETWEEN '"+REP_startdate+"' AND '"+REP_enddate+"' ORDER BY U.UNIT_NO,EU.EU_INVOICE_DATE ASC";  
     var REP_flex_rs=REP_stmt.executeQuery(REP_flextable_query);
     while (REP_flex_rs.next()) 
     {
@@ -1379,10 +1381,10 @@ try
           REP_valueset[3]="";
         }
         REP_Sheet.setColumnWidth(3, 230);
-        REP_Sheet.getRange(REP_counter,4).setValue(REP_valueset[3]);
+        REP_Sheet.getRange(REP_counter,4).setValue(REP_valueset[3]).setHorizontalAlignment("right");
         REP_Sheet.setColumnWidth(4, 120);
         var REP_unitamount="'"+REP_valueset[4];
-        REP_Sheet.getRange(REP_counter,5).setValue(REP_unitamount);
+        REP_Sheet.getRange(REP_counter,5).setValue(REP_unitamount).setHorizontalAlignment("right");
         REP_Sheet.setColumnWidth(5, 150);
         REP_Sheet.getRange(REP_counter,6).setValue(REP_valueset[5]);
         if(REP_valueset[6]=='null')
@@ -1425,7 +1427,7 @@ try
   {
     var REP_conn=eilib.db_GetConnection();
     var REP_stmt=REP_conn.createStatement();
-    var REP_flextable_query="SELECT U.UNIT_NO,DATE_FORMAT(UD.UD_START_DATE,'%d-%m-%Y') AS UD_START_DATE,DATE_FORMAT(UD.UD_END_DATE,'%d-%m-%Y') AS UD_END_DATE FROM UNIT U,UNIT_DETAILS UD WHERE UD.UD_END_DATE<CURDATE() AND UD.UD_OBSOLETE IS NULL AND U.UNIT_ID=UD.UNIT_ID ORDER BY U.UNIT_NO ASC"
+    var REP_flextable_query="SELECT U.UNIT_NO,DATE_FORMAT(UD.UD_START_DATE,'%d/%m/%Y') AS UD_START_DATE,DATE_FORMAT(UD.UD_END_DATE,'%d/%m/%Y') AS UD_END_DATE FROM UNIT U,UNIT_DETAILS UD WHERE UD.UD_END_DATE<CURDATE() AND UD.UD_OBSOLETE IS NULL AND U.UNIT_ID=UD.UNIT_ID ORDER BY U.UNIT_NO ASC"
     var REP_flex_rs=REP_stmt.executeQuery(REP_flextable_query);
     while (REP_flex_rs.next()) 
     {
@@ -1469,13 +1471,13 @@ try
           REP_valueset[1]="";
         }
         REP_Sheet.setColumnWidth(1, 70);
-        REP_Sheet.getRange(REP_counter,2).setValue(REP_valueset[1]);
+        REP_Sheet.getRange(REP_counter,2).setValue(REP_valueset[1]).setHorizontalAlignment("right");
         if(REP_valueset[2]=='null')
         {
           REP_valueset[2]="";
         }
         REP_Sheet.setColumnWidth(2, 100);
-        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]);
+        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]).setHorizontalAlignment("right");
         if(REP_valueset[3]=='null')
         {
           REP_valueset[3]="";
@@ -1504,7 +1506,7 @@ try
     REP_rs_temptble.close();
     REP_stmt_temptble.close();
     var REP_stmt=REP_conn.createStatement();
-    var REP_flextable_query="SELECT DISTINCT U.UNIT_NO,CONCAT(C.CUSTOMER_FIRST_NAME,' ',C.CUSTOMER_LAST_NAME) AS CUSTNAME,CED.CED_REC_VER,CED.CED_LEASE_PERIOD,CED.CED_RECHECKIN,CED.CED_EXTENSION,CED.CED_PRORATED,CED.CED_PROCESSING_WAIVED,CED.CED_PRETERMINATE,DATE_FORMAT(CED.CED_NOTICE_START_DATE,'%d-%m-%Y') AS NOTICESTARTDATE,DATE_FORMAT(CED.CED_CANCEL_DATE,'%d-%m-%Y') AS CANCELDATE,CF.CC_DEPOSIT,CF.CC_ELECTRICITY_CAP,CF.CC_PAYMENT_AMOUNT,CF.CC_AIRCON_FIXED_FEE,CF.CC_AIRCON_QUARTERLY_FEE,CF.CC_DRYCLEAN_FEE,CF.CC_PROCESSING_FEE,CF.CC_CHECKOUT_CLEANING_FEE,DATE_FORMAT(CTD.CLP_STARTDATE,'%d-%m-%Y') AS STARTDATE,DATE_FORMAT(CTD.CLP_ENDDATE,'%d-%m-%Y') AS ENDDATE,CTD.CLP_TERMINATE,DATE_FORMAT(CTD.CLP_PRETERMINATE_DATE,'%d-%m-%Y') AS PRETERMINATEDATE,CTD.CLP_GUEST_CARD,UASD.UASD_ACCESS_CARD,DATE_FORMAT(CPD.CPD_PASSPORT_DATE,'%d-%m-%Y') AS PASSPORTDATE,DATE_FORMAT(CPD.CPD_EP_DATE,'%d-%m-%Y') AS EPDATE,DATE_FORMAT(CPD.CPD_DOB,'%d-%m-%Y') AS DOB,CPD.CPD_COMMENTS FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD on CED.CUSTOMER_ID=CCD.CUSTOMER_ID left join CUSTOMER_LP_DETAILS CTD on CED.CUSTOMER_ID=CTD.CUSTOMER_ID left join CUSTOMER_ACCESS_CARD_DETAILS CACD on CED.CUSTOMER_ID=CACD.CUSTOMER_ID and (CTD.UASD_ID=CACD.UASD_ID)left join UNIT_ACCESS_STAMP_DETAILS UASD on  (UASD.UASD_ID=CACD.UASD_ID) left join "+REP_temptblename+" CF on  CED.CUSTOMER_ID=CF.CUSTOMER_ID left join CUSTOMER C on CED.CUSTOMER_ID=C.CUSTOMER_ID left join  CUSTOMER_PERSONAL_DETAILS CPD on CED.CUSTOMER_ID=CPD.CUSTOMER_ID ,NATIONALITY_CONFIGURATION NC ,UNIT U,USER_LOGIN_DETAILS ULD  where  (CED.UNIT_ID=U.UNIT_ID) and(CPD.NC_ID=NC.NC_ID) and  (CED.CED_REC_VER=CF.CUSTOMER_VER) AND CED.CED_REC_VER=CTD.CED_REC_VER AND ULD.ULD_ID=CTD.ULD_ID AND ULD.ULD_ID=CTD.ULD_ID order by U.UNIT_NO,CUSTNAME,CED.CED_REC_VER ASC";
+    var REP_flextable_query="SELECT DISTINCT U.UNIT_NO,CONCAT(C.CUSTOMER_FIRST_NAME,' ',C.CUSTOMER_LAST_NAME) AS CUSTNAME,CED.CED_REC_VER,CED.CED_LEASE_PERIOD,CED.CED_RECHECKIN,CED.CED_EXTENSION,CED.CED_PRORATED,CED.CED_PROCESSING_WAIVED,CED.CED_PRETERMINATE,DATE_FORMAT(CED.CED_NOTICE_START_DATE,'%d/%m/%Y') AS NOTICESTARTDATE,DATE_FORMAT(CED.CED_CANCEL_DATE,'%d/%m/%Y') AS CANCELDATE,CF.CC_DEPOSIT,CF.CC_ELECTRICITY_CAP,CF.CC_PAYMENT_AMOUNT,CF.CC_AIRCON_FIXED_FEE,CF.CC_AIRCON_QUARTERLY_FEE,CF.CC_DRYCLEAN_FEE,CF.CC_PROCESSING_FEE,CF.CC_CHECKOUT_CLEANING_FEE,DATE_FORMAT(CTD.CLP_STARTDATE,'%d/%m/%Y') AS STARTDATE,DATE_FORMAT(CTD.CLP_ENDDATE,'%d/%m/%Y') AS ENDDATE,CTD.CLP_TERMINATE,DATE_FORMAT(CTD.CLP_PRETERMINATE_DATE,'%d/%m/%Y') AS PRETERMINATEDATE,CTD.CLP_GUEST_CARD,UASD.UASD_ACCESS_CARD,DATE_FORMAT(CPD.CPD_PASSPORT_DATE,'%d/%m/%Y') AS PASSPORTDATE,DATE_FORMAT(CPD.CPD_EP_DATE,'%d/%m/%Y') AS EPDATE,DATE_FORMAT(CPD.CPD_DOB,'%d/%m/%Y') AS DOB,CPD.CPD_COMMENTS FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD on CED.CUSTOMER_ID=CCD.CUSTOMER_ID left join CUSTOMER_LP_DETAILS CTD on CED.CUSTOMER_ID=CTD.CUSTOMER_ID left join CUSTOMER_ACCESS_CARD_DETAILS CACD on CED.CUSTOMER_ID=CACD.CUSTOMER_ID and (CTD.UASD_ID=CACD.UASD_ID)left join UNIT_ACCESS_STAMP_DETAILS UASD on  (UASD.UASD_ID=CACD.UASD_ID) left join "+REP_temptblename+" CF on  CED.CUSTOMER_ID=CF.CUSTOMER_ID left join CUSTOMER C on CED.CUSTOMER_ID=C.CUSTOMER_ID left join  CUSTOMER_PERSONAL_DETAILS CPD on CED.CUSTOMER_ID=CPD.CUSTOMER_ID ,NATIONALITY_CONFIGURATION NC ,UNIT U,USER_LOGIN_DETAILS ULD  where  (CED.UNIT_ID=U.UNIT_ID) and(CPD.NC_ID=NC.NC_ID) and  (CED.CED_REC_VER=CF.CUSTOMER_VER) AND CED.CED_REC_VER=CTD.CED_REC_VER AND ULD.ULD_ID=CTD.ULD_ID AND ULD.ULD_ID=CTD.ULD_ID order by U.UNIT_NO,CUSTNAME,CED.CED_REC_VER ASC";
     var REP_flex_rs=REP_stmt.executeQuery(REP_flextable_query);
     while (REP_flex_rs.next()) 
     {
@@ -1632,13 +1634,13 @@ try
           REP_valueset[2]="";
         }
         REP_Sheet.setColumnWidth(2, 240);
-        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]);
+        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]).setHorizontalAlignment("right");
         if(REP_valueset[3]=='null')
         {
           REP_valueset[3]="";
         }
         REP_Sheet.setColumnWidth(3, 100);
-        REP_Sheet.getRange(REP_counter,4).setValue(REP_valueset[3]);
+        REP_Sheet.getRange(REP_counter,4).setValue(REP_valueset[3]).setHorizontalAlignment("right");
         if(REP_valueset[4]=='null')
         {
           REP_valueset[4]="";
@@ -1704,19 +1706,19 @@ try
           REP_valueset[14]="";
         }
         REP_Sheet.setColumnWidth(14, 170);
-        REP_Sheet.getRange(REP_counter,15).setValue(REP_valueset[14]);
+        REP_Sheet.getRange(REP_counter,15).setValue(REP_valueset[14]).setHorizontalAlignment("right");
         if(REP_valueset[15]=='null')
         {
           REP_valueset[15]="";
         }
         REP_Sheet.setColumnWidth(15, 180);
-        REP_Sheet.getRange(REP_counter,16).setValue(REP_valueset[15]);
+        REP_Sheet.getRange(REP_counter,16).setValue(REP_valueset[15]).setHorizontalAlignment("right");
         if(REP_valueset[16]=='null')
         {
           REP_valueset[16]="";
         }
         REP_Sheet.setColumnWidth(16, 160);
-        REP_Sheet.getRange(REP_counter,17).setValue(REP_valueset[16]);
+        REP_Sheet.getRange(REP_counter,17).setValue(REP_valueset[16]).setHorizontalAlignment("right");
         if(REP_valueset[17]=='null')
         {
           REP_valueset[17]="";
@@ -1776,13 +1778,13 @@ try
           REP_valueset[26]="";
         }
         REP_Sheet.setColumnWidth(26, 130);
-        REP_Sheet.getRange(REP_counter,27).setValue(REP_valueset[26]);
+        REP_Sheet.getRange(REP_counter,27).setValue(REP_valueset[26]).setHorizontalAlignment("right");
         if(REP_valueset[27]=='null')
         {
           REP_valueset[27]="";
         }
         REP_Sheet.setColumnWidth(27, 130);
-        REP_Sheet.getRange(REP_counter,28).setValue(REP_valueset[27]);
+        REP_Sheet.getRange(REP_counter,28).setValue(REP_valueset[27]).setHorizontalAlignment("right");
         if(REP_valueset[28]=='null')
         {
           REP_valueset[28]="";
@@ -1808,7 +1810,7 @@ try
   {
     var REP_conn=eilib.db_GetConnection();
     var REP_stmt=REP_conn.createStatement();
-    var REP_flextable_query="SELECT ERM.ERM_CUST_NAME,ERM.ERM_RENT,DATE_FORMAT(ERM.ERM_MOVING_DATE,'%d-%m-%Y') AS ERM_MOVING_DATE,ERM.ERM_MIN_STAY,EOD.ERMO_DATA,NC.NC_DATA,ERM.ERM_NO_OF_GUESTS,ERM.ERM_AGE,ERM.ERM_CONTACT_NO,ERM.ERM_EMAIL_ID,ERM.ERM_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(ERM.ERM_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTAMP FROM ERM_ENTRY_DETAILS ERM left join NATIONALITY_CONFIGURATION NC ON ERM.NC_ID=NC.NC_ID left join ERM_OCCUPATION_DETAILS EOD ON ERM.ERMO_ID=EOD.ERMO_ID left join USER_LOGIN_DETAILS ULD on ERM.ULD_ID=ULD.ULD_ID WHERE ERM.ERM_MOVING_DATE BETWEEN '"+REP_utstrdte+"' AND '"+REP_utenddte+"' ORDER BY ERM.ERM_CUST_NAME ASC";
+    var REP_flextable_query="SELECT ERM.ERM_CUST_NAME,ERM.ERM_RENT,DATE_FORMAT(ERM.ERM_MOVING_DATE,'%d/%m/%Y') AS ERM_MOVING_DATE,ERM.ERM_MIN_STAY,EOD.ERMO_DATA,NC.NC_DATA,ERM.ERM_NO_OF_GUESTS,ERM.ERM_AGE,ERM.ERM_CONTACT_NO,ERM.ERM_EMAIL_ID,ERM.ERM_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(ERM.ERM_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS TIMESTAMP FROM ERM_ENTRY_DETAILS ERM left join NATIONALITY_CONFIGURATION NC ON ERM.NC_ID=NC.NC_ID left join ERM_OCCUPATION_DETAILS EOD ON ERM.ERMO_ID=EOD.ERMO_ID left join USER_LOGIN_DETAILS ULD on ERM.ULD_ID=ULD.ULD_ID WHERE ERM.ERM_MOVING_DATE BETWEEN '"+REP_utstrdte+"' AND '"+REP_utenddte+"' ORDER BY ERM.ERM_CUST_NAME ASC";
     var REP_flex_rs=REP_stmt.executeQuery(REP_flextable_query);
     while (REP_flex_rs.next()) 
     {
@@ -1881,13 +1883,14 @@ try
           REP_valueset[1]="";
         }
         REP_Sheet.setColumnWidth(1, 240);
-        REP_Sheet.getRange(REP_counter,2).setValue(REP_valueset[1]);
+        REP_Sheet.getRange(REP_counter,2).setValue(REP_valueset[1]).setHorizontalAlignment("right");
         if(REP_valueset[2]=='null')
         {
           REP_valueset[2]="";
         }
         REP_Sheet.setColumnWidth(2, 50);
-        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]);
+        
+        REP_Sheet.getRange(REP_counter,3).setValue(REP_valueset[2]).setHorizontalAlignment("right");
         if(REP_valueset[3]=='null')
         {
           REP_valueset[3]="";

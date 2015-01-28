@@ -1,6 +1,11 @@
 //*******************************************PAYMENT ENTRY-TERMINATED CUSTOMER*********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.04-SD:07/10/2014 ED:07/10/2014,TRACKER NO:672,1.corrected some preloader n msgbox position,2.corrected issue when select is clicked in unit no, customer name listbox
 //DONE BY:KUMAR
+//VER 1.03-SD:19/09/2014 ED:19/09/2014,TRACKER NO:672,Implemented preloader and msgbox position script
+//VER 1.02-SD:27/08/2014 ED:27/08/2014,TRACKER NO:672 changed temp table drop call query function in script.
+//VER 1.01-SD:22/08/2014 ED:22/08/2014,TRACKER NO:672 Updated new jquery and css links and add autogrow line.
 //VER 1.00-SD:19/06/2014 ED:19/06/2014,TRACKER NO:672 added conn failure message and did paiddate validation(mindate as customer 1st lp startdate and maxdate as sysdate).
 //VER 0.09-SD:06/06/2014 ED:06/06/2014,TRACKER NO:672 Changed preloader and jquery and css link.
 //VER 0.08-SD:16/05/2014 ED:16/05/2014,TRACKER NO:672 Changed temp table dynamically in script side.
@@ -47,9 +52,13 @@ try
     var FIN_TERM_ENTRY_allrecheckinunit="SELECT UNIT_NO,CUSTOMER_ID,CONCAT(CUSTOMER_FIRST_NAME,'_',CUSTOMER_LAST_NAME)AS CUSTOMERNAME,CED_REC_VER FROM "+temptablename+" ORDER BY UNIT_NO";
     var FIN_TERM_ENTRY_customerquery = "SELECT UNIT_NO,CUSTOMER_ID,CONCAT(CUSTOMER_FIRST_NAME,'_',CUSTOMER_LAST_NAME)AS CUSTOMERNAME,CED_REC_VER FROM "+temptablename+" WHERE UNIT_NO="+unit+" ORDER BY CUSTOMERNAME ASC";
     if(unit=='nounit')
-    { var FIN_TERM_ENTRY_customerresult = FIN_TERM_ENTRY_customerstmt.executeQuery(FIN_TERM_ENTRY_allrecheckinunit);}
+    {
+      var FIN_TERM_ENTRY_customerresult = FIN_TERM_ENTRY_customerstmt.executeQuery(FIN_TERM_ENTRY_allrecheckinunit);
+    }
     else
-    {   FIN_TERM_ENTRY_customerresult = FIN_TERM_ENTRY_customerstmt.executeQuery(FIN_TERM_ENTRY_customerquery);}
+    {   
+      FIN_TERM_ENTRY_customerresult = FIN_TERM_ENTRY_customerstmt.executeQuery(FIN_TERM_ENTRY_customerquery);
+    }
     while(FIN_TERM_ENTRY_customerresult.next())
     {
       FIN_TERM_ENTRY_customer_array.push({unit:FIN_TERM_ENTRY_customerresult.getString("UNIT_NO"),customername:FIN_TERM_ENTRY_customerresult.getString("CUSTOMERNAME"),customerid:FIN_TERM_ENTRY_customerresult.getString("CUSTOMER_ID")});
@@ -59,8 +68,8 @@ try
     var temptabledropstmt=FIN_TERM_ENTRY_conn.createStatement();
     temptabledropstmt.execute("DROP TABLE IF EXISTS "+temptablename+"");
     temptabledropstmt.close();
-    return FIN_TERM_ENTRY_customer_array;
     FIN_TERM_ENTRY_conn.close();
+    return FIN_TERM_ENTRY_customer_array;
   }
   
   /*************************FORPERIOD VALIDATION FOR SELECTED REC VER ************************************/

@@ -1,6 +1,10 @@
-<!--******************************************BANK TT************************************************************//-->
+<!--******************************************BANK TT ENTRY************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.06- SD:07/10/2014 ED:07/10/2014,TRACKER NO:674,Corrected some preloader n msgbox position
 //DONE BY:KUMAR
+//VER 1.05- SD:19/09/2014 ED:19/09/2014,TRACKER NO:674,Implemented preloader and msgbox position script
+//VER 1.04-SD:22/08/2014 ED:22/08/2014,TRACKER NO:674,Updated new jquery and css links and did rollback and commit.
 //VER 1.03- SD:13/08/2014 ED:13/08/2014,TRACKER NO:674,changed bankcode and branch code prefix accepting zero.
 //VER 1.02- SD:23/07/2014 ED:23/07/2014,TRACKER NO:674,showing all customer name in customer list for selected unit and all units.
 //VER 1.01- SD:21/06/2014 ED:21/06/2014,TRACKER NO:674,SET min and max date for banktt DP(MIN DATE AS SYSDATE-1 YEAR AND MAX DATE AS SYSDATE) AND implemented connection error message.
@@ -20,24 +24,36 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
+$(".preloader").show(); 
+$('.banktt_ta_comments').autogrow({onInitialize: true});
 var max = 250;
    $('#BANKTT_ENTRY_ta_bankaddress').keypress(function(e) {
        if (e.which < 0x20) {
@@ -52,7 +68,6 @@ var max = 250;
            this.value = this.value.substring(0, max);
        }
    });
-$(".preloader").show(); 
 var errormsg=[];
 var model=[];
 $('#FIN_OCBC_BANKTT_ENTRY_form_mainform').hide();
@@ -60,7 +75,7 @@ $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
 $("#BANKTT_ENTRY_tb_accountno").doValidation({rule:'numbersonly',prop:{realpart:25,leadzero:true}});
 $(".alphanumonly").doValidation({rule:'alphanumeric'});
 $(".uppercase").doValidation({rule:'general'});
-$(".autosize").doValidation({rule:'alphanumeric',prop:{whitespace:true,autosize:true}});
+$(".autosize").doValidation({rule:'general',prop:{whitespace:true,autosize:true}});
 $(".compautosize").doValidation({rule:'general',prop:{autosize:true}});
 $(".numonly").doValidation({rule:'numbersonly'});
 $("#BANKTT_ENTRY_tb_bankcode").doValidation({rule:'numbersonly',prop:{realpart:4,leadzero:true}});
@@ -126,7 +141,7 @@ BANKTT_ENTRY_chargevalue += '<option value="' + charge[i] + '">' + charge[i] + '
 }
 $('#BANKTT_ENTRY_lb_chargesto').html(BANKTT_ENTRY_chargevalue);
 $('#BANKTT_ENTRY_tb_amount').prop('title',errormsg[1]);
-$('#BANKTT_ENTRY_tb_accountname').prop('title',errormsg[0]);
+//$('#BANKTT_ENTRY_tb_accountname').prop('title',errormsg[0]);
 if(unit.length==0 || emailname==null)
 {
 if(unit.length==0)
@@ -148,14 +163,18 @@ else
 {
 $('#FIN_OCBC_BANKTT_ENTRY_form_mainform').show();
 }
-$(".preloader").hide(); 
+ //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus(); 
 }
 $('#BANKTT_ENTRY_lb_unit').change(function(){
 var unit=$('#BANKTT_ENTRY_lb_unit').val();
 $('#BANKTT_ENTRY_lbl_errormsgcustomer').hide();
 if(unit!='SELECT')
 {
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#BANKTT_ENTRY_lb_unit').position(),100,180);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(BANKTT_ENTRY_error_message).withSuccessHandler(BANKTT_ENTRY_customer_result).BANKTT_ENTRY_Customer(unit);
 }
 else
@@ -346,7 +365,9 @@ $('#BANKTT_ENTRY_lbl_customer').hide();
 $(".preloader").hide(); 
 }
 $('#BANKTT_ENTRY_btn_savebutton').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#BANKTT_ENTRY_btn_savebutton').position(),100,180);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(BANKTT_ENTRY_error_message).withSuccessHandler(BANKTT_ENTRY_Conformation).BANKTT_ENTRY_processFormSubmit(document.getElementById('FIN_OCBC_BANKTT_ENTRY_form_mainform'))
 });
 $('#BANKTT_ENTRY_btn_reset').click(function(){
@@ -430,12 +451,12 @@ function BANKTT_ENTRY_Conformation(res)
 {
 if(res==1)
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:errormsg[2]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:errormsg[2],position:$('#BANKTT_ENTRY_btn_savebutton').position()}});
 BANKTT_ENTRY_reset();
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:errormsg[6]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:errormsg[6],position:$('#BANKTT_ENTRY_btn_savebutton').position()}});
 }
 $(".preloader").hide(); 
 }
@@ -448,7 +469,7 @@ $('#FIN_OCBC_BANKTT_ENTRY_form_mainform').replaceWith('<center><label class="dbe
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:BANKTT_ENTRY_err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"BANK TT ENTRY",msgcontent:BANKTT_ENTRY_err,position:{top:150,left:500}}});
 }
 $(".preloader").hide();
 }
@@ -526,7 +547,7 @@ $(".preloader").hide();
 <td><label id='BANKTT_ENTRY_lbl_branchcode' >BRANCH CODE</label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_branchcode" id="BANKTT_ENTRY_tb_branchcode" style = 'width:60px;' maxlength="3" class='BANKTT_ENTRY_validation' /></td>
 </tr>
 <tr>
-<td><label >BANK ADDRESS</label></td><td><textarea  name="BANKTT_ENTRY_ta_bankaddress" id="BANKTT_ENTRY_ta_bankaddress" class="BANKTT_ENTRY_validation uppercase"></textarea></td>
+<td><label >BANK ADDRESS</label></td><td><textarea  name="BANKTT_ENTRY_ta_bankaddress" id="BANKTT_ENTRY_ta_bankaddress" class="BANKTT_ENTRY_validation uppercase banktt_ta_comments"></textarea></td>
 </tr>
 <tr>
 <td><label id='BANKTT_ENTRY_lbl_swiftcode' >SWIFT CODE<em>*</em></label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_swiftcode" style = 'width:110px;' maxlength="12" id="BANKTT_ENTRY_tb_swiftcode" class="BANKTT_ENTRY_validation" /></td>
@@ -540,14 +561,14 @@ $(".preloader").hide();
 <td><label >CUSTOMER REF</label></td><td> <input  type="text" name="BANKTT_ENTRY_tb_custref" id="BANKTT_ENTRY_tb_custref" maxlength="200" class="autosize BANKTT_ENTRY_validation"/></td>
 </tr>
 <tr>
-<td><label >INV DETAILS</label></td><td><textarea  name="BANKTT_ENTRY_ta_invdetails" id="BANKTT_ENTRY_ta_invdetails"  class="BANKTT_ENTRY_validation"></textarea></td>
+<td><label >INV DETAILS</label></td><td><textarea  name="BANKTT_ENTRY_ta_invdetails" id="BANKTT_ENTRY_ta_invdetails"  class="BANKTT_ENTRY_validation banktt_ta_comments"></textarea></td>
 </tr>
 <tr>
-<td><label >COMMENTS</label></td><td><textarea  name="BANKTT_ENTRY_ta_comments" id="BANKTT_ENTRY_ta_comments" class="BANKTT_ENTRY_validation"></textarea></td>
+<td><label >COMMENTS</label></td><td><textarea  name="BANKTT_ENTRY_ta_comments" id="BANKTT_ENTRY_ta_comments" class="BANKTT_ENTRY_validation banktt_ta_comments"></textarea></td>
 </tr>
 </table>
 <table>
-<tr><td width="60px"></td><td><input type="button" class="btn"  value="SAVE"  id="BANKTT_ENTRY_btn_savebutton" disabled  /></td><td>  <input type="button" class="btn"  name="reset" id="BANKTT_ENTRY_btn_reset" onclick="BANKTT_ENTRY_formreset()"  value="RESET" /></td></tr> 
+<tr><td width="60px"></td><td><input type="button" class="btn"  value="SAVE"  id="BANKTT_ENTRY_btn_savebutton" disabled  /></td><td>  <input type="button" class="btn"  name="reset" id="BANKTT_ENTRY_btn_reset"  value="RESET" /></td></tr> 
 </table>
 </form>
 </body>

@@ -1,6 +1,11 @@
 //****************************************************FILE DESCRIPTION*************************************//
 //*************************************EMAIL PROFILE ENTRY****************************************************//
+//DONE BY:PUNI
+//VER 1.8-SD:03/10/2014 ED:03/10/2014 TRACKER NO:703:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.7-SD:21/08/2014 ED:21/08/2014,TRACKER NO:703,updated new links
 //DONE BY:LALITHA
+//VER 1.6-SD:24/07/2014 ED:24/07/2014,TRACKER NO:703,Updated sorting for email profile lst bx
 //VER 1.5-SD:09/06/2014 ED:12/06/2014,TRACKER NO:703,Updated commit funct,Changed failure funct,Converted the emailid to lowercase for valid emailid only,Changed btn name(submit to save)
 //VER 1.4-SD:06/06/2014 ED:06/06/2014,Changed jquery link in html file
 //VER 1.3-SD:28/05/2014 ED:28/05/2014,Updated preloader for already exit functn,Updated after reset button hide the email id lbl,txt bx nd buttons(save,reset)
@@ -25,7 +30,7 @@ try
     var EP_ENTRY_conn=eilib.db_GetConnection();
     var EP_ENTRY_profile_stmt=EP_ENTRY_conn.createStatement();
     var EP_ENTRY_profile_array=[];
-    var EP_ENTRY_select_profile="SELECT EP_ID,EP_EMAIL_DOMAIN FROM EMAIL_PROFILE WHERE EP_NON_IP_FLAG is null"; 
+    var EP_ENTRY_select_profile="SELECT EP_ID,EP_EMAIL_DOMAIN FROM EMAIL_PROFILE WHERE EP_NON_IP_FLAG is null ORDER BY EP_EMAIL_DOMAIN ASC"; 
     var EP_ENTRY_profile_rs=EP_ENTRY_profile_stmt.executeQuery( EP_ENTRY_select_profile);
     while(EP_ENTRY_profile_rs.next())
     {

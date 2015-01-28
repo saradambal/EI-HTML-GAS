@@ -1,11 +1,15 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 /**********************************************CUSTOMER EXTENSION******************************************/
-//DONE BY:PUNITHA,KUMAR
+//DONE BY:PUNITHA
+//VER 1.3-SD:08/10/2014 ED:08/10/2014,TRACKER NO:813,changed preloader n msgbox position
+//VER 1.2-SD:12/08/2014 ED:22/08/2014,TRACKER NO:813,Updated new links in html,implemented commit n rollback,updated sp to show msg for payment for same month extn BY PUNI
 //VER 1.1-SD:03/07/2014 ED:03/07/2014,TRACKER NO:813,changed processing cost 5 digits real to 4 digits for amt validation,added numbers only tooltip for amt fields by PUNI
 //VER 1.0-SD:18/06/2014 ED:19/06/2014,TRACKER NO:813,added passport date n ep date validation greater than chk out date n checked userstamp n timestamp updation by PUNI
 //VER 0.09-SD:04/06/2014 ED:04/06/2014,TRACKER NO:813,ep date n pass date max date is fixed,added err msg if cal name is wrong n doc id is wrong,changed new drive link BY PUNI
 //VER 0.08-SD:28/05/2014 ED:28/05/2014,TRACKER NO:813,corrected checkout date DP format,changed query to set max check out date after ptd in between lp n extnd because of card assign view changes by PUNI
+//DONE BY:KUMAR
 //VER 0.07-SD:29/04/2014 ED:29/04/2014,TRACKER NO:813,Added one input parameter in Extension fee temp table.done by kumar
+//DONE BY:PUNITHA
 //VER 0.06-SD:12/04/2014 ED:22/04/2014,TRACKER NO:813,updated validation to clear dp when diff unit is selected n chked tickler table updation sp n updated script to show error msg if active card is assigned returned from sp n checked with corrected term sp BY PUNI
 //VER 0.05-SD:17/03/2014 ED:12/04/2014,TRACKER NO:813,updated validation for passport no,ep no if expiry date entered n updated some form validation to set check out date after ptd in the middle of some lps,changed extension sp to reorder lps when extn after ptd,changed table name as per new changes BY PUNI
 //VER 0.04-SD:17/03/2014 ED:17/03/2014,TRACKER NO:731,issue fixed n cr updated-updated uld id,taken err msg from eilib,changed eilib cal event to cal time from id,implemented array concept,added flag to show confirm mesg,updatd mobile,office,ep no,pass no validation BY PUNI
@@ -92,28 +96,18 @@ try
     CEXTN_feetemptbl_stmt.close();
     //READ CUST MIN RV
     var CTermExtn_tempstmt=CEXTN_cdtlscon.createStatement();
-    CTermExtn_tempstmt.execute("CALL SP_CUSTOMER_MIN_MAX_RV('"+UserStamp+"',"+CEXTN_custid+",@MNMAXTBLNAME)");
+    CTermExtn_tempstmt.execute("CALL SP_CUSTOMER_MIN_MAX_RV("+CEXTN_custid+",@MIN_LP,@MAX_LP)");
     CTermExtn_tempstmt.close();
     var CTermExtn_temptbl_stmt=CEXTN_cdtlscon.createStatement();
-    var CTermExtn_temptbl_query="SELECT @MNMAXTBLNAME";
+    var CTermExtn_temptbl_query="SELECT @MIN_LP";
     var CTermExtn_temptblres=CTermExtn_temptbl_stmt.executeQuery(CTermExtn_temptbl_query);
-    var CTermExtntblname="";
+    var CExtnminlpval="";
     while(CTermExtn_temptblres.next())
     {
-      CTermExtntblname=CTermExtn_temptblres.getString("@MNMAXTBLNAME");
+      CExtnminlpval=CTermExtn_temptblres.getString("@MIN_LP");
     }
     CTermExtn_temptblres.close();
-    CTermExtn_temptbl_stmt.close();
-    var CExtn_minlp_stmt=CEXTN_cdtlscon.createStatement();
-    var CExtn_minlp_query="(SELECT TCMM_MINRV FROM "+CTermExtntblname+" WHERE TCMM_CUSTOMERID="+CEXTN_custid+")";
-    var CTermExtn_minlplres=CExtn_minlp_stmt.executeQuery(CExtn_minlp_query);
-    var CExtnminlpval="";
-    while(CTermExtn_minlplres.next())
-    {
-      CExtnminlpval=CTermExtn_minlplres.getString("TCMM_MINRV");
-    }
-    CTermExtn_minlplres.close();
-    CExtn_minlp_stmt.close();
+    CTermExtn_temptbl_stmt.close();   
     var CEXTN_custdtlsstmt= CEXTN_cdtlscon.createStatement();
     var CEXTN_cidarray =[];
     var CEXTN_currentcheckoutdate="";
@@ -290,14 +284,7 @@ try
     }
     CEXTN_custcardres.close();
     CEXTN_custcardstmt.close();
-    var CEXTN_temp_stmt= CEXTN_cdtlscon.createStatement();
-    var CEXTN_delete_temp = "DROP TABLE IF EXISTS "+CExtntblname+"";
-    CEXTN_temp_stmt.execute(CEXTN_delete_temp);
-    CEXTN_temp_stmt.close();
-    var CTermExtn_temp_stmt= CEXTN_cdtlscon.createStatement();
-    var CTermExtn_delete_temp = "DROP TABLE IF EXISTS "+CTermExtntblname+""; 
-    CTermExtn_temp_stmt.execute(CTermExtn_delete_temp);
-    CTermExtn_temp_stmt.close();
+    eilib.DropTempTable(CEXTN_cdtlscon, CExtntblname);    
     var CEXTN_diffunittno=[];
     var CEXTN_unitdate=eilib.GetUnitSdEdate(CEXTN_cdtlscon,CEXTN_unitno);//call function to get unit start n end date
     var CEXTN_unitsdate=CEXTN_unitdate.unitsdate;//get unit start date
@@ -360,368 +347,437 @@ try
   //FUNCTION TO SAVE CUSTOMER DETAILS
   function CEXTN_SaveDetails(CEXTN_dts)
   {
-    var CEXTN_formname="EXTENSION";    
-    var CEXTN_lb_emailid=CEXTN_dts.CEXTN_lb_emailid;
-    var CEXTN_hidden_custid=CEXTN_dts.CEXTN_hidden_custid;
-    var CEXTN_lb_unitno=CEXTN_dts.CEXTN_lb_unitno;
-    var CEXTN_lb_custname=CEXTN_dts.CEXTN_lb_custname;
-    var CEXTN_tb_firstname=CEXTN_dts.CEXTN_tb_firstname;
-    var CEXTN_tb_lastname=CEXTN_dts.CEXTN_tb_lastname;
-    var CEXTN_customename=CEXTN_lb_custname;
-    var CEXTN_continvoicecustomename=CEXTN_tb_firstname+" "+CEXTN_tb_lastname;
-    var CEXTN_tb_contrpassno,CEXTN_tb_contrepno,CEXTN_tb_contrepdate,CEXTN_tb_contrpassdate,CEXTN_tb_contrnoticedate,CEXTN_tb_contrcompname;
-    //COMPANY DETAILS
-    var CEXTN_tb_compname=CEXTN_dts.CEXTN_tb_compname;
-    CEXTN_tb_contrcompname=CEXTN_tb_compname//company name for contract
-    if(CEXTN_tb_compname=="")
-    {  CEXTN_tb_compname=null;  }else{CEXTN_tb_compname='"'+CEXTN_tb_compname+'"';}
-    var CEXTN_tb_compaddr=CEXTN_dts.CEXTN_tb_compaddr;
-    if(CEXTN_tb_compaddr=="")
-    {  CEXTN_tb_compaddr=null;  }else{CEXTN_tb_compaddr='"'+CEXTN_tb_compaddr+'"';}
-    var CEXTN_tb_comppostcode=CEXTN_dts.CEXTN_tb_comppostcode;
-    if(CEXTN_tb_comppostcode=="")
-    {  CEXTN_tb_comppostcode=null;  }else{CEXTN_tb_comppostcode='"'+CEXTN_tb_comppostcode+'"';}
-    var CEXTN_tb_officeno=CEXTN_dts.CEXTN_tb_officeno;
-    if(CEXTN_tb_officeno=="")
-    {  CEXTN_tb_officeno=null;  }else{CEXTN_tb_officeno='"'+CEXTN_tb_officeno+'"';}
-    //PERSONAL DETAILS
-    var CEXTN_tb_emailid=(CEXTN_dts.CEXTN_tb_emailid).toString().toLowerCase();
-    var CEXTN_tb_mobileno=CEXTN_dts.CEXTN_tb_mobileno;
-    if(CEXTN_tb_mobileno=="")
-    {  CEXTN_tb_mobileno=null;  }else{CEXTN_tb_mobileno='"'+CEXTN_tb_mobileno+'"';}
-    var CEXTN_tb_intmobileno=CEXTN_dts.CEXTN_tb_intmobileno;
-    if(CEXTN_tb_intmobileno=="")
-    {  CEXTN_tb_intmobileno=null;  }else{CEXTN_tb_intmobileno='"'+CEXTN_tb_intmobileno+'"';}
-    var CEXTN_db_dob=CEXTN_dts.CEXTN_db_dob;
-    if(CEXTN_db_dob=="")
-    {  CEXTN_db_dob=null;  }else{CEXTN_db_dob='"'+eilib.SqlDateFormat(CEXTN_db_dob)+'"';}
-    var CEXTN_tb_nation=CEXTN_dts.CEXTN_tb_nation;
-    var CEXTN_tb_passno=CEXTN_dts.CEXTN_tb_passno;
-    CEXTN_tb_contrpassno=CEXTN_tb_passno;//passport no for contract
-    if(CEXTN_tb_passno=="")
-    {  CEXTN_tb_passno=null;}else{CEXTN_tb_passno='"'+CEXTN_tb_passno+'"';}
-    var CEXTN_db_passdate=CEXTN_dts.CEXTN_db_passdate;
-    CEXTN_tb_contrpassdate=CEXTN_db_passdate;//passport date for contract
-    if(CEXTN_db_passdate=="")
-    {  CEXTN_db_passdate=null;  }else{CEXTN_db_passdate='"'+eilib.SqlDateFormat(CEXTN_db_passdate)+'"';}
-    var CEXTN_tb_epno=CEXTN_dts.CEXTN_tb_epno;
-    CEXTN_tb_contrepno=CEXTN_tb_epno;//ep no for contract
-    if(CEXTN_tb_epno=="")
-    {  CEXTN_tb_epno=null;  }else{CEXTN_tb_epno='"'+CEXTN_tb_epno+'"';}
-    var CEXTN_db_epdate=CEXTN_dts.CEXTN_db_epdate;
-    CEXTN_tb_contrepdate=CEXTN_db_epdate;////ep date for contract
-    if(CEXTN_db_epdate=="")
-    {  CEXTN_db_epdate=null;  }else{CEXTN_db_epdate='"'+eilib.SqlDateFormat(CEXTN_db_epdate)+'"';}
-    var CEXTN_ta_comments=CEXTN_dts.CEXTN_ta_comments;
-    if(CEXTN_ta_comments!="")
+    try
     {
-      CEXTN_ta_comments=eilib.ConvertSpclCharString(CEXTN_ta_comments);
-    }
-    //UNIT OPTION
-    var CEXTN_radio_unit=CEXTN_dts.CEXTN_radio_unit;
-    //SAME UNIT N SAME ROOM
-    var CEXTN_tb_sameunitsamermuno=CEXTN_dts.CEXTN_tb_sameunitsamermuno;
-    var CEXTN_tb_sameunitsamermrmtype=CEXTN_dts.CEXTN_tb_sameunitsamermrmtype;
-    //SAME UNIT N DIFFERENT ROOM
-    var CEXTN_tb_sameunitdiffrmuno=CEXTN_dts.CEXTN_tb_sameunitdiffrmuno;
-    var CEXTN_lb_sameunitdiffrmrmtype=CEXTN_dts.CEXTN_lb_sameunitdiffrmrmtype;
-    var CEXTN_tb_sameunitdiffrmcustcard=CEXTN_dts.CEXTN_tb_sameunitdiffrmcustcard;
-    //DIFFERENT UNIT
-    var CEXTN_lb_diffunituno=CEXTN_dts.CEXTN_lb_diffunituno;
-    var CEXTN_lb_diffunitrmtype=CEXTN_dts.CEXTN_lb_diffunitrmtype;
-    var CEXTN_radio_difunitcard=CEXTN_dts.CEXTN_radio_difunitcard;
-    //ENTRY DETAILS
-    var CEXTN_db_prevchkindate=CEXTN_dts.CEXTN_db_prevchkindate;
-    var CEXTN_hidden_prechkinfromtime=CEXTN_dts.CEXTN_hidden_prechkinfromtime;
-    var CEXTN_hidden_prechkintotime=CEXTN_dts.CEXTN_hidden_prechkintotime;
-    var CEXTN_db_chkindate=eilib.SqlDateFormat(CEXTN_dts.CEXTN_db_chkindate);
-    var CEXTN_hidden_chkinfromtime=CEXTN_dts.CEXTN_hidden_chkinfromtime;
-    var CEXTN_hidden_chkintotime=CEXTN_dts.CEXTN_hidden_chkintotime;
-    var CEXTN_lb_chkinfromtime=CEXTN_dts.CEXTN_lb_chkinfromtime;
-    var CEXTN_lb_chkintotime=CEXTN_dts.CEXTN_lb_chkintotime;
-    var CEXTN_db_chkoutdate=eilib.SqlDateFormat(CEXTN_dts.CEXTN_db_chkoutdate);
-    var CEXTN_lb_chkoutfromtime=CEXTN_dts.CEXTN_lb_chkoutfromtime;
-    var CEXTN_lb_chkouttotime=CEXTN_dts.CEXTN_lb_chkouttotime;
-    var CEXTN_tb_noticeperiod=CEXTN_dts.CEXTN_tb_noticeperiod;
-    var CEXTN_contractnoticeperiod=CEXTN_tb_noticeperiod;
-    if(CEXTN_tb_noticeperiod=="")
-    {    CEXTN_tb_noticeperiod=null;  }else{CEXTN_tb_noticeperiod='"'+CEXTN_tb_noticeperiod+'"'}
-    var CEXTN_db_noticeperioddate=CEXTN_dts.CEXTN_db_noticeperioddate;
-    CEXTN_tb_contrnoticedate=CEXTN_db_noticeperioddate;//notice date for contract
-    if(CEXTN_tb_contrnoticedate==undefined){CEXTN_tb_contrnoticedate="";}
-    if(CEXTN_db_noticeperioddate==""||CEXTN_db_noticeperioddate==undefined)
-    {  CEXTN_db_noticeperioddate=null;}else{CEXTN_db_noticeperioddate='"'+eilib.SqlDateFormat(CEXTN_db_noticeperioddate)+'"';}
-    var CEXTN_cb_sameamtprorated=CEXTN_dts.CEXTN_cb_sameamtprorated;
-    var CEXTN_cb_sameamtwaived=CEXTN_dts.CEXTN_cb_sameamtwaived;
-    var CEXTN_cb_diffamtprorated=CEXTN_dts.CEXTN_cb_diffamtprorated;
-    var CEXTN_cb_diffamtwaived=CEXTN_dts.CEXTN_cb_diffamtwaived;
-    //FEE DETAILS
-    var CEXTN_radio_airconfee=CEXTN_dts.CEXTN_radio_airconfee;
-    var CEXTN_radio_amt=CEXTN_dts.CEXTN_radio_amt;
-    var CEXTN_tb_airquarterfee=CEXTN_dts.CEXTN_tb_airquarterfee;
-    var CEXTN_tb_fixedairfee=CEXTN_dts.CEXTN_tb_fixedairfee;
-    //CHECK AIRCON FEE
-    if(CEXTN_radio_airconfee=="CEXTN_radio_quartairconfee")
-    {
-      if(CEXTN_tb_airquarterfee=="")
-      {  
-        CEXTN_tb_airquarterfee=null;
+      var CEXTN_formname="EXTENSION";  
+      var CEXTN_sameamntflag="";
+      var CEXTN_lb_emailid=CEXTN_dts.CEXTN_lb_emailid;
+      var CEXTN_hidden_custid=CEXTN_dts.CEXTN_hidden_custid;
+      var CEXTN_lb_unitno=CEXTN_dts.CEXTN_lb_unitno;
+      var CEXTN_lb_custname=CEXTN_dts.CEXTN_lb_custname;
+      var CEXTN_tb_firstname=CEXTN_dts.CEXTN_tb_firstname;
+      var CEXTN_tb_lastname=CEXTN_dts.CEXTN_tb_lastname;
+      var CEXTN_customename=CEXTN_lb_custname;
+      var CEXTN_continvoicecustomename=CEXTN_tb_firstname+" "+CEXTN_tb_lastname;
+      var CEXTN_tb_contrpassno,CEXTN_tb_contrepno,CEXTN_tb_contrepdate,CEXTN_tb_contrpassdate,CEXTN_tb_contrnoticedate,CEXTN_tb_contrcompname;
+      //COMPANY DETAILS
+      var CEXTN_tb_compname=CEXTN_dts.CEXTN_tb_compname;
+      CEXTN_tb_contrcompname=CEXTN_tb_compname//company name for contract
+      if(CEXTN_tb_compname=="")
+      {  CEXTN_tb_compname=null;  }else{CEXTN_tb_compname='"'+CEXTN_tb_compname+'"';}
+      var CEXTN_tb_compaddr=CEXTN_dts.CEXTN_tb_compaddr;
+      if(CEXTN_tb_compaddr=="")
+      {  CEXTN_tb_compaddr=null;  }else{CEXTN_tb_compaddr='"'+CEXTN_tb_compaddr+'"';}
+      var CEXTN_tb_comppostcode=CEXTN_dts.CEXTN_tb_comppostcode;
+      if(CEXTN_tb_comppostcode=="")
+      {  CEXTN_tb_comppostcode=null;  }else{CEXTN_tb_comppostcode='"'+CEXTN_tb_comppostcode+'"';}
+      var CEXTN_tb_officeno=CEXTN_dts.CEXTN_tb_officeno;
+      if(CEXTN_tb_officeno=="")
+      {  CEXTN_tb_officeno=null;  }else{CEXTN_tb_officeno='"'+CEXTN_tb_officeno+'"';}
+      //PERSONAL DETAILS
+      var CEXTN_tb_emailid=(CEXTN_dts.CEXTN_tb_emailid).toString().toLowerCase();
+      var CEXTN_tb_mobileno=CEXTN_dts.CEXTN_tb_mobileno;
+      if(CEXTN_tb_mobileno=="")
+      {  CEXTN_tb_mobileno=null;  }else{CEXTN_tb_mobileno='"'+CEXTN_tb_mobileno+'"';}
+      var CEXTN_tb_intmobileno=CEXTN_dts.CEXTN_tb_intmobileno;
+      if(CEXTN_tb_intmobileno=="")
+      {  CEXTN_tb_intmobileno=null;  }else{CEXTN_tb_intmobileno='"'+CEXTN_tb_intmobileno+'"';}
+      var CEXTN_db_dob=CEXTN_dts.CEXTN_db_dob;
+      if(CEXTN_db_dob=="")
+      {  CEXTN_db_dob=null;  }else{CEXTN_db_dob='"'+eilib.SqlDateFormat(CEXTN_db_dob)+'"';}
+      var CEXTN_tb_nation=CEXTN_dts.CEXTN_tb_nation;
+      var CEXTN_tb_passno=CEXTN_dts.CEXTN_tb_passno;
+      CEXTN_tb_contrpassno=CEXTN_tb_passno;//passport no for contract
+      if(CEXTN_tb_passno=="")
+      {  CEXTN_tb_passno=null;}else{CEXTN_tb_passno='"'+CEXTN_tb_passno+'"';}
+      var CEXTN_db_passdate=CEXTN_dts.CEXTN_db_passdate;
+      CEXTN_tb_contrpassdate=CEXTN_db_passdate;//passport date for contract
+      if(CEXTN_db_passdate=="")
+      {  CEXTN_db_passdate=null;  }else{CEXTN_db_passdate='"'+eilib.SqlDateFormat(CEXTN_db_passdate)+'"';}
+      var CEXTN_tb_epno=CEXTN_dts.CEXTN_tb_epno;
+      CEXTN_tb_contrepno=CEXTN_tb_epno;//ep no for contract
+      if(CEXTN_tb_epno=="")
+      {  CEXTN_tb_epno=null;  }else{CEXTN_tb_epno='"'+CEXTN_tb_epno+'"';}
+      var CEXTN_db_epdate=CEXTN_dts.CEXTN_db_epdate;
+      CEXTN_tb_contrepdate=CEXTN_db_epdate;////ep date for contract
+      if(CEXTN_db_epdate=="")
+      {  CEXTN_db_epdate=null;  }else{CEXTN_db_epdate='"'+eilib.SqlDateFormat(CEXTN_db_epdate)+'"';}
+      var CEXTN_ta_comments=CEXTN_dts.CEXTN_ta_comments;
+      if(CEXTN_ta_comments!="")
+      {
+        CEXTN_ta_comments=eilib.ConvertSpclCharString(CEXTN_ta_comments);
       }
-      CEXTN_tb_fixedairfee=null;
-    }
-    else
-    {
-      CEXTN_tb_airquarterfee=null;
-      if(CEXTN_tb_fixedairfee=="")
-      { 
+      //UNIT OPTION
+      var CEXTN_radio_unit=CEXTN_dts.CEXTN_radio_unit;
+      //SAME UNIT N SAME ROOM
+      var CEXTN_tb_sameunitsamermuno=CEXTN_dts.CEXTN_tb_sameunitsamermuno;
+      var CEXTN_tb_sameunitsamermrmtype=CEXTN_dts.CEXTN_tb_sameunitsamermrmtype;
+      //SAME UNIT N DIFFERENT ROOM
+      var CEXTN_tb_sameunitdiffrmuno=CEXTN_dts.CEXTN_tb_sameunitdiffrmuno;
+      var CEXTN_lb_sameunitdiffrmrmtype=CEXTN_dts.CEXTN_lb_sameunitdiffrmrmtype;
+      var CEXTN_tb_sameunitdiffrmcustcard=CEXTN_dts.CEXTN_tb_sameunitdiffrmcustcard;
+      //DIFFERENT UNIT
+      var CEXTN_lb_diffunituno=CEXTN_dts.CEXTN_lb_diffunituno;
+      var CEXTN_lb_diffunitrmtype=CEXTN_dts.CEXTN_lb_diffunitrmtype;
+      var CEXTN_radio_difunitcard=CEXTN_dts.CEXTN_radio_difunitcard;
+      //ENTRY DETAILS
+      var CEXTN_db_prevchkindate=CEXTN_dts.CEXTN_db_prevchkindate;
+      var CEXTN_hidden_prechkinfromtime=CEXTN_dts.CEXTN_hidden_prechkinfromtime;
+      var CEXTN_hidden_prechkintotime=CEXTN_dts.CEXTN_hidden_prechkintotime;
+      var CEXTN_db_chkindate=eilib.SqlDateFormat(CEXTN_dts.CEXTN_db_chkindate);
+      var CEXTN_hidden_chkinfromtime=CEXTN_dts.CEXTN_hidden_chkinfromtime;
+      var CEXTN_hidden_chkintotime=CEXTN_dts.CEXTN_hidden_chkintotime;
+      var CEXTN_lb_chkinfromtime=CEXTN_dts.CEXTN_lb_chkinfromtime;
+      var CEXTN_lb_chkintotime=CEXTN_dts.CEXTN_lb_chkintotime;
+      var CEXTN_db_chkoutdate=eilib.SqlDateFormat(CEXTN_dts.CEXTN_db_chkoutdate);
+      var CEXTN_lb_chkoutfromtime=CEXTN_dts.CEXTN_lb_chkoutfromtime;
+      var CEXTN_lb_chkouttotime=CEXTN_dts.CEXTN_lb_chkouttotime;
+      var CEXTN_tb_noticeperiod=CEXTN_dts.CEXTN_tb_noticeperiod;
+      var CEXTN_contractnoticeperiod=CEXTN_tb_noticeperiod;
+      if(CEXTN_tb_noticeperiod=="")
+      {    CEXTN_tb_noticeperiod=null;  }else{CEXTN_tb_noticeperiod='"'+CEXTN_tb_noticeperiod+'"'}
+      var CEXTN_db_noticeperioddate=CEXTN_dts.CEXTN_db_noticeperioddate;
+      CEXTN_tb_contrnoticedate=CEXTN_db_noticeperioddate;//notice date for contract
+      if(CEXTN_tb_contrnoticedate==undefined){CEXTN_tb_contrnoticedate="";}
+      if(CEXTN_db_noticeperioddate==""||CEXTN_db_noticeperioddate==undefined)
+      {  CEXTN_db_noticeperioddate=null;}else{CEXTN_db_noticeperioddate='"'+eilib.SqlDateFormat(CEXTN_db_noticeperioddate)+'"';}
+      var CEXTN_cb_sameamtprorated=CEXTN_dts.CEXTN_cb_sameamtprorated;
+      var CEXTN_cb_sameamtwaived=CEXTN_dts.CEXTN_cb_sameamtwaived;
+      var CEXTN_cb_diffamtprorated=CEXTN_dts.CEXTN_cb_diffamtprorated;
+      var CEXTN_cb_diffamtwaived=CEXTN_dts.CEXTN_cb_diffamtwaived;
+      //FEE DETAILS
+      var CEXTN_radio_airconfee=CEXTN_dts.CEXTN_radio_airconfee;
+      var CEXTN_radio_amt=CEXTN_dts.CEXTN_radio_amt;
+      var CEXTN_tb_airquarterfee=CEXTN_dts.CEXTN_tb_airquarterfee;
+      var CEXTN_tb_fixedairfee=CEXTN_dts.CEXTN_tb_fixedairfee;
+      //CHECK AIRCON FEE
+      if(CEXTN_radio_airconfee=="CEXTN_radio_quartairconfee")
+      {
+        if(CEXTN_tb_airquarterfee=="")
+        {  
+          CEXTN_tb_airquarterfee=null;
+        }
         CEXTN_tb_fixedairfee=null;
       }
-    }
-    var CEXTN_tb_electcapfee=CEXTN_dts.CEXTN_tb_electcapfee;
-    if(CEXTN_tb_electcapfee=="")
-    {  CEXTN_tb_electcapfee=null;}
-    var CEXTN_tb_curtaindryfee=CEXTN_dts.CEXTN_tb_curtaindryfee;
-    if(CEXTN_tb_curtaindryfee=="")
-    {  CEXTN_tb_curtaindryfee=null;}
-    var CEXTN_tb_chkoutcleanfee=CEXTN_dts.CEXTN_tb_chkoutcleanfee;
-    if(CEXTN_tb_chkoutcleanfee=="")
-    {  CEXTN_tb_chkoutcleanfee=null;}
-    //SAME AMOUNT
-    var CEXTN_tb_sameamtdep=CEXTN_dts.CEXTN_tb_sameamtdep;
-    var CEXTN_tb_sameamtrent=CEXTN_dts.CEXTN_tb_sameamtrent;
-    var CEXTN_tb_sameamtprocost=CEXTN_dts.CEXTN_tb_sameamtprocost;
-    //DIFFERENT AMOUNT
-    var CEXTN_tb_diffamtdep=CEXTN_dts.CEXTN_tb_diffamtdep;
-    if(CEXTN_tb_diffamtdep=="")
-    {  CEXTN_tb_diffamtdep=null;}
-    var CEXTN_tb_diffamtrent=CEXTN_dts.CEXTN_tb_diffamtrent;
-    var CEXTN_tb_diffamtprocost=CEXTN_dts.CEXTN_tb_diffamtprocost;
-    if(CEXTN_tb_diffamtprocost=="")
-    {  CEXTN_tb_diffamtprocost=null;}
-    //TO READ CUST ID
-    var CEXTN_radiocustid=CEXTN_dts.CEXTN_radiocustid;
-    //TO READ CARD NOS
-    var CEXTN_cb_diffunitcard=CEXTN_dts.CEXTN_cb_diffunitcard;
-    var CEXTN_lb_diffunitcard=CEXTN_dts.CEXTN_lb_diffunitcard;
-    var CEXTN_tb_diffunitcard=CEXTN_dts.CEXTN_tb_diffunitcard;
-    //PRORATED OR WAIVED VALUE
-    var CEXTN_hidden_sameamtprorated=CEXTN_dts.CEXTN_hidden_sameamtprorated;
-    var CEXTN_hidden_sameamtwaived=CEXTN_dts.CEXTN_hidden_sameamtwaived;
-    var CEXTN_hidden_diffamtprorated=CEXTN_dts.CEXTN_hidden_diffamtprorated;
-    var CEXTN_hidden_diffamtwaived=CEXTN_dts.CEXTN_hidden_diffamtwaived;
-    //QUATORS N LEASE PERIOD CALC
-    var CEXTN_sdate=CEXTN_db_chkindate.split('-');
-    var CEXTN_edate=CEXTN_db_chkoutdate.split('-');
-    var CEXTN_quators  = eilib.quarterCalc(new Date(CEXTN_sdate[0],CEXTN_sdate[1]-1,CEXTN_sdate[2]),new Date(CEXTN_edate[0],CEXTN_edate[1]-1,CEXTN_edate[2])); 
-    var CEXTN_Leaseperiod  = eilib.leasePeriodCalc(new Date(CEXTN_sdate[0],CEXTN_sdate[1]-1,CEXTN_sdate[2]),new Date(CEXTN_edate[0],CEXTN_edate[1]-1,CEXTN_edate[2]));
-    //SET UNIT NO N ROOM TYPE
-    var CEXTN_unitno="";
-    var CEXTN_roomtype="";
-    var CEXTN_waivedvalue="";
-    var CEXTN_proratedvalue="";
-    var CEXTN_rentamt="";
-    var CEXTN_depositamt="";
-    var CEXTN_profeeamt="";
-    var CEXTN_chkoutcleanamt="";
-    var CEXTN_drycleanamt="";
-    var CEXTN_electamt="";
-    var CEXTN_quartamt="";
-    var CEXTN_fixedamt="";
-    var CEXTN_chksameunit="";
-    var CEXTN_card_array=[];
-    var CEXTN_card_lbl=[];
-    var CEXTN_accesscard="";
-    var CEXTN_guestcard="";
-    if(CEXTN_radio_unit=="CEXTN_radio_diffunit")
-    {
-      CEXTN_unitno=CEXTN_lb_diffunituno;
-      CEXTN_roomtype=CEXTN_lb_diffunitrmtype;
-      CEXTN_chksameunit="";
-    }
-    else
-    {
-      CEXTN_unitno=CEXTN_lb_unitno;
-      CEXTN_chksameunit="X";
-    }
-    if(CEXTN_chksameunit=="")
-    {    CEXTN_chksameunit=null;  }else{CEXTN_chksameunit='"'+CEXTN_chksameunit+'"'}
-    
-    if(CEXTN_radio_unit=="CEXTN_radio_sameunit")
-    {
-      CEXTN_roomtype=CEXTN_tb_sameunitsamermrmtype;
-      CEXTN_lb_chkinfromtime=CEXTN_hidden_chkinfromtime;
-      CEXTN_lb_chkintotime=CEXTN_hidden_chkintotime;
-      CEXTN_card_array= CEXTN_dts.CEXTN_tb_sameunitsamermcustcard//getcardno
-      CEXTN_card_lbl=CEXTN_dts.CEXTN_hidden_sameunitsamermcustcard//get customer label
-    }
-    if(CEXTN_radio_unit=="CEXTN_radio_sameunitdiffroom")
-    {
-      CEXTN_roomtype=CEXTN_lb_sameunitdiffrmrmtype;
-      CEXTN_card_array= CEXTN_dts.CEXTN_tb_sameunitdiffrmcustcard//get customer card
-      CEXTN_card_lbl=CEXTN_dts.CEXTN_hidden_sameunitdiffrmcustcard//get customer label
-    }
-    var CEXTN_rent_check="";
-    //CHECK SAME OR DIFF AMOUNT
-    if(CEXTN_radio_amt=="CEXTN_radio_sameamt")
-    {
-      CEXTN_waivedvalue=CEXTN_hidden_sameamtwaived;
-      CEXTN_proratedvalue=CEXTN_hidden_sameamtprorated;
-      CEXTN_rent_check=CEXTN_hidden_sameamtprorated;
-      CEXTN_rentamt=CEXTN_tb_sameamtrent;
-      CEXTN_depositamt=CEXTN_tb_sameamtdep;
-      CEXTN_depositamt=null
-      if(CEXTN_waivedvalue!="")
-      {
-        CEXTN_profeeamt=CEXTN_tb_sameamtprocost;
-      }
       else
       {
-        CEXTN_profeeamt=null;
-      }
-    }
-    else
-    {
-      CEXTN_waivedvalue=CEXTN_hidden_diffamtwaived;
-      CEXTN_proratedvalue=CEXTN_hidden_diffamtprorated;
-      CEXTN_rent_check=CEXTN_hidden_diffamtprorated;
-      CEXTN_rentamt=CEXTN_tb_diffamtrent;
-      CEXTN_depositamt=CEXTN_tb_diffamtdep;
-      CEXTN_profeeamt=CEXTN_tb_diffamtprocost;
-    }
-    //GET CARD NOS
-    var accessflag=0;
-    if(CEXTN_card_array==undefined)
-    {
-      var accessflag=1;
-    }
-    if(CEXTN_radio_unit=="CEXTN_radio_diffunit"&&CEXTN_radio_difunitcard=="CEXTN_radio_difunitcardno")
-    {
-      CEXTN_card_array=CEXTN_cb_diffunitcard;
-      var card_lbl=CEXTN_dts.CEXTN_slctcustlbl;
-      var CEXTN_find=(card_lbl.toString()).search(',');
-      if(CEXTN_find!=-1)
-      {
-        var finalarray=card_lbl.split(",")
-        for(var i=0;i<finalarray.length;i++)
-        {
-          CEXTN_card_lbl.push(finalarray[i])
+        CEXTN_tb_airquarterfee=null;
+        if(CEXTN_tb_fixedairfee=="")
+        { 
+          CEXTN_tb_fixedairfee=null;
         }
       }
-      else
+      var CEXTN_tb_electcapfee=CEXTN_dts.CEXTN_tb_electcapfee;
+      if(CEXTN_tb_electcapfee=="")
+      {  CEXTN_tb_electcapfee=null;}
+      var CEXTN_tb_curtaindryfee=CEXTN_dts.CEXTN_tb_curtaindryfee;
+      if(CEXTN_tb_curtaindryfee=="")
+      {  CEXTN_tb_curtaindryfee=null;}
+      var CEXTN_tb_chkoutcleanfee=CEXTN_dts.CEXTN_tb_chkoutcleanfee;
+      if(CEXTN_tb_chkoutcleanfee=="")
+      {  CEXTN_tb_chkoutcleanfee=null;}
+      //SAME AMOUNT
+      var CEXTN_tb_sameamtdep=CEXTN_dts.CEXTN_tb_sameamtdep;
+      var CEXTN_tb_sameamtrent=CEXTN_dts.CEXTN_tb_sameamtrent;
+      var CEXTN_tb_sameamtprocost=CEXTN_dts.CEXTN_tb_sameamtprocost;
+      //DIFFERENT AMOUNT
+      var CEXTN_tb_diffamtdep=CEXTN_dts.CEXTN_tb_diffamtdep;
+      if(CEXTN_tb_diffamtdep=="")
+      {  CEXTN_tb_diffamtdep=null;}
+      var CEXTN_tb_diffamtrent=CEXTN_dts.CEXTN_tb_diffamtrent;
+      var CEXTN_tb_diffamtprocost=CEXTN_dts.CEXTN_tb_diffamtprocost;
+      if(CEXTN_tb_diffamtprocost=="")
+      {  CEXTN_tb_diffamtprocost=null;}
+      //TO READ CUST ID
+      var CEXTN_radiocustid=CEXTN_dts.CEXTN_radiocustid;
+      //TO READ CARD NOS
+      var CEXTN_cb_diffunitcard=CEXTN_dts.CEXTN_cb_diffunitcard;
+      var CEXTN_lb_diffunitcard=CEXTN_dts.CEXTN_lb_diffunitcard;
+      var CEXTN_tb_diffunitcard=CEXTN_dts.CEXTN_tb_diffunitcard;
+      //PRORATED OR WAIVED VALUE
+      var CEXTN_hidden_sameamtprorated=CEXTN_dts.CEXTN_hidden_sameamtprorated;
+      var CEXTN_hidden_sameamtwaived=CEXTN_dts.CEXTN_hidden_sameamtwaived;
+      var CEXTN_hidden_diffamtprorated=CEXTN_dts.CEXTN_hidden_diffamtprorated;
+      var CEXTN_hidden_diffamtwaived=CEXTN_dts.CEXTN_hidden_diffamtwaived;
+      //QUATORS N LEASE PERIOD CALC
+      var CEXTN_sdate=CEXTN_db_chkindate.split('-');
+      var CEXTN_edate=CEXTN_db_chkoutdate.split('-');
+      var CEXTN_quators  = eilib.quarterCalc(new Date(CEXTN_sdate[0],CEXTN_sdate[1]-1,CEXTN_sdate[2]),new Date(CEXTN_edate[0],CEXTN_edate[1]-1,CEXTN_edate[2])); 
+      var CEXTN_Leaseperiod  = eilib.leasePeriodCalc(new Date(CEXTN_sdate[0],CEXTN_sdate[1]-1,CEXTN_sdate[2]),new Date(CEXTN_edate[0],CEXTN_edate[1]-1,CEXTN_edate[2]));
+      //SET UNIT NO N ROOM TYPE
+      var CEXTN_unitno="";
+      var CEXTN_roomtype="";
+      var CEXTN_waivedvalue="";
+      var CEXTN_proratedvalue="";
+      var CEXTN_rentamt="";
+      var CEXTN_depositamt="";
+      var CEXTN_profeeamt="";
+      var CEXTN_chkoutcleanamt="";
+      var CEXTN_drycleanamt="";
+      var CEXTN_electamt="";
+      var CEXTN_quartamt="";
+      var CEXTN_fixedamt="";
+      var CEXTN_chksameunit="";
+      var CEXTN_card_array=[];
+      var CEXTN_card_lbl=[];
+      var CEXTN_accesscard="";
+      var CEXTN_guestcard="";
+      if(CEXTN_radio_unit=="CEXTN_radio_diffunit")
       {
-        CEXTN_card_lbl=card_lbl
-      }
-    }
-    var CEXTN_customercard="";
-    if(CEXTN_card_array!=undefined)
-    {
-      var CEXTN_find=(CEXTN_card_array.toString()).search(',');
-      if(CEXTN_find!=-1)
-      {
-        accessflag=0;
-        for(var i=0;i<CEXTN_card_array.length;i++)
-        {
-          if(CEXTN_card_array[i]=="")continue;
-          var CEXTN_cardnos=CEXTN_card_array[i]
-          var CEXTN_cardlbl=CEXTN_card_lbl[i].replace(/ /g,"_");
-          CEXTN_customename=CEXTN_customename.replace(/ /g,"_");
-          if(CEXTN_cardlbl==CEXTN_customename)
-          {
-            if(CEXTN_accesscard=="")
-            {
-              CEXTN_accesscard=CEXTN_cardnos;
-              CEXTN_customercard=CEXTN_cardnos
-              CEXTN_guestcard=CEXTN_cardnos+","+" ";
-            }
-            else
-            {
-              CEXTN_accesscard=CEXTN_accesscard+","+CEXTN_cardnos;
-              CEXTN_guestcard=CEXTN_guestcard+","+CEXTN_cardnos+", ";
-              CEXTN_customercard=CEXTN_cardnos;
-            }
-          }
-          else
-          {
-            if(CEXTN_accesscard=="")
-            {
-              CEXTN_guestcard=CEXTN_cardnos+",X";
-              CEXTN_accesscard=CEXTN_cardnos;
-            }
-            else
-            {
-              CEXTN_accesscard=CEXTN_accesscard+","+CEXTN_cardnos;
-              CEXTN_guestcard=CEXTN_guestcard+","+CEXTN_cardnos+",X";
-            }
-          }
-        }
-      }
-      else
-      {
-        accessflag=1;
-        CEXTN_accesscard=CEXTN_card_array;
-        CEXTN_customercard=CEXTN_card_array
-        CEXTN_guestcard=CEXTN_card_array+", ";
-      }
-    }
-    else
-    {
-      CEXTN_accesscard=""
-      CEXTN_guestcard=CEXTN_accesscard+", ";
-    }
-    //CALENDAR DATE N TIME
-    var CEXTN_prevchkoutdate=eilib.SqlDateFormat(CEXTN_db_chkindate);
-    var CEXTN_prevchkoutdatefromtime=CEXTN_hidden_chkinfromtime;
-    var CEXTN_prevchkoutdatetotime=CEXTN_hidden_chkintotime;
-    var CEXTN_prevchkinfromtime=CEXTN_hidden_prechkinfromtime;
-    var CEXTN_prevchkintotime=CEXTN_hidden_prechkintotime;
-    //CALL SAVE SP
-    var CEXTN_saveconn =eilib.db_GetConnection();
-    var CEXTN_savestmt=CEXTN_saveconn.createStatement();
-    CEXTN_savestmt.execute("CALL SP_CUSTOMER_EXTENSION_INSERT("+CEXTN_hidden_custid+","+CEXTN_tb_compname+","+CEXTN_tb_compaddr+","+CEXTN_tb_comppostcode+","+CEXTN_tb_officeno+","+CEXTN_unitno+","+CEXTN_chksameunit+",'"+CEXTN_roomtype+"','"+CEXTN_lb_chkinfromtime+"','"+CEXTN_lb_chkintotime+"','"+CEXTN_lb_chkoutfromtime+"','"+CEXTN_lb_chkouttotime+"','"+CEXTN_Leaseperiod+"',"+CEXTN_quators+",'"+CEXTN_waivedvalue+"','"+CEXTN_proratedvalue+"',"+CEXTN_tb_noticeperiod+","+CEXTN_db_noticeperioddate+","+CEXTN_rentamt+","+CEXTN_depositamt+","+CEXTN_profeeamt+","+CEXTN_tb_fixedairfee+","+CEXTN_tb_airquarterfee+","+CEXTN_tb_electcapfee+","+CEXTN_tb_chkoutcleanfee+","+CEXTN_tb_curtaindryfee+",'"+CEXTN_accesscard+"','"+CEXTN_db_chkindate+"','"+UserStamp+"','"+CEXTN_db_chkindate+"','"+CEXTN_db_chkoutdate+"','"+CEXTN_guestcard+"','"+CEXTN_tb_nation+"',"+CEXTN_tb_mobileno+","+CEXTN_tb_intmobileno+",'"+CEXTN_tb_emailid+"',"+CEXTN_tb_passno+","+CEXTN_db_passdate+","+CEXTN_db_dob+","+CEXTN_tb_epno+","+CEXTN_db_epdate+",'"+CEXTN_ta_comments+"',@EXTNFLAG)");
-    CEXTN_savestmt.close();
-    var saveflag_stmt=CEXTN_saveconn.createStatement();
-    var saveflag_query="SELECT @EXTNFLAG";
-    var saveflag_rs=saveflag_stmt.executeQuery(saveflag_query);
-    var CEXTN_saveflag=0;
-    while(saveflag_rs.next())
-    {
-      CEXTN_saveflag=saveflag_rs.getString("@EXTNFLAG");
-    }
-    saveflag_rs.close();
-    saveflag_stmt.close();
-    if(CEXTN_saveflag==1)
-    {
-      var CEXTN_calenderIDcode =eilib.CUST_getCalenderId(CEXTN_saveconn);//GET CALENDAR ID
-      var CEXTN_TargetFolderId=eilib.CUST_TargetFolderId(CEXTN_saveconn);//GET TARGER FOLDER ID
-      var docowner=eilib.CUST_documentowner(CEXTN_saveconn);//get doc owner
-      //CALL CALENDAR EVENT FUNCTION FROM EILIB
-      eilib.CTermExtn_Calevent(CEXTN_saveconn,CEXTN_hidden_custid,"",CEXTN_calenderIDcode,"","","","",CEXTN_formname);    
-      var cust_config_array=[];
-      cust_config_array=eilib.CUST_invoice_contractreplacetext(CEXTN_saveconn);
-      var CEXTN_invoiceid=cust_config_array[9];
-      var CEXTN_invoicesno=cust_config_array[0];
-      var CEXTN_invoicedate=cust_config_array[1];
-      if(CEXTN_rent_check!="")
-      {
-        CEXTN_rent_check='true';
+        CEXTN_unitno=CEXTN_lb_diffunituno;
+        CEXTN_roomtype=CEXTN_lb_diffunitrmtype;
+        CEXTN_chksameunit="";
       }
       else
       {
-        CEXTN_rent_check='false';
+        CEXTN_unitno=CEXTN_lb_unitno;
+        CEXTN_chksameunit="X";
       }
-      //CONTRACT N INVOICE
+      if(CEXTN_chksameunit=="")
+      {    CEXTN_chksameunit=null;  }else{CEXTN_chksameunit='"'+CEXTN_chksameunit+'"'}
+      
+      if(CEXTN_radio_unit=="CEXTN_radio_sameunit")
+      {
+        CEXTN_roomtype=CEXTN_tb_sameunitsamermrmtype;
+        CEXTN_lb_chkinfromtime=CEXTN_hidden_chkinfromtime;
+        CEXTN_lb_chkintotime=CEXTN_hidden_chkintotime;
+        CEXTN_card_array= CEXTN_dts.CEXTN_tb_sameunitsamermcustcard//getcardno
+        CEXTN_card_lbl=CEXTN_dts.CEXTN_hidden_sameunitsamermcustcard//get customer label
+      }
+      if(CEXTN_radio_unit=="CEXTN_radio_sameunitdiffroom")
+      {
+        CEXTN_roomtype=CEXTN_lb_sameunitdiffrmrmtype;
+        CEXTN_card_array= CEXTN_dts.CEXTN_tb_sameunitdiffrmcustcard//get customer card
+        CEXTN_card_lbl=CEXTN_dts.CEXTN_hidden_sameunitdiffrmcustcard//get customer label
+      }
+      var CEXTN_rent_check="";
+      //CHECK SAME OR DIFF AMOUNT
       if(CEXTN_radio_amt=="CEXTN_radio_sameamt")
       {
-        eilib.CUST_contractmail(CEXTN_saveconn,CEXTN_unitno,CEXTN_db_chkindate,CEXTN_db_chkoutdate,CEXTN_tb_contrcompname,CEXTN_continvoicecustomename,CEXTN_contractnoticeperiod,CEXTN_tb_contrpassno,CEXTN_tb_contrpassdate,CEXTN_tb_contrepno,CEXTN_tb_contrepdate,CEXTN_tb_contrnoticedate,CEXTN_Leaseperiod,CEXTN_customercard,CEXTN_rentamt,CEXTN_tb_airquarterfee,CEXTN_tb_fixedairfee,CEXTN_tb_electcapfee,CEXTN_tb_curtaindryfee,CEXTN_tb_chkoutcleanfee,CEXTN_profeeamt,CEXTN_depositamt,CEXTN_waivedvalue,CEXTN_roomtype,CEXTN_rent_check,CEXTN_lb_emailid,"EXTENSION",CEXTN_TargetFolderId,docowner)
+        CEXTN_waivedvalue=CEXTN_hidden_sameamtwaived;
+        CEXTN_proratedvalue=CEXTN_hidden_sameamtprorated;
+        CEXTN_rent_check=CEXTN_hidden_sameamtprorated;
+        CEXTN_rentamt=CEXTN_tb_sameamtrent;
+        CEXTN_depositamt=CEXTN_tb_sameamtdep;
+        CEXTN_depositamt=null
+        if(CEXTN_waivedvalue!="")
+        {
+          CEXTN_profeeamt=CEXTN_tb_sameamtprocost;
+        }
+        else
+        {
+          CEXTN_profeeamt=null;
+        }
+        CEXTN_sameamntflag="X";
       }
       else
       {
-        eilib.CUST_invoicecontractmail(CEXTN_saveconn,CEXTN_unitno,CEXTN_invoiceid,CEXTN_db_chkindate,CEXTN_db_chkoutdate,CEXTN_tb_contrcompname,CEXTN_continvoicecustomename,CEXTN_invoicesno,CEXTN_invoicedate,CEXTN_contractnoticeperiod,CEXTN_tb_contrpassno,CEXTN_tb_contrpassdate,CEXTN_tb_contrepno,CEXTN_tb_contrepdate,CEXTN_tb_contrnoticedate,CEXTN_Leaseperiod,CEXTN_customercard,CEXTN_rentamt,CEXTN_tb_airquarterfee,CEXTN_tb_fixedairfee,CEXTN_tb_electcapfee,CEXTN_tb_curtaindryfee,CEXTN_tb_chkoutcleanfee,CEXTN_profeeamt,CEXTN_depositamt,CEXTN_waivedvalue,CEXTN_roomtype,CEXTN_TargetFolderId,CEXTN_rent_check,docowner,CEXTN_lb_emailid,"EXTENSION",CEXTN_hidden_custid)
+        CEXTN_waivedvalue=CEXTN_hidden_diffamtwaived;
+        CEXTN_proratedvalue=CEXTN_hidden_diffamtprorated;
+        CEXTN_rent_check=CEXTN_hidden_diffamtprorated;
+        CEXTN_rentamt=CEXTN_tb_diffamtrent;
+        CEXTN_depositamt=CEXTN_tb_diffamtdep;
+        CEXTN_profeeamt=CEXTN_tb_diffamtprocost;
       }
+      //GET CARD NOS
+      var accessflag=0;
+      if(CEXTN_card_array==undefined)
+      {
+        var accessflag=1;
+      }
+      if(CEXTN_radio_unit=="CEXTN_radio_diffunit"&&CEXTN_radio_difunitcard=="CEXTN_radio_difunitcardno")
+      {
+        CEXTN_card_array=CEXTN_cb_diffunitcard;
+        var card_lbl=CEXTN_dts.CEXTN_slctcustlbl;
+        var CEXTN_find=(card_lbl.toString()).search(',');
+        if(CEXTN_find!=-1)
+        {
+          var finalarray=card_lbl.split(",")
+          for(var i=0;i<finalarray.length;i++)
+          {
+            CEXTN_card_lbl.push(finalarray[i])
+          }
+        }
+        else
+        {
+          CEXTN_card_lbl=card_lbl
+        }
+      }
+      var CEXTN_customercard="";
+      if(CEXTN_card_array!=undefined)
+      {
+        var CEXTN_find=(CEXTN_card_array.toString()).search(',');
+        if(CEXTN_find!=-1)
+        {
+          accessflag=0;
+          for(var i=0;i<CEXTN_card_array.length;i++)
+          {
+            if(CEXTN_card_array[i]=="")continue;
+            var CEXTN_cardnos=CEXTN_card_array[i]
+            var CEXTN_cardlbl=CEXTN_card_lbl[i].replace(/ /g,"_");
+            CEXTN_customename=CEXTN_customename.replace(/ /g,"_");
+            if(CEXTN_cardlbl==CEXTN_customename)
+            {
+              if(CEXTN_accesscard=="")
+              {
+                CEXTN_accesscard=CEXTN_cardnos;
+                CEXTN_customercard=CEXTN_cardnos
+                CEXTN_guestcard=CEXTN_cardnos+","+" ";
+              }
+              else
+              {
+                CEXTN_accesscard=CEXTN_accesscard+","+CEXTN_cardnos;
+                CEXTN_guestcard=CEXTN_guestcard+","+CEXTN_cardnos+", ";
+                CEXTN_customercard=CEXTN_cardnos;
+              }
+            }
+            else
+            {
+              if(CEXTN_accesscard=="")
+              {
+                CEXTN_guestcard=CEXTN_cardnos+",X";
+                CEXTN_accesscard=CEXTN_cardnos;
+              }
+              else
+              {
+                CEXTN_accesscard=CEXTN_accesscard+","+CEXTN_cardnos;
+                CEXTN_guestcard=CEXTN_guestcard+","+CEXTN_cardnos+",X";
+              }
+            }
+          }
+        }
+        else
+        {
+          accessflag=1;
+          CEXTN_accesscard=CEXTN_card_array;
+          CEXTN_customercard=CEXTN_card_array
+          CEXTN_guestcard=CEXTN_card_array+", ";
+        }
+      }
+      else
+      {
+        CEXTN_accesscard=""
+        CEXTN_guestcard=CEXTN_accesscard+", ";
+      }
+      //CALENDAR DATE N TIME
+      var CEXTN_prevchkoutdate=eilib.SqlDateFormat(CEXTN_db_chkindate);
+      var CEXTN_prevchkoutdatefromtime=CEXTN_hidden_chkinfromtime;
+      var CEXTN_prevchkoutdatetotime=CEXTN_hidden_chkintotime;
+      var CEXTN_prevchkinfromtime=CEXTN_hidden_prechkinfromtime;
+      var CEXTN_prevchkintotime=CEXTN_hidden_prechkintotime;
+      //CALL SAVE SP
+      
+      var CEXTN_CALEVENTS=[];
+      var CEXTN_saveconn =eilib.db_GetConnection();
+      CEXTN_saveconn.setAutoCommit(false);
+      var CEXTN_savestmt=CEXTN_saveconn.createStatement();
+      CEXTN_savestmt.execute("CALL SP_CUSTOMER_EXTENSION_INSERT("+CEXTN_hidden_custid+","+CEXTN_tb_compname+","+CEXTN_tb_compaddr+","+CEXTN_tb_comppostcode+","+CEXTN_tb_officeno+","+CEXTN_unitno+","+CEXTN_chksameunit+",'"+CEXTN_roomtype+"','"+CEXTN_lb_chkinfromtime+"','"+CEXTN_lb_chkintotime+"','"+CEXTN_lb_chkoutfromtime+"','"+CEXTN_lb_chkouttotime+"','"+CEXTN_Leaseperiod+"',"+CEXTN_quators+",'"+CEXTN_waivedvalue+"','"+CEXTN_proratedvalue+"',"+CEXTN_tb_noticeperiod+","+CEXTN_db_noticeperioddate+","+CEXTN_rentamt+","+CEXTN_depositamt+","+CEXTN_profeeamt+","+CEXTN_tb_fixedairfee+","+CEXTN_tb_airquarterfee+","+CEXTN_tb_electcapfee+","+CEXTN_tb_chkoutcleanfee+","+CEXTN_tb_curtaindryfee+",'"+CEXTN_accesscard+"','"+CEXTN_db_chkindate+"','"+UserStamp+"','"+CEXTN_db_chkindate+"','"+CEXTN_db_chkoutdate+"','"+CEXTN_guestcard+"','"+CEXTN_tb_nation+"',"+CEXTN_tb_mobileno+","+CEXTN_tb_intmobileno+",'"+CEXTN_tb_emailid+"',"+CEXTN_tb_passno+","+CEXTN_db_passdate+","+CEXTN_db_dob+","+CEXTN_tb_epno+","+CEXTN_db_epdate+",'"+CEXTN_ta_comments+"','"+CEXTN_sameamntflag+"',@EXTNFLAG,@TEMP_OUT_EXT_CARNOTBLNAME,@TEMP_OUT_EXTN_CLPDTLSTTBLNAME,@TEMP_OUT_EXTN_FEEDTLTBLNAME,@PAY_CHK_MSG)");
+      CEXTN_savestmt.close();      
+      var CEXTN_saveflag=0;      
+      var CEXTN_finalarr=CEXTN_ReturnFlagGetExtnFormTempTables(CEXTN_saveconn);
+      CEXTN_saveflag=CEXTN_finalarr[0];
+      if(CEXTN_saveflag==1)
+      {
+        var CEXTN_calenderIDcode =eilib.CUST_getCalenderId(CEXTN_saveconn);//GET CALENDAR ID
+        var CEXTN_TargetFolderId=eilib.CUST_TargetFolderId(CEXTN_saveconn);//GET TARGER FOLDER ID
+        var docowner=eilib.CUST_documentowner(CEXTN_saveconn);//get doc owner
+        CEXTN_CALEVENTS=eilib.CTermExtn_GetCalevent(CEXTN_saveconn,CEXTN_hidden_custid);
+        //CALL CALENDAR EVENT FUNCTION FROM EILIB
+        eilib.CTermExtn_Calevent(CEXTN_saveconn,CEXTN_hidden_custid,"",CEXTN_calenderIDcode,CEXTN_formname,"");    
+        var cust_config_array=[];
+        cust_config_array=eilib.CUST_invoice_contractreplacetext(CEXTN_saveconn);
+        var CEXTN_invoiceid=cust_config_array[9];
+        var CEXTN_invoicesno=cust_config_array[0];
+        var CEXTN_invoicedate=cust_config_array[1];
+        if(CEXTN_rent_check!="")
+        {
+          CEXTN_rent_check='true';
+        }
+        else
+        {
+          CEXTN_rent_check='false';
+        }
+        //CONTRACT N INVOICE
+        if(CEXTN_radio_amt=="CEXTN_radio_sameamt")
+        {
+          eilib.CUST_contractmail(CEXTN_saveconn,CEXTN_unitno,CEXTN_db_chkindate,CEXTN_db_chkoutdate,CEXTN_tb_contrcompname,CEXTN_continvoicecustomename,CEXTN_contractnoticeperiod,CEXTN_tb_contrpassno,CEXTN_tb_contrpassdate,CEXTN_tb_contrepno,CEXTN_tb_contrepdate,CEXTN_tb_contrnoticedate,CEXTN_Leaseperiod,CEXTN_customercard,CEXTN_rentamt,CEXTN_tb_airquarterfee,CEXTN_tb_fixedairfee,CEXTN_tb_electcapfee,CEXTN_tb_curtaindryfee,CEXTN_tb_chkoutcleanfee,CEXTN_profeeamt,CEXTN_depositamt,CEXTN_waivedvalue,CEXTN_roomtype,CEXTN_rent_check,CEXTN_lb_emailid,"EXTENSION",CEXTN_TargetFolderId,docowner)
+        }
+        else
+        {
+          eilib.CUST_invoicecontractmail(CEXTN_saveconn,CEXTN_unitno,CEXTN_invoiceid,CEXTN_db_chkindate,CEXTN_db_chkoutdate,CEXTN_tb_contrcompname,CEXTN_continvoicecustomename,CEXTN_invoicesno,CEXTN_invoicedate,CEXTN_contractnoticeperiod,CEXTN_tb_contrpassno,CEXTN_tb_contrpassdate,CEXTN_tb_contrepno,CEXTN_tb_contrepdate,CEXTN_tb_contrnoticedate,CEXTN_Leaseperiod,CEXTN_customercard,CEXTN_rentamt,CEXTN_tb_airquarterfee,CEXTN_tb_fixedairfee,CEXTN_tb_electcapfee,CEXTN_tb_curtaindryfee,CEXTN_tb_chkoutcleanfee,CEXTN_profeeamt,CEXTN_depositamt,CEXTN_waivedvalue,CEXTN_roomtype,CEXTN_TargetFolderId,CEXTN_rent_check,docowner,CEXTN_lb_emailid,"EXTENSION",CEXTN_hidden_custid)
+        }
+      }
+      CEXTN_DropTempTables(CEXTN_saveconn,CEXTN_finalarr[1])
+      CEXTN_saveconn.commit();
+      CEXTN_saveconn.close();
+      return CEXTN_saveflag+"_"+CEXTN_finalarr[2];
     }
-    CEXTN_saveconn.close();
-    return CEXTN_saveflag;
-  }  
+    catch(err)
+    {
+      Logger.log("SCRIPT EXCEPTION:"+err)
+      CEXTN_saveconn.rollback();
+      var CEXTN_finalarr=CEXTN_ReturnFlagGetExtnFormTempTables(CEXTN_saveconn);
+      CEXTN_DropTempTables(CEXTN_saveconn,CEXTN_finalarr[1])
+      if(CEXTN_calenderIDcode!=undefined&&CEXTN_TargetFolderId!=undefined&&docowner!=undefined&&(CEXTN_saveflag==1))
+      {
+        for(var ijk=0;ijk<CEXTN_CALEVENTS.length;ijk++)
+        {
+          eilib.CUST_customerTermcalenderdeletion(CEXTN_hidden_custid,CEXTN_calenderIDcode,CEXTN_CALEVENTS[ijk].sddate,CEXTN_CALEVENTS[ijk].sdtimein,CEXTN_CALEVENTS[ijk].sdtimeout,CEXTN_CALEVENTS[ijk].eddate,CEXTN_CALEVENTS[ijk].edtimein,CEXTN_CALEVENTS[ijk].edtimeout,"")
+        }
+        eilib.CTermExtn_Calevent(CEXTN_saveconn,CEXTN_hidden_custid,"",CEXTN_calenderIDcode,CEXTN_formname,""); 
+        var CEXTN_invoiceID=eilib.invoiceid();
+        var CEXTN_contractID=eilib.contractid();
+        if(CEXTN_invoiceID!=undefined)
+        {
+          eilib.CUST_UNSHARE_FILE(CEXTN_invoiceID);
+        }
+        if(CEXTN_contractID!=undefined)
+        {
+          eilib.CUST_UNSHARE_FILE(CEXTN_contractID);
+        }
+      }
+      return (Logger.getLog());
+    }   
+  }
+  //FUNCTION TO GET FLAG N TEMP TABLES
+  function CEXTN_ReturnFlagGetExtnFormTempTables(CEXTN_saveconn)
+  {
+    var CEXTN_Temptablearray=[];
+    var saveflag_stmt=CEXTN_saveconn.createStatement();
+    var saveflag_query="SELECT @EXTNFLAG,@TEMP_OUT_EXT_CARNOTBLNAME,@TEMP_OUT_EXTN_CLPDTLSTTBLNAME,@TEMP_OUT_EXTN_FEEDTLTBLNAME,@PAY_CHK_MSG";
+    var saveflag_rs=saveflag_stmt.executeQuery(saveflag_query);
+    var CEXTN_saveflag=0;
+    var CEXTN_paymsg=null;
+    while(saveflag_rs.next())
+    {
+      CEXTN_saveflag=saveflag_rs.getString(1);
+      if(saveflag_rs.getString(2)!=null&&saveflag_rs.getString(2)!=undefined&&saveflag_rs.getString(2)!="")
+      {
+        CEXTN_Temptablearray.push(saveflag_rs.getString(2))
+      }
+      if(saveflag_rs.getString(3)!=null&&saveflag_rs.getString(3)!=undefined&&saveflag_rs.getString(3)!="")
+      {
+        CEXTN_Temptablearray.push(saveflag_rs.getString(3))
+      }
+      if(saveflag_rs.getString(4)!=null&&saveflag_rs.getString(4)!=undefined&&saveflag_rs.getString(4)!="")
+      {
+        CEXTN_Temptablearray.push(saveflag_rs.getString(4))
+      }      
+      CEXTN_paymsg=saveflag_rs.getString(5);
+    }
+    var CEXTN_finalflagtemparray=[CEXTN_saveflag,CEXTN_Temptablearray,CEXTN_paymsg];
+    saveflag_rs.close();
+    saveflag_stmt.close();
+    return CEXTN_finalflagtemparray;    
+  }
+  //FUNCTION TO DROP TEMP TABLES
+  function CEXTN_DropTempTables(CEXTN_saveconn,CEXTN_Temptablearray)
+  {
+    for(var t=0;t<CEXTN_Temptablearray.length;t++)
+    {
+      eilib.DropTempTable(CEXTN_saveconn, CEXTN_Temptablearray[t]);
+    }
+  }
 }catch(err)
 {
 }

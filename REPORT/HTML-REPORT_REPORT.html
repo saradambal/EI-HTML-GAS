@@ -1,8 +1,11 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //***********************************************REPORT*******************************************************//
+//DONE BY:PUNI
+//VER 2.1-SD:06/10/2014,ED:06/10/2014,TRACKER NO:655,1.Changed script for preloader,msgbox position,2.corrected sort by for report name n report category
+//DONE BY:SARADAMBAL
+//VER 2.0-SD:22/08/2014 ED:22/08/2014,TRACKER NO:655,updated new links
 //DONE BY:LALITHA
+//VER 1.9-SD:31/07/2014 ED:31/07/2014,TRACKER NO:655,Updated to restrict the current mnth dp for expense nd erm leeds report,Atlast showned the emailid(changed validation),Changed alignmnt right side of amt nd date,Updated dp inside of same table(corrected alignment of dp),Removed repeated query
 //VER 1.8-SD:30/07/2014 ED:30/07/2014,TRACKER NO:655,Updated mandatory symbol for dp
 //VER 1.7-SD:30/07/2014 ED:30/07/2014,TRACKER NO:655,Changed Return Function,Changed the active unit expense spreadsheet for particular month wth dp,Updated parsefloat for amt,Changed validation,changed hypen for date 
 //VER 1.6-SD:11/07/2014 ED:12/07/2014,TRACKER NO:655,Updated column width for all spread sheet
@@ -26,21 +29,31 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function onFailure(REP_error) {
 $(".preloader");
@@ -55,7 +68,7 @@ if(REP_error=='ScriptError: No item with the given ID could be found, or you do 
 {
 REP_error=REP_errorMsg_array[3];
 }
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPORT",msgcontent:REP_error}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPORT",msgcontent:REP_error,position:{top:150,left:500}}}); 
 }
 }
 //FAILURE FUNCTION END
@@ -71,7 +84,6 @@ var REP_report_optionvalues=[];
 //SUCCESS FUNCTION FOR REPORT PROFILE NAME,ERROR MESSAGE
 function REP_getdomain_errresult(REP_getdomain_errresult_response)
 {
-$(".preloader").hide(); 
 $('#REP_form_report').show();
 REP_emailarr_emailid=REP_getdomain_errresult_response.REP_emailid;
 REP_arr_catagoryreportname=REP_getdomain_errresult_response.REP_catagoryreportname;
@@ -103,6 +115,10 @@ for (var i = 0; i < REP_arr_catagoryreportname.length; i++)
 REP_array_catagoryreportname += '<option value="' + REP_arr_catagoryreportname[i].REP_searchoption_id + '">'+ REP_arr_catagoryreportname[i].REP_searchoption_data+' </option>';
 }
 $('#REP_lb_catgreportname').html(REP_array_catagoryreportname).show();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //CHANGE EVENT FUNCTION FOR SEARCH OPTION
 $('.validation').blur(function(){
@@ -143,6 +159,8 @@ $('#REP_db_month').hide();
 }
 else
 {
+var  newPos= adjustPosition($(this).position(),100,150);
+resetPreloader(newPos);
 $(".preloader").show(); 
 google.script.run.withFailureHandler(onFailure).withSuccessHandler(REP_success_load_searchby_lb).REP_func_load_searchby_option(REP_report_optionfetch);
 }
@@ -188,6 +206,8 @@ $('#REP_lbl_emailid').show();
 $('#REP_lb_emailid').val('SELECT').show();
 if(REP_catagory_option==32 || REP_catagory_option==28 )
 {
+$('#REP_lbl_emailid').hide();
+$('#REP_lb_emailid').hide();
 $('#REP_lbl_selectmonth').show();
 $('#REP_db_month').show();
 }
@@ -208,7 +228,7 @@ if(REP_response==1)
 $("#REP_btn_send").attr("disabled", "disabled");
 var REP_errmsg=REP_errorMsg_array[1].replace('[PROFILE]',REP_reportname);
 //MESSAGE BOX FOR SEND BUTTON
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPORT",msgcontent:REP_errmsg}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPORT",msgcontent:REP_errmsg,position:{top:150,left:500}}}); 
 $('#REP_lbl_reportname').hide();
 $('#REP_lbl_emailid').hide();
 $('#REP_lb_reportname').hide();
@@ -235,7 +255,9 @@ $('#REP_db_month').hide();
 }
 //DATE PICKER FUNCTION FOR ERM LEEDS
 $('.date-picker').datepicker( {changeMonth: true,  changeYear: true,  showButtonPanel: true,  dateFormat: 'MM-yy',    
-onClose: function(dateText, inst) {
+maxDate:new Date(),onClose: function(dateText, inst) {
+$('#REP_lbl_emailid').show();
+$('#REP_lb_emailid').show();
 var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
 var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
 $(this).datepicker('setDate', new Date(year, month, 1));
@@ -278,14 +300,13 @@ $('#REP_db_month').hide();
 <option>SELECT</option>
 </select></td>
 </tr>
-</table>
-<table>
 <tr>
 <td style="width:170px"><label name="REP_lbl_reportname" id="REP_lbl_reportname"  hidden >REPORT NAME<em>*</em></label></td>
 <td><select name="REP_lb_reportname" id="REP_lb_reportname" class="validation" hidden>
 <option>SELECT</option>
 </select></td>
 </tr>
+<tr><td style="width:170px"><label name="REP_lbl_selectmonth" id="REP_lbl_selectmonth" hidden>SELECT MONTH<em>*</em></label></td><td><input type="text" id="REP_db_month" name="REP_db_month" class="date-picker validation" style="width:110px" hidden ></td></tr>
 <tr>
 <td style="width:170px"><label name="REP_lbl_emailid" id="REP_lbl_emailid" hidden>EMAIL ID<em>*</em></label></td>
 <td><select name="REP_lb_emailid" id="REP_lb_emailid" class="validation" hidden>
@@ -293,7 +314,6 @@ $('#REP_db_month').hide();
 </select></td>
 </tr>
 </table>
-<tr><td style="width:170px"><label name="REP_lbl_selectmonth" id="REP_lbl_selectmonth" hidden>SELECT MONTH<em>*</em></label></td><td><input type="text" id="REP_db_month" name="REP_db_month" class="date-picker validation" style="width:110px" hidden ></td></tr>
 <table>
 <tr>
 <td style="width:170px" align="right"><input type="button" class="maxbtn" name="REP_btn_send" id="REP_btn_send" value="SEND" disabled></td>

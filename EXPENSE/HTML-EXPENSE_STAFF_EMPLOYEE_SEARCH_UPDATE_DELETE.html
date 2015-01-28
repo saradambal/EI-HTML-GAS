@@ -1,8 +1,12 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE*************************//
+//DONE BY:PUNI
+//VER 1.4-SD:09/10/2014 ED:09/10/2014,TRACKER NO:705:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//VER 1.3-SD:29/09/2014 ED:30/09/2014,TRACKER NO:705,1.corrected flex table to show radio button once for each employee,2.corrected btn validation when no card n show err msg,3.corrected close of undefined issue when clicking search button to show update form
+//DONE BY:SARADAMBAL
+//VER 1.2-SD:23/08/2014 ED:23/08/2014,TRACKER NO:705,updated new links,autogrow,put preloader for reloading updated n deleted one,filter active unit in treeview query
 //DONE BY:LALITHA
+//VER 1.1-SD:02/08/2014 ED:02/08/2014,TRACKER NO:705,updated script to show error msg if active card is assigned returned from sp
 //VER 1.0 SD:16/06/2014 ED:17/06/2014,TRACKER NO:705,Changed return function,Changed failure funct,Changed the email id to lowercase for only valid email id ,Hide the flex tble thn nly shown err msg for update nd delete,After updating the(comments,emailid,mobileno)call the auto complete funct,(Increased the flex tble width for more datas,Starting itself hide the search,delete btns(seen tht issue in int site nly))
 //VER 0.09 SD:07/06/2014 ED:07/06/2014,Changed jquery link,Updated maxlength for(cust frst,last name,emailid),After reset btn clicked hide the card details nd resized the(cust last,frst name,email id),Updated parseInt for mobile number,Increased flex tble width
 //VER 0.08 SD:17/05/2014 ED:22/05/2014,Implemented dynamic sp,Implemented eilib special charater for comments,Removed the mandatory symbol for select the card,Hide the card details aftr shown the flex tble,Asc the emp lst bx,Changed msg box title,Removed the underscore for emp name,Put space in b/w emp frst nd last name,Update the emp name means hide the flex tble nd refresh the emp lst box nd hide the no data err msg,update the othr fields means refresh the flex tble,delete the record means hide the no data err msg nd refresh the list box
@@ -19,29 +23,41 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={EmailId:'Invalid'}
 var EMPSRC_UPD_DEL_sucsval=0;
 //DOCUMENT READY FUNCTION
 $(document).ready(function(){
+$('textarea').autogrow({onInitialize: true});
 $('#EMPSRC_UPD_DEL_btn_search_autocomplt').hide();
 $(".preloader").show(); 
 $('#EMPSRC_UPD_DEL_searchbutton').hide();
 $('#EMPSRC_UPD_DEL_deletebutton').hide();
+$('#EMPSRC_UPD_DEL_lbl_error').text("");
 google.script.run.withFailureHandler(EMPSRC_UPD_error).withSuccessHandler(EMPSRC_UPD_DEL_searchoptionresult).EMPSRC_UPD_DEL_searchoption();
 var EMPSRC_UPD_DEL_searchoption=[];
 var EMPSRC_UPD_DEL_expensearr_designation=[];
@@ -71,13 +87,12 @@ if(EMPSRC_UPD_DEL_sucsval==2)
 {
 $(".preloader").hide();
 //MESSAGE BOX FOR DELETE SUCCESSFULLY
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[15]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[15],position:{top:150,left:500}}}); 
 }
 }
 //SUCCESS FUNCTION FOR SEARCH OPTION
 function EMPSRC_UPD_DEL_searchoptionresult(EMPSRC_UPD_DEL_searchoptionresult_response)
 {
-$(".preloader").hide(); 
 EMPSRC_UPD_DEL_searchoption=EMPSRC_UPD_DEL_searchoptionresult_response.EMPSRC_UPD_DEL_searchoption;
 EMPSRC_UPD_DEL_expensearr_designation=EMPSRC_UPD_DEL_searchoptionresult_response.EMPSRC_UPD_DEL_designation;
 EMPSRC_UPD_DEL_expensearr_employeename=EMPSRC_UPD_DEL_searchoptionresult_response.EMPSRC_UPD_DEL_employeename;
@@ -136,6 +151,10 @@ EMPSRC_UPD_DEL_expensearray_employeename += '<option value="' + EMPSRC_UPD_DEL_e
 }
 $('#EMPSRC_UPD_DEL_lb_employeename_listbox').html(EMPSRC_UPD_DEL_expensearray_employeename);
 $('#EMPSRC_UPD_DEL_lb_empdesig').html(EMPSRC_UPD_DEL_expensearray_designation)
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //CHANGE EVENT FUNCTION FOR COMMENTS
 $( "#EMPSRC_UPD_DEL_ta_comments" ).change(function()
@@ -302,7 +321,10 @@ google.script.run.withFailureHandler(EMPSRC_UPD_error).withSuccessHandler(EMPSRC
 });
 //SEARCH BY ALL OPTIONS//
 $('#EMPSRC_UPD_DEL_lb_searchoption').change(function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show(); 
+$("textarea").height(20);
 $('#EMPSRC_UPD_DEL_table_updateform').hide();
 $('#EMPSRC_UPD_DEL_deletebutton').hide();
 $('#EMPSRC_UPD_DEL_searchbutton').hide();
@@ -400,6 +422,8 @@ $(".preloader").hide();
 });
 //CHANGE EVENT FUNCTION FOR EMPLOYEE NAME
 $('#EMPSRC_UPD_DEL_lb_employeename_listbox').change(function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 EMPSRC_UPD_DEL_sucsval=0;
 $(".preloader").show(); 
 $('#EMPSRC_UPD_DEL_table_updateform').hide();
@@ -423,6 +447,8 @@ google.script.run.withFailureHandler(EMPSRC_UPD_error).withSuccessHandler(EMPSRC
 });
 //CHANGE EVENT FUNCTION FOR EMPLOYEE DESIGNATION
 $('#EMPSRC_UPD_DEL_lb_designation_listbox').change(function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 EMPSRC_UPD_DEL_sucsval=0;
 $(".preloader").show(); 
 $('#EMPSRC_UPD_DEL_table_updateform').hide();
@@ -547,8 +573,15 @@ var EMPSRC_UPD_DEL_header='<tr><th style="width:30px"></th><th style="width:80px
 $('#EMPSRC_UPD_DEL_tble_htmltable').html(EMPSRC_UPD_DEL_header);
 for(var i=0;i<EMPSRC_UPD_DEL_result_array.length;i++)
 {
-var EMPSRC_UPD_DEL_values=EMPSRC_UPD_DEL_result_array[i]
+var EMPSRC_UPD_DEL_lastvalues=EMPSRC_UPD_DEL_result_array[i-1];
+var EMPSRC_UPD_DEL_values=EMPSRC_UPD_DEL_result_array[i];
+if(i==0||(EMPSRC_UPD_DEL_lastvalues!=undefined&&EMPSRC_UPD_DEL_lastvalues.empno!=EMPSRC_UPD_DEL_values.empno)){
 EMPSRC_UPD_DEL_value='<tr><td><input type="radio" class="radiosearch" name="EMPSRC_UPD_DEL_radio_empdetail" id='+(i+1)+' value='+EMPSRC_UPD_DEL_values.empno+'></td><td>'+EMPSRC_UPD_DEL_values.Femployeename+'</td><td>'+EMPSRC_UPD_DEL_values.Lemployeename+'</td><td>'+EMPSRC_UPD_DEL_values.mobile+'</td><td>'+EMPSRC_UPD_DEL_values.email+'</td><td>'+EMPSRC_UPD_DEL_values.designation+'</td><td>'+EMPSRC_UPD_DEL_values.EMPSRC_UPD_DEL_unitno+'</td><td>'+EMPSRC_UPD_DEL_values.cardnumber+'</td><td>'+EMPSRC_UPD_DEL_values.comments+'</td><td>'+EMPSRC_UPD_DEL_values.userstamp+'</td><td>'+EMPSRC_UPD_DEL_values.timestamp+'</td></tr>'
+}
+else
+{
+EMPSRC_UPD_DEL_value='<tr><td></td><td>'+EMPSRC_UPD_DEL_values.Femployeename+'</td><td>'+EMPSRC_UPD_DEL_values.Lemployeename+'</td><td>'+EMPSRC_UPD_DEL_values.mobile+'</td><td>'+EMPSRC_UPD_DEL_values.email+'</td><td>'+EMPSRC_UPD_DEL_values.designation+'</td><td>'+EMPSRC_UPD_DEL_values.EMPSRC_UPD_DEL_unitno+'</td><td>'+EMPSRC_UPD_DEL_values.cardnumber+'</td><td>'+EMPSRC_UPD_DEL_values.comments+'</td><td>'+EMPSRC_UPD_DEL_values.userstamp+'</td><td>'+EMPSRC_UPD_DEL_values.timestamp+'</td></tr>'
+}
 $('#EMPSRC_UPD_DEL_tble_htmltable').append(EMPSRC_UPD_DEL_value);
 }
 $('#EMPSRC_UPD_DEL_tble_htmltable').show();
@@ -558,12 +591,12 @@ $(".preloader").hide();
 if(EMPSRC_UPD_DEL_sucsval==1)
 {
 //MESSAGE BOX FOR UPDATE SUCCESSFULLY
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[14]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[14],position:{top:150,left:500}}}); 
 }
 if(EMPSRC_UPD_DEL_sucsval==2)
 {
 //MESSAGE BOX FOR DELETE SUCCESSFULLY
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[15]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[15],position:{top:150,left:500}}}); 
 }
 }
 //SHOW THE ERROR//
@@ -577,7 +610,7 @@ $('#EMPSRC_UPD_DEL_form_employeelist').replaceWith('<center><label class="dberro
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:err.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:err.message,position:{top:150,left:500}}});
 }
 }
 $(document).on('click','#EMPSRC_UPD_DEL_tble_htmltable tr td input[type="radio"]',function() {
@@ -594,7 +627,11 @@ $('#EMPSRC_UPD_DEL_btn_reset').hide();
 });
 //CLICK FUNCTION FOR SEARCH BUTTON
 $('#EMPSRC_UPD_DEL_searchbutton').click(function(){
+var  newPos= adjustPosition($(this).position(),100,360);
+resetPreloader(newPos);
+$('#EMPSRC_UPD_DEL_lbl_error').text("");
 $(".preloader").show(); 
+$("textarea").height(20);
 $("#EMPSRC_UPD_DEL_lbl_errmsg").hide();
 $('#EMPSRC_UPD_DEL_tb_mobile').removeClass('invalid');
 $('#EMPSRC_UPD_DEL_lbl_validemailid').hide();
@@ -686,6 +723,8 @@ EMPSRC_UPD_DEL_employeedetailrset()
 });
 //LOAD THE UPDATE FORM//
 $('#EMPSRC_UPD_DEL_btn_update').click(function(){
+var  newPos= adjustPosition($(this).position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show(); 
 var EMPSRC_UPD_DEL_bmobilenolength=$('#EMPSRC_UPD_DEL_tb_mobile').val();
 if(EMPSRC_UPD_DEL_bmobilenolength.length<6 || EMPSRC_UPD_DEL_bmobilenolength=="" )
@@ -717,10 +756,12 @@ $('#EMPSRC_UPD_DEL_deletebutton').click(function(){
 $('#EMPSRC_UPD_DEL_table_updateform').hide();
 $('#EMPSRC_UPD_DEL_btn_update').hide();
 $('#EMPSRC_UPD_DEL_btn_reset').hide();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[18],confirmation:true}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[18],confirmation:true,position:$(this).position()}});
 });
 //CALL CONFIRM MESSAGE
 $(document).on('click','.messageconfirm',function(){
+var  newPos= adjustPosition($("#EMPSRC_UPD_DEL_deletebutton").position(),100,270);
+resetPreloader(newPos);
 $(".preloader").show();
 var EMPSRC_UPD_DEL_radiovalue = $('input:radio[name=EMPSRC_UPD_DEL_radio_empdetail]:checked').val();
 var EMPSRC_UPD_DEL_radioid = $('input:radio[name=EMPSRC_UPD_DEL_radio_empdetail]:checked').attr('id');
@@ -735,22 +776,25 @@ if(EMPSRC_UPD_DEL_deletemsgvalue==1)
 {
 EMPSRC_UPD_DEL_sucsval=2;
 if(EMPSRC_UPD_DEL_searchoption==90)
-{
+{$(".preloader").show();
 google.script.run.withFailureHandler(EMPSRC_UPD_error).withSuccessHandler(EMPSRC_UPD_DEL_employlstbx).EMPSRC_UPD_DEL_searchoption();
 }
 else
-{
+{$(".preloader").show();
 google.script.run.withFailureHandler(EMPSRC_UPD_error).withSuccessHandler(EMPSRC_UPD_DEL_srch_result).EMPSRC_UPD_DEL_flextabel_getdatas(document.getElementById('EMPSRC_UPD_DEL_form_employeelist'));
 }
 }
 else
 {
 //MESSAGE BOX FOR NOT DELETE 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[20]}}); 
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[21],position:{top:150,left:500}}}); 
 }
 }
 //SHOW THE CONFORMATION MESSAGE//
 function EMPSRC_UPD_DEL_conformation_result(EMPSRC_UPD_DEL_conformation_resultval)
+{$(".preloader").hide(); 
+var EMPSRC_UPD_DEL_updateresultflag=EMPSRC_UPD_DEL_conformation_resultval[2]
+if(EMPSRC_UPD_DEL_updateresultflag==1)
 {
 var EMPSRC_UPD_DEL_firstname=$('#EMPSRC_UPD_DEL_tb_firstname').val();
 var EMPSRC_UPD_DEL_lastname=$('#EMPSRC_UPD_DEL_tb_lastname').val();
@@ -769,19 +813,31 @@ $('#EMPSRC_UPD_DEL_table_updateform').hide();
 $('#EMPSRC_UPD_DEL_btn_update').hide();
 $('#EMPSRC_UPD_DEL_btn_reset').hide();
 if((EMPSRC_UPD_DEL_firstnamehide!=EMPSRC_UPD_DEL_firstname && EMPSRC_UPD_DEL_searchoption==90)||(EMPSRC_UPD_DEL_lastnamehide!=EMPSRC_UPD_DEL_lastname && EMPSRC_UPD_DEL_searchoption==90))
-{
+{$(".preloader").show();
 google.script.run.withFailureHandler(EMPSRC_UPD_error).withSuccessHandler(EMPSRC_UPD_DEL_employlstbx).EMPSRC_UPD_DEL_searchoption();
 }
 else
-{
+{$(".preloader").show();
 google.script.run.withFailureHandler(EMPSRC_UPD_error).withSuccessHandler(EMPSRC_UPD_DEL_srch_result).EMPSRC_UPD_DEL_flextabel_getdatas(document.getElementById('EMPSRC_UPD_DEL_form_employeelist'));
 }
-$(".preloader").hide(); 
+}
+else{
+//MESSAGE BOX FOR NOT SAVED 
+if(EMPSRC_UPD_DEL_updateresultflag==0){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:EMPSRC_UPD_DEL_flexheader_array[20],position:{top:150,left:500}}}); 
+}
+else
+{
+//CARD SHOULD NOT BE ASSIGNED
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMPSRC_UPD_DEL_updateresultflag,position:{top:150,left:500}}});
+}
+}
 }
 //RESET ALL THE ELEMENT//
 function EMPSRC_UPD_DEL_employeedetailrset()
 {
 $(".preloader").hide(); 
+$("textarea").height(20); 
 $('#EMPSRC_UPD_DEL_tble_menu').hide();
 $("#EMPSRC_UPD_DEL_btn_update").attr("disabled", "disabled");
 $('#EMPSRC_UPD_DEL_lbl_validemailid').hide();
@@ -862,7 +918,7 @@ var EMPSRC_UPD_DEL_Mobileno = $("#EMPSRC_UPD_DEL_tb_mobile").val();
 var EMPSRC_UPD_DEL_email = $("#EMPSRC_UPD_DEL_tb_email").val();
 var EMP_ENTRY_menu=$("input[name=menu]").is(":checked");
 var EMP_ENTRY_submenu=$("input[name=submenu]").is(":checked");
-if( (( EMP_ENTRY_menu==true && EMP_ENTRY_submenu==true && EMPSRC_UPD_DEL_multi_array.length!=0) || $('#EMPSRC_UPD_DEL_radio_null').is(":checked")==true) && (EMPSRC_UPD_DEL_Firstname!='') && (EMPSRC_UPD_DEL_Lastname!='' )&&( EMPSRC_UPD_DEL_Mobileno!='' && (parseInt($('#EMPSRC_UPD_DEL_tb_mobile').val())!=0)) && (EMPSRC_UPD_DEL_Mobileno.length>=6)&& (EMPSRC_UPD_DEL_empdesig!='SELECT'))
+if( (( EMP_ENTRY_menu==true && EMP_ENTRY_submenu==true &&( EMPSRC_UPD_DEL_multi_array.length!=0||EMPSRC_UPD_DEL_multi_array!="")) || $('#EMPSRC_UPD_DEL_radio_null').is(":checked")==true) && (EMPSRC_UPD_DEL_Firstname!='') && (EMPSRC_UPD_DEL_Lastname!='' )&&( EMPSRC_UPD_DEL_Mobileno!='' && (parseInt($('#EMPSRC_UPD_DEL_tb_mobile').val())!=0)) && (EMPSRC_UPD_DEL_Mobileno.length>=6)&& (EMPSRC_UPD_DEL_empdesig!='SELECT'))
 {
 $("#EMPSRC_UPD_DEL_btn_update").removeAttr("disabled");
 }
@@ -975,12 +1031,14 @@ EMPSRC_UPD_DEL_multi_array=EMPSRC_UPD_DEL_multi_arraynew;
 else
 {
 var EMPENTRY_multi_array=[];
-EMPENTRY_multi_array=EMPSRC_UPD_DEL_multi_arraynew
+EMPENTRY_multi_array=EMPSRC_UPD_DEL_multi_arraynew;
 EMPSRC_UPD_DEL_multi_array=EMPENTRY_multi_array;
 }
-if(EMPSRC_UPD_DEL_multi_array.length==0 || EMPSRC_UPD_DEL_multi_array.length==null)
+if(EMPSRC_UPD_DEL_multi_array.length==0|| EMPSRC_UPD_DEL_multi_array.length==null||EMPSRC_UPD_DEL_multi_array=="")
 {
 $('#EMPSRC_UPD_DEL_lbl_error').text(EMPSRC_UPD_DEL_flexheader_array[2]).show();
+$("#EMPSRC_UPD_DEL_tble_menu").hide();
+$("#EMPSRC_UPD_DEL_btn_update").attr("disabled","disabled");
 }
 else
 {
@@ -1007,8 +1065,8 @@ EMPSRC_UPD_DEL_submenu='<div><ul style="list-style: none;"><li style="list-style
 $('#'+"EMPSRC_UPD_DEL_tble_submenu"+j).append(EMPSRC_UPD_DEL_submenu);
 }
 }
-}
 $("#EMPSRC_UPD_DEL_tble_menu").show();
+}
 $('#EMPSRC_UPD_DEL_table_updateform').show();
 $(".preloader").hide(); 
 }
@@ -1073,7 +1131,6 @@ var EMP_ENTRY_radio=$("input[name=EMPSRC_UPD_DEL_selectcard]:checked").val()
 if(EMP_ENTRY_radio=='CARD')
 {
 EMPSRC_UPD_DEL_multitreeview(EMPSRC_UPD_DEL_multi_array);
-$('#EMPSRC_UPD_DEL_tble_menu').show();
 $("#EMPSRC_UPD_DEL_btn_update").attr("disabled","disabled");
 }else
 {

@@ -1,13 +1,18 @@
 //****************************************ERM SEARCH/UPDATE*********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.08 -SD:09/10/2014 ED:09/10/2014,TRACKER NO:709-1.corrected proloader and message box position,2.corrected moving date DP max date as sysdate+3 months
 //DONE BY:KUMAR
-//VER 1.04- SD:22/07/2014 ED:22/07/2014,TRACKER NO:709 coverted age,guests,minimum stay data's to string.
-//VER 1.03- SD:19/07.2014 ED:19/07/2014,TRACKER NO:709 changed timestamp search min date as 2009 and max date as todate()
-//VER 1.02- SD:16/06/2014 ED:16/07/2014,TRACKER NO:709 changed Contact no datatype bigint(20) to varchar(20) and used class prefix accept 00 also 
+//VER 1.07-SD:06/10/2014 ED:06/10/2014,TRACKER NO:709-updated proloader and message box position.
+//VER 1.06- SD:28/08/2014 ED:28/08/2014,TRACKER NO:709 Changed contact no input value format
+//VER 1.05- SD:08/08/2014 ED:08/08/2014,TRACKER NO:709 implemented rollback and commit in script side and updated jquery and css links.
+//VER 1.04- SD:22/07/2014 ED:22/07/2014,TRACKER NO 709 converted spl characters(erm form age,guests,minimum fields )in entry form and updation form.
+//VER 1.03- SD:19/07/2014 ED:19/07/2014,TRACKER NO:709 Did sorting for all search option and set timestamp min and max date.
+//VER 1.02- SD:16/07/2014 ED:16/07/2014,TRACKER NO:709 changed ERM_CONTACT_NO datatype bigint(20) to varchar(20) and prefix accept 000.
 //VER 1.01- SD:28/06/2014 ED:28/06/2014,TRACKER NO:709 cleared email id button vlaidation issue and chenaged erm rent maximum digit 4 to 5 
 //VER 1.00- SD:18/06/2014 ED:18/06/2014,TRACKER NO:709 Added conn error mesaage and did moving date min and max date validation.and updated new email id validation.
 //VER 0.09- SD:06/06/2014 ED:06/06/2014,TRACKER NO:709 Changed jquery common link and css link.
-//ver 0.08- SD:02/06/2014 ED:02/06/2014,TRACKER NO:709 Some nationality have spl character so used eilib splchar conversion function in updation part.
+//ver 0.08- SD:02/06/2014 ED:02/06/2014,TRACKER NO:709 Some nationality have spl character so used eilib splchar conversion function in UPDATION part.
 //VER 0.07- SD:17/04/2014 ED:17/04/2014,TRACKER NO:709 Restricted DP manual inputs and Removed Mantatory Field for Email id.
 //VER 0.06- SD:27/02/2014 ED:27/02/2014,TRACKER NO:709 did userstamp id convrsion changes and return flags;
 //VER 0.05- SD:12/01/2014 ED:12/01/2014,TRACKER NO:709 changed preloder image,conformation msg,did autocomplete
@@ -18,6 +23,7 @@
 //*********************************************************************************************************//
 try
 {
+  var CERM_SRCconn;
   /******************************GETTING ERM CUSTOMER FOR AUTOCOMPLETE****************************/
   function CERM_SRC_customernameautocomplete()
   {
@@ -35,7 +41,7 @@ try
     CERM_SRC_customerstmt.close();
     CERM_SRC_conn.close();
   }
-   /******************************GETTING ERM CONTACT NO'S FOR AUTOCOMPLETE****************************/
+  /******************************GETTING ERM CONTACT NO'S FOR AUTOCOMPLETE****************************/
   function CERM_SRC_contactautocomplete()
   {
     var CERM_SRC_conn =eilib.db_GetConnection();
@@ -53,7 +59,7 @@ try
     CERM_SRC_contactstmt.close();
     CERM_SRC_conn.close();
   }
-   /******************************GETTING ERM DETAILS SELECTED OPTIONS AND SEARCH INPUT****************************/
+  /******************************GETTING ERM DETAILS SELECTED OPTIONS AND SEARCH INPUT****************************/
   function CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_input1,CERM_SRC_input2)
   {
     var CERM_SRC_conn =eilib.db_GetConnection();
@@ -83,7 +89,9 @@ try
     if(CERM_SRC_ermoption==5)
     {
       CERM_SRC_input1=eilib.SqlDateFormat(CERM_SRC_input1);
-      CERM_SRC_input2=eilib.SqlDateFormat(CERM_SRC_input2);
+      var CERM_SRC_toinput=CERM_SRC_input2.split('-');
+      var CERM_SRC_toinputdate=new Date(CERM_SRC_toinput[2],CERM_SRC_toinput[1]-1,CERM_SRC_toinput[0]);
+      var CERM_SRC_input2=Utilities.formatDate(new Date(CERM_SRC_toinputdate.getFullYear(),CERM_SRC_toinputdate.getMonth(),CERM_SRC_toinputdate.getDate()+1), TimeZone, 'yyyy-MM-dd');
       CERM_SRC_QUERY="SELECT ERM.ERM_ID,NC.NC_DATA,ERM.ERM_CUST_NAME,ERM.ERM_RENT,ERM.ERM_MOVING_DATE,ERM.ERM_MIN_STAY,EOD.ERMO_DATA,ERM.ERM_NO_OF_GUESTS,ERM.ERM_AGE,ERM.ERM_CONTACT_NO,ERM.ERM_EMAIL_ID,ERM.ERM_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(ERM.ERM_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS ERM_TIME_STAMP FROM ERM_ENTRY_DETAILS ERM left join NATIONALITY_CONFIGURATION NC ON ERM.NC_ID=NC.NC_ID left join ERM_OCCUPATION_DETAILS EOD ON ERM.ERMO_ID=EOD.ERMO_ID left join USER_LOGIN_DETAILS ULD on ERM.ULD_ID=ULD.ULD_ID WHERE ERM.ERM_TIMESTAMP BETWEEN '"+CERM_SRC_input1+"' AND '"+CERM_SRC_input2+"' ORDER BY ERM.ERM_TIMESTAMP,ERM.ERM_CUST_NAME"
     }
     var CERM_SRC_searchresult=CERM_SRC_searchstmt.executeQuery(CERM_SRC_QUERY);
@@ -108,7 +116,7 @@ try
       if(CERM_SRC_age==null ||CERM_SRC_age=='null' )
       { CERM_SRC_age="";}
       var CERM_SRC_contact=CERM_SRC_searchresult.getString("ERM_CONTACT_NO");
-      if(CERM_SRC_contact==null)
+      if(CERM_SRC_contact==null || CERM_SRC_contact=='null')
       { CERM_SRC_contact=""; }
       var CERM_SRC_mailid=CERM_SRC_searchresult.getString("ERM_EMAIL_ID");
       if(CERM_SRC_mailid==null)
@@ -127,94 +135,7 @@ try
     CERM_SRC_searchstmt.close();
     CERM_SRC_conn.close();
   }
-  //************************************ERM UPDATION PART*********************************//
-  function CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occupation,others,nationality,guests,age,contact,mailid,comments,CERM_oldarrayvalue)
-  {
-    var CERM_SRC_conn =eilib.db_GetConnection();
-    var ERM_SRC_occupation1=occupation;
-    var updatemovedate=movingdate;
-    movingdate=eilib.SqlDateFormat(movingdate)
-    var ERM_nationality=eilib.ConvertSpclCharString(nationality);
-    if(ERM_SRC_occupation1=="OTHERS")
-    { var ERM_SRC_occupation=others;}
-    else
-    { ERM_SRC_occupation=occupation;}
-    if(contact=="")
-    { contact=null;}
-    if(minimumstay!="")
-    {
-    var mailminstay=minimumstay;
-    minimumstay=eilib.ConvertSpclCharString(minimumstay)  
-    }
-    else
-    {
-   mailminstay= "";  
-    }
-    if(guests!="")
-    {
-      var mailguests=guests;
-      guests=eilib.ConvertSpclCharString(guests)
-    }
-    else
-    {
-    mailguests="";  
-    }
-    if(age!="")
-    {
-      var mailage=age;
-      age=eilib.ConvertSpclCharString(age)
-    }
-    else
-    {
-      mailage="";
-    }
-    var ERM_mailid=mailid.toLowerCase();
-    var Erm_comments=eilib.ConvertSpclCharString(comments);
-    var ERM_SRC_timestamp=Utilities.formatDate(new Date(), TimeZone, 'yyyy-MM-dd hh:mm:ss');
-    var CERM_SRC_updatestmt=CERM_SRC_conn.createStatement();
-    var CERM_SRC_updatequery="CALL SP_ERM_UPDATE('"+ERM_SRC_occupation+"',"+id+",'"+customer+"',"+rent+",'"+movingdate+"','"+minimumstay+"','"+ERM_nationality+"','"+guests+"','"+age+"','"+contact+"','"+ERM_mailid+"','"+Erm_comments+"','"+UserStamp+"',@ERM_SUCCESSFLAG)";
-    CERM_SRC_updatestmt.execute(CERM_SRC_updatequery);
-    var returnflagresult=CERM_SRC_updatestmt.executeQuery("SELECT @ERM_SUCCESSFLAG");
-    if(returnflagresult.next())
-    { var returnflag=returnflagresult.getString(1);}
-    returnflagresult.close();
-    CERM_SRC_updatestmt.close();
-    if(returnflag==1)
-    {
-    var emailids=eilib.getProfileEmailId(CERM_SRC_conn, 'ERM')
-    var name=emailids[0];
-    var ccList=emailids[1];
-    name=name.toString();
-    var username=name.split('@');
-    var mailusername=username[0].toUpperCase();
-    var sysdate=Utilities.formatDate(new Date(), TimeZone, "dd-MM-yyyy")
-    var subject="HELLO "+" <font color='gray'>"+"</font>"+"<font color='#498af3'><b>"+mailusername+"</b> </font>"+"<br>"+" PLEASE FIND ATTACHED UPDATED LEED DETAILS FROM ERM: "+"<br>";
-    var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'</body>';
-    if(ERM_SRC_occupation1=="OTHERS")
-    {
-      var dataarray=[customer,rent,updatemovedate,mailminstay,ERM_SRC_occupation,nationality,mailguests,mailage,contact,ERM_mailid,comments];
-    }
-    else
-    {
-      var dataarray=[customer,rent,updatemovedate,mailminstay,ERM_SRC_occupation,nationality,mailguests,mailage,contact,ERM_mailid,comments];
-    }
-    var head_array=['CUSTOMER NAME','RENT','MOVING DATE','MIN STAY','OCCUPATION','NATIONALITY','NO OF GUESTS','AGE','CONTACT','EMAIL','COMMENTS'];
-    for(var i=0;i<dataarray.length;i++)
-    {
-      var value=dataarray[i];
-      if(value=="" || value==null || value=="SELECT")continue;
-      message += '<body>'+'<table border="1"width="500" >'+'<tr align="left" >'+'<td width=40%>'+head_array[i]+'</td>'+'<td width=60%>'+value+'</td>'+'</tr>'+'</table>'+'</body>';
-    }
-    var emailsubject="UPDATED ERM LEED -"+sysdate;
-    var displayname ='ERM' ;
-    var advancedArgs={cc:ccList,name:displayname,htmlBody:message};
-    MailApp.sendEmail(name,emailsubject,message ,advancedArgs);
-    }
-    if(returnflag==1)
-    { var return_flag='UPDATION';    }else{return_flag="NOTUPDATION";}
-    return return_flag;
-    CERM_SRC_conn.close();
-  }
+  
   //*****************************ERM UPDATION INITIAL LOAD FUNCTION****************************//
   function CERM_SRC_commonvalues()
   {
@@ -276,19 +197,10 @@ try
     return CERM_SRC_RESULTS; 
     CERM_SRC_conn.close()
   }
-  //****************************ERM RECORD DELETE FUNCTION *******************************//
   function CERM_SRC_ERMdeletionrecord(id)
   {
     var CERM_SRC_conn =eilib.db_GetConnection();
-    var CERM_SRC_deletestmt=CERM_SRC_conn.createStatement();
-    var CERM_SRC_deletequery="CALL SP_SINGLE_TABLE_ROW_DELETION(80, "+id+",'"+UserStamp+"',@DELETION_FLAG)";
-    CERM_SRC_deletestmt.execute(CERM_SRC_deletequery);
-    var returnflagresult=CERM_SRC_deletestmt.executeQuery("SELECT @DELETION_FLAG");
-    if(returnflagresult.next())
-    {
-      var returnflag=returnflagresult.getString(1);
-    }
-    returnflagresult.close();
+    var returnflag=eilib.DeleteRecord(CERM_SRC_conn, 80, id)
     if(returnflag==1)
     { var return_flag='DELETION';}else{return_flag="NOTDELETED";}
     return return_flag;
@@ -298,3 +210,108 @@ try
 catch(err)
 {
 }
+//************************************ERM UPDATION PART*********************************//
+function CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occupation,others,nationality,guests,age,contact,mailid,comments,CERM_oldarrayvalue)
+{
+  try
+  {
+    var CERM_SRC_conn =eilib.db_GetConnection();
+    CERM_SRCconn=CERM_SRC_conn;
+    var ERM_SRC_occupation1=occupation;
+    var updatemovedate=movingdate;
+    movingdate=eilib.SqlDateFormat(movingdate)
+    var ERM_nationality=eilib.ConvertSpclCharString(nationality);
+    if(ERM_SRC_occupation1=="OTHERS")
+    {
+      var ERM_SRC_occupation=others;
+    }
+    else
+    {
+      ERM_SRC_occupation=occupation;
+    }
+    if(contact=="")
+    { 
+      contact=null;
+    }
+    
+    if(minimumstay!="")
+    {
+      var mailminstay=minimumstay;
+      minimumstay=eilib.ConvertSpclCharString(minimumstay)  
+    }
+    else
+    {
+      mailminstay= "";  
+    }
+    if(guests!="")
+    {
+      var mailguests=guests;
+      guests=eilib.ConvertSpclCharString(guests)
+    }
+    else
+    {
+      mailguests="";  
+    }
+    if(age!="")
+    {
+      var mailage=age;
+      age=eilib.ConvertSpclCharString(age)
+    }
+    else
+    {
+      mailage="";
+    }
+    var ERM_mailid=mailid.toLowerCase();
+    var Erm_comments=eilib.ConvertSpclCharString(comments);
+    var ERM_SRC_timestamp=Utilities.formatDate(new Date(), TimeZone, 'yyyy-MM-dd hh:mm:ss');
+    var CERM_SRC_updatestmt=CERM_SRC_conn.createStatement();
+    var CERM_SRC_updatequery="CALL SP_ERM_UPDATE('"+ERM_SRC_occupation+"',"+id+",'"+customer+"',"+rent+",'"+movingdate+"','"+minimumstay+"','"+ERM_nationality+"','"+guests+"','"+age+"','"+contact+"','"+ERM_mailid+"','"+Erm_comments+"','"+UserStamp+"',@ERM_SUCCESSFLAG)";
+    CERM_SRC_updatestmt.execute(CERM_SRC_updatequery);
+    var returnflagresult=CERM_SRC_updatestmt.executeQuery("SELECT @ERM_SUCCESSFLAG");
+    if(returnflagresult.next())
+    { var returnflag=returnflagresult.getString(1);}
+    returnflagresult.close();
+    CERM_SRC_updatestmt.close();
+    if(returnflag==1)
+    {
+      var emailids=eilib.getProfileEmailId(CERM_SRC_conn, 'ERM')
+      var name=emailids[0];
+      var ccList=emailids[1];
+      name=name.toString();
+      var username=name.split('@');
+      var mailusername=username[0].toUpperCase();
+      var sysdate=Utilities.formatDate(new Date(), TimeZone, "dd-MM-yyyy")
+      var subject="HELLO "+" <font color='gray'>"+"</font>"+"<font color='#498af3'><b>"+mailusername+"</b> </font>"+"<br>"+" PLEASE FIND ATTACHED UPDATED LEED DETAILS FROM ERM: "+"<br>";
+      var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'</body>';
+      if(ERM_SRC_occupation1=="OTHERS")
+      {
+        var dataarray=[customer,rent,updatemovedate,mailminstay,ERM_SRC_occupation,nationality,mailguests,mailage,contact,ERM_mailid,comments];
+      }
+      else
+      {
+        var dataarray=[customer,rent,updatemovedate,mailminstay,ERM_SRC_occupation,nationality,mailguests,mailage,contact,ERM_mailid,comments];
+      }
+      var head_array=['CUSTOMER NAME','RENT','MOVING DATE','MIN STAY','OCCUPATION','NATIONALITY','NO OF GUESTS','AGE','CONTACT','EMAIL','COMMENTS'];
+      for(var i=0;i<dataarray.length;i++)
+      {
+        var value=dataarray[i];
+        if(value=="" || value==null || value=="SELECT")continue;
+        message += '<body>'+'<table border="1"width="500" >'+'<tr align="left" >'+'<td width=40%>'+head_array[i]+'</td>'+'<td width=60%>'+value+'</td>'+'</tr>'+'</table>'+'</body>';
+      }
+      var emailsubject="UPDATED ERM LEED -"+sysdate;
+      var displayname ='ERM' ;
+      var advancedArgs={cc:ccList,name:displayname,htmlBody:message};
+      MailApp.sendEmail(name,emailsubject,message ,advancedArgs);
+      CERM_SRC_conn.commit();
+    }
+    if(returnflag==1)
+    { var return_flag='UPDATION';    }else{return_flag="NOTUPDATION";}
+    return return_flag;
+    CERM_SRC_conn.close();
+  }
+  catch(err)
+  {
+    CERM_SRCconn.rollback();
+  }
+}
+//****************************ERM RECORD DELETE FUNCTION *******************************//

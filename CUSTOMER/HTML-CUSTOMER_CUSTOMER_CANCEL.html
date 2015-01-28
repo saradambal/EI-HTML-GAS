@@ -1,6 +1,9 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //************************************CUSTOMER CANCEL***********************************************//
+//DONE BY:PUNI
+//VER 1.1-SD:08/10/2014 ED:08/10/2014;TRACKER NO:790;CHANGED PRELOADER N MSGBOX POSITION
 //DONE BY:SAFIYULLAH.M
+//VER 1.0-31/07/2014 ED:04/08/2014;TRACKER NO:790;UPDATED SCRIPT SIDE ROLLBACK AND COMMIT
 //VER 0.09-SD:09/07/2014 ED:10/07/2014;TRACKER NO:790;UPDATED ALIGNMENT AND UPADTED EILIB CALENDER EVENT FUNCTION FOR UNCANCEL
 //VER 0.08-SD:17/06/2014 ED:17/06/2014;TRACKER NO:790;updated CALENDER ERROR MSG AND updated failure msg
 VER 0.07-SD:06/06/2014 ED:06/06/2014;TRACKER NO:770;CHANGED JQUERY LINK
@@ -16,24 +19,38 @@ VER 0.01 - INITIAL VERSION-SD:28/08/2013 ED:13/09/2013;TRACKER NO: 331
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
+$(".preloader").show();
+$('textarea').autogrow({onInitialize: true});
 var CCAN_errorAarray=[];
 google.script.run.withFailureHandler(CCAN_error).withSuccessHandler(CCAN_checkcustomer).CCAN_getcustomer();
 $('#CCAN_radio_cancellist').change(function(){
+var  newPos= adjustPosition($(this).position(),100,260);
+resetPreloader(newPos);
 $(".preloader").show();
 var CCAN_select_type=$('#CCAN_radio_cancellist').val()
 $('#CCAN_tble_unitno').hide();
@@ -52,6 +69,8 @@ $('#CCAN_lbl_title').text("CANCEL CUSTOMER").show();
 google.script.run.withFailureHandler(CCAN_error).withSuccessHandler(CCAN_loadUnitNo).CCAN_getcustomer_details(CCAN_select_type);
 });
 $('#CCAN_radio_uncancellist').change(function(){
+var  newPos= adjustPosition($(this).position(),100,260);
+resetPreloader(newPos);
 $(".preloader").show();
 $('#CCAN_div_cancelform').hide();
 $('#CCAN_lbl_errmsg').hide();
@@ -195,6 +214,10 @@ else{
 var CCAN_err_msg=CCAN_errorAarray[1]+'  &  '+CCAN_errorAarray[3]
 $('#CCAN_form_cancelform').replaceWith('<p><label class="errormsg"> '+CCAN_err_msg+'</label></p>'); 
 }
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //FUNCTION TO LOAD INITIAL VALUES
 var CCAN_all_result=[]
@@ -332,7 +355,9 @@ $('#CCAN_tb_noticeperiod').val(CCAN_customer_details.noticeperiod);
 $('#CCAN_tb_noticedate').val(CCAN_noticedate);$('#CCAN_tb_elect').val(CCAN_customer_details.electricitycap); 
 $('#CCAN_tb_drycleanfee').val(CCAN_customer_details.drycleanfee);$('#CCAN_tb_checkoutcleaningfee').val(CCAN_customer_details.checkoutcleaningfee);
 $('#CCAN_tb_deposit').val(CCAN_customer_details.deposit);$('#CCAN_tb_rent').val(CCAN_customer_details.rental);
-$('#CCAN_tb_processingfee').val(CCAN_customer_details.processingfee);$('#CCAN_ta_comments').val(CCAN_customer_details.comments);
+$('#CCAN_tb_processingfee').val(CCAN_customer_details.processingfee);
+$('#CCAN_ta_comments').height(20);
+$('#CCAN_ta_comments').val(CCAN_customer_details.comments);
 $('#CCAN_tb_companyname').val(CCAN_customer_details.company);
 $('#CCAN_tb_nation').val(CCAN_customer_details.nationality);
 var CCAN_quaterlyfee=CCAN_customer_details.airconquartelyfee
@@ -396,7 +421,7 @@ else if(error=='ScriptError: No item with the given ID could be found, or you do
 error=CCAN_errorAarray[6];
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:error}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:error,position:{top:150,left:500}}});
 }
 }
 }
@@ -419,26 +444,38 @@ $('#CCAN_lbl_unitno').hide();
 google.script.run.withFailureHandler(CCAN_error).withSuccessHandler(CCAN_loadUnitNo).CCAN_getcustomer_details(CCAN_select_type);
 $('#CCAN_lb_selectunit').prop('selectedIndex',0).hide();
 if(CCAN_select_type=="CANCEL CUSTOMER"){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:CCAN_errorAarray[0]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:CCAN_errorAarray[0],position:{top:150,left:500}}});
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:CCAN_errorAarray[4]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:CCAN_errorAarray[4],position:{top:150,left:500}}});
 }
 }
-if(response==0)
+else if(response==0)
 {
 if(CCAN_select_type=="CANCEL CUSTOMER"){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:CCAN_errorAarray[5]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:CCAN_errorAarray[5],position:{top:150,left:500}}});
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:CCAN_errorAarray[5]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:CCAN_errorAarray[5],position:{top:150,left:500}}});
 }
 $('#CCAN_lbl_unitno').show();
 $('#CCAN_lb_selectunit').prop('selectedIndex',0).show();
 }
-if(response=='RESET'){
+else if(response=='RESET'){
 $('#CCAN_lbl_unitno').show();
 $('#CCAN_lb_selectunit').prop('selectedIndex',0).show();
+}
+else{
+if(CCAN_select_type=="CANCEL CUSTOMER"){
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:response,position:{top:150,left:500}}});
+}
+else{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CANCELLATION",msgcontent:response,position:{top:150,left:500}}});
+}
+
+$('#CCAN_lbl_unitno').show();
+$('#CCAN_lb_selectunit').prop('selectedIndex',0).show();
+
 }
 }
 //FUNCTION TO CALL SUBMIT BUTTON

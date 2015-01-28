@@ -1,5 +1,9 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //****************************************USER SEARCH DETAILS*********************************************//
+//DONE BY:PUNI
+//VER 1.1-SD:03/10/2014 ED:03/10/2014,TRACKER NO:683,1.changed html script to hide preloader after menu loads,2.changed messagebx position
+//DONE BY:SARADAMBAL
+//VER 1.0-SD:22/08/2014 ED:22/08/2014,TRACKER NO:683,updated new links
 //DONE BY:LALITHA
 //VER 0.09-SD:14/06/2014 ED:14/06/2014,TRACKER NO:683,Changed failure funct
 //VER 0.08-SD:06/06/2014 ED:06/06/2014,Changed jquery link 

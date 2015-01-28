@@ -1,32 +1,45 @@
-<!--*******************************************FILE DESCRIPTION*********************************************
+<!--//*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************CUSTOMER CREATION UAT*********************************************//
 //DONE BY:PUNITHA
-//VER 0.03-ISSUE:828,COMMENT #8,UPDATED ANOTHER EMAIL PROFILE FOR EMAIL ID LIST -FUNCTION TAKEN FROM EILIB BY PUNI
-//VER 0.02-ISSUE:828,COMMENT #4,TOOK COPY OF LATEST VERSION 1.04 OF CUSTOMER CREATION,REMOVED CAL EVENT CALL FUNCTION BY PUNI
-//VER 0.01-INITIAL VERSION-ISSUE:828,TOOK COPY OF LATEST VERSION 1.03 OF CUSTOMER CREATION,ADDED PREFIX AS UAT,ADDED ONE FUNCTION TO GET UAT CONNECTION N REPLACED CONN FN IN GS BY PUNI
-//*********************************************************************************************************-->
-
+//VER 0.05-SD:09/10/2014,ED:09/10/2014,ISSUE:828,Changed preloader n msgbox position
+//VER 0.04-SD:16/09/2014,ED:16/09/2014,ISSUE:828,COMMENT #12,UPDATED CURRENT VERSION 1.08 OF CC FORM,removed cal event,added email profile to get uat email id,added drop temp table function from eilib,added failure handler in save button click BY PUNI
+//VER 0.03-SD:22/07/2014,ED:22/07/2014,ISSUE:828,COMMENT #8,UPDATED ANOTHER EMAIL PROFILE FOR EMAIL ID LIST -FUNCTION TAKEN FROM EILIB BY PUNI
+//VER 0.02-SD:12/07/2014,ED:12/07/2014,ISSUE:828,COMMENT #4,TOOK COPY OF LATEST VERSION 1.04 OF CUSTOMER CREATION,REMOVED CAL EVENT CALL FUNCTION BY PUNI
+//VER 0.01-SD:25/06/2014,ED:25/06/2014,INITIAL VERSION-ISSUE:828,TOOK COPY OF LATEST VERSION 1.03 OF CUSTOMER CREATION,ADDED PREFIX AS UAT,ADDED ONE FUNCTION TO GET UAT CONNECTION N REPLACED CONN FN IN GS BY PUNI
+//*********************************************************************************************************//
+-->
 <!--HTML TAG START-->
 <html>
 <!--HEAD TAG START-->
 <head>
 <!--TO SUPPORT DATE PICKER CSS-->
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
+$('#UAT_CCRE_ta_comments').autogrow({onInitialize: true});
 $('#customercreation_form').hide();
 $(".preloader").show();
 $("#creationheader").hide()
@@ -153,11 +166,13 @@ $('#UAT_CCRE_errormessagetable').append(emailerrormsg);
 }
 }
 $("#creationheader").show()
-$(".preloader").hide();
+ //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 }
 
 /***************************CUSTOMER FORM SUBMIT BUTTON VALIDATION*******************************/
-$('#customercreation_form').change(function(){
+$(document).on('change blur','#customercreation_form',function(){
 /******POSATAL CODE************/
 var postalcode=$('#UAT_CCRE_tb_companypostalcode').val();
 if(postalcode!=""){if(postalcode.length>=5){var postalflag=1;$('#UAT_CCRE_lbl_postalerrormsg').hide();$('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');}else{postalflag=0;$('#UAT_CCRE_lbl_postalerrormsg').show();$('#UAT_CCRE_tb_companypostalcode').addClass('invalid');}}else{$('#UAT_CCRE_lbl_postalerrormsg').hide();postalflag=1;$('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');}
@@ -248,7 +263,7 @@ if(($("input[name='radio']:checked").val()=='null')||(($("input[name='radio']:ch
 if($("input[name='radio']:checked").val()=='cardnum')
 {
 var UAT_CCRE_cardflag=0;
-for(var card=0;card<UAT_CCRE_cardslbl_array.length;card++)
+for(var card=0;card<UAT_CCRE_cardArray.length;card++)
 {
 if($('#UAT_CCRE_cb_cardlistselect'+card).val()==$("#UAT_CCRE_tb_firstname").val()+" "+$("#UAT_CCRE_tb_lastname").val())
 {
@@ -456,6 +471,7 @@ $('#UAT_CCRE_lb_endselect1').hide();
 });
 /*********************************CALL ROOM TYPE FUNCTION FOR SELECTED UNIT*****************************/
 $('.UAT_CCRE_class_customernamechange').blur(function(){
+$("#UAT_CCRE_db_noticedate").removeAttr("disabled");
 var UAT_CCRE_unit = $('#UAT_CCRE_lb_unitselect').val();
 $('#checkindatelabel').hide();
 $('#UAT_CCRE_db_startdate').hide().val('');
@@ -475,7 +491,9 @@ $("#UAT_CCRE_lb_endselect1")[0].selectedIndex = 0;
 var UAT_CCRE_nullpara="";
 if(UAT_CCRE_unit!="SELECT")
 {
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#UAT_CCRE_lb_unitselect').position(),100,120);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_handleMessageResponse).UAT_CCRE_Roomtype(UAT_CCRE_unit,UAT_CCRE_nullpara);
 }
 else
@@ -508,6 +526,7 @@ changeMonth: true
 
 /**********************ENDDATE VALIDATION***********************************/
 $(".startdatevalidate").change(function(){
+$("#UAT_CCRE_db_noticedate").removeAttr("disabled");
 var startdate=$('#UAT_CCRE_db_startdate').val()
 var currentdate=new Date( Date.parse( FormTableDateFormat(startdate)) )
 if(new Date()<=currentdate){
@@ -518,7 +537,7 @@ var newDate = date.toDateString();
 newDate = new Date( Date.parse( newDate ));                      
 $('#UAT_CCRE_db_enddate').datepicker("option","minDate",newDate);
 var enddateunit=unit_startenddate[1].split('-');
-var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]);
+var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
 $('#UAT_CCRE_db_enddate').datepicker("option","maxDate",unitenddate);
 }
 else
@@ -535,20 +554,18 @@ $('#UAT_CCRE_db_enddate').datepicker("option","maxDate",unitenddate);
 }
 });
 
-/*********************SET CHECKIN DATE AND CHECKOUT DATE*****************************************/
+///*********************SET CHECKIN DATE AND CHECKOUT DATE*****************************************/
 $("#UAT_CCRE_db_startdate").datepicker(
 {
 dateFormat: 'dd-mm-yy',
 changeYear: true,
 changeMonth: true
 });
-/**************************************SET DOB DATEPICKER**************************************/
+///**************************************SET DOB DATEPICKER**************************************/
 var UAT_CCRE_d = new Date();
 var UAT_CCRE_year = UAT_CCRE_d.getFullYear() - 18;
 UAT_CCRE_d.setFullYear(UAT_CCRE_year);
-$('#UAT_CCRE_db_BirthDate').datepicker(
-{
-dateFormat: 'dd-mm-yy',
+$('#UAT_CCRE_db_BirthDate').datepicker({dateFormat: 'dd-mm-yy',
 changeYear: true,
 changeMonth: true,
 yearRange: '1920:' + UAT_CCRE_year + '',
@@ -604,7 +621,7 @@ function FormTableDateFormat(inputdate)
 var string = inputdate.split("-");
 return string[2]+'-'+ string[1]+'-'+string[0];
 }
-$('#UAT_CCRE_db_enddate').change(function()
+$('.noticedate').change(function()
 { 
 var UAT_CCRE_date1 = $('#UAT_CCRE_db_startdate').val();
 var UAT_CCRE_date2 = $('#UAT_CCRE_db_enddate').val();
@@ -613,8 +630,18 @@ if(UAT_CCRE_date2!="")
 var UAT_CCRE_db_chkindate1 = new Date();
 UAT_CCRE_db_chkindate1.setDate( UAT_CCRE_db_chkindate1.getDate() + 1);  
 var UAT_CCRE_db_chkindate1 = UAT_CCRE_db_chkindate1.toDateString(); 
-UAT_CCRE_db_chkindate1 = new Date( Date.parse( UAT_CCRE_db_chkindate1 )); 
+UAT_CCRE_db_chkindate1 = new Date( Date.parse( UAT_CCRE_db_chkindate1 ));
+var UAT_CCRE_db_chkindate = new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1))); 
+var new_UAT_CCRE_db_chkindate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1)));
+UAT_CCRE_db_chkindate.setDate( UAT_CCRE_db_chkindate.getDate() + 1);  
+if(new Date()>UAT_CCRE_db_chkindate)
+{
 $('#UAT_CCRE_db_noticedate').datepicker("option","minDate",UAT_CCRE_db_chkindate1);
+}
+else
+{
+$('#UAT_CCRE_db_noticedate').datepicker("option","minDate",UAT_CCRE_db_chkindate);
+}
 var UAT_CCRE_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date2)) ); 
 UAT_CCRE_db_chkoutdate1.setDate( UAT_CCRE_db_chkoutdate1.getDate()-1);  
 var UAT_CCRE_db_chkoutdate1 = UAT_CCRE_db_chkoutdate1.toDateString(); 
@@ -628,6 +655,26 @@ $('#UAT_CCRE_db_noticedate').datepicker("option","maxDate",UAT_CCRE_db_chkoutdat
 if(new Date(UAT_CCRE_finnoticedate)<=new Date(FormTableDateFormat(UAT_CCRE_date1)))
 {
 $('#UAT_CCRE_db_noticedate').val("");
+}
+if(new Date()< UAT_CCRE_db_chkindate)
+{
+var noticestartdate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1))); 
+}
+else
+{
+noticestartdate=new Date();
+}
+noticestartdate.setDate( noticestartdate.getDate()+1);
+var noticeenddate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date2)));
+var noticestart_date=noticestartdate.getFullYear()+'-'+noticestartdate.getMonth()+'-'+noticestartdate.getDate();
+var noticeend_date=noticeenddate.getFullYear()+'-'+noticeenddate.getMonth()+'-'+noticeenddate.getDate();
+if(noticestart_date==noticeend_date)
+{
+$('#UAT_CCRE_db_noticedate').attr("disabled",'disabled');
+}
+else
+{
+$("#UAT_CCRE_db_noticedate").removeAttr("disabled");
 }
 }
 });
@@ -657,7 +704,9 @@ $("input[name='radio']").on("change", function () {
 var UAT_CCRE_radio_name = $("input[name='radio']:checked").val();
 if(UAT_CCRE_radio_name=='cardnum')
 {
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#UAT_CCRE_lb_unitselect').position(),100,120);
+resetPreloader(newPos);
 var UAT_CCRE_unit = $('#UAT_CCRE_lb_unitselect').val();
 var UAT_CCRE_firstname=$('#UAT_CCRE_tb_firstname').val();
 var UAT_CCRE_lastname=$('#UAT_CCRE_tb_lastname').val();
@@ -833,7 +882,7 @@ $('#proratedvalue').removeAttr("disabled");
 
 /***************************************FUNCTION FOR CARD SELECTIONS***********************************************/
 $(document).on('change','.UAT_CCRE_showlist',function(){
-$(".preloader").show(); 
+$(".preloader").show();
 $('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
 var UAT_CCRE_cardlist=[];
 var f=0;var count=0;var ll=0;
@@ -934,8 +983,8 @@ var UAT_CCRE_fname=$('#UAT_CCRE_tb_firstname').val();
 var UAT_CCRE_lname=$('#UAT_CCRE_tb_lastname').val();
 var UAT_CCRE_cardArray=[];
 var UAT_CCRE_g_array=[];
-UAT_CCRE_cardArray=card[1];
-UAT_CCRE_g_array=card[0]
+UAT_CCRE_cardArray=card[0];
+UAT_CCRE_g_array=card[1]
 var UAT_CCRE_cararray_length=UAT_CCRE_cardArray.length;
 var UAT_CCRE_gcardlen=UAT_CCRE_g_array.length;
 var UAT_CCRE_printarray=[];
@@ -1036,16 +1085,22 @@ $(".preloader").hide();
 if(Conformation==1)
 {
 reset();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[7]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[7],position:$('#UAT_CCRE_btn_savebutton').position()}});
+}
+else if(Conformation==0)
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[18],position:$('#UAT_CCRE_btn_savebutton').position()}});
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[18]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:Conformation,position:$('#UAT_CCRE_btn_savebutton').position()}});
 }
 $(".preloader").hide(); 
 }
 $('#UAT_CCRE_btn_savebutton').click(function(){
 $(".preloader").show();
+var  newPos= adjustPosition($('#UAT_CCRE_btn_savebutton').position(),100,200);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_Conformation).UAT_CCRE_processFormSubmit(document.getElementById('customercreation_form'))
 });
 $('#UAT_CCRE_btn_reset').click(function(){
@@ -1106,7 +1161,6 @@ $('#UAT_CCRE_lbl_processerrormsg').hide();
 $('#UAT_CCRE_lbl_electcaperrormsg').hide();
 $('#UAT_CCRE_lbl_passporterrormsg').hide();
 $('#UAT_CCRE_lbl_epnoerrormsg').hide();
-
 $('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');
 $('#UAT_CCRE_tb_mobile').removeClass('invalid');
 $('#UAT_CCRE_tb_intmobile').removeClass('invalid');
@@ -1125,11 +1179,11 @@ function UAT_CCRE_error_message(UAT_CCRE_err)
 {
 if(UAT_CCRE_err=='TypeError: Cannot call method "createEvent" of undefined.')
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[21]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[21],position:$('#UAT_CCRE_btn_savebutton').position()}});
 }
 else if(UAT_CCRE_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[22]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[22],position:$('#UAT_CCRE_btn_savebutton').position()}});
 }
 else if(UAT_CCRE_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
 {
@@ -1138,7 +1192,7 @@ $('#customercreation_form').replaceWith('<center><label class="dberrormsg">'+UAT
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:UAT_CCRE_err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:UAT_CCRE_err,position:$('#UAT_CCRE_btn_savebutton').position()}});
 }
 $(".preloader").hide();
 }
@@ -1379,7 +1433,7 @@ $("#UAT_CCRE_tb_quarterlyfee").focus();
 <td>
 <table>
 <td>
-<input type="text" name="UAT_CCRE_db_startdate" id="UAT_CCRE_db_startdate" class="prorated startdatevalidate datemandtry" style="width:75px;height:20px" hidden/>
+<input type="text" name="UAT_CCRE_db_startdate" id="UAT_CCRE_db_startdate" class="prorated startdatevalidate datemandtry noticedate" style="width:75px;height:20px" hidden/>
 </td>
 <td>
 <select id='UAT_CCRE_lb_startselect' name="UAT_CCRE_lb_startselect" style="width:75px;height:20px" hidden>
@@ -1405,7 +1459,7 @@ $("#UAT_CCRE_tb_quarterlyfee").focus();
 <table>
 <tr>
 <td>
-<input type="text" name="UAT_CCRE_db_enddate" id="UAT_CCRE_db_enddate" class="passportdatevalidation epdatevalidation prorated datemandtry" style="width:75px;height:20px" hidden/>
+<input type="text" name="UAT_CCRE_db_enddate" id="UAT_CCRE_db_enddate" class="passportdatevalidation epdatevalidation prorated datemandtry noticedate" style="width:75px;height:20px" hidden/>
 </td>
 <td>
 <select id='UAT_CCRE_lb_endselect' name="UAT_CCRE_lb_endselect" style="width:75px;height:20px" hidden>
@@ -1576,7 +1630,7 @@ $("#UAT_CCRE_tb_quarterlyfee").focus();
 <td>
 <label>COMMENTS</label>
 <td>
-<textarea name="UAT_CCRE_ta_comments" id="UAT_CCRE_ta_comments" rows="5" cols="20" style 'width th 2000px;'></textarea>
+<textarea name="UAT_CCRE_ta_comments" id="UAT_CCRE_ta_comments"></textarea>
 </td>
 </tr>
 <table cellspacing="5px">
@@ -1587,7 +1641,7 @@ $("#UAT_CCRE_tb_quarterlyfee").focus();
 <input type="button" class="btn" value="CREATE" id="UAT_CCRE_btn_savebutton" disabled/>
 </td>
 <td>
-<input type="button" class="btn" name="reset" id="UAT_CCRE_btn_reset" onclick="UAT_CCRE_customerreset()" value="RESET"/>
+<input type="button" class="btn" name="reset" id="UAT_CCRE_btn_reset"  value="RESET"/>
 </td>
 </tr>
 </table>

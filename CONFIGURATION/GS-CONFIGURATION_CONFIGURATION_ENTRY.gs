@@ -1,6 +1,9 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************CONFIGURATION ENTRY*********************************************//
+//DONE BY:PUNITHA
+//VER 1.4-SD:03/10/2014 ED:03/10/2014 TRACKER NO;689:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //DONE BY:SARADAMBAL
+//VER 1.3-SD:13/08/2014 ED:13/08/2014 TRACKER NO;689 ;updated new jquery,css links,removed script for getting maximum primary id- SARADAMBAL
 //VER 1.2-SD:09/06/2014 ED:12/06/2014,TRACKER NO:689,implemented script for commit and failure function,add trim function  
 //VER 1.1-SD:07/06/2014 ED:07/06/2014,TRACKER NO:689,updated new drive link
 //VER 1.0-SD:28/05/2014 ED:28/05/2014,TRACKER NO:689,implemented dd amt as 3 digit
@@ -54,19 +57,6 @@ try{
     CONF_ENTRY_conn.close();
     return CONF_ENTRY_types_array;
   }
-  /*--------------------------------------FUNCTION TO CHECK WHETHER THE DATA INSERTED OR NOT---------------------------------------*/
-  function CONF_ENTRY_getmaxprimaryid(CONF_ENTRY_profile_names){
-    var CONF_ENTRY_conn =eilib.db_GetConnection();
-    var CONF_ENTRY_twodim_details=CONF_ENTRY_twodimdata(CONF_ENTRY_profile_names)
-    var CONF_ENTRY_stmt_primaryid = CONF_ENTRY_conn.createStatement();
-    var CONF_ENTRY_select="SELECT MAX("+CONF_ENTRY_twodim_details[0]+") AS PRIMARY_ID FROM "+CONF_ENTRY_twodim_details[1]+"";
-    var CONF_ENTRY_rs_primaryid=CONF_ENTRY_stmt_primaryid.executeQuery(CONF_ENTRY_select);
-    while(CONF_ENTRY_rs_primaryid.next())
-      var CONF_ENTRY_primaryid=CONF_ENTRY_rs_primaryid.getString("PRIMARY_ID");
-    CONF_ENTRY_rs_primaryid.close();CONF_ENTRY_stmt_primaryid.close();
-    CONF_ENTRY_conn.close();
-    return CONF_ENTRY_primaryid;        
-  }
   /*------------------------------------------FUNCTION FOR TWO DIMENSION ARRAY----------------------------------------------*/
   function CONF_ENTRY_twodimdata(CONF_ENTRY_profileName){
     var CONF_ENTRY_twodimen={3:['CCN_ID','CUSTOMER_CONFIGURATION','CCN_DATA','CCN_DATA'],5:['ACN_ID','ACCESS_CONFIGURATION','ACN_DATA'],
@@ -105,7 +95,6 @@ try{
     if(CONF_ENTRY_flag=='CONF_ENTRY_flagsave')
     {   
       CONF_ENTRY_data=eilib.ConvertSpclCharString(CONF_ENTRY_data);
-      var CONF_ENTRY_primaryid_before=CONF_ENTRY_getmaxprimaryid(CONF_ENTRY_profile_names) ;   
       if(CONF_ENTRY_typesid==42)
         var CONF_ENTRY_insert = "INSERT INTO DEPOSIT_DEDUCTION_CONFIGURATION(CGN_ID,DDC_DATA,DDC_SUB_DATA,ULD_ID) VALUES("+CONF_ENTRY_typesid+",'"+CONF_ENTRY_data+"','"+CONF_ENTRY_subtype_dd+"',(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))";
       else
@@ -114,11 +103,7 @@ try{
       CONF_ENTRY_stmt_customer.close();
       CONF_ENTRY_conn.commit();
       CONF_ENTRY_conn.close();
-      var CONF_ENTRY_primaryid_after=CONF_ENTRY_getmaxprimaryid(CONF_ENTRY_profile_names)
-      if(CONF_ENTRY_primaryid_before<CONF_ENTRY_primaryid_after)
-        CONF_ENTRY_arr_data=true;
-      else
-        CONF_ENTRY_arr_data=false;
+      CONF_ENTRY_arr_data=true;
     }     
     return CONF_ENTRY_arr_data;
   }

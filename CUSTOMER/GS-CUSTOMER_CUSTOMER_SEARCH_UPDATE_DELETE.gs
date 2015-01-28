@@ -1,5 +1,14 @@
-//***************************************CUSTOMER SEARCH/UPDATE********************************************//
-//*******************************************FILE DESCRIPTION*********************************************//
+//<!--**********************************CUSTOMER SEARCH/UPDATE/DELETE ***********************************************************************//-->
+//<!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY PUNI
+//VER 2.1-SD:08/10/2014 ED:08/10/2014,TRACKER NO:833-Corrected proloader and message box position.
+//DONE BY KUMAR
+//VER 2.00-SD:06/10/2014 ED:06/10/2014,TRACKER NO:833-updated proloader and message box position.
+//VER 1.09-SD:13/09/2014 ED:13/09/2014,TRACKER NO:776-Did notice period validation.
+//VER 1.08- SD:02/09/2014 ED:02/09/2014,TRACKER NO:776-Cleared tracker 776 comments 85 all issues.
+//VER 1.07- SD:11/08/2014 ED:11/08/2014,TRACKER NO:776-implemented rollback and commit comment in script side and updated new jquery links.
+//VER 1.06-SD:06-08-2014 ED:06/08/2014,TRACKER NO:776,updated terminated customer notice period date readoly format and lp and quarter as null when sd and ed both are equal or sd>ed
+//VER 1.05-SD:25/07/2014 ED:25/07/2014,TRACKER NO:776,Cleared customer fee details updation issue and changed html header name and cleared intl mobile button not enable issue.
 //VER 1.04-SD:17/07/2014 ED:17/07/2014,TRACKER NO:776,cleared tickler company details updation issue and entry details old value empty issue.
 //VER 1.03-SD:12/07/2014 ED:12/07/2014,TRACKER NO:776,cleared checkin and checkout datepicker issue and tickler table issues html fields updated orderly.
 //VER 1.02-SD:25/06/2014 ED:25/06/2014,TRACKER NO:776,Did epdate and passport validation and implemented conn failure message.
@@ -10,13 +19,33 @@
 //VER 0.07-SD:02/05/2014 ED:06/05/2014 TRACKER NO 776,Cleared comment 11,12,15  all issues and delivered.
 //VER 0.06-SD:21/04/2014 ED:22/04/2014 TRACKER NO 776,changed table name and Restricted DP manual inputs and added preterminated customer conditions.
 //VER 0.05-SD:26/03/2014 ED:26/03/2014 TRACKER NO 776,Cleared all issues and DP manual i/p restricted using class and did passport and ep no validation.
-//VER 0.04-SD:09/03/2014 ED:11/03/2014 TRACKER NO 711,Changed ULD_id and removed repeated queries and used common array 
+//VER 0.04-SD:09/03/2014 ED:11/03/2014 TRACKER NO 711,Changed ULD_id and removed repeated queries and used common array
 //VER 0.03-SD:01/02/2014 ED:12/02/2014 TRACKER NO 711,Did all corrections and merged all temp table sp in single and added customer delete option.
 //VER 0.02-ED:12/01/2014 TRACKER NO:307 ,DID header fixation
 //VER 0.01-INITIAL VERSION- SD:28/10/2013 ED:,TRACKER NO:307
 //*********************************************************************************************************//
 try
 {
+  /////////////FUNCTION TO CALCULATE PRORATED BASED ON STARTDATE AND ENDDATE////////////////////
+  var CSRCcustomer_id;
+  var CSRCcedrecver;
+  var CSRCcalendarname;
+  var CSRCcheckstatusflag;
+  var CSRC_expconn;
+  var CSRCcalendarname;
+  var CSRCfirstname;
+  var CSRClastname;
+  var CSRCmobile;
+  var CSRCintmobile;
+  var CSRCoffice;
+  var CSRCmailid;
+  var CSRCUnit;
+  var CSRCRoomtype;
+  var beforedelcalevents;
+  var beforecreatecalevents;
+  var afterdelcalevents;
+  var aftercreatecalevents;
+  var CSRC_TEMPtable;
   /////////////FUNCTION TO CALCULATE PRORATED BASED ON STARTDATE AND ENDDATE////////////////////
   function CSRC_prorated(CSRC_startdate,CSRC_enddate)
   {
@@ -252,7 +281,7 @@ try
     {
       table_header=CSRC_customerid1;
       var temptablequery="CALL SP_CUSTOMER_SEARCH_TEMP_TABLE("+CSRC_customerid1+","+null+","+CSRC_searchoption+",'"+UserStamp+"',@TABLENAME)";
-      var CSRC_customerflextable_query="SELECT DISTINCT CTD.CLP_TERMINATE,CED.CED_PRORATED,CED.CED_PRETERMINATE,U.UNIT_NO,C.CUSTOMER_ID,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,CCD.CCD_COMPANY_NAME,CCD.CCD_COMPANY_ADDR,CCD.CCD_POSTAL_CODE,CCD.CCD_OFFICE_NO,CED.UASD_ID,CED.CED_REC_VER,CED.CED_SD_STIME,CED.CED_SD_ETIME,CED.CED_ED_STIME,CED.CED_ED_ETIME,CED.CED_LEASE_PERIOD,CED.CED_QUARTERS,CED.CED_RECHECKIN,CED.CED_EXTENSION,CED.CED_PROCESSING_WAIVED,CED.CED_PRETERMINATE,CED.CED_NOTICE_PERIOD,CED.CED_NOTICE_START_DATE,CED.CED_CANCEL_DATE,CF.CC_DEPOSIT,CF.CC_PAYMENT_AMOUNT,CF.CC_DEPOSIT,CF.CC_ELECTRICITY_CAP,CF.CC_AIRCON_FIXED_FEE,CF.CC_AIRCON_QUARTERLY_FEE,CF.CC_DRYCLEAN_FEE,CF.CC_PROCESSING_FEE,CF.CC_CHECKOUT_CLEANING_FEE,CTD.CLP_STARTDATE,CTD.CLP_ENDDATE,CTD.CLP_TERMINATE,CTD.CLP_PRETERMINATE_DATE,CTD.CLP_GUEST_CARD,UASD.UASD_ACCESS_CARD,NC.NC_DATA,CPD.CPD_MOBILE,CPD.CPD_INTL_MOBILE,CPD.CPD_EMAIL,CPD.CPD_PASSPORT_NO,CPD.CPD_PASSPORT_DATE,CPD.CPD_EP_NO,CPD.CPD_EP_DATE,CPD.CPD_DOB,CPD.CPD_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(CTD.CLP_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS CTD_TIME_STAMP FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD on CED.CUSTOMER_ID=CCD.CUSTOMER_ID left join CUSTOMER_LP_DETAILS CTD on CED.CUSTOMER_ID=CTD.CUSTOMER_ID left join CUSTOMER_ACCESS_CARD_DETAILS CACD on CED.CUSTOMER_ID=CACD.CUSTOMER_ID and (CTD.UASD_ID=CACD.UASD_ID)left join UNIT_ACCESS_STAMP_DETAILS UASD on  (UASD.UASD_ID=CACD.UASD_ID) left join TEMP_CUSTOMER_SEARCH_FEE_DETAIL CF on  CED.CUSTOMER_ID=CF.CUSTOMER_ID left join CUSTOMER C on CED.CUSTOMER_ID=C.CUSTOMER_ID left join  CUSTOMER_PERSONAL_DETAILS CPD on CED.CUSTOMER_ID=CPD.CUSTOMER_ID ,NATIONALITY_CONFIGURATION NC ,UNIT U,USER_LOGIN_DETAILS ULD  where CPD.CPD_INTL_MOBILE='"+CSRC_customerid1+"' AND (CED.UNIT_ID=U.UNIT_ID) and(CPD.NC_ID=NC.NC_ID) and  (CED.CED_REC_VER=CF.CUSTOMER_VER) AND CED.CED_REC_VER=CTD.CED_REC_VER  AND ULD.ULD_ID=CTD.ULD_ID order by C.CUSTOMER_ID,CED.CED_REC_VER,CACD.CACD_GUEST_CARD";
+      var CSRC_customerflextable_query="SELECT DISTINCT CTD.CLP_TERMINATE,CED.CED_PRORATED,CED.CED_PRETERMINATE,U.UNIT_NO,C.CUSTOMER_ID,C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,CCD.CCD_COMPANY_NAME,CCD.CCD_COMPANY_ADDR,CCD.CCD_POSTAL_CODE,CCD.CCD_OFFICE_NO,CED.UASD_ID,CED.CED_REC_VER,CED.CED_SD_STIME,CED.CED_SD_ETIME,CED.CED_ED_STIME,CED.CED_ED_ETIME,CED.CED_LEASE_PERIOD,CED.CED_QUARTERS,CED.CED_RECHECKIN,CED.CED_EXTENSION,CED.CED_PROCESSING_WAIVED,CED.CED_PRETERMINATE,CED.CED_NOTICE_PERIOD,CED.CED_NOTICE_START_DATE,CED.CED_CANCEL_DATE,CF.CC_DEPOSIT,CF.CC_PAYMENT_AMOUNT,CF.CC_DEPOSIT,CF.CC_ELECTRICITY_CAP,CF.CC_AIRCON_FIXED_FEE,CF.CC_AIRCON_QUARTERLY_FEE,CF.CC_DRYCLEAN_FEE,CF.CC_PROCESSING_FEE,CF.CC_CHECKOUT_CLEANING_FEE,CTD.CLP_STARTDATE,CTD.CLP_ENDDATE,CTD.CLP_TERMINATE,CTD.CLP_PRETERMINATE_DATE,CTD.CLP_GUEST_CARD,UASD.UASD_ACCESS_CARD,NC.NC_DATA,CPD.CPD_MOBILE,CPD.CPD_INTL_MOBILE,CPD.CPD_EMAIL,CPD.CPD_PASSPORT_NO,CPD.CPD_PASSPORT_DATE,CPD.CPD_EP_NO,CPD.CPD_EP_DATE,CPD.CPD_DOB,CPD.CPD_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(CTD.CLP_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS CTD_TIME_STAMP FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD on CED.CUSTOMER_ID=CCD.CUSTOMER_ID left join CUSTOMER_LP_DETAILS CTD on CED.CUSTOMER_ID=CTD.CUSTOMER_ID left join CUSTOMER_ACCESS_CARD_DETAILS CACD on CED.CUSTOMER_ID=CACD.CUSTOMER_ID and (CTD.UASD_ID=CACD.UASD_ID)left join UNIT_ACCESS_STAMP_DETAILS UASD on  (UASD.UASD_ID=CACD.UASD_ID) left join TEMP_CUSTOMER_SEARCH_FEE_DETAIL CF on  CED.CUSTOMER_ID=CF.CUSTOMER_ID left join CUSTOMER C on CED.CUSTOMER_ID=C.CUSTOMER_ID left join  CUSTOMER_PERSONAL_DETAILS CPD on CED.CUSTOMER_ID=CPD.CUSTOMER_ID ,NATIONALITY_CONFIGURATION NC ,UNIT U,USER_LOGIN_DETAILS ULD  where CPD.CPD_INTL_MOBILE='"+CSRC_customerid1+"' AND (CED.UNIT_ID=U.UNIT_ID) and(CPD.NC_ID=NC.NC_ID) and  (CED.CED_REC_VER=CF.CUSTOMER_REC_VER) AND CED.CED_REC_VER=CTD.CED_REC_VER  AND ULD.ULD_ID=CTD.ULD_ID order by C.CUSTOMER_ID,CED.CED_REC_VER,CACD.CACD_GUEST_CARD";
     }
     if(CSRC_searchoption==33)
     {
@@ -502,7 +531,7 @@ try
       var CSRC_canceldate = CSRC_ctust_rs.getString("CED_CANCEL_DATE");
       if(CSRC_canceldate == null){CSRC_canceldate = ""}
       var CSRC_comments = CSRC_ctust_rs.getString("CPD_COMMENTS");
-      if(CSRC_comments == null){CSRC_comments = ""}
+      if(CSRC_comments == null){var t_comments="";CSRC_comments = "";}else{t_comments=eilib.ConvertSpclCharString(CSRC_comments);}
       var CSRC_QUARTERS=CSRC_ctust_rs.getString("CED_QUARTERS");
       var CSRC_userstamp = CSRC_ctust_rs.getString("ULD_LOGINID");
       var CSRC_timestamp = CSRC_ctust_rs.getString("CLP_TIMESTAMP"); 
@@ -593,18 +622,20 @@ try
     var unitexpcheck=CSRC_conn.createStatement();
     var unitexpcheckquery="SELECT * FROM EXPENSE_UNIT WHERE CUSTOMER_ID="+CSRC_customerid+" AND UNIT_ID=(SELECT UNIT_ID FROM UNIT WHERE UNIT_NO="+CSRC_unit+") LIMIT 1";
     var unitexpcheckresult=unitexpcheck.executeQuery(unitexpcheckquery);
+    var unitexpflag=0;
     if(unitexpcheckresult.next())
     {
-      var unitexpflag=1;
+      unitexpflag=1;
     }
     unitexpcheckresult.close();
     unitexpcheck.close();
     var paymentcheck=CSRC_conn.createStatement();
     var paymentquery="SELECT * FROM PAYMENT_DETAILS WHERE CUSTOMER_ID="+CSRC_customerid+" AND UNIT_ID=(SELECT UNIT_ID FROM UNIT WHERE UNIT_NO="+CSRC_unit+") LIMIT 1";
     var paymentcheckresult=paymentcheck.executeQuery(paymentquery);
+    var paymentexpflag=0;
     if(paymentcheckresult.next())
     {
-      var paymentexpflag=1;
+      paymentexpflag=1;
     }
     paymentcheckresult.close();
     paymentcheck.close();
@@ -634,7 +665,7 @@ try
     var userProperties_entry = PropertiesService.getUserProperties();
     userProperties_entry.setProperty("ENTRY", entrynewrecords);
     var update_nation=eilib.ConvertSpclCharString(CSRC_nationality)
-    var personalnewrecords=update_nation+'^'+mobile+'^'+mobile1+'^'+CSRC_email+'^'+passportno+'^'+CSRC_passportdate+'^'+CSRC_dob+'^'+CSRC_epno+'^'+CSRC_epdate+'^'+CSRC_comments;
+    var personalnewrecords=update_nation+'^'+mobile+'^'+mobile1+'^'+CSRC_email+'^'+passportno+'^'+CSRC_passportdate+'^'+CSRC_dob+'^'+CSRC_epno+'^'+CSRC_epdate+'^'+t_comments;
     var userProperties_personal = PropertiesService.getUserProperties();
     userProperties_personal.setProperty("PERSONAL", personalnewrecords);
     var paymentnewrecords=CSRC_rental+','+CSRC_deposit+','+processingfee+','+airconfixedfee+','+electricity+','+drycleanfee+','+airconquartelyfee+','+checkoutcleaningfee;
@@ -645,9 +676,17 @@ try
     return return_array;
     CSRC_conn.close();
   }
-  function CSRC_customer_update_getvalues(CSRC_updation)
+}
+catch(err)
+{
+}
+function CSRC_customer_update_getvalues(CSRC_updation)
+{
+  try
   {
-    var CSRC_conn =eilib.db_GetConnection();  
+    var CSRC_conn =eilib.db_GetConnection();
+    CSRC_expconn=CSRC_conn;
+    CSRC_conn.setAutoCommit(false);
     var CSRC_customerid=CSRC_updation.CSRC_tb_custid;
     var CSRC_cutomerrecver=CSRC_updation.CSRC_tb_recver;
     var CSRC_unit=CSRC_updation.CCRE_tempunittextbox;
@@ -655,18 +694,6 @@ try
     var CSRC_lastname=CSRC_updation.CSRC_tb_lastname;
     var CSRC_name=CSRC_firstname+' '+CSRC_lastname;
     var CSRC_customermailid=CSRC_updation.CSRC_tb_custmailid;
-    /*****************CALENDAR EVENTS BEFORE UPDATION*************************/
-    var CSRC_calbeforeeventstmt=CSRC_conn.createStatement();
-    var CSRC_calbeforeupdatequery="CALL SP_CUSTOMER_SEARCH_CALENDAR_CREATION_DELETION("+CSRC_customerid+",'"+UserStamp+"',@TEMP_CALENDAR_LIST)";
-    CSRC_calbeforeeventstmt.execute(CSRC_calbeforeupdatequery);
-    var CSRC_calbeforeupdatetableresult=CSRC_calbeforeeventstmt.executeQuery("SELECT @TEMP_CALENDAR_LIST");
-    if(CSRC_calbeforeupdatetableresult.next())
-    {
-      var CSRC_beforetable=CSRC_calbeforeupdatetableresult.getString(1);
-    }
-    CSRC_calbeforeupdatetableresult.close();
-    CSRC_calbeforeeventstmt.close();
-    /******************END CALENDAR EVENTS BEFORE UPDATION********************/
     var CSRC_dateofbirth=CSRC_updation.CSRC_db_BirthDate;
     if(CSRC_dateofbirth=="")
     {    CSRC_dateofbirth=null;var dob="";  }else{dob=CSRC_dateofbirth;CSRC_dateofbirth="'"+eilib.SqlDateFormat(CSRC_dateofbirth)+"'";}
@@ -708,7 +735,7 @@ try
     var CSRC_noticeno=CSRC_updation.CSRC_tb_noticeno;
     if(CSRC_noticeno=="")
     {    CSRC_noticeno=null;var noticeno="";}else{noticeno=CSRC_noticeno;CSRC_noticeno="'"+CSRC_noticeno+"'"}
-    var CSRC_noticedate=CSRC_updation.CSRC_db_noticedate;
+    var CSRC_noticedate=CSRC_updation.temp_CSRC_db_noticedate;
     if(CSRC_noticedate=="" || CSRC_noticedate==undefined || CSRC_noticedate==null)
     {    CSRC_noticedate=null;var noticedate="";  }else{noticedate=CSRC_noticedate;CSRC_noticedate="'"+eilib.SqlDateFormat(CSRC_noticedate)+"'";}
     var CSRC_quarterlyfee=CSRC_updation.CSRC_tb_quarterlyfee;
@@ -740,6 +767,7 @@ try
     if(CSRC_comments!="")
     {
       CSRC_comments=eilib.ConvertSpclCharString(CSRC_comments);
+      tick_comments=CSRC_comments;
     }
     var CSRC_userstamp=Session.getActiveUser();
     var timestmt=CSRC_conn.createStatement();
@@ -816,10 +844,21 @@ try
     var CSRC_tempenddate=CSRC_updation.CSRC_db_tempenddate;
     var CSRC_sdate=CSRC_tempstartdate.split('-');
     var CSRC_edate=CSRC_tempenddate.split('-');
-    var startdate_CSRC=new Date(CSRC_sdate[2],parseInt(CSRC_sdate[1])-1,CSRC_sdate[0]);
-    var enddate_CSRC=new Date(CSRC_edate[2],parseInt(CSRC_edate[1])-1,CSRC_edate[0]);
-    var CSRC_quators  = eilib.quarterCalc(new Date(CSRC_sdate[2],CSRC_sdate[1]-1,CSRC_sdate[0]),new Date(CSRC_edate[2],CSRC_edate[1]-1,CSRC_edate[0])); 
-    var CSRC_Leaseperiod  = eilib.leasePeriodCalc(new Date(CSRC_sdate[2],CSRC_sdate[1]-1,CSRC_sdate[0]),new Date(CSRC_edate[2],CSRC_edate[1]-1,CSRC_edate[0]));
+    var startdate_CSRC=new Date(CSRC_sdate[2],CSRC_sdate[1]-1,CSRC_sdate[0]);
+    var enddate_CSRC=new Date(CSRC_edate[2],CSRC_edate[1]-1,CSRC_edate[0]);
+    if(startdate_CSRC<enddate_CSRC)
+    {
+      var CSRC_quators  = eilib.quarterCalc(new Date(CSRC_sdate[2],CSRC_sdate[1]-1,CSRC_sdate[0]),new Date(CSRC_edate[2],CSRC_edate[1]-1,CSRC_edate[0])); 
+      var CSRC_Leaseperiod  = eilib.leasePeriodCalc(new Date(CSRC_sdate[2],CSRC_sdate[1]-1,CSRC_sdate[0]),new Date(CSRC_edate[2],CSRC_edate[1]-1,CSRC_edate[0]));
+      var T_CSRC_Leaseperiod=CSRC_Leaseperiod;
+      CSRC_Leaseperiod="'"+CSRC_Leaseperiod+"'";
+    }
+    else
+    {
+      CSRC_quators=null;
+      CSRC_Leaseperiod=null;
+      T_CSRC_Leaseperiod='';
+    }
     var CSRC_Customerstartdate=[];
     var CSRC_Customerenddate=[];
     var cardstartandendatestmt=CSRC_conn.createStatement();
@@ -915,13 +954,27 @@ try
     var paymentoldrecords = userPropertiespayment.getProperty('PAYMENT');
     var customernewrecords=CSRC_firstname+','+CSRC_lastname;
     var companynewrecords=CSRC_compname+','+companyadd+','+postalcode+','+office;
-    var entrynewrecords=CSRC_unit+'@'+CSRC_roomtype+'@'+CSRC_startdate_starttime+'@'+CSRC_startdate_endtime+'@'+CSRC_enddate_starttime+'@'+CSRC_enddate_endtime+'@'+CSRC_Leaseperiod+'@'+CSRC_quators+'@'+noticeno+'@'+noticedate+'@'+tickprocess+'@'+tickprorated;
+    var entrynewrecords=CSRC_unit+'@'+CSRC_roomtype+'@'+CSRC_startdate_starttime+'@'+CSRC_startdate_endtime+'@'+CSRC_enddate_starttime+'@'+CSRC_enddate_endtime+'@'+T_CSRC_Leaseperiod+'@'+CSRC_quators+'@'+noticeno+'@'+noticedate+'@'+tickprocess+'@'+tickprorated;
     var personalnewrecords=update_nation+'^'+mobile+'^'+intlmobile+'^'+CSRC_customermailid+'^'+passportno+'^'+passportdate+'^'+dob+'^'+epno+'^'+epdate+'^'+tick_comments;
     var paymentnewrecords=CSRC_rent+','+CSRCdeposit+','+CSRCprocess+','+CSRCairconfixed+','+CSRCelectricity+','+CSRCdrycleaning+','+CSRCquarterlyfee+','+CSRCcleaning;
     var terminationnewrecords=CSRC_startdate+','+CSRC_enddate;
+    var calenderIDcode=eilib.CUST_getCalenderId(CSRC_conn);
+    CSRCcalendarname=calenderIDcode;
+    CSRCfirstname=CSRC_firstname;
+    CSRClastname=CSRC_lastname;
+    CSRCmobile=CSRC_mobile;
+    CSRCintmobile=CSRC_intmobile;
+    CSRCoffice=CSRC_office;
+    CSRCmailid=CSRC_customermailid;
+    CSRCUnit=CSRC_unit;
+    CSRCRoomtype=CSRC_roomtype;
+    var deleteevents=CAL_DEL_CREATE(CSRC_conn,CSRC_customerid,'DELETE');
+    beforedelcalevents=deleteevents[0];
+    beforecreatecalevents=deleteevents[1];
     var CSRC_customerstmt=CSRC_conn.createStatement();
-    var CSRC_customer_updatequery="CALL SP_CUSTOMER_SEARCH_UPDATE("+CSRC_customerid+",'"+CSRC_firstname+"','"+CSRC_lastname+"',"+CSRC_companyname+","+CSRC_companyaddress+","+CSRC_companypostalcode+","+CSRC_office+","+CSRC_unit+","+CSRC_cutomerrecver+",'"+CSRC_roomtype+"','"+CSRC_startdate_starttime+"','"+CSRC_startdate_endtime+"','"+CSRC_enddate_starttime+"','"+CSRC_enddate_endtime+"','"+CSRC_Leaseperiod+"',"+CSRC_quators+","+CSRC_process_check+","+CSRC_prorated+","+CSRC_noticeno+","+CSRC_noticedate+","+CSRC_rent+","+CSRC_deposit+","+CSRC_process+","+CSRC_airconfixed+","+CSRC_quarterlyfee+","+CSRC_electricity+","+CSRC_drycleaning+","+CSRC_cleaning+",'"+UserStamp+"','"+eilib.SqlDateFormat(CSRC_tempstartdate)+"','"+eilib.SqlDateFormat(CSRC_tempenddate)+"','"+update_nation+"',"+CSRC_mobile+","+CSRC_intmobile+",'"+CSRC_customermailid+"',"+CSRC_passportno+","+CSRC_passportdate+","+CSRC_dateofbirth+","+CSRC_epno+","+CSRC_epdate+",'"+CSRC_comments+"',"+accesscardtilldate+","+accesscardstartenddate+",@SUCCESS_FLAG)";
+    var CSRC_customer_updatequery="CALL SP_CUSTOMER_SEARCH_UPDATE("+CSRC_customerid+",'"+CSRC_firstname+"','"+CSRC_lastname+"',"+CSRC_companyname+","+CSRC_companyaddress+","+CSRC_companypostalcode+","+CSRC_office+","+CSRC_unit+","+CSRC_cutomerrecver+",'"+CSRC_roomtype+"','"+CSRC_startdate_starttime+"','"+CSRC_startdate_endtime+"','"+CSRC_enddate_starttime+"','"+CSRC_enddate_endtime+"',"+CSRC_Leaseperiod+","+CSRC_quators+","+CSRC_process_check+","+CSRC_prorated+","+CSRC_noticeno+","+CSRC_noticedate+","+CSRC_rent+","+CSRC_deposit+","+CSRC_process+","+CSRC_airconfixed+","+CSRC_quarterlyfee+","+CSRC_electricity+","+CSRC_cleaning+","+CSRC_drycleaning+",'"+UserStamp+"','"+eilib.SqlDateFormat(CSRC_tempstartdate)+"','"+eilib.SqlDateFormat(CSRC_tempenddate)+"','"+update_nation+"',"+CSRC_mobile+","+CSRC_intmobile+",'"+CSRC_customermailid+"',"+CSRC_passportno+","+CSRC_passportdate+","+CSRC_dateofbirth+","+CSRC_epno+","+CSRC_epdate+",'"+CSRC_comments+"',"+accesscardtilldate+","+accesscardstartenddate+",@SUCCESS_FLAG)";
     CSRC_customerstmt.execute(CSRC_customer_updatequery);
+    CSRC_customerstmt.execute("CALL SP_CUSTOMER_TICKLER_UPDATE("+CSRC_customerid+","+CSRC_cutomerrecver+",'"+customeroldrecords+"','"+customernewrecords+"','"+companyoldrecords+"','"+companynewrecords+"','"+personaloldrecords+"','"+personalnewrecords+"','"+entryoldrecords+"','"+entrynewrecords+"','"+paymentoldrecords+"','"+paymentnewrecords+"','"+oldaccesscardstartenddate+"','"+newaccesscardstartenddate+"','"+UserStamp+"','"+olduserstamp+"','"+oldtimestamp+"')");
     var customerupdate_getresult= CSRC_customerstmt.executeQuery("SELECT @SUCCESS_FLAG");
     while(customerupdate_getresult.next())
     {
@@ -930,26 +983,13 @@ try
     CSRC_customerstmt.close();
     if(EMP_ENTRY_getresultdate==1)
     {
-      var CSRC_custtickstmt=CSRC_conn.createStatement();
-      CSRC_custtickstmt.execute("CALL SP_CUSTOMER_TICKLER_UPDATE("+CSRC_customerid+","+CSRC_cutomerrecver+",'"+customeroldrecords+"','"+customernewrecords+"','"+companyoldrecords+"','"+companynewrecords+"','"+personaloldrecords+"','"+personalnewrecords+"','"+entryoldrecords+"','"+entrynewrecords+"','"+paymentoldrecords+"','"+paymentnewrecords+"','"+oldaccesscardstartenddate+"','"+newaccesscardstartenddate+"','"+UserStamp+"','"+olduserstamp+"','"+oldtimestamp+"')");
-      
-      /*****************CALENDAR EVENTS AFTER UPDATION*************************/
-      var CSRC_calaftereventstmt=CSRC_conn.createStatement();
-      var CSRC_calafterupdatequery="CALL SP_CUSTOMER_SEARCH_CALENDAR_CREATION_DELETION("+CSRC_customerid+",'"+UserStamp+"',@TEMP_CALENDAR_LIST)";
-      CSRC_calaftereventstmt.execute(CSRC_calafterupdatequery);
-      var CSRC_calafterupdatetableresult=CSRC_calaftereventstmt.executeQuery("SELECT @TEMP_CALENDAR_LIST");
-      if(CSRC_calafterupdatetableresult.next())
-      {
-        var CSRC_aftertable=CSRC_calafterupdatetableresult.getString(1);
-      }
-      CSRC_calafterupdatetableresult.close();
-      CSRC_calaftereventstmt.close();
-      /******************END CALENDAR EVENTS AFTER UPDATION********************/
-      
+      CSRCcustomer_id=CSRC_customerid;
+      CSRCcedrecver=CSRC_cutomerrecver;
       var CSRC_customername=CSRC_firstname+' '+CSRC_lastname;
-      var calenderIDcode=eilib.CUST_getCalenderId(CSRC_conn);
-      CUST_customercalenderdeletion(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_beforetable);
-      CUST_customercalendercreation(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_firstname, CSRC_lastname, CSRC_mobile, CSRC_intmobile, CSRC_office, CSRC_customermailid, CSRC_unit,CSRC_roomtype,CSRC_aftertable)
+      var createevents=CAL_DEL_CREATE(CSRC_conn,CSRC_customerid,'CREATE');
+      afterdelcalevents=createevents[0];
+      aftercreatecalevents=createevents[1];
+      CSRCcheckstatusflag==1
       if(CSRC_ccoption==4 || CSRC_ccoption==5 || CSRC_ccoption==6)
       {
         var cust_config_array=eilib.CUST_invoice_contractreplacetext(CSRC_conn);
@@ -979,14 +1019,42 @@ try
           eilib.CUST_invoicecontractmail(CSRC_conn,CSRC_unit,CSRC_invoiceid,eilib.SqlDateFormat(CSRC_tempstartdate),eilib.SqlDateFormat(CSRC_tempenddate),CSRC_compname,CSRC_customername,CSRC_invoicesno,CSRC_invoicedate,noticeno,passportno,passportdate,epno,epdate,noticedate,CSRC_Leaseperiod,cardno,CSRC_rent,CSRC_quarterlyfee,CSRC_airconfixed,CSRC_electricity,CSRC_drycleaning,CSRC_cleaning,CSRC_process,CSRC_deposit,waived,CSRC_roomtype,Folderid,rentcheck,CSRC_docowner,CSRC_mailid,'CREATION',CSRC_customerid)
         }
       }
+      CUST_customercalenderdeletion(CSRC_customerid,calenderIDcode,beforedelcalevents);
+      CUST_customercalendercreation(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_firstname, CSRC_lastname, mobile, intlmobile,office, CSRC_customermailid, CSRC_unit,CSRC_roomtype,aftercreatecalevents)
     }
+    CSRC_conn.commit();
     return EMP_ENTRY_getresultdate;
     CSRC_conn.close();
   }
-  
-  function CSRC_customerrecord_delete(CSRC_customerid)
+  catch(err)
+  {
+    Logger.log("SCRIPT EXCEPTION:"+err)
+    CSRC_expconn.rollback();
+    if(afterdelcalevents!=undefined && beforecreatecalevents!=undefined)
+    {
+      CUST_customercalenderdeletion(CSRC_customerid,calenderIDcode,afterdelcalevents);
+      CUST_customercalendercreation(CSRC_expconn,CSRC_customerid, calenderIDcode,CSRC_firstname, CSRC_lastname, mobile, intlmobile,office, CSRC_customermailid, CSRC_unit,CSRC_roomtype,beforecreatecalevents)
+    }
+    var invoice=eilib.invoiceid();
+    var contract=eilib.contractid();
+    if(invoice!=undefined)
+    {
+      eilib.CUST_UNSHARE_FILE(invoice);
+    }
+    if(contract!=undefined)
+    {
+      eilib.CUST_UNSHARE_FILE(contract);
+    }
+    return (Logger.getLog());
+  }
+}
+
+function CSRC_customerrecord_delete(CSRC_customerid)
+{
+  try
   {
     var CSRC_conn =eilib.db_GetConnection();
+    CSRC_expconn=CSRC_conn;
     var calender_deletestmt=CSRC_conn.createStatement();
     var calender_deletequery="SELECT CTD.CLP_STARTDATE,CTD.CLP_ENDDATE,CTPA.CTP_DATA AS CED_SD_STIME, CTPB.CTP_DATA AS CED_SD_ETIME,CTPC.CTP_DATA AS CED_ED_STIME, CTPD.CTP_DATA AS CED_ED_ETIME FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_TIME_PROFILE CTPA ON CED.CED_SD_STIME = CTPA.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE CTPB ON CED.CED_SD_ETIME = CTPB.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE CTPC ON CED.CED_ED_STIME = CTPC.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE CTPD ON CED.CED_ED_ETIME = CTPD.CTP_ID,CUSTOMER_LP_DETAILS CTD WHERE CED.CUSTOMER_ID=CTD.CUSTOMER_ID AND CED.CUSTOMER_ID="+CSRC_customerid+""; 
     var calender_deleteresult=calender_deletestmt.executeQuery(calender_deletequery);
@@ -1002,12 +1070,13 @@ try
     calender_deleteresult.close();
     calender_deletestmt.close();
     var customersearch_tick_stmt=CSRC_conn.createStatement();
-    var customersearch_tick_query="CALL SP_CUSTOMER_SEARCH_TICKLER_DELETION("+CSRC_customerid+",'"+UserStamp+"',@FLAG)";
+    var customersearch_tick_query="CALL SP_CUSTOMER_SEARCH_TICKLER_DELETION("+CSRC_customerid+",'"+UserStamp+"',@CUSTOMER_SEARCH_DELETION,@FLAG)";
     customersearch_tick_stmt.execute(customersearch_tick_query);
-    var customerdelete_getresult= customersearch_tick_stmt.executeQuery("SELECT @FLAG");
+    var customerdelete_getresult= customersearch_tick_stmt.executeQuery("SELECT @CUSTOMER_SEARCH_DELETION,@FLAG");
     while(customerdelete_getresult.next())
     {
       var EMP_ENTRY_getresultdate=customerdelete_getresult.getString("@FLAG");
+      CSRC_TEMPtable=customerdelete_getresult.getString("@CUSTOMER_SEARCH_DELETION");
     }
     var customerdeletion_flag=EMP_ENTRY_getresultdate;
     customersearch_tick_stmt.close();
@@ -1016,97 +1085,186 @@ try
       var calenderIDcode=eilib.CUST_getCalenderId(CSRC_conn);
       eilib.CUST_customercalenderdeletion(CSRC_customerid, calenderIDcode, CSRC_oldstartdate, CSRC_oldsstarttime, CSRC_oldsendtime, CSRC_oldenddate, CSRC_oldestarttime, CSRC_oldeendtime,' ')
     }
-    return customerdeletion_flag;
+    CSRC_conn.commit();
+    if(CSRC_TEMPtable!=null || CSRC_TEMPtable!=undefined)
+    {
+      var rollbackstmt=CSRC_conn.createStatement();
+      rollbackstmt.execute("DROP TABLE IF EXISTS "+CSRC_TEMPtable+"");
+      rollbackstmt.close();
+    }
     CSRC_conn.close();
+    return customerdeletion_flag;
+    
+  }
+  catch(err)
+  {
+    Logger.log("SCRIPT EXCEPTION:"+err)
+    CSRC_expconn.rollback();
+    if(CSRC_TEMPtable!=null || CSRC_TEMPtable!=undefined)
+    {
+      var rollbackstmt=CSRC_expconn.createStatement();
+      rollbackstmt.execute("DROP TABLE IF EXISTS "+CSRC_TEMPtable+"");
+      rollbackstmt.close();
+    }
+    return (Logger.getLog());
+  }
+}
+
+function CUST_customercalendercreation(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_firstname, CSRC_lastname, CSRC_mobile, CSRC_intmobile, CSRC_office, CSRC_customermailid, CSRC_unit,CSRC_roomtype,CREATE_finalcaleventsarray)
+{
+  var cal = CalendarApp.getCalendarsByName(calenderIDcode)[0];
+  for(var g=0;g<CREATE_finalcaleventsarray.length;g++)
+  {
+    var createeventdetails=CREATE_finalcaleventsarray[g];
+    var startdate=createeventdetails[2];
+    var start_time_in=createeventdetails[3];
+    var start_time_out=createeventdetails[4]
+    var roomtype=createeventdetails[1];
+    var unit=createeventdetails[0]
+    var diffstatus=createeventdetails[5];
+    var eventstatus=createeventdetails[6];
+    var startevents=eilib.CalenderTime_Convertion(calenderIDcode,startdate, start_time_in, start_time_out)
+    var calendername= CSRC_firstname+' '+CSRC_lastname;
+    var contactno="";
+    var contactaddr="";
+    if(diffstatus!=undefined || diffstatus!=null)
+    {
+      var diffroomunit=diffstatus
+      }
+    else
+    {
+      diffroomunit="";
+    }
+    if(CSRC_mobile!=null && CSRC_mobile!='')
+    {contactno=CSRC_mobile;}
+    else if(CSRC_intmobile!=null  && CSRC_intmobile!='')
+    {contactno=CSRC_intmobile;}
+    else if(CSRC_office!=null && CSRC_office!='')
+    {contactno=CSRC_office;}
+    if(contactno!="")
+    {
+      contactaddr=CSRC_customerid+" "+"EMAIL :"+CSRC_customermailid+",CONTACT NO :"+contactno;
+    }
+    else
+    {
+      contactaddr=CSRC_customerid+" "+"EMAIL :"+CSRC_customermailid;
+    }
+    var details =unit+ " " + calendername + " " +diffroomunit+" "+eventstatus;
+    var details1 =unit+ " " +roomtype ;
+    
+    var c= cal.createEvent(details, startevents[0], startevents[1], {description:contactaddr, location: details1});// event creation if more event on same date in startdate
+  }
+}
+function CAL_DEL_CREATE(CSRC_conn,CSRC_customerid,status)
+{
+  var CTermExtn_tempstmt=CSRC_conn.createStatement();
+  CTermExtn_tempstmt.execute("CALL SP_CUSTOMER_MIN_MAX_RV("+CSRC_customerid+",@MIN_LP,@MAX_LP)");
+  CTermExtn_tempstmt.close();
+  var CTermExtn_temptbl_stmt=CSRC_conn.createStatement();
+  var CTermExtn_temptbl_query="SELECT @MIN_LP,@MAX_LP";
+  var CTermExtn_temptblres=CTermExtn_temptbl_stmt.executeQuery(CTermExtn_temptbl_query);
+  if(CTermExtn_temptblres.next())
+  {
+    var CSRC_MINRV=CTermExtn_temptblres.getString(1);
+    if(CSRC_MINRV==null){CSRC_MINRV=1;}
+    var CSRC_MAXRV=CTermExtn_temptblres.getString(2);
   }
   
-  function CUST_customercalenderdeletion(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_beforetable)
+  CTermExtn_temptblres.close();
+  CTermExtn_temptbl_stmt.close();
+  var CSRC_caldetailsstmt=CSRC_conn.createStatement();
+  var CSRC_caldetailsquery="SELECT C.CUSTOMER_FIRST_NAME,C.CUSTOMER_LAST_NAME,CED.CED_REC_VER,CTD.CLP_GUEST_CARD,CTD.CLP_STARTDATE,CTD.CLP_ENDDATE,CTD.CLP_PRETERMINATE_DATE,CPD.CPD_MOBILE,CPD.CPD_INTL_MOBILE,CCD.CCD_OFFICE_NO,CPD.CPD_EMAIL,U.UNIT_NO,URTD.URTD_ROOM_TYPE,CTPA.CTP_DATA AS CED_SD_STIME, CTPB.CTP_DATA AS CED_SD_ETIME,CTPC.CTP_DATA AS CED_ED_STIME, CTPD.CTP_DATA AS CED_ED_ETIME FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_TIME_PROFILE CTPA ON CED.CED_SD_STIME = CTPA.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE CTPB ON CED.CED_SD_ETIME = CTPB.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE CTPC ON CED.CED_ED_STIME = CTPC.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE CTPD ON CED.CED_ED_ETIME = CTPD.CTP_ID LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD ON CED.CUSTOMER_ID=CCD.CUSTOMER_ID LEFT JOIN  CUSTOMER_PERSONAL_DETAILS CPD ON CED.CUSTOMER_ID=CPD.CUSTOMER_ID,CUSTOMER_LP_DETAILS CTD,UNIT_ROOM_TYPE_DETAILS URTD, UNIT_ACCESS_STAMP_DETAILS UASD ,UNIT U,CUSTOMER C WHERE  CED.UNIT_ID=U.UNIT_ID AND CED.CUSTOMER_ID="+CSRC_customerid+" AND (CTD.CUSTOMER_ID=CED.CUSTOMER_ID) AND (CED.CED_REC_VER=CTD.CED_REC_VER) AND (CTD.CLP_GUEST_CARD IS NULL) AND CED.CED_CANCEL_DATE IS  NULL AND(UASD.UASD_ID=CED.UASD_ID) AND(UASD.URTD_ID=URTD.URTD_ID)  AND (C.CUSTOMER_ID=CED.CUSTOMER_ID) AND (CTD.CUSTOMER_ID=C.CUSTOMER_ID) AND (CED.CED_REC_VER BETWEEN "+CSRC_MINRV+" AND "+CSRC_MAXRV+") AND CTD.CLP_GUEST_CARD IS NULL ORDER BY CED.CED_REC_VER, CTD.CLP_GUEST_CARD ASC";
+  var CSRC_caldetailsresult=CSRC_caldetailsstmt.executeQuery(CSRC_caldetailsquery);
+  var calevents_array=[];  
+  while(CSRC_caldetailsresult.next())
   {
-    var cal = CalendarApp.getCalendarsByName(calenderIDcode)[0]; 
-    var calstmt=CSRC_conn.createStatement();
-    var caldeltableresult=calstmt.executeQuery("SELECT *FROM "+CSRC_beforetable+"");
-    while(caldeltableresult.next())
+    var CSRC_calunit=CSRC_caldetailsresult.getString("UNIT_NO");
+    var CSRC_calsddate=CSRC_caldetailsresult.getString("CLP_STARTDATE");
+    var CSRC_caleddate=CSRC_caldetailsresult.getString("CLP_ENDDATE");
+    var CSRC_cal_ptddate=CSRC_caldetailsresult.getString("CLP_PRETERMINATE_DATE");
+    var CSRC_SD_start_time_in=CSRC_caldetailsresult.getString("CED_SD_STIME");
+    var CSRC_SD_start_time_out=CSRC_caldetailsresult.getString("CED_SD_ETIME");
+    var CSRC_ED_end_time_in=CSRC_caldetailsresult.getString("CED_ED_STIME");
+    var CSRC_ED_end_time_out=CSRC_caldetailsresult.getString("CED_ED_ETIME");
+    var CSRC_calroomtype=CSRC_caldetailsresult.getString("URTD_ROOM_TYPE");
+    if(CSRC_cal_ptddate!=null)
     {
-      var startdate=caldeltableresult.getString("CLP_DATE");
-      var start_time_in=caldeltableresult.getString("CLP_STARTTIME");
-      var start_time_out=caldeltableresult.getString("CLP_ENDTIME");
-      var startevents=eilib.CalenderTime_Convertion(calenderIDcode,startdate, start_time_in, start_time_out);
-      var startevent_deletion=cal.getEvents(startevents[0], startevents[1]);//getting start date event from calendar
-      for(var q=0;q<startevent_deletion.length;q++)
-      {
-        if(startevent_deletion[q])
-        {
-          var start_desc=startevent_deletion[q].getDescription();
-          var ev_title=startevent_deletion[q].getTitle();
-          start_desc=start_desc.split(' ');
-          if(parseInt(start_desc[0]) == CSRC_customerid)
-          {
-            startevent_deletion[q].deleteEvent(); // Deleting events if any edit occure
-          }
-        }
-      } 
+      CSRC_caleddate=CSRC_cal_ptddate;
     }
-    caldeltableresult.close();
-    calstmt.close();
-    var calbeforetemptablestmt=CSRC_conn.createStatement();
-    calbeforetemptablestmt.execute("DROP TABLE IF EXISTS "+CSRC_beforetable+"");
-    calbeforetemptablestmt.close();
+    var sddate=CSRC_calsddate.split('-');
+    var sd_date=new Date(sddate[0],sddate[1]-1,sddate[2]);
+    var eddate=CSRC_caleddate.split('-');
+    var ed_date=new Date(eddate[0],eddate[1]-1,eddate[2]);
+    if(sd_date<ed_date)
+    {
+      calevents_array.push({unit:CSRC_calunit,roomtype:CSRC_calroomtype,sdate:CSRC_calsddate,stime:CSRC_SD_start_time_in,etime:CSRC_SD_start_time_out});
+      calevents_array.push({unit:CSRC_calunit,roomtype:CSRC_calroomtype,sdate:CSRC_caleddate,stime:CSRC_ED_end_time_in,etime:CSRC_ED_end_time_out});
+    }
   }
-  function  CUST_customercalendercreation(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_firstname, CSRC_lastname, CSRC_mobile, CSRC_intmobile, CSRC_office, CSRC_customermailid, CSRC_unit,CSRC_roomtype,CSRC_aftertable)
+  CSRC_caldetailsresult.close();
+  var DELETE_finalcaleventsarray=[];
+  var CREATE_finalcaleventsarray=[];
+  for(var j=0;j<calevents_array.length;j++)
   {
-    var cal = CalendarApp.getCalendarsByName(calenderIDcode)[0];
-    var calstmt=CSRC_conn.createStatement();
-    var caldeltableresult=calstmt.executeQuery("SELECT *FROM "+CSRC_aftertable+"");
-    while(caldeltableresult.next())
+    var c_eventdetails=calevents_array[j];
+    if(j==0 || j==calevents_array.length-1)
     {
-      var startdate=caldeltableresult.getString("CLP_DATE");
-      var start_time_in=caldeltableresult.getString("CLP_STARTTIME");
-      var start_time_out=caldeltableresult.getString("CLP_ENDTIME");
-      var status=caldeltableresult.getString("STATUS");
-      var roomtype=caldeltableresult.getString("ROOMTYPE");
-      var unit=caldeltableresult.getString("UNIT");
-      var diffunit=caldeltableresult.getString("DIFFUNIT");
-      var diffroom=caldeltableresult.getString("DIFFROOM");
-      var startevents=eilib.CalenderTime_Convertion(calenderIDcode,startdate, start_time_in, start_time_out)
-      var calendername= CSRC_firstname+' '+CSRC_lastname;
-      var contactno="";
-      var contactaddr="";
-      if((diffunit!=null)||(diffroom!=null))
+      if(j==0)
       {
-        if(diffunit!=null){var diffroomunit='DIFF UNIT';}
-        if(diffroom!=null){diffroomunit='DIFF ROOM';}
-        if((diffunit!=null)&&(diffroom!=null)){diffroomunit='DIFF UNIT'}
+        var roomstatus='';
+        var eventstatus="CHECKIN";
+        CREATE_finalcaleventsarray.push([c_eventdetails.unit,c_eventdetails.roomtype,c_eventdetails.sdate,c_eventdetails.stime,c_eventdetails.etime,roomstatus,eventstatus])
+        DELETE_finalcaleventsarray.push([c_eventdetails.sdate,c_eventdetails.stime,c_eventdetails.etime]);
       }
       else
       {
-        diffroomunit="";
+        var roomstatus='';
+        eventstatus="CHECKOUT";
+        CREATE_finalcaleventsarray.push([c_eventdetails.unit,c_eventdetails.roomtype,c_eventdetails.sdate,c_eventdetails.stime,c_eventdetails.etime,roomstatus,eventstatus])
+        DELETE_finalcaleventsarray.push([c_eventdetails.sdate,c_eventdetails.stime,c_eventdetails.etime]);
       }
-      if(CSRC_mobile!=null)
-      {contactno=CSRC_mobile;}
-      else if(CSRC_intmobile!=null)
-      {contactno=CSRC_intmobile;}
-      else if(CSRC_office!=null)
-      {contactno=CSRC_office;}
-      if(CSRC_mobile!=null||CSRC_intmobile!=null||CSRC_office!=null)
-      {
-        contactaddr=CSRC_customerid+" "+"EMAIL :"+CSRC_customermailid+",CONTACT NO :"+contactno;
-      }
-      else
-      {
-        contactaddr=CSRC_customerid+" "+"EMAIL :"+CSRC_customermailid;
-      }
-      var details =unit+ " " + calendername + " " +diffroomunit+" "+status;
-      var details1 =unit+ " " +roomtype ;
-      
-      var c= cal.createEvent(details, startevents[0], startevents[1], {description:contactaddr, location: details1});// event creation if more event on same date in startdate
     }
-    caldeltableresult.close();
-    calstmt.close();
-    var calbeforetemptablestmt=CSRC_conn.createStatement();
-    calbeforetemptablestmt.execute("DROP TABLE IF EXISTS "+CSRC_aftertable+"");
-    calbeforetemptablestmt.close();
-  } 
+    else
+    {
+      var p_eventdetails=calevents_array[j-1];
+      if(c_eventdetails.unit==p_eventdetails.unit && c_eventdetails.roomtype!=p_eventdetails.roomtype)
+      {
+        roomstatus='DIFF RM';
+        eventstatus="CHECKIN";
+        CREATE_finalcaleventsarray.push([c_eventdetails.unit,c_eventdetails.roomtype,c_eventdetails.sdate,c_eventdetails.stime,c_eventdetails.etime,roomstatus,eventstatus])
+        DELETE_finalcaleventsarray.push([c_eventdetails.sdate,c_eventdetails.stime,c_eventdetails.etime])
+      }
+      if(c_eventdetails.unit!=p_eventdetails.unit)
+      {
+        roomstatus='DIFF UNIT';
+        eventstatus="CHECKIN";
+        CREATE_finalcaleventsarray.push([c_eventdetails.unit,c_eventdetails.roomtype,c_eventdetails.sdate,c_eventdetails.stime,c_eventdetails.etime,roomstatus,eventstatus])
+        DELETE_finalcaleventsarray.push([c_eventdetails.sdate,c_eventdetails.stime,c_eventdetails.etime])
+      }
+    }
+  }
+  return [DELETE_finalcaleventsarray,CREATE_finalcaleventsarray];
 }
-catch(err)
+function CUST_customercalenderdeletion(customer_id,calenderIDcode,calevent_array)
 {
+  var cal = CalendarApp.getCalendarsByName(calenderIDcode)[0]; 
+  for(var c=0;c<calevent_array.length;c++)
+  {
+    var eventdetails=calevent_array[c];
+    var startevents=eilib.CalenderTime_Convertion(calenderIDcode,eventdetails[0], eventdetails[1], eventdetails[2]);
+    var startevent_deletion=cal.getEvents(startevents[0], startevents[1]);//getting start date event from calendar
+    for(var q=0;q<startevent_deletion.length;q++)
+    {
+      if(startevent_deletion[q])
+      {
+        var start_desc=startevent_deletion[q].getDescription();
+        var ev_title=startevent_deletion[q].getTitle();
+        start_desc=start_desc.split(' ');
+        if(parseInt(start_desc[0]) == customer_id)
+        {
+          startevent_deletion[q].deleteEvent(); // Deleting events if any edit occure
+        }
+      }
+    }  
+  }
 }

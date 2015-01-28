@@ -1,6 +1,12 @@
 <!--*****************************************ERM ENTRY********************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.08- SD:24/10/2014 ED:24/10/2014,TRACKER NO:709,cleared reset button issue.-removed unwanted onclick reset function
 //DONE BY:KUMAR
+//VER 1.07- SD:20/10/2014 ED:20/10/2014,TRACKER NO:709,fixed no of guests saving issue
+//VER 1.06- SD:19/09/2014 ED:19/09/2014,TRACKER NO:709,Implemented preloader and msgbox position script
+//VER 1.05- SD:28/08/2014 ED:28/08/2014,TRACKER NO:709 Changed contact no input value format
+//VER 1.04- SD:08/08/2014 ED:08/08/2014,TRACKER NO:708 implemented rollback and commit in script side AND updated new jquery and css links .
 //VER 1.03- SD:22/07/2014 ED:22/07/2014,TRACKER NO:708 coverted age,guests,minimum stay data's to string.
 //VER 1.02- SD:16/06/2014 ED:16/07/2014,TRACKER NO:708 changed Contact no datatype bigint(20) to varchar(20) and used class prefix accept 00 also 
 //VER 1.01- SD:28/06/2014 ED:28/06/2014,TRACKER NO:708 cleared email id button vlaidation issue and chenaged erm rent maximum digit 4 to 5 
@@ -20,25 +26,36 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //***************INITIAL CALL FUNCTION *********************//
 $(document).ready(function() {
+$('#CERM_ENTRY_ta_comments').autogrow({onInitialize: true});
   $(".preloader").show();
   var errormsg=[];
   $('#CERM_ENTRY_tb_others').hide();
@@ -169,11 +186,15 @@ var changedmonth2=new Date(CERM_id1.setFullYear(CERM_year2));
     $('#CERM_errormessageform').hide();
     $('#CERM_ENTRY_mainform').show();
     }
-    $(".preloader").hide();
+    //TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
   }
   //**********************CALLING GS SAVE FUNCTION****************************//
   $('#CERM_ENTRY_btn_savebutton').click(function(){
     $(".preloader").show(); 
+    var  newPos= adjustPosition($(this).position(),100,230);
+    resetPreloader(newPos);
     google.script.run.withFailureHandler(CERM_error_message).withSuccessHandler(CERM_ENTRY_Conformation).CERM_ENTRY_processFormSubmit(document.getElementById('CERM_ENTRY_mainform'))
   });
   //**********************ERM DETAILS SAVE CONFORMATION************************//
@@ -182,11 +203,11 @@ var changedmonth2=new Date(CERM_id1.setFullYear(CERM_year2));
     if(response=='SAVED')
     {
       CERM_reset();
-      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:errormsg[5]}});
+      $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:errormsg[5],position:$('#CERM_ENTRY_btn_savebutton').position()}});
     }
     else
     {
-     $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:errormsg[6]}});
+     $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:errormsg[6],position:$('#CERM_ENTRY_btn_savebutton').position()}});
     }
     $(".preloader").hide(); 
   }
@@ -200,7 +221,7 @@ var changedmonth2=new Date(CERM_id1.setFullYear(CERM_year2));
   }
   else
   {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:ERM_ENTRY_err}});
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM ENTRY",msgcontent:ERM_ENTRY_err,position:$('#CERM_ENTRY_btn_savebutton').position()}});
   }
   $(".preloader").hide(); 
   }
@@ -357,7 +378,7 @@ var changedmonth2=new Date(CERM_id1.setFullYear(CERM_year2));
 <input type="button" class="btn" value="SAVE" id="CERM_ENTRY_btn_savebutton" disabled/>
 </td>
 <td>
-<input type="button" class="btn" name="reset" id="CERM_ENTRY_btn_reset" onclick="CERM_ENTRY_formreset()" value="RESET"/>
+<input type="button" class="btn" name="reset" id="CERM_ENTRY_btn_reset" value="RESET"/>
 </td>
 </tr>
 </table>

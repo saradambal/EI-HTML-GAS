@@ -1,5 +1,7 @@
 <!--***********************************************TRIGGER **********************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 2.06-SD:09/10/2014,ED:09/10/2014 TRACKER NO:771,Added script to hide preloader after menu n form loads,changed drive app to docslist for remove editor
 //DONE BY:KUMAR
 //VER 2.05-SD:03/09/2014,ED:03/09/2014 TRACKER NO:changed old records select query and did exception mail part corrections and added one parameter in temp table drop call query.
 //VER 2.04-SD:02/09/2014,ED:02/09/2014 TRACKER NO:updated maintainance mail id.
@@ -52,6 +54,13 @@
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
 $(".preloader").show();
 $('#CSV_trigger_form').hide();
@@ -74,15 +83,18 @@ CONFIG_optionvalue += '<option value="' + trigger_option.tcdata + '">' + trigger
 }
 $('#CSV_TRIGGER_lb_triggernames').html(CONFIG_optionvalue);
 $('#CSV_trigger_form').show();
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 $(".toggle-btn:not('.noscript') input[type=radio]").addClass("visuallyhidden");
 $(".toggle-btn:not('.noscript') input[type=radio]").change(function() {
-    if( $(this).attr("name") ) {
-        $(this).parent().addClass("success").siblings().removeClass("success")
-    } else {
-        $(this).parent().toggleClass("success");
-    }
+if( $(this).attr("name") ) {
+$(this).parent().addClass("success").siblings().removeClass("success")
+} else {
+$(this).parent().toggleClass("success");
+}
 });
 /********************TRIGGER RADIO BUTTON CREATION*****************************/
 $('#CSV_TRIGGER_lb_triggernames').change(function(){ 
@@ -136,7 +148,7 @@ function TRIGGER_response(response)
 {
 if(response==0)
 {
- $(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER ALREADY ON, DO NOT OFF THE TRIGGER SWITCH WHILE TRIGGER ALREADY RUNNING, PLZ CHK STATUS IF REQUIRED."}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER ALREADY ON, DO NOT OFF THE TRIGGER SWITCH WHILE TRIGGER ALREADY RUNNING, PLZ CHK STATUS IF REQUIRED."}});
 }
 else if(response==1)
 {
@@ -174,28 +186,27 @@ $(".preloader").hide();
 </div>
 </div>
 <form method="post" class="content" action="" id="CSV_trigger_form" name="CSV_trigger_form">
-     <table cellspacing="20px"style="width=200px;">
-	 <tr><td><label id="body">TRIGGER NAME</label><em>*</em></td>
-	 <td><select id="CSV_TRIGGER_lb_triggernames"  name="CSV_TRIGGER_lb_triggernames">
-	 <option>SELECT</option>
-     </select>
-	 </td>
-	 </tr>
-     <tr><td><table id="CSV_TRIGGER_tble_header" ><tr><td><label align='bottom' name='error' id='CSV_TRIGGER_lbl_header' class="srctitle" visible="false" ></label></tr></table>
-     <tr><table><tr>
-     <td ><div id="switchonoff" class="onoffswitch">
-     <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-     <label class="onoffswitch-label" for="myonoffswitch">
-     <div class="onoffswitch-inner"></div>
-     <div class="onoffswitch-switch"></div>
-     </label>
-     </div></td><td width='30px'><label  hidden> *********  </label></td><td><div><input id="statusbutton" type="button" value="STATUS"></div></td></tr></table>
-    </tr>
-     <tr><table id="CSV_TRIGGER_lbl_tble_header" ><tr><label align='bottom' name='error' id='CSV_TRIGGER_lbl_conformation_message' class="srctitle" visible="false" ></label></tr></table>
-     </tr>
-     </table>
-     </form>
-     </div>
-     </body>
-	 </html>
-	 
+<table cellspacing="20px"style="width=200px;">
+<tr><td><label id="body">TRIGGER NAME</label><em>*</em></td>
+<td><select id="CSV_TRIGGER_lb_triggernames"  name="CSV_TRIGGER_lb_triggernames">
+<option>SELECT</option>
+</select>
+</td>
+</tr>
+<tr><td><table id="CSV_TRIGGER_tble_header" ><tr><td><label align='bottom' name='error' id='CSV_TRIGGER_lbl_header' class="srctitle" visible="false" ></label></tr></table>
+<tr><table><tr>
+<td ><div id="switchonoff" class="onoffswitch">
+<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+<label class="onoffswitch-label" for="myonoffswitch">
+<div class="onoffswitch-inner"></div>
+<div class="onoffswitch-switch"></div>
+</label>
+</div></td><td width='30px'><label  hidden> *********  </label></td><td><div><input id="statusbutton" type="button" value="STATUS"></div></td></tr></table>
+</tr>
+<tr><table id="CSV_TRIGGER_lbl_tble_header" ><tr><label align='bottom' name='error' id='CSV_TRIGGER_lbl_conformation_message' class="srctitle" visible="false" ></label></tr></table>
+</tr>
+</table>
+</form>
+</div>
+</body>
+</html>

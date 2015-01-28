@@ -1,17 +1,20 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************CARD ASSIGN***********************************************//
+//DONE BY:PUNI
+//VER 1.3-SD:08/10/2014 ED:08/10/2014;TRACKER NO:779;changed preloader n msgbox position
+//VER 1.2-SD:25/08/2014 ED:25/08/2014;TRACKER NO:779;updated new links n AG
 //DONE BY:SAFIYULLAH.M
 //VER 1.1-SD:07/07/2014 ED:09/06/2014;TRACKER NO:779;UPDTAED RESET FUNCTION
 //VER 1.0-SD:11/06/2014 ED:11/06/2014;TRACKER NO:779;updated failure msg
 //VER 0.09-SD:06/06/2014 ED:06/06/2014;TRACKER NO:779;CHANGED JQUERY LINK
-//VER 0.08-SD:05/05/2014 ED:06/06/2014:TRACKER NO:779;UPDATED DYNAMIC TEMP TABLE 
+//VER 0.08-SD:05/05/2014 ED:06/05/2014:TRACKER NO:779;UPDATED DYNAMIC TEMP TABLE 
 //VER 0.07-SD;21/04/2014 ED:23/04/2014;TRACKER NO:779;updated script to show error msg if active card is assigned returned from sp,alignment corrected
 //VER 0.06-SD;10/03/2014 ED:12/03/2014;TRACKER NO:730;implement array concept.
 //VER 0.05-SD;31/01/2014 ED:04/02/2014;TRACKER NO:730;Issues corrected,updated error msg getting from eilib and added convert function for spl char.
 //VER 0.04-SD;20/01/2014 ED:21/01/2014;TRACKER NO:712;Added the failure handler when assign card and added SD and Ed for Rec ver;
 //VER 0.03-SD:20/12/2013 ED:28/12/2013;TRACKER NO: 339;Applied SP and changes made in design and change identifier
 //VER 0.02 - SD:21/09/2013 ED:01/10/2013;TRACKER NO: 339;CHANGED CONNECTION STRING AND REMOVED SCRIPLET
-//  VER 0.01 - INITIAL VERSION-SD:31/07/2013 ED:03/09/2013;TRACKER NO: 339
+//VER 0.01 - INITIAL VERSION-SD:31/07/2013 ED:03/09/2013;TRACKER NO: 339
 //*********************************************************************************************************//
 
 //*************FUNCTION AND CUSTOMER DETAILS ERROR MSG*************************//

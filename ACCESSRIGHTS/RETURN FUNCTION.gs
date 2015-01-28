@@ -30,17 +30,17 @@ function CONF_ENTRY_twodimdata(CONF_ENTRY_profileName)
 //FETCH THE ERROR MESSAGE AND LOAD MODULE NAME
 function CONFSRC_UPD_DEL_module_errormsg()
 {
-return CONFG.CONFSRC_UPD_DEL_module_errormsg();  
+  return CONFG.CONFSRC_UPD_DEL_module_errormsg();  
 }
 //GET THE CGN_ID FROM CONFIGURATION USING CNP_DATA (PROFILE NAME) & RETURN TYPES OF THE MODULE
 function CONFSRC_UPD_DEL_selectModule(CONFSRC_UPD_DEL_profileName)
 {
-return CONFG.CONFSRC_UPD_DEL_selectModule(CONFSRC_UPD_DEL_profileName);
+  return CONFG.CONFSRC_UPD_DEL_selectModule(CONFSRC_UPD_DEL_profileName);
 }
 //FUNCTION FOR SHOW THE DATA IN TABLE
 function CONFSRC_UPD_DEL_selectData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_selType,CONFSRC_UPD_DEL_parentFunction,CONFSRC_UPD_DEL_flagdd)
 {
-return CONFG.CONFSRC_UPD_DEL_selectData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_selType,CONFSRC_UPD_DEL_parentFunction,CONFSRC_UPD_DEL_flagdd);
+  return CONFG.CONFSRC_UPD_DEL_selectData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_selType,CONFSRC_UPD_DEL_parentFunction,CONFSRC_UPD_DEL_flagdd);
 }
 //UPDATE AND CHECK DATA ALREADY EXISTS
 function CONFSRC_UPD_DEL_updateData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_updateData,CONFSRC_UPD_DEL_tb_UpdSubtype,CONFSRC_UPD_DEL_dataId,CONFSRC_UPD_DEL_lbType,CONFSRC_UPD_DEL_flagData,CONFSRC_UPD_DEL_lb_Typeid,CONFSCR_UPD_DEL_data)
@@ -50,17 +50,17 @@ return CONFG.CONFSRC_UPD_DEL_updateData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_D
 //DELETE DATA FROM THE TABLE
 function CONFSRC_UPD_DEL_deleteData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_lbType,CONFSRC_UPD_DEL_dataId,CONFSRC_UPD_DEL_UpdData,CONFSRC_UPD_DEL_Updsubdata)
 {
-return CONFG.CONFSRC_UPD_DEL_deleteData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_lbType,CONFSRC_UPD_DEL_dataId,CONFSRC_UPD_DEL_UpdData,CONFSRC_UPD_DEL_Updsubdata);
+  return CONFG.CONFSRC_UPD_DEL_deleteData(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_lbType,CONFSRC_UPD_DEL_dataId,CONFSRC_UPD_DEL_UpdData,CONFSRC_UPD_DEL_Updsubdata);
 }
 //DYNAMIC FUNCTION TO GET POSTID FOR ALL TABLE
 function CONFSRC_UPD_DEL_gettablename(CONFSRC_UPD_DEL_selProfile)
 {
-return CONFG.CONFSRC_UPD_DEL_gettablename(CONFSRC_UPD_DEL_selProfile);
+  return CONFG.CONFSRC_UPD_DEL_gettablename(CONFSRC_UPD_DEL_selProfile);
 }
 //FUNCTION TO CHECK TRANSACTION
 function CONFSRC_UPD_DEL_checktransaction(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_rowid)
 {
-return CONFG.CONFSRC_UPD_DEL_checktransaction(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_rowid);
+  return CONFG.CONFSRC_UPD_DEL_checktransaction(CONFSRC_UPD_DEL_selProfile,CONFSRC_UPD_DEL_rowid);
 }
 //********************CONFG ENTRY SEARCH UPDATE END*******************
 //********************EMAIL PROFILE START*********************
@@ -179,6 +179,7 @@ function UEXST_login_acct_others(UEXST_unitnumber,UEXST_source)
 {
   return UNIT.UEXST_login_acct_others(UEXST_unitnumber,UEXST_source);
 }
+
 //FUNCTION FOR CHECKING ALREADY EXISTS DATA FOR ACCESS CARD, ROOM TYPE AND STAMP TYPE
 function UEXST_alreadyexists(UEXST_alreadyexist,UEXST_source)
 {
@@ -201,11 +202,11 @@ function USRC_UPDCODE_updateDoorcode(USRC_UPDCODE_login_id,USRC_UPDCODE_unitnumb
 {
   return UNIT.USRC_UPDCODE_updateDoorcode(USRC_UPDCODE_login_id,USRC_UPDCODE_unitnumber,USRC_UPDCODE_doorcode,USRC_UPDCODE_weblogin,USRC_UPDCODE_webpass);
 }
-//FUNCTION FOR FETCHING ERROR MESSAGE,UNIT NO FROM SQL TABLE
-function USRC_UPDCODE_ExistsDoorcode(USRC_UPDCODE_doorcode,USRC_UPDCODE_flag_doorCodeLogin)
-{
-  return UNIT.USRC_UPDCODE_ExistsDoorcode(USRC_UPDCODE_doorcode,USRC_UPDCODE_flag_doorCodeLogin);
-}
+//FUNCTION FOR FETCHING ERROR MESSAGE,UNIT NO FROM SQL TABLE----------------------------------------------*/
+  function USRC_UPDCODE_ExistsDoorcode(USRC_UPDCODE_doorcode,USRC_UPDCODE_flag_doorCodeLogin)
+  {
+     return UNIT.USRC_UPDCODE_ExistsDoorcode(USRC_UPDCODE_doorcode,USRC_UPDCODE_flag_doorCodeLogin);
+  }
 //******************* DOOR CODE END***********************
 //******************* UNIT SEARCH/UPDATE START****************
 //FETCHING ERRORMSG & SEARCH BY OPTION
@@ -272,7 +273,33 @@ function CCRE_customercreation_commonvalues()
 {
   return CUSTOMER.CCRE_customercreation_commonvalues();
 }
+function CUST_CREATION_customercalenderdeletion(customer_id,calenderIDcode,calevent_array)
+{
+  return CUSTOMER.CUST_CREATION_customercalenderdeletion(customer_id,calenderIDcode,calevent_array)
+}
 //******************* CUSTOMER CREATION END ***********************
+//******************* CUSTOMER CREATION UAT START ***********************
+function UAT_CCRE_Roomtype(UAT_CCRE_unit,UAT_CCRE_nullpara)
+{
+  return CUSTOMER.UAT_CCRE_Roomtype(UAT_CCRE_unit,UAT_CCRE_nullpara);
+}
+function UAT_CCRE_CardNumber(UAT_CCRE_unit,UAT_CCRE_firstname,UAT_CCRE_lastname)
+{
+  return CUSTOMER.UAT_CCRE_CardNumber(UAT_CCRE_unit,UAT_CCRE_firstname,UAT_CCRE_lastname);
+}
+function UAT_CCRE_prorated(UAT_CCRE_startdate,UAT_CCRE_enddate)
+{
+  return CUSTOMER.UAT_CCRE_prorated(UAT_CCRE_startdate,UAT_CCRE_enddate);
+}
+function UAT_CCRE_processFormSubmit(customercreation)
+{
+  return CUSTOMER.UAT_CCRE_processFormSubmit(customercreation);
+}
+function UAT_CCRE_customercreation_commonvalues()
+{
+  return CUSTOMER.UAT_CCRE_customercreation_commonvalues();
+}
+//******************* CUSTOMER CREATION UAT END ***********************
 //******************* CUSTOMER RECHECK IN START *******************
 function CRCHK_Customer(unit)
 {
@@ -305,27 +332,39 @@ function CRCHK_customerrecheckin_commonvalues(nounit)
 //******************* CUSTOMER RECHECK IN END *******************
 //******************* CUSTOMER CANCEL START *******************
 //////FUNCTION TO CHECK CUSTOMER AVAILABLE
+//////FUNCTION TO CHECK CUSTOMER AVAILABLE
 function CCAN_getcustomer(){
+  
   return CUSTOMER.CCAN_getcustomer();  
 }
-// //FUNCTION TO GET ALL CANCEL /UNCANCEL CUSTOMER DETAILS
+ // //FUNCTION TO GET ALL CANCEL /UNCANCEL CUSTOMER DETAILS
 function CCAN_allcustomerdetails(CCAN_select_type){
+  
   return CUSTOMER.CCAN_allcustomerdetails(CCAN_select_type);
 }
 ////FUNCTION TO RETURN UNIT NO
 function CCAN_getcustomer_details(CCAN_select_type){
+  
   return CUSTOMER.CCAN_getcustomer_details(CCAN_select_type);
+  
 }
 //FUNCTION TO GET CUSTOMER DETAIL'S
 function CCAN_get_customervalues(id,CCAN_select_type,CCAN_recver){
+  
   return CUSTOMER.CCAN_get_customervalues(id,CCAN_select_type,CCAN_recver);
+  
 }
 //Function to cancel customer
 function CCAN_cancel(cancelform){
+  
   return CUSTOMER.CCAN_cancel(cancelform);
-}//Function to Uncancel customer
+  
+}
+//Function to Uncancel customer
 function CCAN_uncancel(uncancelform){
+  
   return CUSTOMER.CCAN_uncancel(uncancelform);
+  
 }
 //******************* CUSTOMER CANCEL END *******************
 //******************* CUSTOMER EXTENSOIN START***************
@@ -523,7 +562,11 @@ function CUST_customercalenderdeletion(CSRC_conn,CSRC_customerid, calenderIDcode
 }
 function  CUST_customercalendercreation(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_firstname, CSRC_lastname, CSRC_mobile, CSRC_intmobile, CSRC_office, CSRC_customermailid, CSRC_unit,CSRC_roomtype,CSRC_aftertable)
 {
-  return CUSTOMER.CUST_customercalendercreation(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_firstname, CSRC_lastname, CSRC_mobile, CSRC_intmobile, CSRC_office, CSRC_customermailid, CSRC_unit,CSRC_roomtype,CSRC_aftertable);  
+return CUSTOMER.CUST_customercalendercreation(CSRC_conn,CSRC_customerid, calenderIDcode,CSRC_firstname, CSRC_lastname, CSRC_mobile, CSRC_intmobile, CSRC_office, CSRC_customermailid, CSRC_unit,CSRC_roomtype,CSRC_aftertable);  
+}
+function CAL_DEL_CREATE(CSRC_conn,CSRC_customerid,status)
+{
+  return CUSTOMER.CAL_DEL_CREATE(CSRC_conn,CSRC_customerid,status);
 }
 //******************* CUSTOMER SEARCH UPDATE END***********
 //******************* ACCESS REPLACE CARD START********
@@ -599,6 +642,10 @@ function BDLY_INPUT_get_unitno(BDLY_INPUT_type)
 {
   return EXP.BDLY_INPUT_get_unitno(BDLY_INPUT_type);
 }
+/*------------------------------------------EILIB FUNCTION TO GET UNIT SDATE,EDATE AND INVDATE -----------------------------------------------------*/
+  function BDLY_SRC_getUnitDate(BDLY_SRC_unitno){
+      return EXP.BDLY_SRC_getUnitDate(BDLY_SRC_unitno);
+  }
 //FUNCTION FOR GET THE PETTY CASH BALANCE
 function BDLY_INPUT_get_balance()
 {
@@ -661,7 +708,6 @@ function BDLY_INPUT_get_SEdate(BDLY_INPUT_unitno)
 }
 //******************* BIZ DAILY ENTRY END********
 //******************* BIZ DAILY SEARCHY UPDATE START********
-
 /*-------------------------------GET INITIAL VALUE EXPENSE TYPE,UNIT EXP CATEGORY,ERROR MESSAGES--------------------------------------*/
 function BDLY_SRC_getInitialvalue()
 {
@@ -746,11 +792,6 @@ function BDLY_SRC_UpdaterowData(BDLY_new_values,BDLY_old_values,expense,selected
 function  BDLY_SRC_DeleteRowData(BDLY_Delete_key,selectedexpense)
 {
   return EXP.BDLY_SRC_DeleteRowData(BDLY_Delete_key,selectedexpense);
-}
-/*------------------------------------------EILIB FUNCTION TO GET UNIT SDATE,EDATE AND INVDATE -----------------------------------------------------*/
-function BDLY_SRC_getUnitDate(BDLY_SRC_unitno)
-{
-  return EXP.BDLY_SRC_getUnitDate(BDLY_SRC_unitno);
 }
 //******************* BIZ DAILY SEARCHY UPDATE END********
 //******************* BIZ DETIAL ENTRY START********
@@ -1023,9 +1064,9 @@ function EMPSRC_UPD_DEL_getcardnoandunitno(EMPSRC_UPD_DEL_id)
   return EXP.EMPSRC_UPD_DEL_getcardnoandunitno(EMPSRC_UPD_DEL_id);
 }
 //UPDATE THE FORM DATAS//
-function EMPSRC_UPD_DEL_updateform(EMPSRC_UPD_DEL_updateformelement)
+function EMPSRC_UPD_DEL_updateform(EMPSRC_UPD_DEL_updateformelement,EMPSRC_UPD_DEL_expense_searchoptions)
 {
-  return EXP.EMPSRC_UPD_DEL_updateform(EMPSRC_UPD_DEL_updateformelement);
+  return EXP.EMPSRC_UPD_DEL_updateform(EMPSRC_UPD_DEL_updateformelement,EMPSRC_UPD_DEL_expense_searchoptions);
 }
 //DELETE THE  RECORD IN THE TABLE
 function EMPSRC_UPD_DEL_deleterow(EMPSRC_UPD_DEL_deleteid)
@@ -1093,9 +1134,9 @@ function PDLY_SEARCH_invfroandamtmgetMatchText(PDLY_SEARCH_lb_typelistvalue,PDLY
   return EXP.PDLY_SEARCH_invfroandamtmgetMatchText(PDLY_SEARCH_lb_typelistvalue,PDLY_SEARCH_lb_getstartvaluevalue,PDLY_SEARCH_lb_getendvaluevalue,PDLY_SEARCH_lb_babysearchoptionvalue);
 }
 // CODING FOR PERSONAL EXPENSE  DELETE //
-function  PDLY_SEARCH_delete(PDLY_SEARCH_lb_typelistvalue,PDLY_SEARCH_radiovalue,PDLY_SEARCH_lb_getstartvaluevalue,PDLY_SEARCH_lb_getendvaluevalue,PDLY_SEARCH_lb_babysearchoptionvalue)
+function  PDLY_SEARCH_delete(PDLY_SEARCH_lb_typelistvalue,PDLY_SEARCH_radiovalue)
 {
-  return EXP.PDLY_SEARCH_delete(PDLY_SEARCH_lb_typelistvalue,PDLY_SEARCH_radiovalue,PDLY_SEARCH_lb_getstartvaluevalue,PDLY_SEARCH_lb_getendvaluevalue,PDLY_SEARCH_lb_babysearchoptionvalue);
+  return EXP.PDLY_SEARCH_delete(PDLY_SEARCH_lb_typelistvalue,PDLY_SEARCH_radiovalue);
 }
 //******************* PERSONAL DAILY SEARCH UPDATE END***************
 
@@ -1106,7 +1147,7 @@ function FIN_ENTRY_Customer(unit,no)
 }
 function FIN_ENTRY_input_details(rental)
 {
-  return FINANCE.FIN_ENTRY_input_details(rental); 
+ return FINANCE.FIN_ENTRY_input_details(rental); 
 }
 function FIN_ENTRY_commonvalues()
 {
@@ -1136,13 +1177,14 @@ function FIN_TERM_ENTRY_input_details(termination)
 }
 //******************* FINANCE TERMINATED CUST ENTRY END***************************
 //******************* FINANCE SEARCH UPDATE START***************************
+
 function FIN_SRC_paymentsearchoptions(searchinput1,searchinput2,searchinput3,searchinput4,searchinput5,label)
 {
- return FINANCE.FIN_SRC_paymentsearchoptions(searchinput1,searchinput2,searchinput3,searchinput4,searchinput5,label);
+  return FINANCE.FIN_SRC_paymentsearchoptions(searchinput1,searchinput2,searchinput3,searchinput4,searchinput5,label);
 }
 function FIN_SRC_unitcustomerlist(unit)
 {
- return FINANCE.FIN_SRC_unitcustomerlist(unit); 
+  return FINANCE.FIN_SRC_unitcustomerlist(unit); 
 }
 function FIN_SRC_Paymentupdationdetails(rentalid,recver,custid)
 {
@@ -1192,6 +1234,7 @@ function CHEQUE_SRC_chequeupdation(chequeid,chequedate,chequeno,chequeto,chequef
 {
   return FINANCE.CHEQUE_SRC_chequeupdation(chequeid,chequedate,chequeno,chequeto,chequefor,amount,unit,status,debited,comments);
 }
+
 //******************* FINANCE CHEQUE SEARCH UPDATE END********
 //******************* FINANCE MODEL ENTRY START ********
 function MODEL_ENTRY_existingmodels(modelname)
@@ -1206,7 +1249,7 @@ function FIN_OCBC_MODEL_ENTRY_processFormSubmit(MODEL_ENTRY_details)
 //******************* FINANCE MODEL SEARCH UPDATE START********
 function MODEL_SRC_commonvalues()
 {
- return FINANCE.MODEL_SRC_commonvalues(); 
+  return FINANCE.MODEL_SRC_commonvalues(); 
 }
 function MODEL_SRC_processFormSubmit(modelname)
 {
@@ -1216,9 +1259,9 @@ function MODEL_SRC_existingmodels(modelname)
 {
   return FINANCE.MODEL_SRC_existingmodels(modelname);
 }
-function MODEL_SRC_modelupdation(modelname,id)
+function MODEL_SRC_modelupdation(modelname,modelid,obsolute)
 {
-  return FINANCE.MODEL_SRC_modelupdation(modelname,id);
+  return FINANCE.MODEL_SRC_modelupdation(modelname,modelid,obsolute);
 }
 function MODEL_SRC_modeldeletion(id)
 {
@@ -1270,7 +1313,7 @@ function DDC_getunitlistbox(DDC_flag)
 //GET THE REC_VER , START DATE AND END DATE FOR THE SELECTED CUSTOMER NAME AND UNIT NO    
 function DDC_loaddatebox(DDC_getcustid,DDC_name,DDC_unitno)
 { 
-   return FINANCE.DDC_loaddatebox(DDC_getcustid,DDC_name,DDC_unitno);
+  return FINANCE.DDC_loaddatebox(DDC_getcustid,DDC_name,DDC_unitno);
 }
 //CALCULATION FUNCTION//
 function DDC_Dep_Cal_submit(formallid)
@@ -1337,7 +1380,7 @@ function DDE_Dep_Exct_mixing(a,b)
 //******************* FINANCE OCBC START********
 function FIN_OCBC_Customer(unit,no)
 {
- return FINANCE.FIN_OCBC_Customer(unit,no);
+  return FINANCE.FIN_OCBC_Customer(unit,no);
 }
 function FIN_OCBC_DU_selectedmonthdetails(date)
 {

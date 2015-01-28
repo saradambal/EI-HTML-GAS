@@ -1,6 +1,11 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************EMPLOYEE DETAIL ENTRY****************************************//
+//DONE BY:PUNI
+//VER 1.2-SD:09/10/2014 ED:09/10/2014,TRACKER NO:705:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.1-SD:23/08/2014 ED:23/08/2014,TRACKER NO:705,updated new links,autogrow,removed one function,changed query for getting active unit
 //DONE BY:LALITHA
+//VER 1.0-SD:04/08/2014 ED:05/08/2014,TRACKER NO:705,updated script to show error msg if active card is assigned returned from sp,Passed varchar for mobile no,Tested sp wth auto cmmt
 //VER 0.09-SD:14/06/2014 ED:17/06/2014,TRACKER NO:705,Changed failure funct,Removed mandatory symbol,Changed btn name(submit to save),Changed the email id to lowercase for only valid emailid 
 //VER 0.08 SD:07/06/2014 ED:07/06/2014,TRACKER NO:705,Changed jquery link,Updated parseInt for mobile number,Updated autosize for email id,Hide the invalid email err msg,After reset nd submit clicked means resize the(cust frst name,last name,emailid txt bxs),After reset nd submit btn clicked hide the card details,Updated maxlength for cust frst nd last name
 //VER 0.07 SD:22/05/2014 ED:22/05/2014,Updated the space in b/w emp frst nd last name,Removed the bold tag for title
@@ -44,34 +49,6 @@ try
     EMP_ENTRY_conn.close();
     return EMP_ENTRY_result;
   }
-  //FUNCTION TO RETURN AVAILABLE CARD'S 
-  function EMP_INPUT_getempid(unitno)
-  {
-    //TREEVIEW  UNIT NO//
-    var EMP_ENTRY_connection =eilib.db_GetConnection();
-    var EMP_ENTRY_main_menu_stmt = EMP_ENTRY_connection.createStatement();
-    var EMP_ENTRY_main_menu_array=[];
-    var EMP_ENTRY_multi_array=[]
-    var EMP_ENTRY_select_main_menu="SELECT DISTINCT UNIT_NO FROM UNIT U,UNIT_ACCESS_STAMP_DETAILS UASD,UNIT_DETAILS UD WHERE U.UNIT_ID=UASD.UNIT_ID AND U.UNIT_ID=UD.UNIT_ID AND UASD.UASD_ACCESS_INVENTORY IS NOT NULL AND UD.UD_OBSOLETE IS NULL AND UASD.UASD_ACCESS_CARD IS NOT NULL AND  UASD.UASD_ID NOT IN(SELECT ECD.UASD_ID FROM EMPLOYEE_CARD_DETAILS ECD)"
-    var EMP_ENTRY_main_menu_result=EMP_ENTRY_main_menu_stmt.executeQuery(EMP_ENTRY_select_main_menu);
-    while(EMP_ENTRY_main_menu_result.next()){
-      EMP_ENTRY_main_menu_array.push(EMP_ENTRY_main_menu_result.getString("UNIT_NO"));
-    }
-    EMP_ENTRY_multi_array.push(EMP_ENTRY_main_menu_array)
-    for(var i=0;i<EMP_ENTRY_multi_array[0].length;i++){
-      var menu=EMP_ENTRY_multi_array[0][i];
-      var EMP_ENTRY_sub_menu_array=[];
-      var EMP_ENTRY_select_sub_menu="SELECT UASD.UASD_ACCESS_CARD FROM UNIT_ACCESS_STAMP_DETAILS UASD,UNIT U WHERE U.UNIT_ID=UASD.UNIT_ID AND U.UNIT_NO='"+menu+"' AND UASD.UASD_ID NOT IN(SELECT ECD.UASD_ID FROM EMPLOYEE_CARD_DETAILS ECD)AND UASD.UASD_ACCESS_INVENTORY IS NOT NULL AND UASD.UASD_ACCESS_CARD IS NOT NULL ORDER BY UASD.UASD_ACCESS_CARD ASC";       
-      var EMP_ENTRY_sub_menu_result=EMP_ENTRY_main_menu_stmt.executeQuery(EMP_ENTRY_select_sub_menu);
-      while(EMP_ENTRY_sub_menu_result.next()){ 
-        EMP_ENTRY_sub_menu_array.push(EMP_ENTRY_sub_menu_result.getString("UASD_ACCESS_CARD"));
-      }
-      EMP_ENTRY_multi_array.push(EMP_ENTRY_sub_menu_array)
-    }
-    EMP_ENTRY_connection.close();
-    EMP_ENTRY_main_menu_stmt.close();
-    return EMP_ENTRY_multi_array  
-  }
   //FUNCTION FOR TO SAVE THE EMAIL ID
   function EMP_ENTRY_save(EMP_ENTRY_form_employeename) 
   {
@@ -93,7 +70,7 @@ try
     {
       EMP_ENTRY_cardno=EMP_ENTRY_cardno;
     }
-    var EMP_ENTRY_insertstaffexpense ="CALL SP_EMPDTL_INSERT('"+EMP_ENTRY_firstname+"','"+EMP_ENTRY_lastname+"','"+EMP_ENTRY_empdesigname+"',"+EMP_ENTRY_mobilenumber+",'"+EMP_ENTRY_email+"','"+EMP_ENTRY_comments+"','"+UserStamp+"','"+EMP_ENTRY_cardno+"',@FLAG_ENTRYEMP)";
+    var EMP_ENTRY_insertstaffexpense ="CALL SP_EMPDTL_INSERT('"+EMP_ENTRY_firstname+"','"+EMP_ENTRY_lastname+"','"+EMP_ENTRY_empdesigname+"','"+EMP_ENTRY_mobilenumber+"','"+EMP_ENTRY_email+"','"+EMP_ENTRY_comments+"','"+UserStamp+"','"+EMP_ENTRY_cardno+"',@FLAG_ENTRYEMP)";
     EMP_ENTRY_stmt.execute(EMP_ENTRY_insertstaffexpense);
     var EMP_ENTRY_getresult= EMP_ENTRY_stmt.executeQuery("SELECT @FLAG_ENTRYEMP");
     while(EMP_ENTRY_getresult.next()){
@@ -112,7 +89,7 @@ try
     var EMP_ENTRY_stmt =EMP_ENTRY_conn.createStatement()
     var EMP_ENTRY_main_menu_array=[];
     var EMP_ENTRY_multi_array=[]
-    var EMP_ENTRY_select_main_menu="SELECT DISTINCT UNIT_NO FROM UNIT U,UNIT_ACCESS_STAMP_DETAILS UASD,UNIT_DETAILS UD WHERE U.UNIT_ID=UASD.UNIT_ID AND U.UNIT_ID=UD.UNIT_ID AND UASD.UASD_ACCESS_INVENTORY IS NOT NULL AND UD.UD_OBSOLETE IS NULL AND UASD.UASD_ACCESS_CARD IS NOT NULL AND  UASD.UASD_ID NOT IN(SELECT ECD.UASD_ID FROM EMPLOYEE_CARD_DETAILS ECD)"
+    var EMP_ENTRY_select_main_menu="SELECT DISTINCT U.UNIT_NO FROM UNIT U,UNIT_ACCESS_STAMP_DETAILS UASD,UNIT_DETAILS UD ,VW_ACTIVE_UNIT VAU WHERE VAU.UNIT_ID=U.UNIT_ID AND  U.UNIT_ID=UASD.UNIT_ID AND U.UNIT_ID=UD.UNIT_ID AND UASD.UASD_ACCESS_INVENTORY IS NOT NULL AND UD.UD_OBSOLETE IS NULL AND UASD.UASD_ACCESS_CARD IS NOT NULL AND  UASD.UASD_ID NOT IN(SELECT ECD.UASD_ID FROM EMPLOYEE_CARD_DETAILS ECD)"
     var EMP_ENTRY_main_menu_result=EMP_ENTRY_stmt.executeQuery(EMP_ENTRY_select_main_menu);
     while(EMP_ENTRY_main_menu_result.next()){
       EMP_ENTRY_main_menu_array.push(EMP_ENTRY_main_menu_result.getString("UNIT_NO"));

@@ -1,8 +1,13 @@
 <!--*********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*********************************************UNIT SEARCH/UPDATE*********************************************//
+//<!--DONE BY:PUNI
+//VER 1.3 -SD:06/10/2014 ED:07/10/2014,TRACKER NO:723,Changed some preloader n msgbox position
 <!--DONE BY:SARADAMBAL
-VER 0.09-TRACKER NO:723,SD:12/06/2014 ED:11/07/2014,implemented script for commit and failure function,implement script in refresh func ,implemented check transaction sp for dp
+VER 1.2 -SD:13/09/2014 ED:13/09/2014,TRACKER NO:723,implemented script for preloader,msgbox
+VER 1.1 -SD:18/08/2014 ED:18/08/2014,TRACKER NO:723,updated new links,implemented autogrow,rollback if any issue in calendar or sp,checked sp
+VER 1.0- TRACKER NO:723,SD:22/07/2014 ED:22/07/2014,removed RO mode for non-trans unit no
+VER 0.09-TRACKER NO:723,SD:25/06/2014,SD:27/06/2014,updated failure function,checked tickler after uld_id include,include class for comments to avoid space
 VER 0.08-TRACKER NO:723,SD:07/06/2014,SD:07/06/2014,updated new drive link
 VER 0.07-TRACKER NO:723,SD:23/04/2014,ED:26/04/2014,add class for datepicker,put dp validation for unit min(sd-1 month) and max(sysdate+2 year)
 VER 0.06-TRACKER NO:723,SD:27/03/2014,ED:27/03/2014,closed head tag
@@ -13,18 +18,29 @@ VER 0.02-INITIAL VERSION,TRACKER NO:245,SD:10/12/2013,ED:11/12/2013,updated sp f
 VER 0.01-INITIAL VERSION,TRACKER6 NO:245,SD:12/08/2013,ED:03/09/2013-->
 <html>
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+<!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
 /*-------------------------------------FUNCTION FOR CHANGE DATE FORMAT---------------------------*/
 function USRC_FormTableDateFormat(USRC_inputdate){
 var USRC_string  = USRC_inputdate.split("-");
@@ -32,6 +48,8 @@ return USRC_string[2]+'-'+ USRC_string[1]+'-'+USRC_string[0];
 }
 var ErrorControl ={AmountCompare:'InValid'}
 $(document).ready(function() {
+$(".preloader").show();
+$('textarea').autogrow({onInitialize: true});
 /*--------------------------------------FAILURE FUNCTION-----------------------------------------*/
 function USRC_onFailure(USRC_error) {
 if(USRC_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
@@ -45,7 +63,7 @@ if(USRC_error=='TypeError: Cannot call method "getEvents" of undefined.'||USRC_e
 {
 USRC_error=USRC_errormsg_arr[52];
 }
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_error}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_error,position:{top:150,left:500}}});
 }
 $(".preloader").hide();
 }
@@ -74,6 +92,9 @@ var USRC_select_options_card ='<option>SELECT</option>';
 google.script.run.withSuccessHandler(USRC_success).withFailureHandler(USRC_onFailure).USRC_errormsg_data_unitno();
 /*----------------------------------------SUCCESS FUNCTION FOR ERRORMSG------------------------------------------*/
 function USRC_success(USRC_response){
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
 USRC_errormsg_arr=USRC_response.USRC_errormsg;
 USRC_unitoption_arr=USRC_response.USRC_unitoption;
 USRC_glb_unitno_arr=USRC_response.USRC_obj_unitno;
@@ -105,6 +126,8 @@ $('#USRC_div_msg,#USRC_errmsg_roominventory').text('');
 if(USRC_unit_optionfetch!='SELECT')
 {
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 if((USRC_unit_optionfetch==5)||(USRC_unit_optionfetch==8))//ROOM TYPE,STAMP TYPE
 {google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_flex(document.getElementById('USRC_form_unit_searchnupdate'))
 }
@@ -224,6 +247,8 @@ $('<tr><td style="width:180px">TYPE OF CARD</td><td><select id="USRC_lb_typeofca
 else
 {
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_flex(document.getElementById('USRC_form_unit_searchnupdate'))
 }}});
 /*------------------------------------CHANGE EVENT FOR SEARCH BY CARD---------------------------------*/
@@ -235,12 +260,16 @@ $('#USRC_div_msg').text('');
 $('#USRC_lbl_errmsg_cardno').text('')
 if($('#USRC_lb_typeofcard').val()!='SELECT'){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists($('#USRC_lb_all_searchby').val(),$('#USRC_lb_typeofcard').val(),'USRC_flag_check_cardunitno','')
 }});
 /*--------------------------------------------------------CHANGE EVENT FOR SEARCH BY LISTBOX---------------------------------*/
 $(document).on('change','#USRC_lb_inventory_cardno',function(){
 if($('#USRC_lb_inventory_cardno').val()!='SELECT'){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_flex(document.getElementById('USRC_form_unit_searchnupdate'))
 }});
 /*--------------------------------------------CHANGE FUNCTION FOR FORM VALIDATION FOR SEARCH BUTTON---------------------------------------*/
@@ -256,6 +285,8 @@ $('#USRC_btn_search').removeAttr("disabled");
 /*-------------------------------CLICK FUNCTION FOR DATE,AMOUNT SEARCH BUTTON----------------------------*/
 $(document).on('click','#USRC_btn_search',function(){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(USRC_success_flex).withFailureHandler(USRC_onFailure).USRC_func_flex(document.getElementById('USRC_form_unit_searchnupdate'))
 });
 /*--------------------------------------CHANGE EVENT FOR SEARCH BY OPTION TABLE-----------------------*/
@@ -268,6 +299,11 @@ $('#USRC_btn_searchflex').attr("disabled", "disabled")
 /*----------------------------------SUCCESS FUNCTION FOR FLEX TABLE---------------------------*/
 function USRC_success_flex(USRC_response_flex){
 $(".preloader").hide();
+if(USRC_response_flex.toString().match("SCRIPT ERROR:"))
+{
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_response_flex,position:{top:150,left:500}}});
+}
+else{
 if(((USRC_response_flex.USRC_parentfunc_obj!=true)&&(USRC_response_flex.USRC_parentfunc_obj!=0))||((USRC_response_flex.USRC_parentfunc_obj=='')&&(USRC_response_flex.USRC_parentfunc_obj!=0))){
 $('#USRC_div_updateform').hide();
 $("#USRC_btn_search").attr("disabled","disabled");
@@ -467,10 +503,10 @@ else if(USRC_flex_flag==8)//STAMP TYPE
 var USRC_replace_errmsg=USRC_errormsg_arr[45];
 else
 var USRC_replace_errmsg=USRC_errormsg_arr[38].replace('[UNITNO]',USRC_obj_rowvalue.USRC_tr_first);
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_replace_errmsg}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_replace_errmsg,position:{top:150,left:500}}});
 }}
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_errormsg_arr[48]}});}}
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT SEARCH/UPDATE",msgcontent:USRC_errormsg_arr[48],position:{top:150,left:500}}});}}}
 /*---------------------------------CLICK FUNCTION FOR RADIO BUTTON-----------------------*/
 $(document).on('click','.USRC_class_flex',function()
 {$('#USRC_div_updateform').hide();
@@ -501,7 +537,7 @@ var USRC_upd_tr='';
 var USRC_lb_selectoption_unit=$('#USRC_lb_selectoption_unit').val();
 var USRC_unitid=$tds.eq(0).text();
 if((USRC_lb_selectoption_unit==3)||(USRC_lb_selectoption_unit==4)||(USRC_lb_selectoption_unit==6)||(USRC_lb_selectoption_unit==7))
-{USRC_upd_tr +='<table><tr><td style="width:160px"><label>UNIT NUMBER</label><em>*</em></td><td style="width:240px"><input style="width:40px" id="USRC_tb_unitno" value="'+$tds.eq(1).text()+'" name="USRC_tb_unitno" type="USRC_tb_unitno" maxlength=4  style="width:40" class="USRC_class_title_nums USRC_class_updvalidation numonlyzero"></td><td><label id="USRC_lbl_alreadyexists" class="errormsg"></label></td></tr><tr><td><label>START DATE</label><em>*</em></td><td><input value="'+$tds.eq(2).text()+'" type="text" name="USRC_db_startdate_update" id="USRC_db_startdate_update" style="width:75px" class="USRC_class_updvalidation datemandtry"/></td></tr><tr><td>END DATE<em>*</em></td><td><input value="'+$tds.eq(3).text()+'" type="text" name="USRC_db_enddate_update" id="USRC_db_enddate_update" style="width:75px" class="USRC_class_updvalidation datemandtry"/><input id ="USRC_cb_obsolete" type="checkbox" name="USRC_cb_obsolete" class="USRC_class_obsolete USRC_class_updvalidation" disabled><label id="USRC_lbl_obsolete">OBSOLETE</label></td><td><label id="USRC_lbl_obsolete_errmsg" class="errormsg"></label></td></tr><tr><td><label>UNIT RENTAL</label><em>*</em></td><td><input value="'+$tds.eq(6).text()+'" id= "USRC_tb_unitreltal" type = "text" name="USRC_tb_unitreltal" maxlength=4 style="width:40px" class="numonly USRC_class_title_nums USRC_class_updvalidation"></td></tr><tr><td><label>UNIT DEPOSIT</label></td><td><input value="'+$tds.eq(7).text()+'" id="USRC_tb_unitdeposit" type="text" name = "USRC_tb_unitdeposit" maxlength=5 style="width:45px" class="numonly USRC_class_title_nums USRC_class_updvalidation"></td></tr><tr><td><label>ACCOUNT NUMBER</label></td><td><input value="'+$tds.eq(8).text()+'" id ="USRC_tb_accnoid" type="USRC_tb_accnoid" name="USRC_tb_accnoid" class ="numonlyzero USRC_class_updvalidation USRC_class_title_nums" maxlength=15 style="width:130px"></td></tr><tr><td><label>ACCOUNT NAME</label></td><td><input id="USRC_tb_accname" type="text" name="USRC_tb_accname" value="'+$tds.eq(9).text()+'" maxlength=25 class="general USRC_class_updvalidation"></td></tr><tr><td><label>BANK CODE</label></td><td> <input id = "USRC_tb_bankcodeid" type="text" name="USRC_tb_bankcodeid"  maxlength=5 value="'+$tds.eq(10).text()+'" style="width:45px" class="numonlyzero USRC_class_title_nums USRC_class_updvalidation" ></td></tr><tr><td><label>BRANCH CODE</label></td><td> <input id ="USRC_tb_branchcode" type="text" name="USRC_tb_branchcode" value="'+$tds.eq(11).text()+'" maxlength=5 style="width:45px" class="numonlyzero USRC_class_title_nums USRC_class_updvalidation"></td></tr></table><table><tr><td><label>BANK ADDRESS</label></td><td><textarea id="USRC_tb_bankaddr" name="USRC_tb_bankaddr" class="USRC_class_updvalidation general" >'+$tds.eq(12).text()+'</textarea></td></tr><tr><td style="width:160px"><label>COMMENTS</label></td><td><textarea id="USRC_ta_comments" name="USRC_ta_comments USRC_class_ta_cmts" class="USRC_class_updvalidation">'+$tds.eq(13).text()+'</textarea></td></tr><tr><td>EI/NON_EI</td><td><input id ="USRC_cb_nonei" type="checkbox" name="USRC_cb_nonei" class="USRC_class_updvalidation"></td></tr></table>';
+{USRC_upd_tr +='<table><tr><td style="width:160px"><label>UNIT NUMBER</label><em>*</em></td><td style="width:240px"><input style="width:40px" id="USRC_tb_unitno" value="'+$tds.eq(1).text()+'" name="USRC_tb_unitno" type="USRC_tb_unitno" maxlength=4  style="width:40" class="USRC_class_title_nums USRC_class_updvalidation numonlyzero"></td><td><label id="USRC_lbl_alreadyexists" class="errormsg"></label></td></tr><tr><td><label>START DATE</label><em>*</em></td><td><input value="'+$tds.eq(2).text()+'" type="text" name="USRC_db_startdate_update" id="USRC_db_startdate_update" style="width:75px" class="USRC_class_updvalidation datemandtry"/></td></tr><tr><td>END DATE<em>*</em></td><td><input value="'+$tds.eq(3).text()+'" type="text" name="USRC_db_enddate_update" id="USRC_db_enddate_update" style="width:75px" class="USRC_class_updvalidation datemandtry"/><input id ="USRC_cb_obsolete" type="checkbox" name="USRC_cb_obsolete" class="USRC_class_obsolete USRC_class_updvalidation" disabled><label id="USRC_lbl_obsolete">OBSOLETE</label></td><td><label id="USRC_lbl_obsolete_errmsg" class="errormsg"></label></td></tr><tr><td><label>UNIT RENTAL</label><em>*</em></td><td><input value="'+$tds.eq(6).text()+'" id= "USRC_tb_unitreltal" type = "text" name="USRC_tb_unitreltal" maxlength=4 style="width:40px" class="numonly USRC_class_title_nums USRC_class_updvalidation"></td></tr><tr><td><label>UNIT DEPOSIT</label></td><td><input value="'+$tds.eq(7).text()+'" id="USRC_tb_unitdeposit" type="text" name = "USRC_tb_unitdeposit" maxlength=5 style="width:45px" class="numonly USRC_class_title_nums USRC_class_updvalidation"></td></tr><tr><td><label>ACCOUNT NUMBER</label></td><td><input value="'+$tds.eq(8).text()+'" id ="USRC_tb_accnoid" type="USRC_tb_accnoid" name="USRC_tb_accnoid" class ="numonlyzero USRC_class_updvalidation USRC_class_title_nums" maxlength=15 style="width:130px"></td></tr><tr><td><label>ACCOUNT NAME</label></td><td><input id="USRC_tb_accname" type="text" name="USRC_tb_accname" value="'+$tds.eq(9).text()+'" maxlength=25 class="general USRC_class_updvalidation"></td></tr><tr><td><label>BANK CODE</label></td><td> <input id = "USRC_tb_bankcodeid" type="text" name="USRC_tb_bankcodeid"  maxlength=5 value="'+$tds.eq(10).text()+'" style="width:45px" class="numonlyzero USRC_class_title_nums USRC_class_updvalidation" ></td></tr><tr><td><label>BRANCH CODE</label></td><td> <input id ="USRC_tb_branchcode" type="text" name="USRC_tb_branchcode" value="'+$tds.eq(11).text()+'" maxlength=5 style="width:45px" class="numonlyzero USRC_class_title_nums USRC_class_updvalidation"></td></tr></table><table><tr><td><label>BANK ADDRESS</label></td><td><textarea id="USRC_tb_bankaddr" name="USRC_tb_bankaddr" class="USRC_class_updvalidation" >'+$tds.eq(12).text()+'</textarea></td></tr><tr><td style="width:160px"><label>COMMENTS</label></td><td><textarea id="USRC_ta_comments" name="USRC_ta_comments" class="USRC_class_updvalidation">'+$tds.eq(13).text()+'</textarea></td></tr><tr><td>EI/NON_EI</td><td><input id ="USRC_cb_nonei" type="checkbox" name="USRC_cb_nonei" class="USRC_class_updvalidation"></td></tr></table>';
 $(USRC_upd_tr).appendTo($("#USRC_tble_update"));
 $("#USRC_db_startdate_update").datepicker({dateFormat: "dd-mm-yy",changeYear:true,changeMonth:true,maxDate:'+2Y' });
 $("#USRC_db_enddate_update").datepicker({dateFormat: "dd-mm-yy" ,changeYear:true,changeMonth:true,maxDate:'+2Y' });
@@ -513,6 +549,8 @@ if($tds.eq(12).text()!='')
 $('#USRC_tb_bankaddr').attr("size",$tds.eq(12).text().length+2);
 USRC_flag_roomtype=1;USRC_flag_access=1;
 $(".preloader").show();//CHECKING UNIT NO IF TRANSACTION IS THERE
+var  newPos= adjustPosition($("#USRC_div_updateform").position(),100,230);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(USRC_success_unitno_trans).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists($('#USRC_tb_unitno').val(),'','USRC_flag_transac_check_unitno','');
 USRC_flag_unitno=1;
 if($tds.eq(5).text()=='X')
@@ -635,7 +673,7 @@ var USRC_newDate_end = USRC_enddate_change.toDateString();
 USRC_newDate_end = new Date( Date.parse( USRC_newDate_end ) );
 $('#USRC_db_enddate_update').datepicker("option","minDate",USRC_newDate_end);
 USRC_glb_unitno_arr=USRC_response_unitno_trans.USRC_obj_loadunitno;
-if(USRC_response_unitno_trans.USRC_truefalse_flag==true){
+if(USRC_response_unitno_trans.USRC_objarr_custexpense[1]!=USRC_FormTableDateFormat(USRC_obj_rowvalue.USRC_tr_second)){
 $('#USRC_tb_unitno').prop('readonly', true);
 $('#USRC_tb_unitno').addClass('rdonly');}
 //CHECK TRANSACTION FOR SDATE,IF NO TRANS MEANS NOT SET MIN DATE
@@ -700,6 +738,8 @@ var USRC_parentfunc_already=8
 }
 if((($('#USRC_tb_sep_stamptype').val()==undefined)&&($('#USRC_tb_sep_roomtype').val()!='')&&(($('#USRC_tb_sep_roomtype').val()).trim()!=USRC_obj_rowvalue.USRC_tr_first))||(($('#USRC_tb_sep_stamptype').val()!='')&&($('#USRC_tb_sep_roomtype').val()==undefined)&&(($('#USRC_tb_sep_stamptype').val()).trim()!=USRC_obj_rowvalue.USRC_tr_first))){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists(USRC_roomstamptype_val,'',USRC_parentfunc_already,'');
 }
 if(($('#USRC_tb_sep_roomtype').val()=='')||($('#USRC_tb_sep_stamptype').val()=='')){
@@ -868,6 +908,8 @@ $("#USRC_lbl_alreadyexists").text(USRC_errormsg_arr[7])
 }
 else if(($("#USRC_tb_access").val().length>=4)&&(USRC_obj_rowvalue.USRC_tr_second!=$("#USRC_tb_access").val())){
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 USRC_flag_access=1;
 google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists($("#USRC_tb_access").val(),'','USRC_flag_check_accesscard','');
 }});
@@ -876,6 +918,8 @@ $(document).on('change','#USRC_lb_roomtype',function(){
 if(($("#USRC_lb_roomtype").val()=='SELECT')&&(USRC_obj_rowvalue.USRC_tr_six!='')){
 USRC_flag_roomtype=0;
 $(".preloader").show();
+var  newPos= adjustPosition($(this).position(),100,180);
+resetPreloader(newPos);
 google.script.run.withSuccessHandler(USRC_success_alreadyexists).withFailureHandler(USRC_onFailure).USRC_Data_AlreadyExists(USRC_obj_rowvalue.USRC_tr_second,'','USRC_transac_check_roomtype','');
 }else{
 $("#USRC_lbl_alreadyexists_roomtype").text('')
@@ -884,6 +928,8 @@ USRC_flag_roomtype=1;}});
 /*--------------------------FUNCTION FOR UPDATION---------------------------------------*/
 $(document).on('click','#USRC_btn_update',function(){
 $(".preloader").show();
+var  newPos= adjustPosition($("#USRC_btn_update").position(),100,230);
+resetPreloader(newPos);
 if ($('#USRC_cb_nonei').is(":checked"))
 var USRC_cb_nonei='X'
 else
@@ -924,6 +970,7 @@ $("#USRC_db_startdate_update").datepicker({dateFormat: "dd-mm-yy" ,changeYear:tr
 $("#USRC_db_enddate_update").datepicker({dateFormat: "dd-mm-yy" ,changeYear:true,changeMonth:true,maxDate:'+2Y' });
 $('#USRC_lb_roomtype').removeClass('invalid');
 $('textarea').val('');//set default size for textarea , we can give id also
+$('textarea').height(20);
 $('#USRC_form_unit_searchnupdate').find('input:text').prop("size","20");
 $('#USRC_btn_update').attr("disabled","disabled")
 $('#USRC_cb_lost').attr("disabled", "disabled")

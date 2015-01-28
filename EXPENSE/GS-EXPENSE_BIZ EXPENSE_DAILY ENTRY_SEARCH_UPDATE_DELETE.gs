@@ -1,6 +1,13 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 /*********************************BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE*******************************/
-//DONE BY:PRADAP,PUNITHA,SARADAMBAL M
+//DONE BY:PUNI
+//VER 1.9-SD:09/10/2014 ED:09/10/2014,TRACKER NO:511,corrected script for preloader,msgbox position
+//DONE BY:SARADAMBAL M
+//VER 1.8-SD:15/09/2014 ED:15/09/2014,TRACKER NO:511,implemented script for preloader,msgbox
+//VER 1.7-SD:28/08/2014 ED:28/08/2014,TRACKER NO:511,updated data table version 1.10.2
+//VER 1.6-SD:13/08/2014 ED:13/08/2014,TRACKER NO:511,implemented script for reset normal size after updation,updated new links,checked autocommit  
+//VER 1.5-SD:27/07/2014 ED:27/07/2014,TRACKER NO:511,implemented script for starhub DP validation, autocomplete for unit category
+//VER 1.4-SD:21/07/2014 ED:21/07/2014,TRACKER NO:511,implemented coding to sort asc,desc for inv date,from period,to period, timestamp and forperiod- DONE BY SARADAMBAL
 //VER 1.3-SD:11/07/2014 ED:12/07/2014,TRACKER NO:511,implemented sp to get inv,sdate & edate for dynamic dp validation using eilib,removed script for dynamic dp validation- DONE BY SARADAMBAL
 //VER 1.2-SD:25/06/2014 ED:25/06/2014,TRACKER NO:511,implemented err msg if the record not having within unit validation period,corrected some err msg
 //VER 1.1-SD:19/06/2014 ED:19/06/2014,TRACKER NO:511,removed alais(as) for inv date,from period and to period for temp table(electricity)
@@ -11,6 +18,7 @@
 //VER 0.06-SD:07/05/2014 ED:07/05/2014,TRACKER NO:511,put success function in seperate,implemented dynamic temp for electricity type search--SARADAMBAL
 //VER 0.05-SD:21/04/2014 ED:21/04/2014,TRACKER NO:511,changed sp name for unit deletion,to show err msg if no customer in unit in datatable update form-SARADAMBAL
 //VER 0.04-SD:16/04/2014 ED:16/04/2014,TRACKER NO:511,checked migration data and after lp changes,corrected and replaced error msg for description,implemented script for dp validation,implemented script for update validation,hide preloader while getting migration type in unit expense-SARADAMBAL
+//DONE BY:PRADAP,PUNITHA
 //VER 0.03-SD:29/03/2014 ED:04/04/2014,TRACKER NO:511,corrected srchbtn validation,error msg(no table entry),sp(unit expense),dp(invoice,forperiod)
 //VER 0.02-SD:22/01/2014 ED:15/03/2014,TRACKER NO:511,corrected all select query,fileterd active unit condition in all search n updated validation,err msgs
 //VER 0.01-INITIAL VERSION, SD:3/11/2013 ED:29/11/2013,TRACKER NO:511
@@ -55,7 +63,6 @@
 //removed no data err msg after
 *********/
 //23.need sorting for date column in data table.
-/***********************************************PENDING TO DO ****************************************
 //11.need to change size(7,2) to max length for petty cash balance
 //11.need to add minus in search form for amt search
 //15.need to validate search button in search form if values not present
@@ -79,7 +86,7 @@ customer
 6.implemented err msg for all expense (checked whether the each table having record or not)
 7.applied validation for invoice date,for period(cant greater than sysdate) ,set date as unit end date +1month for which end date is less than sysdate
 8.corrected some expense srch btn validation
--*/
+/*------------------------------------------GLOABAL DECLARATION TO GET DB CONNECTION-------------------------------------*/
 try
 {
   /* 1-> ELECTRICITY      2-> STARHUB
@@ -113,8 +120,8 @@ try
     for(var i=1;i<=16;i++){
       var BIZDLY_SRC_stmt_chk_expensetble = conn.createStatement();
       var BIZDLY_SRC_rs_expensetble = BIZDLY_SRC_stmt_chk_expensetble.executeQuery("SELECT COUNT(*) FROM "+BIZDLY_SRC_cnt_tblename[i][0]+"");
-      if(BIZDLY_SRC_rs_expensetble.next())
-        BDLY_SRC_arr_errmsg_tablecount.push(BIZDLY_SRC_rs_expensetble.getString("COUNT(*)"));
+      if(BIZDLY_SRC_rs_expensetble.next()){
+        BDLY_SRC_arr_errmsg_tablecount.push(BIZDLY_SRC_rs_expensetble.getString("COUNT(*)"));}
       BIZDLY_SRC_rs_expensetble.close();
       BIZDLY_SRC_stmt_chk_expensetble.close();    }
     conn.close();
@@ -664,7 +671,7 @@ try
       /*HOUSE KEEPING PAYMENT AMNT*/BDLY_SRC_SelectQuery['12']['148'] ="SELECT EHKP.EHKP_ID,UNIT_NO,EHKP.EHKP_AMOUNT,DATE_FORMAT(EHKP.EHKP_FOR_PERIOD,'%M-%Y'),DATE_FORMAT(EHKP.EHKP_PAID_DATE,'%d-%m-%Y') AS DATE,EHKP.EHKP_COMMENTS,EHKP.EHKP_USERSTAMP,DATE_FORMAT(CONVERT_TZ(EHKP.EHKP_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS EHKP_TIMESTAMP FROM "+BDLY_SRC_tmptbl_hkpsrch+" EHKP WHERE  EHKP.EHKP_PAID_DATE BETWEEN '"+eilib.SqlDateFormat(SearchFormData.BDLY_SRC_startdate)+"' AND '"+eilib.SqlDateFormat(SearchFormData.BDLY_SRC_enddate)+"' AND EHKP.EHKP_AMOUNT BETWEEN  "+SearchFormData.BDLY_SRC_tb_fromtoamnt[0]+" AND "+SearchFormData.BDLY_SRC_tb_fromtoamnt[1]+" ORDER BY EHKP.EHKP_AMOUNT,UNIT_NO,EHKP.EHKP_PAID_DATE ASC";
     }  
     var execute_statement = creatStatement.executeQuery(BDLY_SRC_SelectQuery[BDLY_SRC_lb_ExpenseList_val][SearchFormData.BDLY_SRC_lb_serachopt]);
-    while(execute_statement.next()){
+    while(execute_statement.next()){      
       var rowarray =[],Totalcolumns=BDLY_SRC_GridHeaders.length;
       for(var x=1; x<=Totalcolumns; x++){
         if(SearchFormData.BDLY_SRC_lb_serachopt==142&&x==2){rowarray.push(parseFloat(execute_statement.getString(x)).toFixed(2))}
@@ -688,8 +695,11 @@ try
       unit_start_end_date_obj['UNITNO'+unit_start_end_date_query.getString('U.UNIT_NO')]=[unit_start_end_date_query.getString('UD_START_DATE'),unit_start_end_date_query.getString('UD_END_DATE')]
     }
     BDLY_SRC_drophkpaymentsptemptable(conn,BDLY_SRC_tmptbl_hkpsrch);
+    var BDLY_SRC_arr_unitcmts=[];
+    if(BDLY_SRC_lb_ExpenseList_val==3)
+      BDLY_SRC_arr_unitcmts=eilib.BDLY_getinvoicefrom(conn); 
     creatStatement.close(),conn.close();
-    return [BDLY_SRC_Expdataobject,unit_start_end_date_obj,BDLY_SRC_TableWidth];
+    return [BDLY_SRC_Expdataobject,unit_start_end_date_obj,BDLY_SRC_TableWidth,BDLY_SRC_arr_unitcmts];
   }
   /*------------------------------------------EILIB FUNCTION TO GET UNIT SDATE,EDATE AND INVDATE -----------------------------------------------------*/
   function BDLY_SRC_getUnitDate(BDLY_SRC_unitno){
@@ -739,11 +749,10 @@ try
       case '1': 
         var EELC_AMOUNT="",EELC_AMTID=0;        
         if(BDLY_new_values[6]!=""){EELC_AMOUNT=BDLY_new_values[6];EELC_AMTID=135;}else if(BDLY_new_values[7]!=""){EELC_AMOUNT=BDLY_new_values[7];EELC_AMTID=134;} else {EELC_AMOUNT=BDLY_new_values[8];EELC_AMTID=133;}
-        updatequery ="UPDATE EXPENSE_ELECTRICITY SET EE_INVOICE_DATE='"+eilib.SqlDateFormat(BDLY_new_values[3])+"',EE_FROM_PERIOD='"+eilib.SqlDateFormat(BDLY_new_values[4])+"',EE_TO_PERIOD='"+eilib.SqlDateFormat(BDLY_new_values[5])+"',ECN_ID="+EELC_AMTID+",EE_AMOUNT='"+EELC_AMOUNT+"',EE_COMMENTS="+BDLY_SRC_commentvalue+",ULD_ID=((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"')) WHERE EE_ID='"+BDLY_new_values[0]+"'";
-        break;
-        
+        updatequery ="CALL SP_BIZDLY_ELECTRICITY_UPDATE('"+BDLY_new_values[0]+"','"+eilib.SqlDateFormat(BDLY_new_values[3])+"','"+eilib.SqlDateFormat(BDLY_new_values[4])+"','"+eilib.SqlDateFormat(BDLY_new_values[5])+"',"+EELC_AMTID+",'"+EELC_AMOUNT+"',"+BDLY_SRC_commentvalue+",'"+UserStamp+"',@UPDATE_FLAG)";
+        break;        
       case '2': { 
-        updatequery= "UPDATE EXPENSE_STARHUB SET ESH_INVOICE_DATE='"+eilib.SqlDateFormat(BDLY_new_values[4])+"',ESH_FROM_PERIOD='"+eilib.SqlDateFormat(BDLY_new_values[5])+"',ESH_TO_PERIOD='"+eilib.SqlDateFormat(BDLY_new_values[6])+"',ESH_AMOUNT='"+BDLY_new_values[7]+"',ESH_COMMENTS="+BDLY_SRC_commentvalue+",ULD_ID=((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"')) WHERE ESH_ID='"+BDLY_new_values[0]+"'";
+        updatequery= "CALL SP_BIZDLY_STARHUB_UPDATE('"+BDLY_new_values[0]+"','"+eilib.SqlDateFormat(BDLY_new_values[4])+"','"+eilib.SqlDateFormat(BDLY_new_values[5])+"','"+eilib.SqlDateFormat(BDLY_new_values[6])+"','"+BDLY_new_values[7]+"',"+BDLY_SRC_commentvalue+",'"+UserStamp+"',@UPDATE_FLAG)";
         break;
       }
       case '3':{
@@ -762,7 +771,7 @@ try
         updatequery = "UPDATE EXPENSE_DIGITAL_VOICE SET EDV_INVOICE_DATE='"+eilib.SqlDateFormat(BDLY_new_values[5])+"',EDV_FROM_PERIOD='"+eilib.SqlDateFormat(BDLY_new_values[6])+"',EDV_TO_PERIOD='"+eilib.SqlDateFormat(BDLY_new_values[7])+"',EDV_AMOUNT='"+BDLY_new_values[8]+"',EDV_COMMENTS="+BDLY_SRC_commentvalue+",ULD_ID=((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"')) WHERE EDV_ID='"+BDLY_new_values[0]+"'";
         break;
       case '6':  
-        updatequery= "CALL SP_BIZDLY_PURCHASE_NEW_CARD_UPDATE("+BDLY_new_values[0]+",'"+BDLY_new_values[2]+"','"+eilib.SqlDateFormat(BDLY_new_values[3])+"','"+BDLY_new_values[4]+"',"+BDLY_SRC_commentvalue+",'"+UserStamp+"',@EPNC_FLAG)";
+        updatequery= "CALL SP_BIZDLY_PURCHASE_NEW_CARD_UPDATE("+BDLY_new_values[0]+",'"+BDLY_new_values[2]+"','"+eilib.SqlDateFormat(BDLY_new_values[3])+"','"+BDLY_new_values[4]+"',"+BDLY_SRC_commentvalue+",'"+UserStamp+"',@UPDATE_FLAG)";
         break;
       case '7':
         updatequery = "UPDATE EXPENSE_MOVING_IN_AND_OUT SET ULD_ID=((SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"')),EMIO_INVOICE_DATE='"+eilib.SqlDateFormat(BDLY_new_values[2])+"',EMIO_AMOUNT='"+BDLY_new_values[3]+"',EMIO_COMMENTS="+BDLY_SRC_commentvalue+" WHERE EMIO_ID='"+BDLY_new_values[0]+"'";
@@ -788,7 +797,7 @@ try
         {
           var BIZDLY_hkpforperiod=eilib.GetForperiodDateFormat(BDLY_new_values[3],BDLY_new_values[3]);
           var BIZDLY_unitno=BDLY_new_values[1].split(" ")[0];
-          updatequery = "CALL SP_BIZDLY_HOUSEKEEPING_PAYMENT_UPDATE("+BDLY_new_values[0]+","+BIZDLY_unitno+",'"+BIZDLY_hkpforperiod.frmdate+"','"+eilib.SqlDateFormat(BDLY_new_values[4])+"','"+BDLY_new_values[2]+"',"+BDLY_SRC_commentvalue+",'"+UserStamp+"',@HKP_FLAG)"
+          updatequery = "CALL SP_BIZDLY_HOUSEKEEPING_PAYMENT_UPDATE("+BDLY_new_values[0]+","+BIZDLY_unitno+",'"+BIZDLY_hkpforperiod.frmdate+"','"+eilib.SqlDateFormat(BDLY_new_values[4])+"','"+BDLY_new_values[2]+"',"+BDLY_SRC_commentvalue+",'"+UserStamp+"',@UPDATE_FLAG)"
         }
         break;
       }
@@ -797,11 +806,10 @@ try
     creatStatement.close();
     conn.commit();
     BDLY_SRC_updateflag=1;
-    if(expense=='6'||(expense=='12'&&selectedSearchopt!=198))
+    if(expense=='6'||(expense=='12'&&selectedSearchopt!=198) || expense=='1' || expense=='2')
     {
       BDLY_SRC_updateflag=0;
-      if(expense=='6'){var updateflag_query="SELECT @EPNC_FLAG";}
-      else{var updateflag_query="SELECT @HKP_FLAG";}
+      var updateflag_query="SELECT @UPDATE_FLAG";
       var updateflag_stmt=conn.createStatement();
       var updateflag_rs=updateflag_stmt.executeQuery(updateflag_query);
       while(updateflag_rs.next())
@@ -824,17 +832,18 @@ try
     if(selectedexpense==6)
     {
       delquery="CALL SP_BIZDLY_PURCHASE_NEW_CARD_DELETE("+BDLY_SRC_tableid[selectedexpense]+","+BDLY_Delete_key+",'"+UserStamp+"',@DELETION_FLAG)"
+      creatStatement.execute(delquery); 
+      var BDLY_SRC_getresult= creatStatement.executeQuery("SELECT @DELETION_FLAG");
+      while(BDLY_SRC_getresult.next()){
+        var BDLY_SRC_chkdelflag=BDLY_SRC_getresult.getString("@DELETION_FLAG");
+      }
+      creatStatement.close(); 
     }
     else
     {
-      delquery="CALL SP_SINGLE_TABLE_ROW_DELETION("+BDLY_SRC_tableid[selectedexpense]+","+BDLY_Delete_key+",'"+UserStamp+"',@DELETION_FLAG)";
+      BDLY_SRC_chkdelflag=eilib.DeleteRecord(conn,BDLY_SRC_tableid[selectedexpense],BDLY_Delete_key);
     }
-    creatStatement.execute(delquery);
-    var BDLY_SRC_getresult= creatStatement.executeQuery("SELECT @DELETION_FLAG");
-    while(BDLY_SRC_getresult.next()){
-      var BDLY_SRC_chkdelflag=BDLY_SRC_getresult.getString("@DELETION_FLAG");
-    }
-    creatStatement.close(); conn.close();
+    conn.close();
     return BDLY_SRC_chkdelflag;
   }
 }catch(err)

@@ -1,11 +1,16 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************VIEW ALL CARD***************************************************//
+//DONE BY:PUNI
+//VER 1.3-SD:14/11/2014 ED:14/11/2014;TRACKER NO:780:Corrected script to show err msg throwing from sp if any duplicard card issue occurs
+VER 1.2-SD:09/10/2014 ED:09/10/2014;TRACKER NO:780:1.added script to hide preloader after menu n form loads,2.Changed preloader n msgbox position
+//DONE BY:SARADAMBAL.M
+VER 1.1-SD:27/08/2014 ED:27/08/2014;TRACKER NO:780;UPDATED NEW LINKS
 //DONE BY:SAFIYULLAH.M
 VER 1.0-SD:12/06/2014 ED:12/06/2014;TRACKER NO:780;UPDATED FAILURE MSG
 VER 0.09-SD:06/06/2014 ED:06/06/2014;TRACKER NO:780;CHANGED JQUERY LINK
-//VER 0.08-SD:26/05/2014 ED:26/05/2014:TRACKER NO: 780;SEARCH BY CARD FLEX TABLE HEIGHTS UPDATED, AND ISSUE CORRCTED IN ERROR MSG SHOWING.SP UPDTAED TO SHOW TERMINATED CUSTOMER CARD DETAILS ALSO
-//VER 0.07 - SD:06/05/2014 ED:07/05/2014 ;TRACKER NO: 780:UPDATE THE HEIGHT OF FLEX TABLE AND UPDATED TEMP TABLE DYNAMIC IN FORM
-//VER 0.06 -SD:05/03/2014 ED:05/03/2014;TRACKER NO: 716;implement error msg getting from eilib 
+VER 0.08-SD:26/05/2014 ED:26/05/2014:TRACKER NO: 780;SEARCH BY CARD FLEX TABLE HEIGHTS UPDATED, AND ISSUE CORRCTED IN ERROR MSG SHOWING.SP UPDTAED TO SHOW TERMINATED CUSTOMER CARD DETAILS ALSO
+VER 0.07 - SD:06/05/2014 ED:07/05/2014 ;TRACKER NO: 780:UPDATE THE HEIGHT OF FLEX TABLE AND UPDATED TEMP TABLE DYNAMIC IN FORM
+VER 0.06 -SD:05/03/2014 ED:05/03/2014;TRACKER NO: 716;implement error msg getting from eilib 
 VER 0.05 - SD:21/01/2014 ED:22/01/2014;TRACKER NO: 716-Added Auto complete for search by customer
 VER 0.04 - SD:28/12/2013 ED:28/12/2013;TRACKER NO: 530-update style for header msg and change identifier
 VER 0.03 - SD:02/12/2013 ED:09/12/2013;TRACKER NO: 530-Updated SP(Removed Doget function)
@@ -17,22 +22,31 @@ VER 0.01 - INITIAL VERSION-SD:04/09/2013 ED:1/10/2013;TRACKER NO: 530
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
-
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
 var CACS_VIEW_errorAarray=[];
 var CACS_VIEW_cust_array=[]
@@ -48,7 +62,6 @@ google.script.run.withSuccessHandler(CACS_VIEW_customername_autocompleteresult).
 google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_load_initial_values).CACS_VIEW_get_initial_values();
 //****************FUNCTION TO LOAD INITIAL VALUES******************8//
 function CACS_VIEW_load_initial_values(initial_values){
- $(".preloader").hide();
 CACS_VIEW_errorAarray=initial_values[0].CACS_VIEW_error_msg;
 var CACS_VIEW_unitarray=initial_values[0].CACS_VIEW_unitno;
 var CACS_VIEW_cust_config=initial_values[0].CACS_VIEW_config;
@@ -81,8 +94,14 @@ CACS_VIEW_cardno_options += '<option value="' + CACS_VIEW_cardno_array[i] + '">'
 }
 $('#CACS_VIEW_lb_cardno').html(CACS_VIEW_cardno_options)
 var CACS_VIEW_custname_options ='<option>SELECT</option>'
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 $('#CACS_VIEW_lb_searchoption').change(function(){
+var  newPos= adjustPosition($(this).position(),100,80);
+resetPreloader(newPos);
 $(".preloader").show(); 
 if($(this).val()==31)
 {
@@ -204,6 +223,8 @@ $('#CACS_VIEW_btn_search').click(function()
 {
 var CACS_VIEW_name =$('#CACS_VIEW_tb_cname').val();
 if(CACS_VIEW_name!=""){ 
+var  newPos= adjustPosition($("#CACS_VIEW_tb_cname").position(),100,100);
+resetPreloader(newPos);
 $(".preloader").show();
 google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_CustId).CACS_VIEW_CustomerId(CACS_VIEW_name);
 $('#CACS_VIEW_tble_htmltable').hide();
@@ -217,7 +238,7 @@ $('#CACS_VIEW_headermsg1').hide();
 function CACS_VIEW_loadcardno_details(card_details)
 {
 $(".preloader").hide();
-if($('#CACS_VIEW_lb_searchoption').val()==40 ||$('#CACS_VIEW_lb_searchoption').val()==31){
+if($('#CACS_VIEW_lb_searchoption').val()==40 ||$('#CACS_VIEW_lb_searchoption').val()==31||$('#CACS_VIEW_lb_searchoption').val()==18){
 var CACS_VIEW_result_array=card_details[0];
 var CACS_VIEW_checkfalg=card_details[1];
 }
@@ -255,6 +276,12 @@ var msg=(CACS_VIEW_errorAarray[2]).replace('[CARD NO]',CACS_VIEW_cardno)
 $('#CACS_VIEW_headermsg1').text(msg).show();
 $('#CACS_VIEW_lbl_errmsg').hide();
 }
+else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1){
+$('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
+$('#CACS_VIEW_headermsg1').text(msg).hide()
+$('#CACS_VIEW_tble_htmltable').hide();
+$('#CACS_VIEW_div_htmltable').hide();
+}
 else{
 $('#CACS_VIEW_tble_htmltable').hide();
 $('#CACS_VIEW_div_htmltable').hide();
@@ -273,7 +300,7 @@ else if($('#CACS_VIEW_lb_searchoption').val()==31)
 {
 if(CACS_VIEW_unitno!="SELECT"){
 if(CACS_VIEW_result_array.length!=0){
-if(CACS_VIEW_checkfalg==1){
+//if(CACS_VIEW_checkfalg==1){
 var CACS_VIEW_table_header='<tr><th>ACTIVE CARDS</th><th>NON ACTIVE CARDS</th><th>OLD CARDS</th><th>ACCESS REASON</th></tr>'
 $('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
 var CACS_VIEW_active=[]
@@ -306,15 +333,7 @@ $('#CACS_VIEW_tble_htmltable').show();
 $('#CACS_VIEW_div_htmltable').show();
 $('#CACS_VIEW_lbl_errmsg').hide();
 }
-else{
-$('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
-$('#CACS_VIEW_headermsg1').text(msg).hide()
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-}
-}
-else{
-if(CACS_VIEW_checkfalg!=0){
+else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1){
 $('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
 $('#CACS_VIEW_headermsg1').text(msg).hide()
 $('#CACS_VIEW_tble_htmltable').hide();
@@ -326,7 +345,6 @@ $('#CACS_VIEW_div_htmltable').hide();
 $('#CACS_VIEW_headermsg1').hide();
 var msg=(CACS_VIEW_errorAarray[3]).replace('[UNO]',CACS_VIEW_unitno)
 $('#CACS_VIEW_lbl_errmsg').text(msg).show()
-}
 }
 }
 else{
@@ -354,13 +372,19 @@ var msg=CACS_VIEW_errorAarray[8]
 $('#CACS_VIEW_headermsg1').text(msg).show()
 $('#CACS_VIEW_tble_htmltable').show();
 $('#CACS_VIEW_div_htmltable').show();
+}
+else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1)
+{
+$('#CACS_VIEW_tble_htmltable').hide();
+$('#CACS_VIEW_div_htmltable').hide();
+$('#CACS_VIEW_headermsg1').hide();
 $('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
 }
 else{
 $('#CACS_VIEW_tble_htmltable').hide();
 $('#CACS_VIEW_div_htmltable').hide();
 $('#CACS_VIEW_headermsg1').hide();
-var msg=(CACS_VIEW_errorAarray[3]).replace('[UNO]',CACS_VIEW_unitno)
+var msg=(CACS_VIEW_errorAarray[3]).replace('[UNO]',$('#CACS_VIEW_lb_searchoption').find('option:selected').text())
 $('#CACS_VIEW_lbl_errmsg').text(msg).show()
 }
 }
@@ -394,6 +418,8 @@ $('#CACS_VIEW_headermsg1').hide();
 //FUNCTION TO CALL RADIO BUTTON CLICK
 $(document).on("change",'.CACS_VIEW_class_custid', function ()
 {
+var  newPos= adjustPosition($(this).position(),100,80);
+resetPreloader(newPos);
 $(".preloader").show();
 var CACS_VIEW_customer_id=$("input[name=custid]:checked").val();
 $('input:radio[name=CACS_VIEW_selectcard]').attr('checked',false);
@@ -413,7 +439,7 @@ var CACS_VIEW_custcard_array=custdetails_result[0];
 var CACS_VIEW_checkflag=custdetails_result[1];
 var CACS_VIEW_name =$('#CACS_VIEW_tb_cname').val();
 CACS_VIEW_name=CACS_VIEW_name.replace("_"," ")
-if(CACS_VIEW_checkflag==''){
+//if(CACS_VIEW_checkflag==''){
 if(CACS_VIEW_custcard_array.length > 10){ var px = '600px'}
      else
      { 
@@ -441,19 +467,19 @@ $('#CACS_VIEW_div_htmltable').show();
 var msg=(CACS_VIEW_errorAarray[1]).replace('[FIRST NAME + LAST NAME]',CACS_VIEW_name)
 $('#CACS_VIEW_headermsg1').text(msg).show();
 }
+else if(CACS_VIEW_checkflag!=0&&CACS_VIEW_checkflag!=1){
+$('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkflag).show();
+$('#CACS_VIEW_tble_htmltable').hide();
+$('#CACS_VIEW_div_htmltable').hide();
+$('#CACS_VIEW_headermsg1').hide();
+}
 else{
 $('#CACS_VIEW_tble_htmltable').hide();
 $('#CACS_VIEW_div_htmltable').hide();
 var msg=(CACS_VIEW_errorAarray[4]).replace('[CNAME]',CACS_VIEW_name)
 $('#CACS_VIEW_lbl_errmsg').text(msg).show();
 }
-}
-else{
-$('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkflag).show();
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-}
+//}
 }
 function CACS_VIEW_error(err){
 $(".preloader").hide();
@@ -463,7 +489,7 @@ err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
 $('#CACS_VIEW_form_viewcardform').replaceWith('<center><label class="dberrormsg">'+err+'</label></center>');
 }
 else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"VIEW ALL CARD",msgcontent:err}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"VIEW ALL CARD",msgcontent:err,position:{top:150,left:500}}});
 }
 }
 //FUNCTION TO HIGHLIGHT SEARCH TEXT
@@ -484,7 +510,10 @@ function CACS_VIEW_customername_autocompleteresult(response)
 {
 CACS_VIEW_customername=response;
 $("#CACS_VIEW_tb_cname").val("");
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 $("#CACS_VIEW_tb_cname").keypress(function(e){
 

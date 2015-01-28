@@ -1,9 +1,14 @@
 <!--********************************************ERM SEARCH/UPDATE*******************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
+//DONE BY:PUNI
+//VER 1.08 -SD:09/10/2014 ED:09/10/2014,TRACKER NO:709-1.corrected proloader and message box position,2.corrected moving date DP max date as sysdate+3 months
 //DONE BY:KUMAR
-//VER 1.04- SD:22/07/2014 ED:22/07/2014,TRACKER NO:709 coverted age,guests,minimum stay data's to string.
-//VER 1.03- SD:19/07.2014 ED:10/07/2014,TRACKER NO:709 changed timestamp search min date as 2009 and max date as todate()
-//VER 1.02- SD:16/06/2014 ED:16/07/2014,TRACKER NO:709 changed Contact no datatype bigint(20) to varchar(20) and used class prefix accept 00 also 
+//VER 1.07 -SD:06/10/2014 ED:06/10/2014,TRACKER NO:709-updated proloader and message box position.
+//VER 1.06- SD:28/08/2014 ED:28/08/2014,TRACKER NO:709 Changed contact no input value format
+//VER 1.05- SD:08/08/2014 ED:08/08/2014,TRACKER NO:709 implemented rollback and commit in script side and updated jquery and css links.
+//VER 1.04- SD:22/07/2014 ED:22/07/2014,TRACKER NO 709 converted spl characters(erm form age,guests,minimum fields )in entry form and updation form.
+//VER 1.03- SD:19/07/2014 ED:19/07/2014,TRACKER NO:709 Did sorting for all search option and set timestamp min and max date.
+//VER 1.02- SD:16/07/2014 ED:16/07/2014,TRACKER NO:709 changed ERM_CONTACT_NO datatype bigint(20) to varchar(20) and prefix accept 000.
 //VER 1.01- SD:28/06/2014 ED:28/06/2014,TRACKER NO:709 cleared email id button vlaidation issue and chenaged erm rent maximum digit 4 to 5 
 //VER 1.00- SD:18/06/2014 ED:18/06/2014,TRACKER NO:709 Added conn error mesaage and did moving date min and max date validation.and updated new email id validation.
 //VER 0.09- SD:06/06/2014 ED:06/06/2014,TRACKER NO:709 Changed jquery common link and css link.
@@ -21,25 +26,36 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={AmountCompare:'InValid'}
 $(document).ready(function() {
+$('#CERM_SRC_ta_comments').autogrow({onInitialize: true});
 /**********************ERROR MESSAGE********************************/
  function CERN_SRC_error_message(ERM_SRC_err)
    {
@@ -50,7 +66,7 @@ $(document).ready(function() {
   }
   else
   {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:ERM_SRC_err}});
+  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:ERM_SRC_err,position:{top:150,left:500}}});
   }
   $(".preloader").hide(); 
   }
@@ -162,7 +178,9 @@ if(emailname!=null ||recordcheck==null)
     $('#CERM_errormessageform').hide();
     $('#CERM_SRC_formmainform').show();
  }
-$(".preloader").hide(); 
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus(); 
 }
 //***************SET FROM TIMESTAMP DATEPICKER***************//
 $('#CERM_SRC_db_totimestamp').datepicker({
@@ -269,6 +287,8 @@ $('#CERM_SRC_tble_timestampsearchtable').hide();
 if(CERM_SRC_option==3)
 {
 $(".preloader").show();
+ var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $('#CERM_SRC_tble_amountrangetable').hide();
 $('#CERM_SRC_tble_contactnotable').show();
 $('#CERM_SRC_tble_customernametable').hide();
@@ -280,6 +300,8 @@ google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(
 if(CERM_SRC_option==2)
 {
 $(".preloader").show();
+ var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $('#CERM_SRC_tble_amountrangetable').hide();
 $('#CERM_SRC_tble_contactnotable').hide();
 $('#CERM_SRC_tble_customernametable').show();
@@ -436,6 +458,8 @@ var CERM_SRC_null='';
 if(CERM_SRC_customername!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CERM_SRC_btn_customernameseachbutton').position(),100,280);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_customername,CERM_SRC_null)
 }
 });
@@ -450,12 +474,16 @@ var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
 if((CERM_SRC_fromamt!="")&&(CERM_SRC_toamt!=""))
 {
 $(".preloader").show(); 
+var  newPos= adjustPosition($('#CERM_SRC_btn_amountrangesearchbutton').position(),100,280);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_fromamt,CERM_SRC_toamt)
 }
 });
 //***************CONTACT NO SEARCH CALL FUNCTION***************//
 $('#CERM_SRC_btn_contactnoseachbutton').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#CERM_SRC_btn_contactnoseachbutton').position(),100,280);
+resetPreloader(newPos);
 $('#CERM_SRC_div_htmltable').hide();
 $('#ERM_formsearchbutton').hide();
 $('#CERM_SRC_lbl_error').hide();
@@ -478,6 +506,8 @@ var CERM_SRC_null='';
 if(CERM_SRC_nationality!="SELECT")
 {
 $(".preloader").show(); 
+var  newPos= adjustPosition($('#CERM_SRC_btn_nationalityseachbutton').position(),100,280);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_nationality,CERM_SRC_null)
 }
 });
@@ -492,6 +522,8 @@ var CERM_SRC_null='';
 if(CERM_SRC_userstamp!="SELECT")
 {
 $(".preloader").show();
+var  newPos= adjustPosition($('#CERM_SRC_btn_userstampseachbutton').position(),100,280);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_userstamp,CERM_SRC_null)
 }
 });
@@ -505,7 +537,9 @@ var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
 var CERM_SRC_totimestamp=$('#CERM_SRC_db_totimestamp').val();
 if((CERM_SRC_fromtimestamp!="")&&(CERM_SRC_fromtimestamp!=""))
 {
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#CERM_SRC_btn_timestampseachbutton').position(),100,280);
+resetPreloader(newPos);
 google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_fromtimestamp,CERM_SRC_totimestamp)
 }
 });
@@ -736,7 +770,7 @@ var CERM_SRC_toinput=$('#CERM_SRC_db_totimestamp').val();
  else
  {
  CERM_SRC_errorflag=1;
- CERM_SRC_customerheader="NO DETAILS OF SELECTED TIMESTAMP: "+CERM_SRC_frominput+" TO "+CERM_SRC_frominput
+ CERM_SRC_customerheader="NO DETAILS OF SELECTED TIMESTAMP: "+CERM_SRC_frominput+" TO "+CERM_SRC_toinput
  }
  }
  if(CERM_SRC_errorflag==0)
@@ -777,6 +811,8 @@ $('#updatebuttontable').hide();
 
 $(document).on('click','#CERM_SRC_btn_searchbutton',function(){
 $(".preloader").show(); 
+var  newPos= adjustPosition($('#CERM_SRC_btn_searchbutton').position(),100,280);
+resetPreloader(newPos);
 $("#CERM_SRC_btn_searchbutton").attr("disabled","disabled");
 $("#CERM_SRC_btn_deletebutton").attr("disabled","disabled");
 $("#CERM_SRC_btn_savebutton").attr("disabled", "disabled");
@@ -803,8 +839,9 @@ $('#CERM_SRC_tb_customernamesrc').val(name)
 $('#CERM_SRC_tb_customernamesrc').attr("size",namelength);
 $('#CERM_SRC_tb_rent').val(rent);
 var newmovingdate=movingdate.split('-');
+var CERM_NEWsysdate = new Date();
 $('#CERM_SRC_db_movingdate').datepicker("option","minDate",new Date(newmovingdate[2]-1,newmovingdate[1]-1,newmovingdate[0]));
-$('#CERM_SRC_db_movingdate').datepicker("option","maxDate",new Date(newmovingdate[2],parseInt(newmovingdate[1])+2,newmovingdate[0]));
+$('#CERM_SRC_db_movingdate').datepicker("option","maxDate",new Date(CERM_NEWsysdate.getFullYear(),CERM_NEWsysdate.getMonth()+3,CERM_NEWsysdate.getDate()));
 $('#CERM_SRC_db_movingdate').val(movingdate);
 $('#CERM_SRC_tb_minimumstay').val(minimumstay);
 $('#CERM_SRC_lb_occupation').val(occupation);
@@ -822,7 +859,9 @@ $('#CERM_SRC_update_table').show();
 $('#updatebuttontable').show();
 });
 $('#CERM_SRC_btn_ermupdatebutton').click(function(){
-$(".preloader").show(); 
+$(".preloader").show();
+var  newPos= adjustPosition($('#CERM_SRC_btn_ermupdatebutton').position(),100,280);
+resetPreloader(newPos);
 var id=$('#CERM_SRC_tb_id').val();
 var customer=$('#CERM_SRC_tb_customernamesrc').val();
 var rent=$('#CERM_SRC_tb_rent').val();
@@ -857,29 +896,35 @@ $(".preloader").hide();
 if(res=='UPDATION')
 {
 ERM_updatereset();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[9]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[9],position:{top:150,left:500}}});
 }
-if(res=='NOTUPDATION')
+else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[12]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[12],position:$('#CERM_SRC_btn_ermupdatebutton').position()}});
 }
+}
+function CERM_SRC_ERMdeletionResponse(res)
+{
+$(".preloader").hide();
 if(res=='DELETION')
 {
 ERM_updatereset();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[10]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[10],position:{top:150,left:500}}});
 }
-if(res=='NOTDELETED')
+else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[7]}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[7],position:$('#ERM_formsearchbutton').position()}});
 }
 }
 $('#CERM_SRC_btn_deletebutton').click(function(){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE/DELETE",msgcontent:errormsg[8],confirmation:true}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE/DELETE",msgcontent:errormsg[8],confirmation:true,position:$('#ERM_formsearchbutton').position()}});
 });
 $(document).on('click','.messageconfirm',function(){
 $(".preloader").show();
+var  newPos= adjustPosition($('#ERM_formsearchbutton').position(),100,230);
+resetPreloader(newPos);
 var CERM_SRC_id=$("input[name=radiobuttons]:checked").val();
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_ERMupdationtResponse).CERM_SRC_ERMdeletionrecord(CERM_SRC_id);
+google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_ERMdeletionResponse).CERM_SRC_ERMdeletionrecord(CERM_SRC_id);
 });
 $('#CERM_SRC_formmainform').show();
 });
@@ -905,7 +950,7 @@ $('#CERM_SRC_formmainform').show();
     			<table id='CERM_SRC_errormessagetable'>
 				</table>
 			</form>
-<form class="content" id="CERM_SRC_formmainform">
+<form class="content" id="CERM_SRC_formmainform" hidden>
 <table>
 <tr>
 <td><label id="CERM_SRC_lbl_main" hidden>ERM SEARCH BY<em>*</em></label></td>
@@ -926,7 +971,7 @@ $('#CERM_SRC_formmainform').show();
 <input  type="text" name="CERM_SRC_tb_toamount" id="CERM_SRC_tb_toamount" class="amountvalidation" style="width:55px;"/></td><td><label id="CERM_SRC_lbl_amounterrormsg" class='errormsg'></label></td>
 </tr>
 <tr><td>
-<input type="button"  id="CERM_SRC_btn_amountrangesearchbutton" class="maxbtn" value="SEARCH" disabled onclick="CERM_SRC_ermamountrangesearch()"/> 
+<input type="button"  id="CERM_SRC_btn_amountrangesearchbutton" class="maxbtn" value="SEARCH" disabled /> 
 </td></tr>
 </table>
 <table cellspacing="5px" id="CERM_SRC_tble_contactnotable">
@@ -937,7 +982,7 @@ $('#CERM_SRC_formmainform').show();
 <td><label id="contactnoautocompleteerrormsg" class="errormsg" hidden></label></td>
 </tr>
 <tr><td>
-<input type="button"  id="CERM_SRC_btn_contactnoseachbutton" class="maxbtn"  value="SEARCH" disabled onclick="CERM_SRC_ermcontactnosearch()"   /> 
+<input type="button"  id="CERM_SRC_btn_contactnoseachbutton" class="maxbtn"  value="SEARCH" disabled  /> 
 </td></tr>
 </table>
 <table cellspacing="5px" id="CERM_SRC_tble_customernametable">
@@ -960,7 +1005,7 @@ $('#CERM_SRC_formmainform').show();
 </select>
 </tr>
 <tr><td>
-<input type="button"  id="CERM_SRC_btn_nationalityseachbutton" class="maxbtn"  value="SEARCH" disabled onclick="CERM_SRC_ermnationalitysearch()"   /> 
+<input type="button"  id="CERM_SRC_btn_nationalityseachbutton" class="maxbtn"  value="SEARCH" disabled/> 
 </td></tr>
 </table>
 <table cellspacing="5px" id="CERM_SRC_tble_timestampsearchtable">
@@ -975,7 +1020,7 @@ $('#CERM_SRC_formmainform').show();
 <input  type="text" name="CERM_SRC_db_totimestamp" id="CERM_SRC_db_totimestamp" class="timestampvalidation datemandtry" style="width:105px;height:20px"/></td>
 </tr>
 <tr><td>
-<input type="button"  id="CERM_SRC_btn_timestampseachbutton" class="maxbtn"  value="SEARCH" disabled onclick="CERM_SRC_ermtimestampsearch()"/> 
+<input type="button"  id="CERM_SRC_btn_timestampseachbutton" class="maxbtn"  value="SEARCH" disabled /> 
 </td></tr>
 </table>
 <table cellspacing="5px" id="CERM_SRC_tble_userstampsearchtable">
@@ -987,7 +1032,7 @@ $('#CERM_SRC_formmainform').show();
 </select>
 </tr>
 <tr><td>
-<input type="button"  id="CERM_SRC_btn_userstampseachbutton" class="maxbtn"  value="SEARCH" disabled onclick="CERM_SRC_ermuserstampsearch()"   /> 
+<input type="button"  id="CERM_SRC_btn_userstampseachbutton" class="maxbtn"  value="SEARCH" disabled /> 
 </td></tr>
 </table>
 <table id="CERM_SRC_tble_header" ><tr><label align='bottom' name='error' id='CERM_SRC_lbl_error' class="srctitle" visible="false" ></label></tr></table>

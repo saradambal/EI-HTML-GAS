@@ -1,7 +1,10 @@
-<!--*********************************************GLOBAL DECLARATION******************************************-->
-<!--**********************************************************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //***********************************************TICKLER HISTORY**********************************************//
+//DONE BY:PUNITHA
+//VER 1.5-SD:24/09/2014 ED:24/09/2014,TRACKER NO:694,changed preloader position,msgbox position
+//VER 1.4-SD:24/09/2014 ED:24/09/2014,TRACKER NO:694,used function from jquery to replace<> tag in old val n new val,changed script as per corrected sp ,used drop table function from eilib,corrected sort by timestamp in query,changed preloader position,msgbox position
+//DONE BY:SARADAMBAL
+//VER 1.3-SD:22/08/2014 ED:22/08/2014,TRACKER NO:694,updated new links
 //DONE BY:LALITHA
 //VER 1.2-SD:14/07/2014 ED:15/07/2014,TRACKER NO:694,Changed failure funct,Inbetween record put comma,Select query ordered by timestamp desc,sp changed:added unsigned zero for unit nos
 //VER 1.1-SD:07/06/2014 ED:07/06/2014,TRACKER NO:694,Changed jquery link 
@@ -20,21 +23,31 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!-----------------------------COMMON JQUERY LINKS START-------------------------->
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<!----------------------------COMMON JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.11.1.min.js"></script>
-<!-----------------------------COMMON JQUERY LINKS END----------------------------->
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<!--TO SUPPORT OLD FUNCTIONALITIES-->
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!--TO SUPPORT DATE PICKER CSS-->
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<!----------------------------COMMON JQUERY LINKS END---------------------------->
+<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
 <!--TO SUPPORT JQUERY LIB VALIDATION-->
 <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
 <!--TO SUPPORT FORM CSS-->
 <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 <!--SCRIPT TAG START-->
 <script>
+//CHECK PRELOADER STATUS N HIDE START
+var SubPage=1;
+function CheckPageStatus(){
+if(MenuPage!=1 && SubPage!=1)
+$(".preloader").hide();
+}
+//CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION
 function TH_onFailure(TH_error) 
 {
@@ -46,22 +59,25 @@ $('#TH_form_customername').replaceWith('<center><label class="dberrormsg">'+TH_e
 }
 else
 {
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TICKLER HISTORY",msgcontent:TH_error.message}});
+$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TICKLER HISTORY",msgcontent:TH_error,position:{top:150,left:500}}});
 }
 }
 var TH_srch_result_array=[];
 //DOCUMENT READY FUNCTION START
 $(document).ready(function(){
 google.script.run.withSuccessHandler(TH_get_errresult).withFailureHandler(TH_onFailure).TH_get_err();
-$(".preloader").show();
 google.script.run.withSuccessHandler(TH_customername_autocompleteresult).withFailureHandler(TH_onFailure).TH_customername_autocomplete();
+$(".preloader").show();
 var TH_errorMsg_array=[];
 //SUCCESS FUNCTION FOR GET ERROR MESSAGE
 function TH_get_errresult(TH_get_errresult_response)
 {
-$(".preloader").hide();
 TH_errorMsg_array=TH_get_errresult_response.TH_errormsg;
 $('#TH_lbl_notmatch').text(TH_errorMsg_array[2]);
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //FUNCTION TO HIGHLIGHT SEARCH TEXT
 function TH_highlightSearchText() {
@@ -80,7 +96,10 @@ function TH_customername_autocompleteresult(ressponse)
 {
 TH_customername=ressponse;
 $("#TH_ta_customername").val("");
-$(".preloader").hide();
+//TO HIDE PRELOADER START
+SubPage=0;
+CheckPageStatus();
+//TO HIDE PRELOADER END
 }
 //KEY PRESS FUNCTION
 $("#TH_ta_customername").keypress(function(){
@@ -125,6 +144,8 @@ $('#TH_btn_search_customername').removeAttr("disabled");
 }
 //CLICK EVENT FUNCTION FOR CUSTOMER NAME
 $('#TH_btn_search_customername').click(function(){
+var  newPos= adjustPosition($(this).position(),100,230);
+resetPreloader(newPos);
 $(".preloader").show();
 $('#TH_btn_search_customername').removeAttr("disabled");
 $('#TH_div_headernodata').hide();
@@ -136,7 +157,7 @@ google.script.run.withSuccessHandler(TH_srch_result).withFailureHandler(TH_onFai
 //SUCCESS FUNCTION FOR FLEX TABLE DATA
 function TH_srch_result(TH_response)
 {
-$(".preloader").hide();
+//$(".preloader").hide();
 var TH_customername=$("#TH_ta_customername").val();
 $('#TH_ta_customername').val('');
 TH_srch_result_array=TH_response
@@ -187,6 +208,7 @@ else
 {
 TH_arroldvalue +=' , '+TH_arrchk[j];
 }
+TH_arroldvalue=replaceSpclcharAngularBrack(TH_arroldvalue)
 }
 for(var k=0;k<TH_arrnewchk.length;k++)
 {
@@ -198,6 +220,7 @@ else
 {
 TH_arrnewvalue +=' , '+TH_arrnewchk[k];
 }
+TH_arrnewvalue=replaceSpclcharAngularBrack(TH_arrnewvalue)
 }
 TH_value ='<tr><td>'+'CUSTOMER ID:'+''+TH_values.customerid+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'CUSTOMER NAME:'+''+TH_values.customerfirstname+' '+TH_values.customerlastname+'<br>'+'UPDATION/DELETION  :'+''+TH_values.upddel+'<br>'+'TABLE NAME:'+''+TH_values.tablename+'<br><br>'+'OLD VALUE:'+TH_arroldvalue+'<br><br><br>'+'NEW VALUE:'+TH_arrnewvalue+'</td><td>'+TH_values.userstamp+'</td><td>'+TH_values.timestamp+'</td></tr>'
 $('#TH_tble_htmltable').append(TH_value);
@@ -207,6 +230,7 @@ $('#TH_div_header').text(TH_errmsg).show();
 $('#TH_tble_htmltable').show();
 }
 $('#TH_btn_search_customername').attr("disabled", "disabled");
+google.script.run.withSuccessHandler(TH_customername_autocompleteresult).withFailureHandler(TH_onFailure).TH_customername_autocomplete();
 }
 });
 //DOCUMENT READY FUNCTION END

@@ -1,6 +1,12 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************EMPLOYEE DETAIL:SEARCH/UPDATE/DELETE*************************//
+//DONE BY:PUNI
+//VER 1.4-SD:09/10/2014 ED:09/10/2014,TRACKER NO:705:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
+//VER 1.3-SD:29/09/2014 ED:30/09/2014,TRACKER NO:705,1.corrected flex table to show radio button once for each employee,2.corrected btn validation when no card n show err msg,3.corrected close of undefined issue when clicking search button to show update form
+//DONE BY:SARADAMBAL
+//VER 1.2-SD:23/08/2014 ED:23/08/2014,TRACKER NO:705,updated new links,autogrow,put preloader for reloading updated n deleted one,filter active unit in treeview query
 //DONE BY:LALITHA
+//VER 1.1-SD:04/08/2014 ED:05/08/2014,TRACKER NO:705,updated script to show error msg if active card is assigned returned from sp,Passed varchar for mobile no,Updated err msg(recrd nt updated),Tested sp wth auto cmmt
 //VER 1.0 SD:16/06/2014 ED:17/06/2014,TRACKER NO:705,Changed return function,Changed failure funct,Changed the email id to lowercase for only valid email id ,Hide the flex tble thn nly shown err msg for update nd delete,After updating the(comments,emailid,mobileno)call the auto complete funct,(Increased the flex tble width for more datas,Starting itself hide the search,delete btns(seen tht issue in int site nly))
 //VER 0.09 SD:07/06/2014 ED:07/06/2014,Changed jquery link,Updated maxlength for(cust frst,last name,emailid),After reset btn clicked hide the card details nd resized the(cust last,frst name,email id),Updated parseInt for mobile number,Increased flex tble width
 //VER 0.08 SD:17/05/2014 ED:22/05/2014,Implemented dynamic sp,Implemented eilib special charater for comments,Removed the mandatory symbol for select the card,Hide the card details aftr shown the flex tble,Asc the emp lst bx,Changed msg box title,Removed the underscore for emp name,Put space in b/w emp frst nd last name,Update the emp name means hide the flex tble nd refresh the emp lst box nd hide the no data err msg,update the othr fields means refresh the flex tble,delete the record means hide the no data err msg nd refresh the list box
@@ -41,7 +47,7 @@ try
     }
     EMPSRC_UPD_DEL_employee_name_rs.close();
     var EMPSRC_UPD_DEL_flexheader_array =[];
-    var EMPSRC_UPD_errmsgids="1,2,34,71,135,136,153,155,157,158,163,164,165,166,167,168,169,248,315,339,446";
+    var EMPSRC_UPD_errmsgids="1,2,34,71,135,136,153,155,157,158,163,164,165,166,167,168,169,248,315,339,401,446";
     var EMPSRC_UPD_DEL_flexheader_array=[];
     EMPSRC_UPD_DEL_flexheader_array=eilib.GetErrorMessageList(EMPSRC_UPD_DEL_connection,EMPSRC_UPD_errmsgids);
     var EMPSRC_UPD_DEL_unitArray = [];
@@ -154,7 +160,7 @@ try
     var EMPSRC_UPD_DEL_main_menu_stmt = EMPSRC_UPD_DEL_connection.createStatement();
     var EMPSRC_UPD_DEL_main_menu_array=[];
     var EMPSRC_UPD_DEL_multi_array=[];
-    var EMPSRC_UPD_DEL_select_main_menu="SELECT DISTINCT UNIT_NO FROM UNIT U,UNIT_ACCESS_STAMP_DETAILS UASD,UNIT_DETAILS UD WHERE U.UNIT_ID=UASD.UNIT_ID AND U.UNIT_ID=UD.UNIT_ID AND UASD.UASD_ACCESS_INVENTORY IS NOT NULL AND UD.UD_OBSOLETE IS NULL AND UASD.UASD_ACCESS_CARD IS NOT NULL AND  UASD.UASD_ID NOT IN(SELECT ECD.UASD_ID FROM EMPLOYEE_CARD_DETAILS ECD)"
+    var EMPSRC_UPD_DEL_select_main_menu="SELECT DISTINCT U.UNIT_NO FROM UNIT U,UNIT_ACCESS_STAMP_DETAILS UASD,UNIT_DETAILS UD ,VW_ACTIVE_UNIT VAU WHERE VAU.UNIT_ID=U.UNIT_ID AND  U.UNIT_ID=UASD.UNIT_ID AND U.UNIT_ID=UD.UNIT_ID AND UASD.UASD_ACCESS_INVENTORY IS NOT NULL AND UD.UD_OBSOLETE IS NULL AND UASD.UASD_ACCESS_CARD IS NOT NULL AND  UASD.UASD_ID NOT IN(SELECT ECD.UASD_ID FROM EMPLOYEE_CARD_DETAILS ECD)"
     var EMPSRC_UPD_DEL_main_menu_result=EMPSRC_UPD_DEL_main_menu_stmt.executeQuery(EMPSRC_UPD_DEL_select_main_menu);
     while(EMPSRC_UPD_DEL_main_menu_result.next()){
       EMPSRC_UPD_DEL_main_menu_array.push(EMPSRC_UPD_DEL_main_menu_result.getString("UNIT_NO"));
@@ -170,6 +176,7 @@ try
       }
       EMPSRC_UPD_DEL_multi_array.push(EMPSRC_UPD_DEL_sub_menu_array)
     }
+    Logger.log("EMPSRC_UPD_DEL_multi_array:"+EMPSRC_UPD_DEL_multi_array)
     EMPSRC_UPD_DEL_main_menu_result.close();
     EMPSRC_UPD_DEL_main_menu_stmt.close();
     EMPSRC_UPD_DEL_connection.close();
@@ -181,7 +188,7 @@ try
     var EMPSRC_UPD_DEL_cardunitnoarray=[];
     var EMPSRC_UPD_DEL_connection =eilib.db_GetConnection();
     var EMPSRC_UPD_DEL_card_stmt = EMPSRC_UPD_DEL_connection.createStatement();
-    var EMPSRC_UPD_DEL_getcardnoandunitno ="select DISTINCT U.UNIT_NO,UASD.UASD_ACCESS_CARD  from EMPLOYEE_DETAILS ED left join EMPLOYEE_CARD_DETAILS ECD on (ECD.EMP_ID=ED.EMP_ID) left join UNIT_ACCESS_STAMP_DETAILS UASD on (UASD.UASD_ID=ECD.UASD_ID) left join UNIT U on (UASD.UNIT_ID=U.UNIT_ID) where ED.EMP_ID='"+EMPSRC_UPD_DEL_id+"'";//( ED.EMP_FIRST_NAME='"+EMPSRC_UPD_DEL_firstname+"') AND( ED.EMP_LAST_NAME='"+EMPSRC_UPD_DEL_lastname+"')";
+    var EMPSRC_UPD_DEL_getcardnoandunitno ="select DISTINCT U.UNIT_NO,UASD.UASD_ACCESS_CARD  from EMPLOYEE_DETAILS ED left join EMPLOYEE_CARD_DETAILS ECD on (ECD.EMP_ID=ED.EMP_ID) left join UNIT_ACCESS_STAMP_DETAILS UASD on (UASD.UASD_ID=ECD.UASD_ID) left join UNIT U on (UASD.UNIT_ID=U.UNIT_ID) where ED.EMP_ID='"+EMPSRC_UPD_DEL_id+"'";
     var EMPSRC_UPD_DEL_sub_card_result=EMPSRC_UPD_DEL_card_stmt.executeQuery(EMPSRC_UPD_DEL_getcardnoandunitno);
     var EMPSRC_UPD_DEL_unitno_array=[];
     var EMPSRC_UPD_DEL_cardno_array=[];
@@ -192,7 +199,6 @@ try
     EMPSRC_UPD_DEL_sub_card_result.close();
     EMPSRC_UPD_DEL_cardunitnoarray.push(EMPSRC_UPD_DEL_unitno_array);
     EMPSRC_UPD_DEL_cardunitnoarray.push(EMPSRC_UPD_DEL_cardno_array);
-    
     var EMPSRC_UPD_DEL_multi_array=EMPSRC_UPD_DEL_gettreeviewunit(EMPSRC_UPD_DEL_id);
     EMPSRC_UPD_DEL_cardunitnoarray.push(EMPSRC_UPD_DEL_multi_array);
     EMPSRC_UPD_DEL_card_stmt.close();
@@ -244,24 +250,29 @@ try
       EMPSRC_UPD_DEL_comments='"'+eilib.ConvertSpclCharString(EMPSRC_UPD_DEL_comments)+'"';    
     }
     var EMPSRC_UPD_DEL_lastupdatecard=EMPSRC_UPD_DEL_cardno;
-    var EMPSRC_UPD_DEL_updateempdetail ="CALL SP_EMPDTL_UPDATE("+EMPSRC_UPD_DEL_tb_updateid+",'"+EMPSRC_UPD_DEL_firstname+"','"+EMPSRC_UPD_DEL_lastname+"','"+EMPSRC_UPD_DEL_empdesigname+"',"+EMPSRC_UPD_DEL_mobilenumber+",'"+EMPSRC_UPD_DEL_email+"',"+EMPSRC_UPD_DEL_comments+",'"+UserStamp+"','"+EMPSRC_UPD_DEL_getcardnoarray+"','"+EMPSRC_UPD_DEL_lastupdatecard+"',@FLAG_UPDATEEMP)";
+    var EMPSRC_UPD_DEL_updateempdetail ="CALL SP_EMPDTL_UPDATE("+EMPSRC_UPD_DEL_tb_updateid+",'"+EMPSRC_UPD_DEL_firstname+"','"+EMPSRC_UPD_DEL_lastname+"','"+EMPSRC_UPD_DEL_empdesigname+"','"+EMPSRC_UPD_DEL_mobilenumber+"','"+EMPSRC_UPD_DEL_email+"',"+EMPSRC_UPD_DEL_comments+",'"+UserStamp+"','"+EMPSRC_UPD_DEL_getcardnoarray+"','"+EMPSRC_UPD_DEL_lastupdatecard+"',@FLAG_UPDATEEMP)";
     EMPSRC_UPD_DEL_stmt.execute(EMPSRC_UPD_DEL_updateempdetail);
+    var EMPSRC_UPD_DEL_getresultflg= EMPSRC_UPD_DEL_stmt.executeQuery("SELECT @FLAG_UPDATEEMP");
+    while(EMPSRC_UPD_DEL_getresultflg.next()){
+      var EMPSRC_UPD_DEL_getresultdateflg=EMPSRC_UPD_DEL_getresultflg.getString("@FLAG_UPDATEEMP");
+    }
     var EMPSRC_UPD_DEL_multi_array=EMPSRC_UPD_DEL_gettreeviewunit(EMPSRC_UPD_DEL_tb_updateid);
-    EMPSRC_UPD_DEL_stmt.close();
-    EMPSRC_UPD_DEL_conn.close();
     var EMPSRC_UPD_DEL_commentsupdate=[];
     if((EMPSRC_UPD_DEL_expense_searchoptions==94)||(EMPSRC_UPD_DEL_expense_searchoptions==96)||(EMPSRC_UPD_DEL_expense_searchoptions==99))
     {
       EMPSRC_UPD_DEL_commentsupdate=EMPSRC_UPD_DEL_autocomplts_autocomplete(EMPSRC_UPD_DEL_expense_searchoptions);
     }
-    return [EMPSRC_UPD_DEL_multi_array,EMPSRC_UPD_DEL_commentsupdate];
+    EMPSRC_UPD_DEL_stmt.close();
+    EMPSRC_UPD_DEL_conn.close();
+    return [EMPSRC_UPD_DEL_multi_array,EMPSRC_UPD_DEL_commentsupdate,EMPSRC_UPD_DEL_getresultdateflg];
   }
   //DELETE THE  RECORD IN THE TABLE
   function EMPSRC_UPD_DEL_deleterow(EMPSRC_UPD_DEL_deleteid)
   {
     var EMPSRC_UPD_DEL_conn=eilib.db_GetConnection();
     var EMPSRC_UPD_DEL_DEL_stmt= EMPSRC_UPD_DEL_conn.createStatement();
-    EMPSRC_UPD_DEL_DEL_stmt.execute("CALL SP_EMPDTL_DELETE("+EMPSRC_UPD_DEL_deleteid+",'"+UserStamp+"',@EMPLOYEEDELETE_FLAG)");
+    var EMPSRC_UPD_DEL_DELQUERY="CALL SP_EMPDTL_DELETE("+EMPSRC_UPD_DEL_deleteid+",'"+UserStamp+"',@EMPLOYEEDELETE_FLAG)";
+    EMPSRC_UPD_DEL_DEL_stmt.execute(EMPSRC_UPD_DEL_DELQUERY);
     EMPSRC_UPD_DEL_DEL_stmt.close();
     var EMPSRC_UPD_DEL_stmt_flag=EMPSRC_UPD_DEL_conn.createStatement();
     var EMPSRC_UPD_DEL_flag_select="SELECT @EMPLOYEEDELETE_FLAG";
@@ -281,12 +292,15 @@ try
     //TREEVIEW  UNIT NO//
     var EMPSRC_UPD_DEL_main_menu_array=[];
     var EMPSRC_UPD_DEL_multi_array=[];
-    var EMPSRC_UPD_DEL_select_main_menu="SELECT DISTINCT U.UNIT_NO FROM UNIT U,UNIT_ACCESS_STAMP_DETAILS UASD,UNIT_DETAILS UD WHERE U.UNIT_ID=UASD.UNIT_ID AND U.UNIT_ID=UD.UNIT_ID AND UASD.UASD_ACCESS_INVENTORY IS NOT NULL AND UD.UD_OBSOLETE IS NULL AND UASD.UASD_ACCESS_CARD IS NOT NULL AND UASD.UASD_ID NOT IN(SELECT ECD.UASD_ID FROM EMPLOYEE_CARD_DETAILS ECD WHERE ECD.EMP_ID !="+EMPSRC_UPD_DEL_tb_updateid+")";
+    var EMPSRC_UPD_DEL_select_main_menu="SELECT DISTINCT U.UNIT_NO FROM UNIT U,UNIT_ACCESS_STAMP_DETAILS UASD,UNIT_DETAILS UD,VW_ACTIVE_UNIT VAU WHERE VAU.UNIT_ID=U.UNIT_ID AND U.UNIT_ID=UASD.UNIT_ID AND U.UNIT_ID=UD.UNIT_ID AND UASD.UASD_ACCESS_INVENTORY IS NOT NULL AND UD.UD_OBSOLETE IS NULL AND UASD.UASD_ACCESS_CARD IS NOT NULL AND UASD.UASD_ID NOT IN(SELECT ECD.UASD_ID FROM EMPLOYEE_CARD_DETAILS ECD WHERE ECD.EMP_ID !="+EMPSRC_UPD_DEL_tb_updateid+")";
     var EMPSRC_UPD_DEL_main_menu_result=EMPSRC_UPD_DEL_stmt.executeQuery(EMPSRC_UPD_DEL_select_main_menu);
     while(EMPSRC_UPD_DEL_main_menu_result.next()){
       EMPSRC_UPD_DEL_main_menu_array.push(EMPSRC_UPD_DEL_main_menu_result.getString("UNIT_NO"));
     }
-    EMPSRC_UPD_DEL_multi_array.push(EMPSRC_UPD_DEL_main_menu_array)
+    EMPSRC_UPD_DEL_main_menu_result.close();
+    EMPSRC_UPD_DEL_stmt.close();
+    EMPSRC_UPD_DEL_multi_array.push(EMPSRC_UPD_DEL_main_menu_array);
+    var EMPSRC_UPD_DEL_stmt =EMPSRC_UPD_DEL_conn.createStatement();
     for(var i=0;i<EMPSRC_UPD_DEL_multi_array[0].length;i++){
       var menu=EMPSRC_UPD_DEL_multi_array[0][i];
       var EMPSRC_UPD_DEL_sub_menu_array=[];
@@ -295,10 +309,9 @@ try
       while(EMPSRC_UPD_DEL_sub_menu_result.next()){ 
         EMPSRC_UPD_DEL_sub_menu_array.push(EMPSRC_UPD_DEL_sub_menu_result.getString("UASD_ACCESS_CARD"));
       }
-      EMPSRC_UPD_DEL_multi_array.push(EMPSRC_UPD_DEL_sub_menu_array)
+      EMPSRC_UPD_DEL_multi_array.push(EMPSRC_UPD_DEL_sub_menu_array);
+      EMPSRC_UPD_DEL_sub_menu_result.close();
     }
-    EMPSRC_UPD_DEL_main_menu_result.close();
-    EMPSRC_UPD_DEL_sub_menu_result.close();
     EMPSRC_UPD_DEL_stmt.close();
     EMPSRC_UPD_DEL_conn.close();
     return EMPSRC_UPD_DEL_multi_array;
