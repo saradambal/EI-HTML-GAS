@@ -75,7 +75,7 @@ function EP_ENTRY_getmaxprimaryid()
   return CONFG.EP_ENTRY_getmaxprimaryid();
 }  
 //FUNCTION FOR TO SAVE THE EMAIL ID
-function EP_ENTRY_save(EP_ENTRY_profilename,EP_ENTRY_emailid)    																	
+function EP_ENTRY_save(EP_ENTRY_profilename,EP_ENTRY_emailid)																		
 {																			
   return CONFG.EP_ENTRY_save(EP_ENTRY_profilename,EP_ENTRY_emailid);																		
 }
@@ -1524,25 +1524,3 @@ function CHART_func_expense_perunit(CHART_unitno,CHART_unit_fdate,CHART_unit_tda
   return REPORT.CHART_func_expense_perunit(CHART_unitno,CHART_unit_fdate,CHART_unit_tdate,CHART_srchdata,CHART_flag_date); 
 }
 //******************* REPORT CHART END********
-//******************* CUSTOMER CREATION UAT START ***********************
-function UAT_CCRE_Roomtype(UAT_CCRE_unit,UAT_CCRE_nullpara)
-{
-  return CUSTOMER.UAT_CCRE_Roomtype(UAT_CCRE_unit,UAT_CCRE_nullpara);
-}
-function UAT_CCRE_CardNumber(UAT_CCRE_unit,UAT_CCRE_firstname,UAT_CCRE_lastname)
-{
-  return CUSTOMER.UAT_CCRE_CardNumber(UAT_CCRE_unit,UAT_CCRE_firstname,UAT_CCRE_lastname);
-}
-function UAT_CCRE_prorated(UAT_CCRE_startdate,UAT_CCRE_enddate)
-{
-  return CUSTOMER.UAT_CCRE_prorated(UAT_CCRE_startdate,UAT_CCRE_enddate);
-}
-function UAT_CCRE_processFormSubmit(customercreation)
-{
-  return CUSTOMER.UAT_CCRE_processFormSubmit(customercreation);
-}
-function UAT_CCRE_customercreation_commonvalues()
-{
-  return CUSTOMER.UAT_CCRE_customercreation_commonvalues();
-}
-//******************* CUSTOMER CREATION UAT END ***********************

@@ -17,7 +17,7 @@
 //*********************************************************************************************************//
 try
 {
-  function CHEQUE_ENTRY_processFormSubmit(cheque_date,chequeno,chequeto,chequefor,chequeamount,chequeunit,chequecomments)
+   function CHEQUE_ENTRY_processFormSubmit(cheque_date,chequeno,chequeto,chequefor,chequeamount,chequeunit,chequecomments)
   {
     var CHEQUE_ENTRY_conn=eilib.db_GetConnection();
     var chequedate=eilib.SqlDateFormat(cheque_date);
@@ -46,7 +46,7 @@ try
     var CHEQUE_ENTRY_error_array =eilib.GetErrorMessageList(CHEQUE_ENTRY_conn, CHEQUE_ENTRY_error_code); 
     var CHEQUE_ENTRY_RESULTS={errormessage:CHEQUE_ENTRY_error_array.errormsg};
     return CHEQUE_ENTRY_RESULTS;  
-    CHEQUE_ENTRY_conn.close();
+     CHEQUE_ENTRY_conn.close();
   }
 }
 catch(err)

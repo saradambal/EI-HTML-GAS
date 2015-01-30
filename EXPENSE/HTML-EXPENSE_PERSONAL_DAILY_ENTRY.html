@@ -45,609 +45,609 @@
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
-$(".preloader").show(); 
-$('textarea').autogrow({onInitialize: true});
-var PDLY_INPUT_categorytypearray=[];
-var Ivsearchval = [];
-$(".numonly").doValidation({rule:'numbersonly',prop:{realpart:5}});
-$(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
-$('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
-$('#PDLY_INPUT_btn_carsbutton').hide();
-$('#PDLY_INPUT_btn_carrbutton').hide();
-$('#PDLY_INPUT_btn_rbutton').hide();
-google.script.run.withFailureHandler(PDLY_INPUT_onFailure).withSuccessHandler(PDLY_INPUT_loadtypofexpense).PDLY_INPUT_gettypofexpense()
+    $(".preloader").show();
+    $('textarea').autogrow({onInitialize: true});
+    var PDLY_INPUT_categorytypearray=[];
+    var Ivsearchval = [];
+    $(".numonly").doValidation({rule:'numbersonly',prop:{realpart:5}});
+    $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+    $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+    $('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
+    $('#PDLY_INPUT_btn_carsbutton').hide();
+    $('#PDLY_INPUT_btn_carrbutton').hide();
+    $('#PDLY_INPUT_btn_rbutton').hide();
+    google.script.run.withFailureHandler(PDLY_INPUT_onFailure).withSuccessHandler(PDLY_INPUT_loadtypofexpense).PDLY_INPUT_gettypofexpense()
 //SUBMIT BUTTON VALIDATION FOR MULTIROW .........................
-$(document).on('blur','.submultivalid',function() {
-PDLY_INPUT_submultivalidfunction();
-});
-function PDLY_INPUT_submultivalidfunction()
-{
-var STDLY_INPUT_table = document.getElementById('PDLY_INPUT_tble_multi');
-var STDLY_INPUT_table_rowlength=STDLY_INPUT_table.rows.length;
-var count=0;
-for(var i=1;i<STDLY_INPUT_table_rowlength;i++)
-{
-var unit=$('#PDLY_INPUT_lb_category'+i).val()
-var invoicedate=$('#PDLY_INPUT_db_invdate'+i).val()
-var fromdate=$('#PDLY_INPUT_tb_invfrom'+i).val()
-var todate=$('#PDLY_INPUT_ta_invitem'+i).val()
-var payment=$('#PDLY_INPUT_tb_incamtrp'+i).val()
-if((unit!=undefined)&&(unit!="SELECT")&&(unit!='')&&(payment!='')&&(parseInt(payment)!=0)&&(fromdate!="")&&(todate!="")&&(fromdate!=undefined)&&(todate!=undefined)&&(invoicedate!=''))
-{
-count=count+1;
-}
-}
-if(count==STDLY_INPUT_table_rowlength-1)
-{
-$('#PDLY_INPUT_btn_bbypsnlsbutton').removeAttr("disabled");
-$('#PDLY_INPUT_btn_addbtn'+(STDLY_INPUT_table_rowlength-1)).removeAttr("disabled");
-}
-else
-{
-$('#PDLY_INPUT_btn_bbypsnlsbutton').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_addbtn'+(STDLY_INPUT_table_rowlength-1)).attr("disabled", "disabled");
-}
-}
-var PDLY_INPUT_gettypofexpense=[];
-var PDLY_INPUT_CONFORMATIONMSG;
+    $(document).on('blur','.submultivalid',function() {
+        PDLY_INPUT_submultivalidfunction();
+    });
+    function PDLY_INPUT_submultivalidfunction()
+    {
+        var STDLY_INPUT_table = document.getElementById('PDLY_INPUT_tble_multi');
+        var STDLY_INPUT_table_rowlength=STDLY_INPUT_table.rows.length;
+        var count=0;
+        for(var i=1;i<STDLY_INPUT_table_rowlength;i++)
+        {
+            var unit=$('#PDLY_INPUT_lb_category'+i).val()
+            var invoicedate=$('#PDLY_INPUT_db_invdate'+i).val()
+            var fromdate=$('#PDLY_INPUT_tb_invfrom'+i).val()
+            var todate=$('#PDLY_INPUT_ta_invitem'+i).val()
+            var payment=$('#PDLY_INPUT_tb_incamtrp'+i).val()
+            if((unit!=undefined)&&(unit!="SELECT")&&(unit!='')&&(payment!='')&&(parseInt(payment)!=0)&&(fromdate!="")&&(todate!="")&&(fromdate!=undefined)&&(todate!=undefined)&&(invoicedate!=''))
+            {
+                count=count+1;
+            }
+        }
+        if(count==STDLY_INPUT_table_rowlength-1)
+        {
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').removeAttr("disabled");
+            $('#PDLY_INPUT_btn_addbtn'+(STDLY_INPUT_table_rowlength-1)).removeAttr("disabled");
+        }
+        else
+        {
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').attr("disabled", "disabled");
+            $('#PDLY_INPUT_btn_addbtn'+(STDLY_INPUT_table_rowlength-1)).attr("disabled", "disabled");
+        }
+    }
+    var PDLY_INPUT_gettypofexpense=[];
+    var PDLY_INPUT_CONFORMATIONMSG;
 //LOAD THE TYPE OF EXPENSE  IN THE LISTBOX....................
-function PDLY_INPUT_loadtypofexpense(PDLY_INPUT_typofexpense)
-{
-PDLY_INPUT_gettypofexpense=PDLY_INPUT_typofexpense[0];
-PDLY_INPUT_CONFORMATIONMSG=PDLY_INPUT_typofexpense[1];
-var PDLY_INPUT_options ='';
-for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
-var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
-if(i>=5 && i<=8)
-{
-PDLY_INPUT_options += '<option value="' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata + '</option>';
-}
-}
-$('#PDLY_INPUT_lb_typelist').html(PDLY_INPUT_options);
-$('#PDLY_INPUT_lb_typelist').show();
-$('#PDLY_INPUT_lbl_type').show();
-PDLY_INPUT_Sortit('PDLY_INPUT_lb_typelist');
+    function PDLY_INPUT_loadtypofexpense(PDLY_INPUT_typofexpense)
+    {
+        PDLY_INPUT_gettypofexpense=PDLY_INPUT_typofexpense[0];
+        PDLY_INPUT_CONFORMATIONMSG=PDLY_INPUT_typofexpense[1];
+        var PDLY_INPUT_options ='';
+        for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
+            var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
+            if(i>=5 && i<=8)
+            {
+                PDLY_INPUT_options += '<option value="' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata + '</option>';
+            }
+        }
+        $('#PDLY_INPUT_lb_typelist').html(PDLY_INPUT_options);
+        $('#PDLY_INPUT_lb_typelist').show();
+        $('#PDLY_INPUT_lbl_type').show();
+        PDLY_INPUT_Sortit('PDLY_INPUT_lb_typelist');
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
-function PDLY_INPUT_Sortit(lbid) {
-var $r = $("#"+lbid+" "+"option");
-$r.sort(function(a, b) {
-if (a.text < b.text) return -1;
-if (a.text == b.text) return 0;
-return 1;
-});
-$($r).remove();
-$("#"+lbid).append($($r));
-$("#"+lbid+" "+"option").eq(0).before('<option value="SELECT">SELECT</option>')
-$("select#"+lbid)[0].selectedIndex = 0;
-}
+    }
+    function PDLY_INPUT_Sortit(lbid) {
+        var $r = $("#"+lbid+" "+"option");
+        $r.sort(function(a, b) {
+            if (a.text < b.text) return -1;
+            if (a.text == b.text) return 0;
+            return 1;
+        });
+        $($r).remove();
+        $("#"+lbid).append($($r));
+        $("#"+lbid+" "+"option").eq(0).before('<option value="SELECT">SELECT</option>')
+        $("select#"+lbid)[0].selectedIndex = 0;
+    }
 //SHOW THE FORM DEPOND ON TYPE OF EXPENSE//
-$('#PDLY_INPUT_lb_typelist').change(function(){
-$(".preloader").show(); 
-$("textarea").height(20); 
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_expensetype=="SELECT")
-{
-$(".preloader").hide(); 
-$('#PDLY_INPUT_tble_multi').hide();
-$('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
-$('#PDLY_INPUT_btn_carsbutton').hide();
-$('#PDLY_INPUT_btn_carrbutton').hide();
-$('#PDLY_INPUT_tble_carexpense').hide();
-$('#PDLY_INPUT_tble_carloan').hide();
-}
-if(PDLY_INPUT_expensetype==35)
-{
-PDLY_INPUT_loadcategory();
-}
-if((PDLY_INPUT_expensetype==36)||(PDLY_INPUT_expensetype==37))
-{
-PDLY_SEARCH_clear_multirow();
-if(PDLY_INPUT_expensetype==37)
-{
-google.script.run.withFailureHandler(PDLY_INPUT_onFailure).withSuccessHandler(PDLY_INPUT_getinvoicefromvalue).PDLY_INPUT_getinvoicefrom()
-}
-$(".preloader").show(); 
-PDLY_INPUT_btn_bbypsnlsbuttonmulti();
-PDLY_INPUT_loadcategory();
-}
-if(PDLY_INPUT_expensetype==38)
-{$(".preloader").hide(); 
-$('#PDLY_INPUT_tble_carloan').show();
-$('#PDLY_INPUT_ta_carloancmt').val('').show();
-$('#PDLY_INPUT_tb_carloanamt').val('').show();
-$('#PDLY_INPUT_db_cartodate').val('').show();
-$('#PDLY_INPUT_db_carfromdate').val('').show();
-$('#PDLY_INPUT_db_carpaiddate').val('').show();
-$('#PDLY_INPUT_lbl_carloancmt').show();
-$('#PDLY_INPUT_lbl_carloanamt').show();
-$('#PDLY_INPUT_lbl_cartodate').show();
-$('#PDLY_INPUT_lbl_carfromdate').show();
-$('#PDLY_INPUT_lbl_carpaiddate').show();
-$('#PDLY_INPUT_btn_carsbutton').show();
-$('#PDLY_INPUT_btn_carrbutton').show();
-$('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
-$('#PDLY_INPUT_tble_multi').hide();
-$('#PDLY_INPUT_tble_carexpense').hide();
-}
-});
+    $('#PDLY_INPUT_lb_typelist').change(function(){
+        $(".preloader").show();
+        $("textarea").height(20);
+        var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+        if(PDLY_INPUT_expensetype=="SELECT")
+        {
+            $(".preloader").hide();
+            $('#PDLY_INPUT_tble_multi').hide();
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
+            $('#PDLY_INPUT_btn_carsbutton').hide();
+            $('#PDLY_INPUT_btn_carrbutton').hide();
+            $('#PDLY_INPUT_tble_carexpense').hide();
+            $('#PDLY_INPUT_tble_carloan').hide();
+        }
+        if(PDLY_INPUT_expensetype==35)
+        {
+            PDLY_INPUT_loadcategory();
+        }
+        if((PDLY_INPUT_expensetype==36)||(PDLY_INPUT_expensetype==37))
+        {
+            PDLY_SEARCH_clear_multirow();
+            if(PDLY_INPUT_expensetype==37)
+            {
+                google.script.run.withFailureHandler(PDLY_INPUT_onFailure).withSuccessHandler(PDLY_INPUT_getinvoicefromvalue).PDLY_INPUT_getinvoicefrom()
+            }
+            $(".preloader").show();
+            PDLY_INPUT_btn_bbypsnlsbuttonmulti();
+            PDLY_INPUT_loadcategory();
+        }
+        if(PDLY_INPUT_expensetype==38)
+        {$(".preloader").hide();
+            $('#PDLY_INPUT_tble_carloan').show();
+            $('#PDLY_INPUT_ta_carloancmt').val('').show();
+            $('#PDLY_INPUT_tb_carloanamt').val('').show();
+            $('#PDLY_INPUT_db_cartodate').val('').show();
+            $('#PDLY_INPUT_db_carfromdate').val('').show();
+            $('#PDLY_INPUT_db_carpaiddate').val('').show();
+            $('#PDLY_INPUT_lbl_carloancmt').show();
+            $('#PDLY_INPUT_lbl_carloanamt').show();
+            $('#PDLY_INPUT_lbl_cartodate').show();
+            $('#PDLY_INPUT_lbl_carfromdate').show();
+            $('#PDLY_INPUT_lbl_carpaiddate').show();
+            $('#PDLY_INPUT_btn_carsbutton').show();
+            $('#PDLY_INPUT_btn_carrbutton').show();
+            $('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
+            $('#PDLY_INPUT_tble_multi').hide();
+            $('#PDLY_INPUT_tble_carexpense').hide();
+        }
+    });
 //FUNCTION FOR LOADING THE CATEGORY IN MULTIROW LISTBOX....................
-function PDLY_INPUT_loadcategory()//PDLY_INPUT_loadcategorytype
-{
-$(".preloader").hide(); 
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_expensetype==36 || PDLY_INPUT_expensetype==37)
-{
-if(PDLY_INPUT_expensetype==36)
-{
-var PDLY_INPUT_options ='';
-for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
-var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
-if(i>=15 && i<=17)
-{
-PDLY_INPUT_options += '<option value="' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata + '</option>';
-}
-}
-}
-if(PDLY_INPUT_expensetype==37)
-{
-var PDLY_INPUT_options ='';
-for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
-var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
-if(i>=9 && i<=14)
-{
-PDLY_INPUT_options += '<option value="' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata+ '</option>';
-}
-}
-}
-$('#PDLY_INPUT_btn_carsbutton').hide();
-$('#PDLY_INPUT_btn_carrbutton').hide();
-$('#PDLY_INPUT_tble_carloan').hide();
-$('#PDLY_INPUT_tble_carexpense').hide();
-$('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
-$('#PDLY_INPUT_tble_multi').show();
-$('#PDLY_INPUT_lb_category1').html(PDLY_INPUT_options);
-PDLY_INPUT_Sortit('PDLY_INPUT_lb_category1');
-$('#PDLY_INPUT_lbl_expense').show();
-$('#PDLY_INPUT_tble_multi').show();
-$('#PDLY_INPUT_lbl_invdate').show();
-$('#PDLY_INPUT_lbl_invamt').show();
-$('#PDLY_INPUT_lbl_invitm').show();
-$('#PDLY_INPUT_lbl_invfrom').show();
-$('#PDLY_INPUT_lbl_invcmt').show();
-$('#PDLY_INPUT_lb_category1').show();
-$('#PDLY_INPUT_db_invdate1').val('').show();
-$('#PDLY_INPUT_tb_incamtrp1').val('').show();
-$('#PDLY_INPUT_ta_invitem1').val('').show();
-$('#PDLY_INPUT_tb_invfrom1').val('').show();
-$('#PDLY_INPUT_tb_comments1').val('').show();
-$('#PDLY_INPUT_btn_addbtn1').show();
-$('#PDLY_INPUT_btn_delbtn1').show();
-$("#PDLY_INPUT_lb_category1").val('SELECT');
-$('#PDLY_INPUT_btn_addbtn1').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_delbtn1').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_bbypsnlsbutton').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_bbypsnlsbutton').show();
-}
-if(PDLY_INPUT_expensetype==35)
-{
-var PDLY_INPUT_options ='';
-for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
-var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
-if(i>=0 && i<=4)
-{
-PDLY_INPUT_options += '<option value="' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata+ '</option>';
-}
-}
-$('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
-$('#PDLY_INPUT_tble_multi').hide();
-$('#PDLY_INPUT_tble_carexpense').show();
-$('#PDLY_INPUT_lb_carcategory').html(PDLY_INPUT_options);
-PDLY_INPUT_Sortit('PDLY_INPUT_lb_carcategory');
-$('#PDLY_INPUT_lbl_carexpense').show();
-$('#PDLY_INPUT_lbl_carinvdate').show();
-$('#PDLY_INPUT_lbl_carinvamt').show();
-$('#PDLY_INPUT_lbl_carinvitm').show();
-$('#PDLY_INPUT_lbl_carinvfrom').show();
-$('#PDLY_INPUT_lbl_carinvcmt').show();
-$('#PDLY_INPUT_lb_carcategory').show();
-$('#PDLY_INPUT_db_carinvdate').val('').show();
-$('#PDLY_INPUT_tb_carincamtrp').val('').show();
-$('#PDLY_INPUT_ta_carinvitem').val('').show();
-$('#PDLY_INPUT_tb_carinvfrom').val('').show();
-$('#PDLY_INPUT_tb_carcomments').val('').show();
-$('#PDLY_INPUT_btn_carsbutton').show();
-$('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_carrbutton').show();
-$('#PDLY_INPUT_tble_carloan').hide();
-}
-}
+    function PDLY_INPUT_loadcategory()//PDLY_INPUT_loadcategorytype
+    {
+        $(".preloader").hide();
+        var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+        if(PDLY_INPUT_expensetype==36 || PDLY_INPUT_expensetype==37)
+        {
+            if(PDLY_INPUT_expensetype==36)
+            {
+                var PDLY_INPUT_options ='';
+                for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
+                    var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
+                    if(i>=15 && i<=17)
+                    {
+                        PDLY_INPUT_options += '<option value="' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata + '</option>';
+                    }
+                }
+            }
+            if(PDLY_INPUT_expensetype==37)
+            {
+                var PDLY_INPUT_options ='';
+                for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
+                    var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
+                    if(i>=9 && i<=14)
+                    {
+                        PDLY_INPUT_options += '<option value="' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata+ '</option>';
+                    }
+                }
+            }
+            $('#PDLY_INPUT_btn_carsbutton').hide();
+            $('#PDLY_INPUT_btn_carrbutton').hide();
+            $('#PDLY_INPUT_tble_carloan').hide();
+            $('#PDLY_INPUT_tble_carexpense').hide();
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
+            $('#PDLY_INPUT_tble_multi').show();
+            $('#PDLY_INPUT_lb_category1').html(PDLY_INPUT_options);
+            PDLY_INPUT_Sortit('PDLY_INPUT_lb_category1');
+            $('#PDLY_INPUT_lbl_expense').show();
+            $('#PDLY_INPUT_tble_multi').show();
+            $('#PDLY_INPUT_lbl_invdate').show();
+            $('#PDLY_INPUT_lbl_invamt').show();
+            $('#PDLY_INPUT_lbl_invitm').show();
+            $('#PDLY_INPUT_lbl_invfrom').show();
+            $('#PDLY_INPUT_lbl_invcmt').show();
+            $('#PDLY_INPUT_lb_category1').show();
+            $('#PDLY_INPUT_db_invdate1').val('').show();
+            $('#PDLY_INPUT_tb_incamtrp1').val('').show();
+            $('#PDLY_INPUT_ta_invitem1').val('').show();
+            $('#PDLY_INPUT_tb_invfrom1').val('').show();
+            $('#PDLY_INPUT_tb_comments1').val('').show();
+            $('#PDLY_INPUT_btn_addbtn1').show();
+            $('#PDLY_INPUT_btn_delbtn1').show();
+            $("#PDLY_INPUT_lb_category1").val('SELECT');
+            $('#PDLY_INPUT_btn_addbtn1').attr("disabled", "disabled");
+            $('#PDLY_INPUT_btn_delbtn1').attr("disabled", "disabled");
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').attr("disabled", "disabled");
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').show();
+        }
+        if(PDLY_INPUT_expensetype==35)
+        {
+            var PDLY_INPUT_options ='';
+            for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
+                var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
+                if(i>=0 && i<=4)
+                {
+                    PDLY_INPUT_options += '<option value="' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata+ '</option>';
+                }
+            }
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
+            $('#PDLY_INPUT_tble_multi').hide();
+            $('#PDLY_INPUT_tble_carexpense').show();
+            $('#PDLY_INPUT_lb_carcategory').html(PDLY_INPUT_options);
+            PDLY_INPUT_Sortit('PDLY_INPUT_lb_carcategory');
+            $('#PDLY_INPUT_lbl_carexpense').show();
+            $('#PDLY_INPUT_lbl_carinvdate').show();
+            $('#PDLY_INPUT_lbl_carinvamt').show();
+            $('#PDLY_INPUT_lbl_carinvitm').show();
+            $('#PDLY_INPUT_lbl_carinvfrom').show();
+            $('#PDLY_INPUT_lbl_carinvcmt').show();
+            $('#PDLY_INPUT_lb_carcategory').show();
+            $('#PDLY_INPUT_db_carinvdate').val('').show();
+            $('#PDLY_INPUT_tb_carincamtrp').val('').show();
+            $('#PDLY_INPUT_ta_carinvitem').val('').show();
+            $('#PDLY_INPUT_tb_carinvfrom').val('').show();
+            $('#PDLY_INPUT_tb_carcomments').val('').show();
+            $('#PDLY_INPUT_btn_carsbutton').show();
+            $('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
+            $('#PDLY_INPUT_btn_carrbutton').show();
+            $('#PDLY_INPUT_tble_carloan').hide();
+        }
+    }
 //CAR EXPENSE VALIDATION.........................
-$(document).on('change blur','.carsubmultivalid',function() {
-carsubmultivalidfunct();
-});
+    $(document).on('change blur','.carsubmultivalid',function() {
+        carsubmultivalidfunct();
+    });
 //CAR EXPENSE VALIDATION//
-$(document).on('blur change','.amtcarsubmultivalid',function() {
-carsubmultivalidfunct();
-});
+    $(document).on('blur change','.amtcarsubmultivalid',function() {
+        carsubmultivalidfunct();
+    });
 //CAR EXPENSE VALIDATION FUNCTION//
-function carsubmultivalidfunct()
-{
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_expensetype==35)
-{
-if(($("#PDLY_INPUT_lb_carcategory").val()=="SELECT")||($("#PDLY_INPUT_db_carinvdate").val()=="")||($("#PDLY_INPUT_tb_carincamtrp").val()=="")||(parseInt($("#PDLY_INPUT_tb_carincamtrp").val())==0)||($("#PDLY_INPUT_ta_carinvitem").val()=="")||($("#PDLY_INPUT_tb_carinvfrom").val()==""))
-{
-$('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
-}
-else
-{
-$('#PDLY_INPUT_btn_carsbutton').removeAttr("disabled");
-}
-}
-if(PDLY_INPUT_expensetype==38)
-{
-if(($("#PDLY_INPUT_tb_carloanamt").val()=="")||(parseInt($("#PDLY_INPUT_tb_carloanamt").val())==0)||($("#PDLY_INPUT_db_cartodate").val()=="")||($("#PDLY_INPUT_db_carfromdate").val()=="")||($("#PDLY_INPUT_db_carpaiddate").val()==""))
-{
-$('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
-}
-else
-{
-$('#PDLY_INPUT_btn_carsbutton').removeAttr("disabled");
-}
-}
-}
-$('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "maxDate", new Date() );
-$('#PDLY_INPUT_db_cartodate') .datepicker( "option", "maxDate", new Date() );
-$(".datepickinc").datepicker({dateFormat:'dd-mm-yy',
-changeYear: true,
-changeMonth: true,
-onClose: function() {
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_expensetype==36 || PDLY_INPUT_expensetype==37)
-{
-PDLY_INPUT_submultivalidfunction();
-}
-}
-});
-$('.datepickinc').datepicker("option","maxDate",new Date()); 
+    function carsubmultivalidfunct()
+    {
+        var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+        if(PDLY_INPUT_expensetype==35)
+        {
+            if(($("#PDLY_INPUT_lb_carcategory").val()=="SELECT")||($("#PDLY_INPUT_db_carinvdate").val()=="")||($("#PDLY_INPUT_tb_carincamtrp").val()=="")||(parseInt($("#PDLY_INPUT_tb_carincamtrp").val())==0)||($("#PDLY_INPUT_ta_carinvitem").val()=="")||($("#PDLY_INPUT_tb_carinvfrom").val()==""))
+            {
+                $('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
+            }
+            else
+            {
+                $('#PDLY_INPUT_btn_carsbutton').removeAttr("disabled");
+            }
+        }
+        if(PDLY_INPUT_expensetype==38)
+        {
+            if(($("#PDLY_INPUT_tb_carloanamt").val()=="")||(parseInt($("#PDLY_INPUT_tb_carloanamt").val())==0)||($("#PDLY_INPUT_db_cartodate").val()=="")||($("#PDLY_INPUT_db_carfromdate").val()=="")||($("#PDLY_INPUT_db_carpaiddate").val()==""))
+            {
+                $('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
+            }
+            else
+            {
+                $('#PDLY_INPUT_btn_carsbutton').removeAttr("disabled");
+            }
+        }
+    }
+    $('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "maxDate", new Date() );
+    $('#PDLY_INPUT_db_cartodate') .datepicker( "option", "maxDate", new Date() );
+    $(".datepickinc").datepicker({dateFormat:'dd-mm-yy',
+        changeYear: true,
+        changeMonth: true,
+        onClose: function() {
+            var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+            if(PDLY_INPUT_expensetype==36 || PDLY_INPUT_expensetype==37)
+            {
+                PDLY_INPUT_submultivalidfunction();
+            }
+        }
+    });
+    $('.datepickinc').datepicker("option","maxDate",new Date());
 //<!-- MULTI ROW CREATION->
-var incid=1;
-var PDLY_INPUT_inc_id;
-$(document).on('click','.addbttn',function() {
-$('#PDLY_INPUT_btn_bbypsnlsbutton').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_delbtn1').removeAttr("disabled");
-var PDLY_INPUT_table = document.getElementById('PDLY_INPUT_tble_multi');
-var PDLY_INPUT_rowCount = PDLY_INPUT_table.rows.length;
-incid =  PDLY_INPUT_rowCount;
-$('#PDLY_INPUT_hidetablerowid').val(incid);
-var PDLY_INPUT_deladdrem =incid-1;
-var PDLY_INPUT_deladdid=$('#PDLY_INPUT_hideaddid').val();
-var PDLY_INPUT_delremoid=$('#PDLY_INPUT_hideremoveid').val();
-$(PDLY_INPUT_deladdid).hide();
-$(PDLY_INPUT_delremoid).hide();
-$('#PDLY_INPUT_btn_addbtn1').hide();
-$('#PDLY_INPUT_btn_delbtn1').hide();
-$('#PDLY_INPUT_btn_addbtn'+PDLY_INPUT_deladdrem).hide();
-$('#PDLY_INPUT_btn_delbtn'+PDLY_INPUT_deladdrem).hide();
-var newRow = PDLY_INPUT_table.insertRow(PDLY_INPUT_rowCount);
-var fCell = newRow.insertCell(0);
-fCell.innerHTML ="<td> <select  class='submultivalid' name='PDLY_INPUT_lb_category' id='"+"PDLY_INPUT_lb_category"+incid+"' ><option >SELECT</option></select> </td> "
-fCell = newRow.insertCell(1);
-fCell.innerHTML ="<td><input  class='datepickinc submultivalid datemandtry' type='text' name ='PDLY_INPUT_db_invdate' id='"+"PDLY_INPUT_db_invdate"+incid+"' style='width:75px;' /> </td>"
-fCell = newRow.insertCell(2);
-$(".datepickinc").datepicker({dateFormat:'dd-mm-yy',
-changeYear: true,
-changeMonth: true,
-onClose: function(  ) {
-PDLY_INPUT_submultivalidfunction();
-}
-});
-$('.datepickinc').datepicker("option","maxDate",new Date()); 
-fCell.innerHTML ="<td><input  class='amtonlyinc submultivalid' type='text'  name ='PDLY_INPUT_tb_incamtrp' id='"+"PDLY_INPUT_tb_incamtrp"+incid+"' style='width:60px;'/></td>"
-fCell = newRow.insertCell(3);
-$(".amtonlyinc").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-fCell.innerHTML ="<td><textarea class='submultivalid'  type='text' name='PDLY_INPUT_ta_invitem' id='"+"PDLY_INPUT_ta_invitem"+incid+"'></textarea></td>"
-fCell = newRow.insertCell(4);
-fCell.innerHTML ="<td><input  class='submultivalid autosize autocompinc' type='text' name ='PDLY_INPUT_tb_invfrom' id='"+"PDLY_INPUT_tb_invfrom"+incid+"' /></td>"
-fCell = newRow.insertCell(5);
-$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
-fCell.innerHTML = "<td><textarea  class='submultivalid' type='text' name ='PDLY_INPUT_tb_comments' id='"+"PDLY_INPUT_tb_comments"+incid+"'></textarea></td>"
-fCell = newRow.insertCell(6);
-fCell.innerHTML ="<td><input type='button' value='+' class='addbttn' alt='Add Row' height='30' width='30' name ='PDLY_INPUT_btn_addbtn' id='"+"PDLY_INPUT_btn_addbtn"+incid+"'/></td>";
-fCell = newRow.insertCell(7);
-fCell.innerHTML ="<td><input  type='button' value='-' class='deletebttn' alt='delete Row' height='30' width='30' name ='PDLY_INPUT_btn_delbtn' id='"+"PDLY_INPUT_btn_delbtn"+incid+"' /></td>";
-$('#PDLY_INPUT_btn_addbtn'+incid).attr("disabled", "disabled");
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-PDLY_INPUT_loadcategorymultirow();
-});
+    var incid=1;
+    var PDLY_INPUT_inc_id;
+    $(document).on('click','.addbttn',function() {
+        $('#PDLY_INPUT_btn_bbypsnlsbutton').attr("disabled", "disabled");
+        $('#PDLY_INPUT_btn_delbtn1').removeAttr("disabled");
+        var PDLY_INPUT_table = document.getElementById('PDLY_INPUT_tble_multi');
+        var PDLY_INPUT_rowCount = PDLY_INPUT_table.rows.length;
+        incid =  PDLY_INPUT_rowCount;
+        $('#PDLY_INPUT_hidetablerowid').val(incid);
+        var PDLY_INPUT_deladdrem =incid-1;
+        var PDLY_INPUT_deladdid=$('#PDLY_INPUT_hideaddid').val();
+        var PDLY_INPUT_delremoid=$('#PDLY_INPUT_hideremoveid').val();
+        $(PDLY_INPUT_deladdid).hide();
+        $(PDLY_INPUT_delremoid).hide();
+        $('#PDLY_INPUT_btn_addbtn1').hide();
+        $('#PDLY_INPUT_btn_delbtn1').hide();
+        $('#PDLY_INPUT_btn_addbtn'+PDLY_INPUT_deladdrem).hide();
+        $('#PDLY_INPUT_btn_delbtn'+PDLY_INPUT_deladdrem).hide();
+        var newRow = PDLY_INPUT_table.insertRow(PDLY_INPUT_rowCount);
+        var fCell = newRow.insertCell(0);
+        fCell.innerHTML ="<td> <select  class='submultivalid' name='PDLY_INPUT_lb_category' id='"+"PDLY_INPUT_lb_category"+incid+"' ><option >SELECT</option></select> </td> "
+        fCell = newRow.insertCell(1);
+        fCell.innerHTML ="<td><input  class='datepickinc submultivalid datemandtry' type='text' name ='PDLY_INPUT_db_invdate' id='"+"PDLY_INPUT_db_invdate"+incid+"' style='width:75px;' /> </td>"
+        fCell = newRow.insertCell(2);
+        $(".datepickinc").datepicker({dateFormat:'dd-mm-yy',
+            changeYear: true,
+            changeMonth: true,
+            onClose: function(  ) {
+                PDLY_INPUT_submultivalidfunction();
+            }
+        });
+        $('.datepickinc').datepicker("option","maxDate",new Date());
+        fCell.innerHTML ="<td><input  class='amtonlyinc submultivalid' type='text'  name ='PDLY_INPUT_tb_incamtrp' id='"+"PDLY_INPUT_tb_incamtrp"+incid+"' style='width:60px;'/></td>"
+        fCell = newRow.insertCell(3);
+        $(".amtonlyinc").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+        fCell.innerHTML ="<td><textarea class='submultivalid'  type='text' name='PDLY_INPUT_ta_invitem' id='"+"PDLY_INPUT_ta_invitem"+incid+"'></textarea></td>"
+        fCell = newRow.insertCell(4);
+        fCell.innerHTML ="<td><input  class='submultivalid autosize autocompinc' type='text' name ='PDLY_INPUT_tb_invfrom' id='"+"PDLY_INPUT_tb_invfrom"+incid+"' /></td>"
+        fCell = newRow.insertCell(5);
+        $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+        fCell.innerHTML = "<td><textarea  class='submultivalid' type='text' name ='PDLY_INPUT_tb_comments' id='"+"PDLY_INPUT_tb_comments"+incid+"'></textarea></td>"
+        fCell = newRow.insertCell(6);
+        fCell.innerHTML ="<td><input type='button' value='+' class='addbttn' alt='Add Row' height='30' width='30' name ='PDLY_INPUT_btn_addbtn' id='"+"PDLY_INPUT_btn_addbtn"+incid+"'/></td>";
+        fCell = newRow.insertCell(7);
+        fCell.innerHTML ="<td><input  type='button' value='-' class='deletebttn' alt='delete Row' height='30' width='30' name ='PDLY_INPUT_btn_delbtn' id='"+"PDLY_INPUT_btn_delbtn"+incid+"' /></td>";
+        $('#PDLY_INPUT_btn_addbtn'+incid).attr("disabled", "disabled");
+        var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+        PDLY_INPUT_loadcategorymultirow();
+    });
 //CALL FUNCTION TO HIGHLIGHT SEARCH TEXT//
-$(document).on('keypress','.autocompinc',function() {
-var PDLY_INPUT_getthisid=$(this).attr('id');
-PDLY_INPUT_inc_id=PDLY_INPUT_getthisid.replace( /^\D+/g, '');
+    $(document).on('keypress','.autocompinc',function() {
+        var PDLY_INPUT_getthisid=$(this).attr('id');
+        PDLY_INPUT_inc_id=PDLY_INPUT_getthisid.replace( /^\D+/g, '');
 //$("#PDLY_INPUT_tb_invfrom"+PDLY_INPUT_inc_id).keypress(function(){
-PDLY_SEARCH_invfromhighlightSearchText();
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_expensetype==37)
-{
-$("#PDLY_INPUT_tb_invfrom"+PDLY_INPUT_inc_id).autocomplete({
-source: Ivsearchval,
-select: PDLY_SEARCH_invfromAutoCompleteSelectHandler
-});
-}
-});
+        PDLY_SEARCH_invfromhighlightSearchText();
+        var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+        if(PDLY_INPUT_expensetype==37)
+        {
+            $("#PDLY_INPUT_tb_invfrom"+PDLY_INPUT_inc_id).autocomplete({
+                source: Ivsearchval,
+                select: PDLY_SEARCH_invfromAutoCompleteSelectHandler
+            });
+        }
+    });
 //DELETE THE MULTIROW  ...................................
-$(document).on('click','.deletebttn',function() {
-var table = document.getElementById('PDLY_INPUT_tble_multi');
-var PDLY_INPUT_showbuttonlen=table.rows.length;
-if(table.rows.length>2) 
-$(this).closest("tr").remove();
-var PDLY_INPUT_showbutton=PDLY_INPUT_showbuttonlen-2;
-var PDLY_INPUT_id=$(this).attr('id');
-var PDLY_INPUT_lyid=PDLY_INPUT_id.replace( /^\D+/g, '');
-PDLY_INPUT_lyid=PDLY_INPUT_lyid-1;
-var PDLY_INPUT_add='#PDLY_INPUT_btn_addbtn'+PDLY_INPUT_lyid;
-var PDLY_INPUT_del='#PDLY_INPUT_btn_delbtn'+PDLY_INPUT_lyid;
-$(PDLY_INPUT_add).show();
-$(PDLY_INPUT_del).show();
-$('#PDLY_INPUT_btn_addbtn'+PDLY_INPUT_showbutton).show();
-$('#PDLY_INPUT_btn_delbtn'+PDLY_INPUT_showbutton).show();
-if(PDLY_INPUT_showbuttonlen==3)
-{
-$('#PDLY_INPUT_btn_delbtn'+PDLY_INPUT_lyid).attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_delbtn1').attr("disabled", "disabled");
-}
-$('#PDLY_INPUT_hideaddid').val(PDLY_INPUT_add);
-$('#PDLY_INPUT_hideremoveid').val(PDLY_INPUT_del);
-$('#PDLY_INPUT_btn_bbypsnlsbutton').removeAttr("disabled");
-if(table.rows.length<2) 
-{
-if(($("#PDLY_INPUT_lb_category1").val()=="SELECT")||($("#PDLY_INPUT_db_invdate1").val()=="")||($("#PDLY_INPUT_tb_incamtrp1").val()=="")||($("#PDLY_INPUT_ta_invitem1").val()=="")||($("#PDLY_INPUT_tb_invfrom1").val()==""))
-{
-$('#PDLY_INPUT_btn_bbypsnlsbutton').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_addbtn1').attr("disabled", "disabled");
-}
-else
-{
-$('PDLY_INPUT_btn_delbtn1').attr("disabled", "disabled");
-$('#PDLY_INPUT_btn_addbtn1').removeAttr("disabled");
-$('PDLY_INPUT_btn_delbtn1').show();
-$('#PDLY_INPUT_btn_addbtn1').show();
-$('#PDLY_INPUT_btn_bbypsnlsbutton').show();
-}
-}
-});
-$('#PDLY_INPUT_btn_bbypsnlsbutton').click(function(){
-var  newPos= adjustPosition($(this).position(),100,320);
-resetPreloader(newPos);
-$(".preloader").show(); 
-google.script.run.withFailureHandler(PDLY_INPUT_onFailure).withSuccessHandler(PDLY_INPUT_babysavemsgshow).PDLY_INPUT_savebabypersonal(document.getElementById('PDLY_INPUT_form_personaldaily'))
-});
-$('#PDLY_INPUT_btn_carsbutton').click(function(){
-var  newPos= adjustPosition($(this).position(),100,320);
-resetPreloader(newPos);
-$(".preloader").show(); 
-google.script.run.withFailureHandler(PDLY_INPUT_onFailure).withSuccessHandler(PDLY_INPUT_savemsgshow).PDLY_INPUT_savecardetails(document.getElementById('PDLY_INPUT_form_personaldaily'))
-});
+    $(document).on('click','.deletebttn',function() {
+        var table = document.getElementById('PDLY_INPUT_tble_multi');
+        var PDLY_INPUT_showbuttonlen=table.rows.length;
+        if(table.rows.length>2)
+            $(this).closest("tr").remove();
+        var PDLY_INPUT_showbutton=PDLY_INPUT_showbuttonlen-2;
+        var PDLY_INPUT_id=$(this).attr('id');
+        var PDLY_INPUT_lyid=PDLY_INPUT_id.replace( /^\D+/g, '');
+        PDLY_INPUT_lyid=PDLY_INPUT_lyid-1;
+        var PDLY_INPUT_add='#PDLY_INPUT_btn_addbtn'+PDLY_INPUT_lyid;
+        var PDLY_INPUT_del='#PDLY_INPUT_btn_delbtn'+PDLY_INPUT_lyid;
+        $(PDLY_INPUT_add).show();
+        $(PDLY_INPUT_del).show();
+        $('#PDLY_INPUT_btn_addbtn'+PDLY_INPUT_showbutton).show();
+        $('#PDLY_INPUT_btn_delbtn'+PDLY_INPUT_showbutton).show();
+        if(PDLY_INPUT_showbuttonlen==3)
+        {
+            $('#PDLY_INPUT_btn_delbtn'+PDLY_INPUT_lyid).attr("disabled", "disabled");
+            $('#PDLY_INPUT_btn_delbtn1').attr("disabled", "disabled");
+        }
+        $('#PDLY_INPUT_hideaddid').val(PDLY_INPUT_add);
+        $('#PDLY_INPUT_hideremoveid').val(PDLY_INPUT_del);
+        $('#PDLY_INPUT_btn_bbypsnlsbutton').removeAttr("disabled");
+        if(table.rows.length<2)
+        {
+            if(($("#PDLY_INPUT_lb_category1").val()=="SELECT")||($("#PDLY_INPUT_db_invdate1").val()=="")||($("#PDLY_INPUT_tb_incamtrp1").val()=="")||($("#PDLY_INPUT_ta_invitem1").val()=="")||($("#PDLY_INPUT_tb_invfrom1").val()==""))
+            {
+                $('#PDLY_INPUT_btn_bbypsnlsbutton').attr("disabled", "disabled");
+                $('#PDLY_INPUT_btn_addbtn1').attr("disabled", "disabled");
+            }
+            else
+            {
+                $('PDLY_INPUT_btn_delbtn1').attr("disabled", "disabled");
+                $('#PDLY_INPUT_btn_addbtn1').removeAttr("disabled");
+                $('PDLY_INPUT_btn_delbtn1').show();
+                $('#PDLY_INPUT_btn_addbtn1').show();
+                $('#PDLY_INPUT_btn_bbypsnlsbutton').show();
+            }
+        }
+    });
+    $('#PDLY_INPUT_btn_bbypsnlsbutton').click(function(){
+        var  newPos= adjustPosition($(this).position(),100,320);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        google.script.run.withFailureHandler(PDLY_INPUT_onFailure).withSuccessHandler(PDLY_INPUT_babysavemsgshow).PDLY_INPUT_savebabypersonal(document.getElementById('PDLY_INPUT_form_personaldaily'))
+    });
+    $('#PDLY_INPUT_btn_carsbutton').click(function(){
+        var  newPos= adjustPosition($(this).position(),100,320);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        google.script.run.withFailureHandler(PDLY_INPUT_onFailure).withSuccessHandler(PDLY_INPUT_savemsgshow).PDLY_INPUT_savecardetails(document.getElementById('PDLY_INPUT_form_personaldaily'))
+    });
 //<!--RESET THE ELEMENT IN THE FORM......................-->
-$('#PDLY_INPUT_btn_carrbutton').click(function(){
-var  newPos= adjustPosition($(this).position(),100,320);
-resetPreloader(newPos);
-$(".preloader").show(); 
-$("textarea").height(20);
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_expensetype==35)
-{ 
-$("#PDLY_INPUT_tb_carinvfrom").prop("size","20");//set default size for textbox
-$('#PDLY_INPUT_db_carinvdate').val('');
-$('#PDLY_INPUT_tb_carincamtrp').val('');
-$('#PDLY_INPUT_ta_carinvitem').val('');
-$('#PDLY_INPUT_tb_carinvfrom').val('');
-$('#PDLY_INPUT_tb_carcomments').val('');
-$("select#PDLY_INPUT_lb_carcategory").val('SELECT');
-$('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
-$(".preloader").hide();
-}
-if(PDLY_INPUT_expensetype==38)
-{
-$('#PDLY_INPUT_ta_carloancmt').val('');
-$('#PDLY_INPUT_tb_carloanamt').val('');
-$("#PDLY_INPUT_tb_carloanamt").prop("size","20");
-$('#PDLY_INPUT_db_cartodate').val('');
-$('#PDLY_INPUT_db_carfromdate').val('');
-$('#PDLY_INPUT_db_carpaiddate').val('');
-$('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
-$('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "maxDate", null );
-$('#PDLY_INPUT_db_cartodate') .datepicker( "option", "maxDate", null );
-$('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "maxDate", new Date() );
-$('#PDLY_INPUT_db_cartodate') .datepicker( "option", "maxDate", new Date() );
-$(".preloader").hide(); 
-}
-});
+    $('#PDLY_INPUT_btn_carrbutton').click(function(){
+        var  newPos= adjustPosition($(this).position(),100,320);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        $("textarea").height(20);
+        var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+        if(PDLY_INPUT_expensetype==35)
+        {
+            $("#PDLY_INPUT_tb_carinvfrom").prop("size","20");//set default size for textbox
+            $('#PDLY_INPUT_db_carinvdate').val('');
+            $('#PDLY_INPUT_tb_carincamtrp').val('');
+            $('#PDLY_INPUT_ta_carinvitem').val('');
+            $('#PDLY_INPUT_tb_carinvfrom').val('');
+            $('#PDLY_INPUT_tb_carcomments').val('');
+            $("select#PDLY_INPUT_lb_carcategory").val('SELECT');
+            $('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
+            $(".preloader").hide();
+        }
+        if(PDLY_INPUT_expensetype==38)
+        {
+            $('#PDLY_INPUT_ta_carloancmt').val('');
+            $('#PDLY_INPUT_tb_carloanamt').val('');
+            $("#PDLY_INPUT_tb_carloanamt").prop("size","20");
+            $('#PDLY_INPUT_db_cartodate').val('');
+            $('#PDLY_INPUT_db_carfromdate').val('');
+            $('#PDLY_INPUT_db_carpaiddate').val('');
+            $('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
+            $('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "maxDate", null );
+            $('#PDLY_INPUT_db_cartodate') .datepicker( "option", "maxDate", null );
+            $('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "maxDate", new Date() );
+            $('#PDLY_INPUT_db_cartodate') .datepicker( "option", "maxDate", new Date() );
+            $(".preloader").hide();
+        }
+    });
 //<!-- DATE PICKER FOR THE CAR LOAN ENTRY -->
-$(document).on('change','#PDLY_INPUT_db_carpaiddate',function() {
-var PDLY_INPUT_datep = $('#PDLY_INPUT_db_carpaiddate').datepicker('getDate'); 
-var date = new Date( Date.parse( PDLY_INPUT_datep ) ); 
-date.setDate( date.getDate() ); 
-var PDLY_INPUT_newDate = date.toDateString(); 
-PDLY_INPUT_newDate = new Date( Date.parse( PDLY_INPUT_newDate ) ); 
-$('#PDLY_INPUT_db_carfromdate').datepicker("option","maxDate",PDLY_INPUT_newDate); 
-$('#PDLY_INPUT_db_cartodate').datepicker("option","maxDate",PDLY_INPUT_newDate); 
-carsubmultivalidfunct();
-}); 
+    $(document).on('change','#PDLY_INPUT_db_carpaiddate',function() {
+        var PDLY_INPUT_datep = $('#PDLY_INPUT_db_carpaiddate').datepicker('getDate');
+        var date = new Date( Date.parse( PDLY_INPUT_datep ) );
+        date.setDate( date.getDate() );
+        var PDLY_INPUT_newDate = date.toDateString();
+        PDLY_INPUT_newDate = new Date( Date.parse( PDLY_INPUT_newDate ) );
+        $('#PDLY_INPUT_db_carfromdate').datepicker("option","maxDate",PDLY_INPUT_newDate);
+        $('#PDLY_INPUT_db_cartodate').datepicker("option","maxDate",PDLY_INPUT_newDate);
+        carsubmultivalidfunct();
+    });
 //DATE PICKER FUNCTION FOR  FOR DATEBOX IN SALARY ENTRY...............
-$(document).on('change','#PDLY_INPUT_db_carfromdate',function() {
-var PDLY_INPUT_fromdate = $('#PDLY_INPUT_db_carfromdate').datepicker('getDate'); 
-var date = new Date( Date.parse( PDLY_INPUT_fromdate ) ); 
-date.setDate( date.getDate()  ); //+ 1
-var PDLY_INPUT_newDate = date.toDateString(); 
-PDLY_INPUT_newDate = new Date( Date.parse( PDLY_INPUT_newDate ) ); 
-$('#PDLY_INPUT_db_cartodate').datepicker("option","minDate",PDLY_INPUT_newDate); 
-var paiddate = $('#PDLY_INPUT_db_carpaiddate').datepicker('getDate'); 
-var date = new Date( Date.parse( paiddate ) ); 
-date.setDate( date.getDate()  ); 
-var paidnewDate = date.toDateString(); 
-paidnewDate = new Date( Date.parse( paidnewDate ) ); 
-$('#PDLY_INPUT_db_cartodate').datepicker("option","maxDate",paidnewDate); 
-carsubmultivalidfunct();
-}); 
+    $(document).on('change','#PDLY_INPUT_db_carfromdate',function() {
+        var PDLY_INPUT_fromdate = $('#PDLY_INPUT_db_carfromdate').datepicker('getDate');
+        var date = new Date( Date.parse( PDLY_INPUT_fromdate ) );
+        date.setDate( date.getDate()  ); //+ 1
+        var PDLY_INPUT_newDate = date.toDateString();
+        PDLY_INPUT_newDate = new Date( Date.parse( PDLY_INPUT_newDate ) );
+        $('#PDLY_INPUT_db_cartodate').datepicker("option","minDate",PDLY_INPUT_newDate);
+        var paiddate = $('#PDLY_INPUT_db_carpaiddate').datepicker('getDate');
+        var date = new Date( Date.parse( paiddate ) );
+        date.setDate( date.getDate()  );
+        var paidnewDate = date.toDateString();
+        paidnewDate = new Date( Date.parse( paidnewDate ) );
+        $('#PDLY_INPUT_db_cartodate').datepicker("option","maxDate",paidnewDate);
+        carsubmultivalidfunct();
+    });
 //DATE PICKER FOR TO DATE IN THE  SALARY ENTRY.....................
-$(document).on('change','#PDLY_INPUT_db_cartodate',function() {
-var PDLY_INPUT_fromdate = $('#PDLY_INPUT_db_carfromdate').datepicker('getDate'); 
-var date = new Date( Date.parse( PDLY_INPUT_fromdate ) ); 
-date.setDate( date.getDate()  ); //+ 1
-var newDate = date.toDateString(); 
-newDate = new Date( Date.parse( newDate ) ); 
-$('#PDLY_INPUT_db_cartodate').datepicker("option","minDate",newDate); 
-var PDLY_INPUT_paiddate = $('#PDLY_INPUT_db_carpaiddate').datepicker('getDate'); 
-var date = new Date( Date.parse( PDLY_INPUT_paiddate ) ); 
-date.setDate( date.getDate() ); // - 1
-var PDLY_INPUT_paidnewDate = date.toDateString(); 
-PDLY_INPUT_paidnewDate = new Date( Date.parse( PDLY_INPUT_paidnewDate ) ); 
-$('#PDLY_INPUT_db_cartodate').datepicker("option","maxDate",PDLY_INPUT_paidnewDate); 
-carsubmultivalidfunct();
-}); 
+    $(document).on('change','#PDLY_INPUT_db_cartodate',function() {
+        var PDLY_INPUT_fromdate = $('#PDLY_INPUT_db_carfromdate').datepicker('getDate');
+        var date = new Date( Date.parse( PDLY_INPUT_fromdate ) );
+        date.setDate( date.getDate()  ); //+ 1
+        var newDate = date.toDateString();
+        newDate = new Date( Date.parse( newDate ) );
+        $('#PDLY_INPUT_db_cartodate').datepicker("option","minDate",newDate);
+        var PDLY_INPUT_paiddate = $('#PDLY_INPUT_db_carpaiddate').datepicker('getDate');
+        var date = new Date( Date.parse( PDLY_INPUT_paiddate ) );
+        date.setDate( date.getDate() ); // - 1
+        var PDLY_INPUT_paidnewDate = date.toDateString();
+        PDLY_INPUT_paidnewDate = new Date( Date.parse( PDLY_INPUT_paidnewDate ) );
+        $('#PDLY_INPUT_db_cartodate').datepicker("option","maxDate",PDLY_INPUT_paidnewDate);
+        carsubmultivalidfunct();
+    });
 //<!--HIDE THE MULTIROW AFTER SAVING THE MULTIROW-->
-function PDLY_INPUT_btn_bbypsnlsbuttonmulti()
-{
-$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
-$(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-$(".datepickinc").datepicker({dateFormat:'dd-mm-yy', changeYear: true, changeMonth: true,
-onClose: function() {
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_expensetype==36 || PDLY_INPUT_expensetype==37)
-{
-PDLY_INPUT_submultivalidfunction();
-}
-}});
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-PDLY_INPUT_loadcategory();
-}
+    function PDLY_INPUT_btn_bbypsnlsbuttonmulti()
+    {
+        $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+        $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+        $(".datepickinc").datepicker({dateFormat:'dd-mm-yy', changeYear: true, changeMonth: true,
+            onClose: function() {
+                var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+                if(PDLY_INPUT_expensetype==36 || PDLY_INPUT_expensetype==37)
+                {
+                    PDLY_INPUT_submultivalidfunction();
+                }
+            }});
+        var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+        PDLY_INPUT_loadcategory();
+    }
 //FAILURE FUNCTION
-function PDLY_INPUT_onFailure(errormsg)
-{$(".preloader").hide(); 
-if(errormsg=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-errormsg="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#PDLY_INPUT_form_personaldaily').replaceWith('<center><label class="dberrormsg">'+errormsg+'</label></center>');
-}
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:errormsg,position:{top:150,left:500}}});
-}}
+    function PDLY_INPUT_onFailure(errormsg)
+    {$(".preloader").hide();
+        if(errormsg=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+        {
+            errormsg="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+            $('#PDLY_INPUT_form_personaldaily').replaceWith('<center><label class="dberrormsg">'+errormsg+'</label></center>');
+        }
+        else{
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:errormsg,position:{top:150,left:500}}});
+        }}
 //CALL FUNCTION TO HIGHLIGHT SEARCH TEXT//
-function PDLY_INPUT_getinvoicefromvalue(PDLY_INPUT_assvoicefromvalue)
-{
-Ivsearchval=PDLY_INPUT_assvoicefromvalue;
-}
+    function PDLY_INPUT_getinvoicefromvalue(PDLY_INPUT_assvoicefromvalue)
+    {
+        Ivsearchval=PDLY_INPUT_assvoicefromvalue;
+    }
 //FUNCTION TO HIGHLIGHT SEARCH TEXT//
-function PDLY_SEARCH_invfromhighlightSearchText() {
-$.ui.autocomplete.prototype._renderItem = function( ul, item) {
-var re = new RegExp(this.term, "i") ;
-var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
-return $( "<li></li>" )
-.data( "item.autocomplete", item )
-.append( "<a>" + t + "</a>" )
-.appendTo( ul );
-};}
+    function PDLY_SEARCH_invfromhighlightSearchText() {
+        $.ui.autocomplete.prototype._renderItem = function( ul, item) {
+            var re = new RegExp(this.term, "i") ;
+            var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
+            return $( "<li></li>" )
+                    .data( "item.autocomplete", item )
+                    .append( "<a>" + t + "</a>" )
+                    .appendTo( ul );
+        };}
 //FUNCTION TO GET SELECTED VALUE//
-function PDLY_SEARCH_invfromAutoCompleteSelectHandler(event, ui) {
-}
-function PDLY_SEARCH_clear_multirow(){
-$('#PDLY_INPUT_tble_multi').empty();
-$('<tr><td><label  id="PDLY_INPUT_lbl_expense" >CATEGORY OF EXPENSE<em>*</em></label> </td><td width="150px"><label  id="PDLY_INPUT_lbl_invdate" >INVOICE DATE<em>*</em></label></td><td ><label id="PDLY_INPUT_lbl_invamt" >INVOICE AMOUNT<em>*</em></label> </td><td ><label id="PDLY_INPUT_lbl_invitm" >INVOICE ITEMS<em>*</em></label> </td><td ><label id="PDLY_INPUT_lbl_invfrom" >INVOICE FROM<em>*</em></label> </td><td><label id="PDLY_INPUT_lbl_invcmt" >COMMENTS</label></td></tr><tr><td> <select class="submultivalid"   name="PDLY_INPUT_lb_category" id="PDLY_INPUT_lb_category1"  ><option >SELECT</option> </select> </td> <td><input class="submultivalid datepickinc datemandtry"   type="text" name ="PDLY_INPUT_db_invdate" id="PDLY_INPUT_db_invdate1" style="width:75px;" /> </td><td><input   type="text" name ="PDLY_INPUT_tb_incamtrp" id="PDLY_INPUT_tb_incamtrp1"  class="amtonly submultivalid" style="width:60px;"   /></td><td><textarea class="submultivalid "   name="PDLY_INPUT_ta_invitem" id="PDLY_INPUT_ta_invitem1"   ></textarea></td><td><input class="submultivalid autosize autocompinc"  type="text" name ="PDLY_INPUT_tb_invfrom" id="PDLY_INPUT_tb_invfrom1" /></td><td><textarea  class="submultivalid" name ="PDLY_INPUT_tb_comments" id="PDLY_INPUT_tb_comments1" ></textarea></td><td><input enabled type="button" disabled value="+" class="addbttn" alt="Add Row" height="30" width="30" name ="PDLY_INPUT_btn_addbtn" id="PDLY_INPUT_btn_addbtn1" disabled/></td><td><input  type="button" value="-" class="deletebttn" alt="delete Row" height="30" width="30" name ="PDLY_INPUT_btn_delbtn" id="PDLY_INPUT_btn_delbtn1"  disabled /></td></tr>').appendTo($('#PDLY_INPUT_tble_multi'))
-$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
-$(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-$(".datepickinc").datepicker({dateFormat:'dd-mm-yy', changeYear: true, changeMonth: true});
-$('.datepickinc').datepicker("option","maxDate",new Date()); 
-}
+    function PDLY_SEARCH_invfromAutoCompleteSelectHandler(event, ui) {
+    }
+    function PDLY_SEARCH_clear_multirow(){
+        $('#PDLY_INPUT_tble_multi').empty();
+        $('<tr><td><label  id="PDLY_INPUT_lbl_expense" >CATEGORY OF EXPENSE<em>*</em></label> </td><td width="150px"><label  id="PDLY_INPUT_lbl_invdate" >INVOICE DATE<em>*</em></label></td><td ><label id="PDLY_INPUT_lbl_invamt" >INVOICE AMOUNT<em>*</em></label> </td><td ><label id="PDLY_INPUT_lbl_invitm" >INVOICE ITEMS<em>*</em></label> </td><td ><label id="PDLY_INPUT_lbl_invfrom" >INVOICE FROM<em>*</em></label> </td><td><label id="PDLY_INPUT_lbl_invcmt" >COMMENTS</label></td></tr><tr><td> <select class="submultivalid"   name="PDLY_INPUT_lb_category" id="PDLY_INPUT_lb_category1"  ><option >SELECT</option> </select> </td> <td><input class="submultivalid datepickinc datemandtry"   type="text" name ="PDLY_INPUT_db_invdate" id="PDLY_INPUT_db_invdate1" style="width:75px;" /> </td><td><input   type="text" name ="PDLY_INPUT_tb_incamtrp" id="PDLY_INPUT_tb_incamtrp1"  class="amtonly submultivalid" style="width:60px;"   /></td><td><textarea class="submultivalid "   name="PDLY_INPUT_ta_invitem" id="PDLY_INPUT_ta_invitem1"   ></textarea></td><td><input class="submultivalid autosize autocompinc"  type="text" name ="PDLY_INPUT_tb_invfrom" id="PDLY_INPUT_tb_invfrom1" /></td><td><textarea  class="submultivalid" name ="PDLY_INPUT_tb_comments" id="PDLY_INPUT_tb_comments1" ></textarea></td><td><input enabled type="button" disabled value="+" class="addbttn" alt="Add Row" height="30" width="30" name ="PDLY_INPUT_btn_addbtn" id="PDLY_INPUT_btn_addbtn1" disabled/></td><td><input  type="button" value="-" class="deletebttn" alt="delete Row" height="30" width="30" name ="PDLY_INPUT_btn_delbtn" id="PDLY_INPUT_btn_delbtn1"  disabled /></td></tr>').appendTo($('#PDLY_INPUT_tble_multi'))
+        $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+        $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+        $(".datepickinc").datepicker({dateFormat:'dd-mm-yy', changeYear: true, changeMonth: true});
+        $('.datepickinc').datepicker("option","maxDate",new Date());
+    }
 //<!--SHOW CONFORM MESSAGE FOR THE BABY AND PERSONAL EXPENSE-->
-function PDLY_INPUT_babysavemsgshow(PDLY_INPUT_response_save)
-{
-$(".preloader").hide(); 
-if(PDLY_INPUT_response_save[0]==1){
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').find('option:selected').text();
-var PDLY_INPUT_CONFSAVEMSG = PDLY_INPUT_CONFORMATIONMSG[0].replace('[TYPE]', PDLY_INPUT_expensetype); 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:PDLY_INPUT_CONFSAVEMSG,position:{top:150,left:500}}});
-$('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
-PDLY_SEARCH_clear_multirow();
-PDLY_INPUT_loadcategory();
-if($('#PDLY_INPUT_lb_typelist').val()==37)
-Ivsearchval=PDLY_INPUT_response_save[1];
-}
-else
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:PDLY_INPUT_CONFORMATIONMSG[1]+PDLY_INPUT_response_save[0],position:{top:150,left:500}}});}
+    function PDLY_INPUT_babysavemsgshow(PDLY_INPUT_response_save)
+    {
+        $(".preloader").hide();
+        if(PDLY_INPUT_response_save[0]==1){
+            var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').find('option:selected').text();
+            var PDLY_INPUT_CONFSAVEMSG = PDLY_INPUT_CONFORMATIONMSG[0].replace('[TYPE]', PDLY_INPUT_expensetype);
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:PDLY_INPUT_CONFSAVEMSG,position:{top:150,left:500}}});
+            $('#PDLY_INPUT_btn_bbypsnlsbutton').hide();
+            PDLY_SEARCH_clear_multirow();
+            PDLY_INPUT_loadcategory();
+            if($('#PDLY_INPUT_lb_typelist').val()==37)
+                Ivsearchval=PDLY_INPUT_response_save[1];
+        }
+        else
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:PDLY_INPUT_CONFORMATIONMSG[1]+PDLY_INPUT_response_save[0],position:{top:150,left:500}}});}
 //<!--SHOW CONFORM MESSAGE FOR THE CAR AND CARLOAN EXPENSE-->
-function PDLY_INPUT_savemsgshow(PDLY_INPUT_response)
-{$(".preloader").hide(); 
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_response==1){
-if(PDLY_INPUT_expensetype==35)
-{
-$("#PDLY_INPUT_lb_carcategory").val("SELECT")
-$('#PDLY_INPUT_db_carinvdate').val('');
-$('#PDLY_INPUT_tb_carincamtrp').val('');
-$('#PDLY_INPUT_ta_carinvitem').val('');
-$('#PDLY_INPUT_tb_carinvfrom').val('');
-$('#PDLY_INPUT_tb_carcomments').val('');
-$('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
-}
-if(PDLY_INPUT_expensetype==38)
-{
-$('#PDLY_INPUT_ta_carloancmt').val('');
-$('#PDLY_INPUT_tb_carloanamt').val('');
-$('#PDLY_INPUT_db_cartodate').val('');
-$('#PDLY_INPUT_db_carfromdate').val('');
-$('#PDLY_INPUT_db_carpaiddate').val('');
-$('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
-$('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "maxDate", new Date() );
-$('#PDLY_INPUT_db_cartodate') .datepicker( "option", "maxDate", new Date() );
-$('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "minDate", null );
-$('#PDLY_INPUT_db_cartodate') .datepicker( "option", "minDate", null );
-}
-var PDLY_INPUT_expensetypetext=$('#PDLY_INPUT_lb_typelist').find('option:selected').text();
-var PDLY_INPUT_CONFSAVEMSG =PDLY_INPUT_CONFORMATIONMSG[0].replace('[TYPE]', PDLY_INPUT_expensetypetext); 
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:PDLY_INPUT_CONFSAVEMSG,position:{top:150,left:500}}});
-}
-else
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:PDLY_INPUT_CONFORMATIONMSG[1],position:{top:150,left:500}}});
-}
+    function PDLY_INPUT_savemsgshow(PDLY_INPUT_response)
+    {$(".preloader").hide();
+        var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+        if(PDLY_INPUT_response==1){
+            if(PDLY_INPUT_expensetype==35)
+            {
+                $("#PDLY_INPUT_lb_carcategory").val("SELECT")
+                $('#PDLY_INPUT_db_carinvdate').val('');
+                $('#PDLY_INPUT_tb_carincamtrp').val('');
+                $('#PDLY_INPUT_ta_carinvitem').val('');
+                $('#PDLY_INPUT_tb_carinvfrom').val('');
+                $('#PDLY_INPUT_tb_carcomments').val('');
+                $('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
+            }
+            if(PDLY_INPUT_expensetype==38)
+            {
+                $('#PDLY_INPUT_ta_carloancmt').val('');
+                $('#PDLY_INPUT_tb_carloanamt').val('');
+                $('#PDLY_INPUT_db_cartodate').val('');
+                $('#PDLY_INPUT_db_carfromdate').val('');
+                $('#PDLY_INPUT_db_carpaiddate').val('');
+                $('#PDLY_INPUT_btn_carsbutton').attr("disabled", "disabled");
+                $('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "maxDate", new Date() );
+                $('#PDLY_INPUT_db_cartodate') .datepicker( "option", "maxDate", new Date() );
+                $('#PDLY_INPUT_db_carfromdate') .datepicker( "option", "minDate", null );
+                $('#PDLY_INPUT_db_cartodate') .datepicker( "option", "minDate", null );
+            }
+            var PDLY_INPUT_expensetypetext=$('#PDLY_INPUT_lb_typelist').find('option:selected').text();
+            var PDLY_INPUT_CONFSAVEMSG =PDLY_INPUT_CONFORMATIONMSG[0].replace('[TYPE]', PDLY_INPUT_expensetypetext);
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:PDLY_INPUT_CONFSAVEMSG,position:{top:150,left:500}}});
+        }
+        else
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"PERSONAL EXPENSE ENTRY",msgcontent:PDLY_INPUT_CONFORMATIONMSG[1],position:{top:150,left:500}}});
+    }
 //INCREAMENT THE MULTIROW//
-function PDLY_INPUT_loadcategorymultirow()
-{
-$(".preloader").hide(); 
-var PDLY_INPUT_options ='';
-for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
-var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
-var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
-if(PDLY_INPUT_expensetype==36)
-{
-if(i>=15 && i<=17)
-{
-PDLY_INPUT_options += '<option value="' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata+ '</option>';
-}
-}
-if(PDLY_INPUT_expensetype==37)
-{
-if(i>=9 && i<=14)
-{
-PDLY_INPUT_options += '<option value="' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata+ '</option>';
-}
-}
-}
-var PDLY_INPUT_val=$('#PDLY_INPUT_hidetablerowid').val();
-$('#PDLY_INPUT_lb_category'+(PDLY_INPUT_val)).html(PDLY_INPUT_options);
-PDLY_INPUT_Sortit('PDLY_INPUT_lb_category'+PDLY_INPUT_val);
-}
+    function PDLY_INPUT_loadcategorymultirow()
+    {
+        $(".preloader").hide();
+        var PDLY_INPUT_options ='';
+        for (var i = 0; i <PDLY_INPUT_gettypofexpense.length ; i++) {
+            var PDLY_INPUT_gettypofexpensevalues=PDLY_INPUT_gettypofexpense[i]
+            var PDLY_INPUT_expensetype=$('#PDLY_INPUT_lb_typelist').val();
+            if(PDLY_INPUT_expensetype==36)
+            {
+                if(i>=15 && i<=17)
+                {
+                    PDLY_INPUT_options += '<option value="' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata+ '</option>';
+                }
+            }
+            if(PDLY_INPUT_expensetype==37)
+            {
+                if(i>=9 && i<=14)
+                {
+                    PDLY_INPUT_options += '<option value="' + PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpenseid + '">' +PDLY_INPUT_gettypofexpensevalues.PDLY_INPUT_personalExpensedata+ '</option>';
+                }
+            }
+        }
+        var PDLY_INPUT_val=$('#PDLY_INPUT_hidetablerowid').val();
+        $('#PDLY_INPUT_lb_category'+(PDLY_INPUT_val)).html(PDLY_INPUT_options);
+        PDLY_INPUT_Sortit('PDLY_INPUT_lb_category'+PDLY_INPUT_val);
+    }
 });
 </script>
 <!--SCRIPT END-->
@@ -656,102 +656,102 @@ PDLY_INPUT_Sortit('PDLY_INPUT_lb_category'+PDLY_INPUT_val);
 <!--BODY START-->
 <body bgcolor="#00FF00" >
 <div class="wrapper">
-<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
-<div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>PERSONAL EXPENSE ENTRY</h3><p></div></div>
-<!--FORM START-->
-<form class="content"  id="PDLY_INPUT_form_personaldaily" name="PDLY_INPUT_form_personaldaily"  >
-<table id='PDLY_INPUT_tble_main'>
-<tr>
-<td width="230px"><label id='PDLY_INPUT_lbl_type'   hidden> TYPE OF EXPENSE <em >*</em></label></td>
-<td><td><select id='PDLY_INPUT_lb_typelist' name="PDLY_INPUT_lb_typelist" hidden>
-</select></td>
-<!--CREATE ELEMENT FOR BABY & PERSONAL PART-->
-</tr></table>
-<table id="PDLY_INPUT_tble_multi">
-<tr>
-<td><label  id="PDLY_INPUT_lbl_expense" hidden>CATEGORY OF EXPENSE<em>*</em></label> </td>
-<td width="150px"><label  id="PDLY_INPUT_lbl_invdate" hidden>INVOICE DATE<em>*</em></label></td>
-<td ><label id="PDLY_INPUT_lbl_invamt" hidden>INVOICE AMOUNT<em>*</em></label> </td>
-<td ><label id="PDLY_INPUT_lbl_invitm" hidden>INVOICE ITEMS<em>*</em></label> </td>
-<td ><label id="PDLY_INPUT_lbl_invfrom" hidden>INVOICE FROM<em>*</em></label> </td>
-<td ><label id="PDLY_INPUT_lbl_invcmt"hidden>COMMENTS</label></td>
-</tr>
-<tr>
-<td> <select class="submultivalid"   name="PDLY_INPUT_lb_category" id="PDLY_INPUT_lb_category1" hidden ><option >SELECT</option> </select> </td> 
-<td><input class="submultivalid datepickinc datemandtry"   type="text" name ="PDLY_INPUT_db_invdate" id="PDLY_INPUT_db_invdate1" style="width:75px;" hidden /> </td>
-<td><input   type="text" name ="PDLY_INPUT_tb_incamtrp" id="PDLY_INPUT_tb_incamtrp1"  class="amtonly submultivalid" style="width:60px;"  hidden /></td> 
-<td><textarea class="submultivalid "   name="PDLY_INPUT_ta_invitem" id="PDLY_INPUT_ta_invitem1"  hidden ></textarea></td>
-<td><input class="submultivalid autosize autocompinc"  type="text" name ="PDLY_INPUT_tb_invfrom" id="PDLY_INPUT_tb_invfrom1"hidden /></td>
-<td><textarea  class="submultivalid" name ="PDLY_INPUT_tb_comments" id="PDLY_INPUT_tb_comments1" hidden ></textarea></td>
-<td><input enabled type='button'disabled value='+' class='addbttn' alt='Add Row' height='30' width='30' name ='PDLY_INPUT_btn_addbtn' id='PDLY_INPUT_btn_addbtn1' hidden disabled/></td>
-<td><input  type='button' value='-' class='deletebttn' alt='delete Row' height='30' width='30' name ='PDLY_INPUT_btn_delbtn' id='PDLY_INPUT_btn_delbtn1' hidden disabled /></td>
-</tr></table>
-<!--SAVE AND RESET BUTTON USED IN FORM -->
-<table>
-<tr><td><input type="button"   id="PDLY_INPUT_btn_bbypsnlsbutton"  value="SAVE" class="btn" disabled hidden /></td>
-<td><input type="button"  id="PDLY_INPUT_btn_rbutton" value="RESET" class="btn  resetsubmit" hidden /></td></tr>
-<tr><td><input    type="text" name ="PDLY_INPUT_hideaddid" id="PDLY_INPUT_hideaddid" hidden /> </td></tr>
-<tr><td><input    type="text" name ="PDLY_INPUT_hideremoveid" id="PDLY_INPUT_hideremoveid" hidden /> </td></tr>
-<tr><td><input    type="text" name ="PDLY_INPUT_hidetablerowid" id="PDLY_INPUT_hidetablerowid" hidden /> </td></tr></table>
-<!--CAR EXPENSE-->
-<table id="PDLY_INPUT_tble_carexpense">
-<tr>
-<td width="233px"><label id="PDLY_INPUT_lbl_carexpense" hidden>CATEGORY OF CAR EXPENSE<em>*</em></label> </td>
-<td> <select class="carsubmultivalid"   name="PDLY_INPUT_lb_carcategory" id="PDLY_INPUT_lb_carcategory" hidden ><option >SELECT</option> </select> </td> 
-</tr>
-<tr>
-<td ><label  id="PDLY_INPUT_lbl_carinvdate" hidden>INVOICE DATE<em>*</em></label></td>
-<td><input class="carsubmultivalid datepickinc datemandtry"   type="text" name ="PDLY_INPUT_db_carinvdate" id="PDLY_INPUT_db_carinvdate" style="width:75px;" hidden /> </td>
-</tr>
-<tr>
-<td ><label id="PDLY_INPUT_lbl_carinvamt" hidden>INVOICE AMOUNT<em>*</em></label> </td>
-<td><input  style="width:60px;" type="text" name ="PDLY_INPUT_tb_carincamtrp" id="PDLY_INPUT_tb_carincamtrp"  class="amtonly carsubmultivalid"   hidden /></td> 
-</tr>
-<tr>
-<td ><label id="PDLY_INPUT_lbl_carinvitm" hidden>INVOICE ITEMS<em>*</em></label> </td>
-<td><textarea class="carsubmultivalid"  type="text" name="PDLY_INPUT_ta_carinvitem" id="PDLY_INPUT_ta_carinvitem"  hidden ></textarea></td>
-</tr>
-<tr>
-<td ><label id="PDLY_INPUT_lbl_carinvfrom" hidden>INVOICE FROM<em>*</em></label> </td>
-<td><input class="carsubmultivalid autosize"  type="text" name ="PDLY_INPUT_tb_carinvfrom" id="PDLY_INPUT_tb_carinvfrom" hidden /></td>
-</tr>
-<tr>
-<td ><label id="PDLY_INPUT_lbl_carinvcmt"hidden>COMMENTS</label></td>
-<td><textarea   type="text" name ="PDLY_INPUT_tb_carcomments" id="PDLY_INPUT_tb_carcomments"  hidden ></textarea></td>
-</tr>
-</table>
-<!--CAR LOAN EXPENSE-->
-<table id="PDLY_INPUT_tble_carloan">
-<tr>
-<td width="232px" ><label  id="PDLY_INPUT_lbl_carpaiddate" hidden>PAID DATE<em>*</em></label></td>
-<td><input class="carsubmultivalid datemandtry datepickinc"   type="text" name ="PDLY_INPUT_db_carpaiddate" id="PDLY_INPUT_db_carpaiddate" style="width:75px;" hidden /> </td>
-</tr>
-<tr>
-<td ><label  id="PDLY_INPUT_lbl_carfromdate" hidden>FROM PERIOD<em>*</em></label></td>
-<td><input class="carsubmultivalid datemandtry datepickinc "   type="text" name ="PDLY_INPUT_db_carfromdate" id="PDLY_INPUT_db_carfromdate" style="width:75px;" hidden /> </td>
-</tr>
-<tr>
-<td ><label  id="PDLY_INPUT_lbl_cartodate" hidden>TO PERIOD <em>*</em></label></td>
-<td><input class="carsubmultivalid datemandtry datepickinc"   type="text" name ="PDLY_INPUT_db_cartodate" id="PDLY_INPUT_db_cartodate" style="width:75px;" hidden /> </td>
-</tr>
-<tr>
-<td ><label id="PDLY_INPUT_lbl_carloanamt" hidden>INVOICE AMOUNT<em>*</em></label> </td>
-<td><input   type="text" name ="PDLY_INPUT_tb_carloanamt" id="PDLY_INPUT_tb_carloanamt"  class="amtonly amtcarsubmultivalid" style="width:60px;"  hidden /></td> 
-</tr>
-<tr>
-<td ><label id="PDLY_INPUT_lbl_carloancmt"hidden>COMMENTS</label></td>
-<td><textarea   type="text" name ="PDLY_INPUT_ta_carloancmt" id="PDLY_INPUT_ta_carloancmt" hidden ></textarea></td>
-</tr>
-</table>
-<div style="position:relative;left:130px;">
-<table id="PDLY_INPUT_tble_button">
-<tr><td><input type="button"   id="PDLY_INPUT_btn_carsbutton" disabled  value="SAVE" class="btn submit" hidden /></td>
-<td><input type="button"  id="PDLY_INPUT_btn_carrbutton" value="RESET" class="btn  resetsubmit" hidden /></td></tr>
-</table>
-</div>
-<!--TABLE END-->
-<!--FORM END-->
-</form>
+    <div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+    <div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>PERSONAL EXPENSE ENTRY</h3><p></div></div>
+    <!--FORM START-->
+    <form class="content"  id="PDLY_INPUT_form_personaldaily" name="PDLY_INPUT_form_personaldaily"  >
+        <table id='PDLY_INPUT_tble_main'>
+            <tr>
+                <td width="230px"><label id='PDLY_INPUT_lbl_type'   hidden> TYPE OF EXPENSE <em >*</em></label></td>
+                <td><td><select id='PDLY_INPUT_lb_typelist' name="PDLY_INPUT_lb_typelist" hidden>
+            </select></td>
+                <!--CREATE ELEMENT FOR BABY & PERSONAL PART-->
+            </tr></table>
+        <table id="PDLY_INPUT_tble_multi">
+            <tr>
+                <td><label  id="PDLY_INPUT_lbl_expense" hidden>CATEGORY OF EXPENSE<em>*</em></label> </td>
+                <td width="150px"><label  id="PDLY_INPUT_lbl_invdate" hidden>INVOICE DATE<em>*</em></label></td>
+                <td ><label id="PDLY_INPUT_lbl_invamt" hidden>INVOICE AMOUNT<em>*</em></label> </td>
+                <td ><label id="PDLY_INPUT_lbl_invitm" hidden>INVOICE ITEMS<em>*</em></label> </td>
+                <td ><label id="PDLY_INPUT_lbl_invfrom" hidden>INVOICE FROM<em>*</em></label> </td>
+                <td ><label id="PDLY_INPUT_lbl_invcmt"hidden>COMMENTS</label></td>
+            </tr>
+            <tr>
+                <td> <select class="submultivalid"   name="PDLY_INPUT_lb_category" id="PDLY_INPUT_lb_category1" hidden ><option >SELECT</option> </select> </td>
+                <td><input class="submultivalid datepickinc datemandtry"   type="text" name ="PDLY_INPUT_db_invdate" id="PDLY_INPUT_db_invdate1" style="width:75px;" hidden /> </td>
+                <td><input   type="text" name ="PDLY_INPUT_tb_incamtrp" id="PDLY_INPUT_tb_incamtrp1"  class="amtonly submultivalid" style="width:60px;"  hidden /></td>
+                <td><textarea class="submultivalid "   name="PDLY_INPUT_ta_invitem" id="PDLY_INPUT_ta_invitem1"  hidden ></textarea></td>
+                <td><input class="submultivalid autosize autocompinc"  type="text" name ="PDLY_INPUT_tb_invfrom" id="PDLY_INPUT_tb_invfrom1"hidden /></td>
+                <td><textarea  class="submultivalid" name ="PDLY_INPUT_tb_comments" id="PDLY_INPUT_tb_comments1" hidden ></textarea></td>
+                <td><input enabled type='button'disabled value='+' class='addbttn' alt='Add Row' height='30' width='30' name ='PDLY_INPUT_btn_addbtn' id='PDLY_INPUT_btn_addbtn1' hidden disabled/></td>
+                <td><input  type='button' value='-' class='deletebttn' alt='delete Row' height='30' width='30' name ='PDLY_INPUT_btn_delbtn' id='PDLY_INPUT_btn_delbtn1' hidden disabled /></td>
+            </tr></table>
+        <!--SAVE AND RESET BUTTON USED IN FORM -->
+        <table>
+            <tr><td><input type="button"   id="PDLY_INPUT_btn_bbypsnlsbutton"  value="SAVE" class="btn" disabled hidden /></td>
+                <td><input type="button"  id="PDLY_INPUT_btn_rbutton" value="RESET" class="btn  resetsubmit" hidden /></td></tr>
+            <tr><td><input    type="text" name ="PDLY_INPUT_hideaddid" id="PDLY_INPUT_hideaddid" hidden /> </td></tr>
+            <tr><td><input    type="text" name ="PDLY_INPUT_hideremoveid" id="PDLY_INPUT_hideremoveid" hidden /> </td></tr>
+            <tr><td><input    type="text" name ="PDLY_INPUT_hidetablerowid" id="PDLY_INPUT_hidetablerowid" hidden /> </td></tr></table>
+        <!--CAR EXPENSE-->
+        <table id="PDLY_INPUT_tble_carexpense">
+            <tr>
+                <td width="233px"><label id="PDLY_INPUT_lbl_carexpense" hidden>CATEGORY OF CAR EXPENSE<em>*</em></label> </td>
+                <td> <select class="carsubmultivalid"   name="PDLY_INPUT_lb_carcategory" id="PDLY_INPUT_lb_carcategory" hidden ><option >SELECT</option> </select> </td>
+            </tr>
+            <tr>
+                <td ><label  id="PDLY_INPUT_lbl_carinvdate" hidden>INVOICE DATE<em>*</em></label></td>
+                <td><input class="carsubmultivalid datepickinc datemandtry"   type="text" name ="PDLY_INPUT_db_carinvdate" id="PDLY_INPUT_db_carinvdate" style="width:75px;" hidden /> </td>
+            </tr>
+            <tr>
+                <td ><label id="PDLY_INPUT_lbl_carinvamt" hidden>INVOICE AMOUNT<em>*</em></label> </td>
+                <td><input  style="width:60px;" type="text" name ="PDLY_INPUT_tb_carincamtrp" id="PDLY_INPUT_tb_carincamtrp"  class="amtonly carsubmultivalid"   hidden /></td>
+            </tr>
+            <tr>
+                <td ><label id="PDLY_INPUT_lbl_carinvitm" hidden>INVOICE ITEMS<em>*</em></label> </td>
+                <td><textarea class="carsubmultivalid"  type="text" name="PDLY_INPUT_ta_carinvitem" id="PDLY_INPUT_ta_carinvitem"  hidden ></textarea></td>
+            </tr>
+            <tr>
+                <td ><label id="PDLY_INPUT_lbl_carinvfrom" hidden>INVOICE FROM<em>*</em></label> </td>
+                <td><input class="carsubmultivalid autosize"  type="text" name ="PDLY_INPUT_tb_carinvfrom" id="PDLY_INPUT_tb_carinvfrom" hidden /></td>
+            </tr>
+            <tr>
+                <td ><label id="PDLY_INPUT_lbl_carinvcmt"hidden>COMMENTS</label></td>
+                <td><textarea   type="text" name ="PDLY_INPUT_tb_carcomments" id="PDLY_INPUT_tb_carcomments"  hidden ></textarea></td>
+            </tr>
+        </table>
+        <!--CAR LOAN EXPENSE-->
+        <table id="PDLY_INPUT_tble_carloan">
+            <tr>
+                <td width="232px" ><label  id="PDLY_INPUT_lbl_carpaiddate" hidden>PAID DATE<em>*</em></label></td>
+                <td><input class="carsubmultivalid datemandtry datepickinc"   type="text" name ="PDLY_INPUT_db_carpaiddate" id="PDLY_INPUT_db_carpaiddate" style="width:75px;" hidden /> </td>
+            </tr>
+            <tr>
+                <td ><label  id="PDLY_INPUT_lbl_carfromdate" hidden>FROM PERIOD<em>*</em></label></td>
+                <td><input class="carsubmultivalid datemandtry datepickinc "   type="text" name ="PDLY_INPUT_db_carfromdate" id="PDLY_INPUT_db_carfromdate" style="width:75px;" hidden /> </td>
+            </tr>
+            <tr>
+                <td ><label  id="PDLY_INPUT_lbl_cartodate" hidden>TO PERIOD <em>*</em></label></td>
+                <td><input class="carsubmultivalid datemandtry datepickinc"   type="text" name ="PDLY_INPUT_db_cartodate" id="PDLY_INPUT_db_cartodate" style="width:75px;" hidden /> </td>
+            </tr>
+            <tr>
+                <td ><label id="PDLY_INPUT_lbl_carloanamt" hidden>INVOICE AMOUNT<em>*</em></label> </td>
+                <td><input   type="text" name ="PDLY_INPUT_tb_carloanamt" id="PDLY_INPUT_tb_carloanamt"  class="amtonly amtcarsubmultivalid" style="width:60px;"  hidden /></td>
+            </tr>
+            <tr>
+                <td ><label id="PDLY_INPUT_lbl_carloancmt"hidden>COMMENTS</label></td>
+                <td><textarea   type="text" name ="PDLY_INPUT_ta_carloancmt" id="PDLY_INPUT_ta_carloancmt" hidden ></textarea></td>
+            </tr>
+        </table>
+        <div style="position:relative;left:130px;">
+            <table id="PDLY_INPUT_tble_button">
+                <tr><td><input type="button"   id="PDLY_INPUT_btn_carsbutton" disabled  value="SAVE" class="btn submit" hidden /></td>
+                    <td><input type="button"  id="PDLY_INPUT_btn_carrbutton" value="RESET" class="btn  resetsubmit" hidden /></td></tr>
+            </table>
+        </div>
+        <!--TABLE END-->
+        <!--FORM END-->
+    </form>
 </div>
 <!--BODY END-->
 </body>

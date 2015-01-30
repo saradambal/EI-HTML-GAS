@@ -41,7 +41,7 @@ try
     CERM_SRC_customerstmt.close();
     CERM_SRC_conn.close();
   }
-  /******************************GETTING ERM CONTACT NO'S FOR AUTOCOMPLETE****************************/
+   /******************************GETTING ERM CONTACT NO'S FOR AUTOCOMPLETE****************************/
   function CERM_SRC_contactautocomplete()
   {
     var CERM_SRC_conn =eilib.db_GetConnection();
@@ -59,7 +59,7 @@ try
     CERM_SRC_contactstmt.close();
     CERM_SRC_conn.close();
   }
-  /******************************GETTING ERM DETAILS SELECTED OPTIONS AND SEARCH INPUT****************************/
+   /******************************GETTING ERM DETAILS SELECTED OPTIONS AND SEARCH INPUT****************************/
   function CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_input1,CERM_SRC_input2)
   {
     var CERM_SRC_conn =eilib.db_GetConnection();
@@ -197,10 +197,10 @@ try
     return CERM_SRC_RESULTS; 
     CERM_SRC_conn.close()
   }
-  function CERM_SRC_ERMdeletionrecord(id)
+   function CERM_SRC_ERMdeletionrecord(id)
   {
     var CERM_SRC_conn =eilib.db_GetConnection();
-    var returnflag=eilib.DeleteRecord(CERM_SRC_conn, 80, id)
+      var returnflag=eilib.DeleteRecord(CERM_SRC_conn, 80, id)
     if(returnflag==1)
     { var return_flag='DELETION';}else{return_flag="NOTDELETED";}
     return return_flag;
@@ -211,10 +211,10 @@ catch(err)
 {
 }
 //************************************ERM UPDATION PART*********************************//
-function CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occupation,others,nationality,guests,age,contact,mailid,comments,CERM_oldarrayvalue)
-{
-  try
+  function CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occupation,others,nationality,guests,age,contact,mailid,comments,CERM_oldarrayvalue)
   {
+    try
+    {
     var CERM_SRC_conn =eilib.db_GetConnection();
     CERM_SRCconn=CERM_SRC_conn;
     var ERM_SRC_occupation1=occupation;
@@ -233,15 +233,15 @@ function CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occu
     { 
       contact=null;
     }
-    
+      
     if(minimumstay!="")
     {
-      var mailminstay=minimumstay;
-      minimumstay=eilib.ConvertSpclCharString(minimumstay)  
+    var mailminstay=minimumstay;
+    minimumstay=eilib.ConvertSpclCharString(minimumstay)  
     }
     else
     {
-      mailminstay= "";  
+   mailminstay= "";  
     }
     if(guests!="")
     {
@@ -250,7 +250,7 @@ function CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occu
     }
     else
     {
-      mailguests="";  
+    mailguests="";  
     }
     if(age!="")
     {
@@ -274,44 +274,45 @@ function CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occu
     CERM_SRC_updatestmt.close();
     if(returnflag==1)
     {
-      var emailids=eilib.getProfileEmailId(CERM_SRC_conn, 'ERM')
-      var name=emailids[0];
-      var ccList=emailids[1];
-      name=name.toString();
-      var username=name.split('@');
-      var mailusername=username[0].toUpperCase();
-      var sysdate=Utilities.formatDate(new Date(), TimeZone, "dd-MM-yyyy")
-      var subject="HELLO "+" <font color='gray'>"+"</font>"+"<font color='#498af3'><b>"+mailusername+"</b> </font>"+"<br>"+" PLEASE FIND ATTACHED UPDATED LEED DETAILS FROM ERM: "+"<br>";
-      var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'</body>';
-      if(ERM_SRC_occupation1=="OTHERS")
-      {
-        var dataarray=[customer,rent,updatemovedate,mailminstay,ERM_SRC_occupation,nationality,mailguests,mailage,contact,ERM_mailid,comments];
-      }
-      else
-      {
-        var dataarray=[customer,rent,updatemovedate,mailminstay,ERM_SRC_occupation,nationality,mailguests,mailage,contact,ERM_mailid,comments];
-      }
-      var head_array=['CUSTOMER NAME','RENT','MOVING DATE','MIN STAY','OCCUPATION','NATIONALITY','NO OF GUESTS','AGE','CONTACT','EMAIL','COMMENTS'];
-      for(var i=0;i<dataarray.length;i++)
-      {
-        var value=dataarray[i];
-        if(value=="" || value==null || value=="SELECT")continue;
-        message += '<body>'+'<table border="1"width="500" >'+'<tr align="left" >'+'<td width=40%>'+head_array[i]+'</td>'+'<td width=60%>'+value+'</td>'+'</tr>'+'</table>'+'</body>';
-      }
-      var emailsubject="UPDATED ERM LEED -"+sysdate;
-      var displayname ='ERM' ;
-      var advancedArgs={cc:ccList,name:displayname,htmlBody:message};
-      MailApp.sendEmail(name,emailsubject,message ,advancedArgs);
-      CERM_SRC_conn.commit();
+    var emailids=eilib.getProfileEmailId(CERM_SRC_conn, 'ERM')
+    var name=emailids[0];
+    var ccList=emailids[1];
+    name=name.toString();
+    var username=name.split('@');
+    var mailusername=username[0].toUpperCase();
+    var sysdate=Utilities.formatDate(new Date(), TimeZone, "dd-MM-yyyy")
+    var subject="HELLO "+" <font color='gray'>"+"</font>"+"<font color='#498af3'><b>"+mailusername+"</b> </font>"+"<br>"+" PLEASE FIND ATTACHED UPDATED LEED DETAILS FROM ERM: "+"<br>";
+    var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'</body>';
+    if(ERM_SRC_occupation1=="OTHERS")
+    {
+      var dataarray=[customer,rent,updatemovedate,mailminstay,ERM_SRC_occupation,nationality,mailguests,mailage,contact,ERM_mailid,comments];
+    }
+    else
+    {
+      var dataarray=[customer,rent,updatemovedate,mailminstay,ERM_SRC_occupation,nationality,mailguests,mailage,contact,ERM_mailid,comments];
+    }
+    var head_array=['CUSTOMER NAME','RENT','MOVING DATE','MIN STAY','OCCUPATION','NATIONALITY','NO OF GUESTS','AGE','CONTACT','EMAIL','COMMENTS'];
+    for(var i=0;i<dataarray.length;i++)
+    {
+      var value=dataarray[i];
+      if(value=="" || value==null || value=="SELECT")continue;
+      message += '<body>'+'<table border="1"width="500" >'+'<tr align="left" >'+'<td width=40%>'+head_array[i]+'</td>'+'<td width=60%>'+value+'</td>'+'</tr>'+'</table>'+'</body>';
+    }
+    var emailsubject="UPDATED ERM LEED -"+sysdate;
+    var displayname ='ERM' ;
+    var advancedArgs={cc:ccList,name:displayname,htmlBody:message};
+    MailApp.sendEmail(name,emailsubject,message ,advancedArgs);
+    CERM_SRC_conn.commit();
     }
     if(returnflag==1)
     { var return_flag='UPDATION';    }else{return_flag="NOTUPDATION";}
     return return_flag;
     CERM_SRC_conn.close();
+    }
+    catch(err)
+    {
+      CERM_SRCconn.rollback();
+    }
   }
-  catch(err)
-  {
-    CERM_SRCconn.rollback();
-  }
-}
-//****************************ERM RECORD DELETE FUNCTION *******************************//
+  //****************************ERM RECORD DELETE FUNCTION *******************************//
+ 

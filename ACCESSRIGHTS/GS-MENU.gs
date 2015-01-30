@@ -1,13 +1,13 @@
-/* REPORT - MbmkDg_ARM5CSwCcr4bBr1-rKGMnPQbcl - REPORT
-UNIT     - MuLnmcM2IRHXXri_scGtIGurKGMnPQbcl - UNIT
-CUSTOMER - MoB56RqBnbEMVnvWFLji2zerKGMnPQbcl - CUSTOMER
-EXPENSE  - MBWM1cR-C8yKsom21vFRS6erKGMnPQbcl - EXP 
+/* REPORT - Mb4vVcwu3nksAE2QwxnN2Jb2-f0eBq96R - REPORT
+UNIT     - M1vnRrN_IXW5TX0oHI5N-J72-f0eBq96R - UNIT
+CUSTOMER - MnUZ6z0jxolfESCHe5JSHyurKGMnPQbcl - CUSTOMER
+EXPENSE  - MwXp2D3XU3miH8kcohze3kerKGMnPQbcl - EXP 
 
-CONFIGURATION - MtSVMT1Stv4dpslC19iek6OrKGMnPQbcl - CONFG
-FINANCE  - MLhmnL37wzRXhH4qb6Kz1qurKGMnPQbcl - FINANCE
-EILIB    - MSijAvAvjjnegbeuDUb0m-urKGMnPQbcl - eilib
+CONFIGURATION - MKmBK8pSgXpLpx8INlAWpNL2-f0eBq96R - CONFG
+FINANCE  - Mr0TkeaqHWR-0pzxw_e4SaOrKGMnPQbcl - FINANCE
+EILIB    - MP5ZcIutkLeN81_aMqv9userKGMnPQbcl - eilib
 
-ACCESS RIGHTS - 
+ACCESS RIGHTS - MCuOmI8N4lZMoTQzotfQG2urKGMnPQbcl
 */
 //*****************************************************GLOBAL DECLARATION*********************************//
 //var Connparam   = eilib.db_Connect();
@@ -15,15 +15,15 @@ ACCESS RIGHTS -
 var timeZoneFormat=eilib.getTimezone();
 var TimeZone=Session.getScriptTimeZone();
 var UserStamp=Session.getActiveUser().getEmail();
-var trg_UserStamp= Session.getEffectiveUser().getEmail();
 var schema_name=eilib.getSchemaName();
 var InstanceName=eilib.getInstanceName();
-
+var trg_UserStamp= Session.getEffectiveUser().getEmail();
+//*******************************************FILE DESCRIPTION*********************************************
 //************************************************MENU***********************************************//
 //DONE BY:PUNI
-//VER 1.4-SD:18/10/2014 ED:18/10/2014;TRACKER NO :651;maskpanel added when clicking the menu n showing confirm message box
-//VER 1.3-SD:15/10/2014 ED:16/10/2014;TRACKER NO :651;1.added dialoog box for menu confirmation to avoid issue of other form confirmation message box.
-//VER 1.2-SD:28/08/2014 ED:29/08/2014;TRACKER NO :651;COMMENT 57,1.Added new lib links,2.updated script to show new confirm msg,3.changed preloader n msgbox position,4.added script to hide preloader after form loads
+ //VER 1.4-SD:18/10/2014 ED:18/10/2014;TRACKER NO :651;maskpanel added when clicking the menu n showing confirm message box
+ //VER 1.3-SD:15/10/2014 ED:16/10/2014;TRACKER NO :651;1.added dialoog box for menu confirmation to avoid issue of other form confirmation message box.
+ //VER 1.2-SD:28/08/2014 ED:29/08/2014;TRACKER NO :651;COMMENT 57,1.Added new lib links,2.updated script to show new confirm msg,3.changed preloader n msgbox position,4.added script to hide preloader after form loads
 //DONE BY:SAFIYULLAH.M
 ////VER 1.1-SD:01/06/2014 ED:04/06/2014;TRACKER NO:651;updated customised error for script error
 // VER 1.0-SD:08/06/2014 ED:10/06/2014;TRACKER NO:651;issue corrected and updated failure msg

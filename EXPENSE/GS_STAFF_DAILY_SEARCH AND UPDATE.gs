@@ -1,5 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************STAFF EXPENSE DAILY ENTRY: SEARCH/UPDATE/DELETE*********************************************//
+//DONE BY:SARADAMBAL M
+//VER 2.0 SD:27/12/2014 ED:27/12/2014, TRACKER NO:840//sorted staff name in ddl
 //DONE BY:PUNI
 //VER 1.7-SD:09/10/2014 ED:09/10/2014,TRACKER NO:459:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //VER 1.6-SD:27/09/2014 ED:27/09/2014,TRACKER NO:459,comment 51,1.removed trim for invitem n comments textarea search,2.hided del n srch btn while clicking srch btn,3.corrected issue when clicking cpf no srch,4.implemented staff salary new sp fr the duplicate month record
@@ -326,7 +328,7 @@ try
     var STDLY_SEARCH_employeeNameArray = [];
     var STDLY_SEARCH_employee_Name_List=[];
     var STDLY_SEARCH_employee_Name_List1=[];
-    var STDLY_SEARCH_selectEmployeeName = "SELECT ED.EMP_FIRST_NAME,ED.EMP_LAST_NAME FROM EMPLOYEE_DETAILS ED WHERE ED.EMP_ID IN (SELECT EMP_ID FROM EXPENSE_DETAIL_STAFF_SALARY)";
+    var STDLY_SEARCH_selectEmployeeName = "SELECT ED.EMP_FIRST_NAME,ED.EMP_LAST_NAME FROM EMPLOYEE_DETAILS ED WHERE ED.EMP_ID IN (SELECT EMP_ID FROM EXPENSE_DETAIL_STAFF_SALARY) ORDER BY ED.EMP_FIRST_NAME ASC";
     var STDLY_SEARCH_stmtname= STDLY_SEARCH_conn.createStatement();
     var STDLY_SEARCH_employeeName = STDLY_SEARCH_stmtname.executeQuery(STDLY_SEARCH_selectEmployeeName);
     while(STDLY_SEARCH_employeeName.next())

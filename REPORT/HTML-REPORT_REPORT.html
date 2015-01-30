@@ -50,236 +50,236 @@
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function onFailure(REP_error) {
-$(".preloader");
-if(REP_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-REP_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#REP_form_report').replaceWith('<center><label class="dberrormsg">'+REP_error+'</label></center>');
-}
-else
-{
-if(REP_error=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
-{
-REP_error=REP_errorMsg_array[3];
-}
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPORT",msgcontent:REP_error,position:{top:150,left:500}}}); 
-}
+    $(".preloader").hide();
+    if(REP_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+    {
+        REP_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+        $('#REP_form_report').replaceWith('<center><label class="dberrormsg">'+REP_error+'</label></center>');
+    }
+    else
+    {
+        if(REP_error=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
+        {
+            REP_error=REP_errorMsg_array[3];
+        }
+        $(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPORT",msgcontent:REP_error,position:{top:150,left:500}}});
+    }
 }
 //FAILURE FUNCTION END
 //DOCUMENT READY FUNCTION START
 $(document).ready(function(){
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(REP_getdomain_errresult).REP_getdomain_err();
-$(".preloader").show(); 
-var REP_emailarr_emailid=[];
-var REP_arr_reportname=[];
-var REP_arr_catagoryreportname=[];
-var REP_errorMsg_array=[];
-var REP_report_optionvalues=[];
+    google.script.run.withFailureHandler(onFailure).withSuccessHandler(REP_getdomain_errresult).REP_getdomain_err();
+    $(".preloader").show();
+    var REP_emailarr_emailid=[];
+    var REP_arr_reportname=[];
+    var REP_arr_catagoryreportname=[];
+    var REP_errorMsg_array=[];
+    var REP_report_optionvalues=[];
 //SUCCESS FUNCTION FOR REPORT PROFILE NAME,ERROR MESSAGE
-function REP_getdomain_errresult(REP_getdomain_errresult_response)
-{
-$('#REP_form_report').show();
-REP_emailarr_emailid=REP_getdomain_errresult_response.REP_emailid;
-REP_arr_catagoryreportname=REP_getdomain_errresult_response.REP_catagoryreportname;
-REP_arr_reportname=REP_getdomain_errresult_response.REP_reportname;
-REP_errorMsg_array=REP_getdomain_errresult_response.REP_errormsg;
-if(REP_emailarr_emailid.length==0)
-{
-var REP_errmsg=REP_errorMsg_array[0].replace('[PROFILE]','REPORT');
-$('#REP_form_report').replaceWith('<p><label class="errormsg"> '+REP_errmsg+'</label></p>')
-}
-else
-{
-var REP_emailarray_emailid='<option>SELECT</option>';
-for (var i = 0; i < REP_emailarr_emailid.length; i++) 
-{
-REP_emailarray_emailid += '<option value="' + REP_emailarr_emailid[i]  + '">' + REP_emailarr_emailid[i] + '</option>';
-}
-$('#REP_lb_emailid').html(REP_emailarray_emailid);
-}
-var REP_array_reportname='<option>SELECT</option>';
-for (var i = 0; i < REP_arr_reportname.length; i++) 
-{
-REP_array_reportname += '<option value="' + REP_arr_reportname[i].REP_reportnames_id + '">' + REP_arr_reportname[i].REP_reportnames_data + '</option>';
-}
-$('#REP_lb_reportname').html(REP_array_reportname);
-var REP_array_catagoryreportname ='<option>SELECT</option>';
-for (var i = 0; i < REP_arr_catagoryreportname.length; i++) 
-{
-REP_array_catagoryreportname += '<option value="' + REP_arr_catagoryreportname[i].REP_searchoption_id + '">'+ REP_arr_catagoryreportname[i].REP_searchoption_data+' </option>';
-}
-$('#REP_lb_catgreportname').html(REP_array_catagoryreportname).show();
+    function REP_getdomain_errresult(REP_getdomain_errresult_response)
+    {
+        $('#REP_form_report').show();
+        REP_emailarr_emailid=REP_getdomain_errresult_response.REP_emailid;
+        REP_arr_catagoryreportname=REP_getdomain_errresult_response.REP_catagoryreportname;
+        REP_arr_reportname=REP_getdomain_errresult_response.REP_reportname;
+        REP_errorMsg_array=REP_getdomain_errresult_response.REP_errormsg;
+        if(REP_emailarr_emailid.length==0)
+        {
+            var REP_errmsg=REP_errorMsg_array[0].replace('[PROFILE]','REPORT');
+            $('#REP_form_report').replaceWith('<p><label class="errormsg"> '+REP_errmsg+'</label></p>')
+        }
+        else
+        {
+            var REP_emailarray_emailid='<option>SELECT</option>';
+            for (var i = 0; i < REP_emailarr_emailid.length; i++)
+            {
+                REP_emailarray_emailid += '<option value="' + REP_emailarr_emailid[i]  + '">' + REP_emailarr_emailid[i] + '</option>';
+            }
+            $('#REP_lb_emailid').html(REP_emailarray_emailid);
+        }
+        var REP_array_reportname='<option>SELECT</option>';
+        for (var i = 0; i < REP_arr_reportname.length; i++)
+        {
+            REP_array_reportname += '<option value="' + REP_arr_reportname[i].REP_reportnames_id + '">' + REP_arr_reportname[i].REP_reportnames_data + '</option>';
+        }
+        $('#REP_lb_reportname').html(REP_array_reportname);
+        var REP_array_catagoryreportname ='<option>SELECT</option>';
+        for (var i = 0; i < REP_arr_catagoryreportname.length; i++)
+        {
+            REP_array_catagoryreportname += '<option value="' + REP_arr_catagoryreportname[i].REP_searchoption_id + '">'+ REP_arr_catagoryreportname[i].REP_searchoption_data+' </option>';
+        }
+        $('#REP_lb_catgreportname').html(REP_array_catagoryreportname).show();
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
+    }
 //CHANGE EVENT FUNCTION FOR SEARCH OPTION
-$('.validation').blur(function(){
-var REP_catagoryvalid=$('#REP_lb_catgreportname').val();
-$('#REP_div_nodata').hide();
-$("#REP_btn_send").attr("disabled", "disabled");
-if(($("#REP_lb_catgreportname").val()!="SELECT")&&($("#REP_lb_reportname").val()!="SELECT")&&($("#REP_lb_emailid").val()!="SELECT"))
-{
-if(REP_catagoryvalid==82 || REP_catagoryvalid==73)
-{
-if(($('#REP_db_month').val()!=undefined)&&($('#REP_db_month').val()!=''))
-$("#REP_btn_send").removeAttr("disabled");
-}
-else
-$("#REP_btn_send").removeAttr("disabled");
-}
-else
-{
-$("#REP_btn_send").attr("disabled", "disabled");
-}
-});
+    $('.validation').blur(function(){
+        var REP_catagoryvalid=$('#REP_lb_catgreportname').val();
+        $('#REP_div_nodata').hide();
+        $("#REP_btn_send").attr("disabled", "disabled");
+        if(($("#REP_lb_catgreportname").val()!="SELECT")&&($("#REP_lb_reportname").val()!="SELECT")&&($("#REP_lb_emailid").val()!="SELECT"))
+        {
+            if(REP_catagoryvalid==82 || REP_catagoryvalid==73)
+            {
+                if(($('#REP_db_month').val()!=undefined)&&($('#REP_db_month').val()!=''))
+                    $("#REP_btn_send").removeAttr("disabled");
+            }
+            else
+                $("#REP_btn_send").removeAttr("disabled");
+        }
+        else
+        {
+            $("#REP_btn_send").attr("disabled", "disabled");
+        }
+    });
 //CHANGE EVENT FUNCTION FOR REPORT CATAGORY OPTION
-$('#REP_lb_catgreportname').change(function(){
-var REP_report_optionfetch=$(this).val();
-$('#REP_db_month').val('');
-$("#REP_btn_send").attr("disabled", "disabled");
-$('#REP_div_nodata').hide();
-if(REP_report_optionfetch=='SELECT')
-{
-$(".preloader").hide(); 
-$('#REP_div_nodata').hide();
-$('#REP_lbl_reportname').hide();
-$('#REP_lb_reportname').hide();
-$('#REP_lbl_emailid').hide();
-$('#REP_lb_emailid').hide();
-$('#REP_lbl_selectmonth').hide();
-$('#REP_db_month').hide();
-}
-else
-{
-var  newPos= adjustPosition($(this).position(),100,150);
-resetPreloader(newPos);
-$(".preloader").show(); 
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(REP_success_load_searchby_lb).REP_func_load_searchby_option(REP_report_optionfetch);
-}
-});
+    $('#REP_lb_catgreportname').change(function(){
+        var REP_report_optionfetch=$(this).val();
+        $('#REP_db_month').val('');
+        $("#REP_btn_send").attr("disabled", "disabled");
+        $('#REP_div_nodata').hide();
+        if(REP_report_optionfetch=='SELECT')
+        {
+            $(".preloader").hide();
+            $('#REP_div_nodata').hide();
+            $('#REP_lbl_reportname').hide();
+            $('#REP_lb_reportname').hide();
+            $('#REP_lbl_emailid').hide();
+            $('#REP_lb_emailid').hide();
+            $('#REP_lbl_selectmonth').hide();
+            $('#REP_db_month').hide();
+        }
+        else
+        {
+            var  newPos= adjustPosition($(this).position(),100,150);
+            resetPreloader(newPos);
+            $(".preloader").show();
+            google.script.run.withFailureHandler(onFailure).withSuccessHandler(REP_success_load_searchby_lb).REP_func_load_searchby_option(REP_report_optionfetch);
+        }
+    });
 //SUCCESS FUNCTION FOR ALL SEARCH BY CATAGORY REPORT
-function REP_success_load_searchby_lb(REP_response_load_searchby)
-{
-$(".preloader").hide(); 
-var REP_report_optionfetch=REP_response_load_searchby.REP_flag;
-REP_report_optionvalues=REP_response_load_searchby.REP_loaddata_searchby;
-var REP_report_options='<option>SELECT</option>';
-for(var i = 0;i<REP_report_optionvalues.length; i++)
-{
-REP_report_options += '<option value="' + REP_report_optionvalues[i].REP_seperatereportnames_id + '">' + REP_report_optionvalues[i].REP_seperatereportnames_data + '</option>';
-}
-$('#REP_lb_reportname').html(REP_report_options).show();
-$('#REP_lbl_reportname').show();
-$("#REP_btn_send").attr("disabled", "disabled");
-$('#REP_lbl_emailid').hide();
-$('#REP_lb_emailid').hide();
-$('#REP_lbl_selectmonth').hide();
-$('#REP_db_month').hide();
-}
+    function REP_success_load_searchby_lb(REP_response_load_searchby)
+    {
+        $(".preloader").hide();
+        var REP_report_optionfetch=REP_response_load_searchby.REP_flag;
+        REP_report_optionvalues=REP_response_load_searchby.REP_loaddata_searchby;
+        var REP_report_options='<option>SELECT</option>';
+        for(var i = 0;i<REP_report_optionvalues.length; i++)
+        {
+            REP_report_options += '<option value="' + REP_report_optionvalues[i].REP_seperatereportnames_id + '">' + REP_report_optionvalues[i].REP_seperatereportnames_data + '</option>';
+        }
+        $('#REP_lb_reportname').html(REP_report_options).show();
+        $('#REP_lbl_reportname').show();
+        $("#REP_btn_send").attr("disabled", "disabled");
+        $('#REP_lbl_emailid').hide();
+        $('#REP_lb_emailid').hide();
+        $('#REP_lbl_selectmonth').hide();
+        $('#REP_db_month').hide();
+    }
 //CHANGE EVENT FUNCTION FOR REPORT NAME
-$('#REP_lb_reportname').change(function(){
-$(".preloader").show(); 
-var REP_catagory_option=$(this).val();
-$("#REP_btn_send").attr("disabled", "disabled");
-$('#REP_div_nodata').hide();
-if(REP_catagory_option=='SELECT')
-{
-$(".preloader").hide(); 
-$('#REP_lbl_emailid').hide();
-$('#REP_lb_emailid').hide();
-$('#REP_div_nodata').hide();
-$('#REP_lbl_selectmonth').hide();
-$('#REP_db_month').hide();
-}
-else
-{
-$(".preloader").hide(); 
-$('#REP_lbl_emailid').show();
-$('#REP_lb_emailid').val('SELECT').show();
-if(REP_catagory_option==32 || REP_catagory_option==28 )
-{
-$('#REP_lbl_emailid').hide();
-$('#REP_lb_emailid').hide();
-$('#REP_lbl_selectmonth').show();
-$('#REP_db_month').show();
-}
-}
-});
+    $('#REP_lb_reportname').change(function(){
+        $(".preloader").show();
+        var REP_catagory_option=$(this).val();
+        $("#REP_btn_send").attr("disabled", "disabled");
+        $('#REP_div_nodata').hide();
+        if(REP_catagory_option=='SELECT')
+        {
+            $(".preloader").hide();
+            $('#REP_lbl_emailid').hide();
+            $('#REP_lb_emailid').hide();
+            $('#REP_div_nodata').hide();
+            $('#REP_lbl_selectmonth').hide();
+            $('#REP_db_month').hide();
+        }
+        else
+        {
+            $(".preloader").hide();
+            $('#REP_lbl_emailid').show();
+            $('#REP_lb_emailid').val('SELECT').show();
+            if(REP_catagory_option==32 || REP_catagory_option==28 )
+            {
+                $('#REP_lbl_emailid').hide();
+                $('#REP_lb_emailid').hide();
+                $('#REP_lbl_selectmonth').show();
+                $('#REP_db_month').show();
+            }
+        }
+    });
 //CLICK FUNCTION FOR SAVE BUTTON
-$('#REP_btn_send').click(function(){
-$(".preloader").show(); 
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(REP_ss_getdatas_result).REP_ss_getdatas($('#REP_lb_reportname').val(),$('#REP_lb_reportname').find('option:selected').text(),($('#REP_lb_emailid').val()),$('#REP_lb_catgreportname').find('option:selected').text(),$("#REP_db_month").val());
-});
+    $('#REP_btn_send').click(function(){
+        $(".preloader").show();
+        google.script.run.withFailureHandler(onFailure).withSuccessHandler(REP_ss_getdatas_result).REP_ss_getdatas($('#REP_lb_reportname').val(),$('#REP_lb_reportname').find('option:selected').text(),($('#REP_lb_emailid').val()),$('#REP_lb_catgreportname').find('option:selected').text(),$("#REP_db_month").val());
+    });
 //SUCCESS FUNCTION FOR SEND BUTTON
-function REP_ss_getdatas_result(REP_response)
-{
-$(".preloader").hide(); 
-var REP_reportname=$('#REP_lb_reportname').find('option:selected').text();
-if(REP_response==1)
-{
-$("#REP_btn_send").attr("disabled", "disabled");
-var REP_errmsg=REP_errorMsg_array[1].replace('[PROFILE]',REP_reportname);
+    function REP_ss_getdatas_result(REP_response)
+    {
+        $(".preloader").hide();
+        var REP_reportname=$('#REP_lb_reportname').find('option:selected').text();
+        if(REP_response==1)
+        {
+            $("#REP_btn_send").attr("disabled", "disabled");
+            var REP_errmsg=REP_errorMsg_array[1].replace('[PROFILE]',REP_reportname);
 //MESSAGE BOX FOR SEND BUTTON
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPORT",msgcontent:REP_errmsg,position:{top:150,left:500}}}); 
-$('#REP_lbl_reportname').hide();
-$('#REP_lbl_emailid').hide();
-$('#REP_lb_reportname').hide();
-$('#REP_lb_emailid').hide();
-$('#REP_lb_catgreportname').val('SELECT');
-$('#REP_div_nodata').hide();
-$('#REP_lbl_selectmonth').hide();
-$('#REP_db_month').hide();
-$('#REP_db_month').val('');
-}
-else
-{
-$("#REP_btn_send").attr("disabled", "disabled");
-var REP_errormsgnodata=REP_errorMsg_array[2].replace('[REPORT]',REP_reportname);
-$('#REP_div_nodata').text(REP_errormsgnodata).show();
-$('#REP_lbl_reportname').hide();
-$('#REP_lbl_emailid').hide();
-$('#REP_lb_reportname').hide();
-$('#REP_lb_emailid').hide();
-$('#REP_lb_catgreportname').val('SELECT');
-$('#REP_lbl_selectmonth').hide();
-$('#REP_db_month').hide();
-}
-}
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPORT",msgcontent:REP_errmsg,position:{top:150,left:500}}});
+            $('#REP_lbl_reportname').hide();
+            $('#REP_lbl_emailid').hide();
+            $('#REP_lb_reportname').hide();
+            $('#REP_lb_emailid').hide();
+            $('#REP_lb_catgreportname').val('SELECT');
+            $('#REP_div_nodata').hide();
+            $('#REP_lbl_selectmonth').hide();
+            $('#REP_db_month').hide();
+            $('#REP_db_month').val('');
+        }
+        else
+        {
+            $("#REP_btn_send").attr("disabled", "disabled");
+            var REP_errormsgnodata=REP_errorMsg_array[2].replace('[REPORT]',REP_reportname);
+            $('#REP_div_nodata').text(REP_errormsgnodata).show();
+            $('#REP_lbl_reportname').hide();
+            $('#REP_lbl_emailid').hide();
+            $('#REP_lb_reportname').hide();
+            $('#REP_lb_emailid').hide();
+            $('#REP_lb_catgreportname').val('SELECT');
+            $('#REP_lbl_selectmonth').hide();
+            $('#REP_db_month').hide();
+        }
+    }
 //DATE PICKER FUNCTION FOR ERM LEEDS
-$('.date-picker').datepicker( {changeMonth: true,  changeYear: true,  showButtonPanel: true,  dateFormat: 'MM-yy',    
-maxDate:new Date(),onClose: function(dateText, inst) {
-$('#REP_lbl_emailid').show();
-$('#REP_lb_emailid').show();
-var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-$(this).datepicker('setDate', new Date(year, month, 1));
-$(this).blur();
-}
-});
-$(".date-picker").focus(function () {
-$(".ui-datepicker-calendar").hide();
-$("#ui-datepicker-div").position({ my: "left top", at: "left bottom", of: $(this)});});
+    $('.date-picker').datepicker( {changeMonth: true,  changeYear: true,  showButtonPanel: true,  dateFormat: 'MM-yy',
+        maxDate:new Date(),onClose: function(dateText, inst) {
+            $('#REP_lbl_emailid').show();
+            $('#REP_lb_emailid').show();
+            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).datepicker('setDate', new Date(year, month, 1));
+            $(this).blur();
+        }
+    });
+    $(".date-picker").focus(function () {
+        $(".ui-datepicker-calendar").hide();
+        $("#ui-datepicker-div").position({ my: "left top", at: "left bottom", of: $(this)});});
 //CLICK EVENT FUCNTION FOR RESET
-$('#REP_btn_reset').click(function()
-{
-$('#REP_lb_catgreportname').val('');
-$('#REP_lbl_reportname').hide();
-$('#REP_lb_reportname').hide();
-$('#REP_lbl_emailid').hide();
-$('#REP_lb_emailid').hide();
-$("#REP_btn_send").attr("disabled", "disabled");
-$('#REP_div_nodata').hide();
-$('#REP_lbl_selectmonth').hide();
-$('#REP_db_month').hide();
-});
+    $('#REP_btn_reset').click(function()
+    {
+        $('#REP_lb_catgreportname').val('');
+        $('#REP_lbl_reportname').hide();
+        $('#REP_lb_reportname').hide();
+        $('#REP_lbl_emailid').hide();
+        $('#REP_lb_emailid').hide();
+        $("#REP_btn_send").attr("disabled", "disabled");
+        $('#REP_div_nodata').hide();
+        $('#REP_lbl_selectmonth').hide();
+        $('#REP_db_month').hide();
+    });
 });
 //DOCUMENT READY FUNCTION END
 </script>
@@ -289,40 +289,40 @@ $('#REP_db_month').hide();
 <!--BODY TAG START-->
 <body>
 <div>
-<div class="wrapper">
-<div class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
-<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>REPORT</h3><p></div></div>
-<form class="content" name="REP_form_report" id="REP_form_report" hidden >
-<table>
-<tr>
-<td style="width:170px"><label name="REP_lbl_catgreportname" id="REP_lbl_catgreportname">REPORT CATEGORY<em>*</em></label></td>
-<td><select name="REP_lb_catgreportname" id="REP_lb_catgreportname" class="validation">
-<option>SELECT</option>
-</select></td>
-</tr>
-<tr>
-<td style="width:170px"><label name="REP_lbl_reportname" id="REP_lbl_reportname"  hidden >REPORT NAME<em>*</em></label></td>
-<td><select name="REP_lb_reportname" id="REP_lb_reportname" class="validation" hidden>
-<option>SELECT</option>
-</select></td>
-</tr>
-<tr><td style="width:170px"><label name="REP_lbl_selectmonth" id="REP_lbl_selectmonth" hidden>SELECT MONTH<em>*</em></label></td><td><input type="text" id="REP_db_month" name="REP_db_month" class="date-picker validation" style="width:110px" hidden ></td></tr>
-<tr>
-<td style="width:170px"><label name="REP_lbl_emailid" id="REP_lbl_emailid" hidden>EMAIL ID<em>*</em></label></td>
-<td><select name="REP_lb_emailid" id="REP_lb_emailid" class="validation" hidden>
-<option>SELECT</option>
-</select></td>
-</tr>
-</table>
-<table>
-<tr>
-<td style="width:170px" align="right"><input type="button" class="maxbtn" name="REP_btn_send" id="REP_btn_send" value="SEND" disabled></td>
-<td style="width:170px" align="left"><input type="button" class="maxbtn" name="REP_btn_reset" id="REP_btn_reset" value="RESET"></td>
-</tr>
-</table>
-<div class="errormsg" name="REP_div_nodata" id="REP_div_nodata"></div>
-</form>
-</div>
+    <div class="wrapper">
+        <div class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+        <div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>REPORT</h3><p></div></div>
+        <form class="content" name="REP_form_report" id="REP_form_report" hidden >
+            <table>
+                <tr>
+                    <td style="width:170px"><label name="REP_lbl_catgreportname" id="REP_lbl_catgreportname">REPORT CATEGORY<em>*</em></label></td>
+                    <td><select name="REP_lb_catgreportname" id="REP_lb_catgreportname" class="validation">
+                        <option>SELECT</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <td style="width:170px"><label name="REP_lbl_reportname" id="REP_lbl_reportname"  hidden >REPORT NAME<em>*</em></label></td>
+                    <td><select name="REP_lb_reportname" id="REP_lb_reportname" class="validation" hidden>
+                        <option>SELECT</option>
+                    </select></td>
+                </tr>
+                <tr><td style="width:170px"><label name="REP_lbl_selectmonth" id="REP_lbl_selectmonth" hidden>SELECT MONTH<em>*</em></label></td><td><input type="text" id="REP_db_month" name="REP_db_month" class="date-picker validation" style="width:110px" hidden ></td></tr>
+                <tr>
+                    <td style="width:170px"><label name="REP_lbl_emailid" id="REP_lbl_emailid" hidden>EMAIL ID<em>*</em></label></td>
+                    <td><select name="REP_lb_emailid" id="REP_lb_emailid" class="validation" hidden>
+                        <option>SELECT</option>
+                    </select></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td style="width:170px" align="right"><input type="button" class="maxbtn" name="REP_btn_send" id="REP_btn_send" value="SEND" disabled></td>
+                    <td style="width:170px" align="left"><input type="button" class="maxbtn" name="REP_btn_reset" id="REP_btn_reset" value="RESET"></td>
+                </tr>
+            </table>
+            <div class="errormsg" name="REP_div_nodata" id="REP_div_nodata"></div>
+        </form>
+    </div>
 </div>
 </body>
 <!--BODY TAG END-->

@@ -48,7 +48,7 @@ function  CUST_customercalendercreation(custid,calenderIDcode,startdate,startdat
   {contactno=intmobile;}
   else if(office!=null)
   {contactno=office;}
-  //  if(mobile!=null||intmobile!=null||office!=null)
+//  if(mobile!=null||intmobile!=null||office!=null)
   if(contactno!=null && contactno!="")
   {
     contactaddr=custid+" "+"EMAIL :"+customermailid+",CONTACT NO :"+contactno;

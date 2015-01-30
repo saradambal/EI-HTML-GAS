@@ -34,179 +34,179 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
-//CHECK PRELOADER STATUS N HIDE START
-var SubPage=1;
-function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
-}
-//CHECK PRELOADER STATUS N HIDE END
-$(document).ready(function() {
-$(".preloader").show();
-$('#CSV_trigger_form').hide();
-$('#edit-status').hide();
-$('#switchonoff').hide();
-$('#statusbutton').hide();
-$('input:checkbox[name=onoffswitch]').attr('checked',false);
-/************INITIAL LOAD FUNCTION*******************************/
-google.script.run.withSuccessHandler(CONFIG_getCommonvalues_result).CONFIG_commonvalues();
-function CONFIG_getCommonvalues_result(CONFIG_result)
-{
-var triggeroption=[];
-triggeroption=CONFIG_result;
-var CONFIG_optionvalue='<option>SELECT</option>';
-for(var i=0;i<triggeroption.length;i++)
-{
-var trigger_option=triggeroption[i];
-var triggerid=trigger_option.tcid+'/'+trigger_option.tcdata;
-CONFIG_optionvalue += '<option value="' + trigger_option.tcdata + '">' + trigger_option.tcdata + '</option>';
-}
-$('#CSV_TRIGGER_lb_triggernames').html(CONFIG_optionvalue);
-$('#CSV_trigger_form').show();
+    //CHECK PRELOADER STATUS N HIDE START
+    var SubPage=1;
+    function CheckPageStatus(){
+        if(MenuPage!=1 && SubPage!=1)
+            $(".preloader").hide();
+    }
+    //CHECK PRELOADER STATUS N HIDE END
+    $(document).ready(function() {
+        $(".preloader").show();
+        $('#CSV_trigger_form').hide();
+        $('#edit-status').hide();
+        $('#switchonoff').hide();
+        $('#statusbutton').hide();
+        $('input:checkbox[name=onoffswitch]').attr('checked',false);
+        /************INITIAL LOAD FUNCTION*******************************/
+        google.script.run.withSuccessHandler(CONFIG_getCommonvalues_result).CONFIG_commonvalues();
+        function CONFIG_getCommonvalues_result(CONFIG_result)
+        {
+            var triggeroption=[];
+            triggeroption=CONFIG_result;
+            var CONFIG_optionvalue='<option>SELECT</option>';
+            for(var i=0;i<triggeroption.length;i++)
+            {
+                var trigger_option=triggeroption[i];
+                var triggerid=trigger_option.tcid+'/'+trigger_option.tcdata;
+                CONFIG_optionvalue += '<option value="' + trigger_option.tcdata + '">' + trigger_option.tcdata + '</option>';
+            }
+            $('#CSV_TRIGGER_lb_triggernames').html(CONFIG_optionvalue);
+            $('#CSV_trigger_form').show();
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+            SubPage=0;
+            CheckPageStatus();
 //TO HIDE PRELOADER END
-}
-$(".toggle-btn:not('.noscript') input[type=radio]").addClass("visuallyhidden");
-$(".toggle-btn:not('.noscript') input[type=radio]").change(function() {
-if( $(this).attr("name") ) {
-$(this).parent().addClass("success").siblings().removeClass("success")
-} else {
-$(this).parent().toggleClass("success");
-}
-});
-/********************TRIGGER RADIO BUTTON CREATION*****************************/
-$('#CSV_TRIGGER_lb_triggernames').change(function(){ 
-$('#CSV_TRIGGER_lbl_conformation_message').hide();
-$('#CSV_TRIGGER_radio tr').remove();
-var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
-if(CSV_TRIGGER_selectedtrigger!="SELECT")
-{
-$('#CSV_TRIGGER_lbl_header').text(CSV_TRIGGER_selectedtrigger).show();
-$('input:checkbox[name=onoffswitch]').attr('checked',false);
-$('#switchonoff').show();
-$('#statusbutton').show();
-$('#CSV_TRIGGER_btn_search').show();
-$('#edit-status').show();
-}
-else
-{
-$('#CSV_TRIGGER_lbl_header').text('');
-$('#buttondiv').hide();
-}
-});
-$(document).on('click','#myonoffswitch',function(){
-var buttonstatus=$("input[name='onoffswitch']:checked").val();
-var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
-if(buttonstatus=='on')
-{
-google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_ON');
-}
-else
-{
-google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_OFF');
-}
-});
-$(document).on('click','#CSV_TRIGGERON_btn_search',function(){
-$('#CSV_TRIGGER_lbl_conformation_message').hide();
-var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
-google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_ON');
-});
-$(document).on('click','#CSV_TRIGGEROFF_btn_search',function(){
-$('#CSV_TRIGGER_lbl_conformation_message').hide();
-var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
-google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_OFF');
-});
-$(document).on('click','#statusbutton',function(){
-$('#CSV_TRIGGER_lbl_conformation_message').hide();
-var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
-google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_STATUS');
-})
-/**********************TRIGGER RESPONSE **************************/
-function TRIGGER_response(response)
-{
-if(response==0)
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER ALREADY ON, DO NOT OFF THE TRIGGER SWITCH WHILE TRIGGER ALREADY RUNNING, PLZ CHK STATUS IF REQUIRED."}});
-}
-else if(response==1)
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS DELETED SUCCESSFULLY"}});
-}
-else if(response==2)
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS ON"}});
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS OFF"}});
-}
-$(".preloader").hide();
-}
-});
+        }
+        $(".toggle-btn:not('.noscript') input[type=radio]").addClass("visuallyhidden");
+        $(".toggle-btn:not('.noscript') input[type=radio]").change(function() {
+            if( $(this).attr("name") ) {
+                $(this).parent().addClass("success").siblings().removeClass("success")
+            } else {
+                $(this).parent().toggleClass("success");
+            }
+        });
+        /********************TRIGGER RADIO BUTTON CREATION*****************************/
+        $('#CSV_TRIGGER_lb_triggernames').change(function(){
+            $('#CSV_TRIGGER_lbl_conformation_message').hide();
+            $('#CSV_TRIGGER_radio tr').remove();
+            var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+            if(CSV_TRIGGER_selectedtrigger!="SELECT")
+            {
+                $('#CSV_TRIGGER_lbl_header').text(CSV_TRIGGER_selectedtrigger).show();
+                $('input:checkbox[name=onoffswitch]').attr('checked',false);
+                $('#switchonoff').show();
+                $('#statusbutton').show();
+                $('#CSV_TRIGGER_btn_search').show();
+                $('#edit-status').show();
+            }
+            else
+            {
+                $('#CSV_TRIGGER_lbl_header').text('');
+                $('#buttondiv').hide();
+            }
+        });
+        $(document).on('click','#myonoffswitch',function(){
+            var buttonstatus=$("input[name='onoffswitch']:checked").val();
+            var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+            if(buttonstatus=='on')
+            {
+                google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_ON');
+            }
+            else
+            {
+                google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_OFF');
+            }
+        });
+        $(document).on('click','#CSV_TRIGGERON_btn_search',function(){
+            $('#CSV_TRIGGER_lbl_conformation_message').hide();
+            var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+            google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_ON');
+        });
+        $(document).on('click','#CSV_TRIGGEROFF_btn_search',function(){
+            $('#CSV_TRIGGER_lbl_conformation_message').hide();
+            var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+            google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_OFF');
+        });
+        $(document).on('click','#statusbutton',function(){
+            $('#CSV_TRIGGER_lbl_conformation_message').hide();
+            var CSV_TRIGGER_selectedtrigger=$('#CSV_TRIGGER_lb_triggernames').val();
+            google.script.run.withSuccessHandler(TRIGGER_response).CONFIG_TRIGGER_creation(CSV_TRIGGER_selectedtrigger,'TRIGGER_STATUS');
+        })
+        /**********************TRIGGER RESPONSE **************************/
+        function TRIGGER_response(response)
+        {
+            if(response==0)
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER ALREADY ON, DO NOT OFF THE TRIGGER SWITCH WHILE TRIGGER ALREADY RUNNING, PLZ CHK STATUS IF REQUIRED."}});
+            }
+            else if(response==1)
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS DELETED SUCCESSFULLY"}});
+            }
+            else if(response==2)
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS ON"}});
+            }
+            else
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"TRIGGER",msgcontent:"TRIGGER IS OFF"}});
+            }
+            $(".preloader").hide();
+        }
+    });
 </script>
 <body bgcolor="#E6E6FA">
 <div>
-<?!=include('HTML-MENU') ?>
-<div class="wrapper">
-<div class="preloader MaskPanel">
-<div class="preloader statusarea">
-<div style="padding-top:90px; text-align:center">
-<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
-</div>
-</div>
-</div>
-<div class="title" id="fhead">
-<div style="padding-left:500px; text-align:left;">
-<p>
-<h3>TRIGGER
-</h3>
-<p>
-</div>
-</div>
-<form method="post" class="content" action="" id="CSV_trigger_form" name="CSV_trigger_form">
-<table cellspacing="20px"style="width=200px;">
-<tr><td><label id="body">TRIGGER NAME</label><em>*</em></td>
-<td><select id="CSV_TRIGGER_lb_triggernames"  name="CSV_TRIGGER_lb_triggernames">
-<option>SELECT</option>
-</select>
-</td>
-</tr>
-<tr><td><table id="CSV_TRIGGER_tble_header" ><tr><td><label align='bottom' name='error' id='CSV_TRIGGER_lbl_header' class="srctitle" visible="false" ></label></tr></table>
-<tr><table><tr>
-<td ><div id="switchonoff" class="onoffswitch">
-<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-<label class="onoffswitch-label" for="myonoffswitch">
-<div class="onoffswitch-inner"></div>
-<div class="onoffswitch-switch"></div>
-</label>
-</div></td><td width='30px'><label  hidden> *********  </label></td><td><div><input id="statusbutton" type="button" value="STATUS"></div></td></tr></table>
-</tr>
-<tr><table id="CSV_TRIGGER_lbl_tble_header" ><tr><label align='bottom' name='error' id='CSV_TRIGGER_lbl_conformation_message' class="srctitle" visible="false" ></label></tr></table>
-</tr>
-</table>
-</form>
-</div>
+    <?!=include('HTML-MENU') ?>
+    <div class="wrapper">
+        <div class="preloader MaskPanel">
+            <div class="preloader statusarea">
+                <div style="padding-top:90px; text-align:center">
+                    <img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+                </div>
+            </div>
+        </div>
+        <div class="title" id="fhead">
+            <div style="padding-left:500px; text-align:left;">
+                <p>
+                <h3>TRIGGER
+                </h3>
+                <p>
+            </div>
+        </div>
+        <form method="post" class="content" action="" id="CSV_trigger_form" name="CSV_trigger_form">
+            <table cellspacing="20px"style="width=200px;">
+                <tr><td><label id="body">TRIGGER NAME</label><em>*</em></td>
+                    <td><select id="CSV_TRIGGER_lb_triggernames"  name="CSV_TRIGGER_lb_triggernames">
+                        <option>SELECT</option>
+                    </select>
+                    </td>
+                </tr>
+                <tr><td><table id="CSV_TRIGGER_tble_header" ><tr><td><label align='bottom' name='error' id='CSV_TRIGGER_lbl_header' class="srctitle" visible="false" ></label></tr></table>
+                <tr><table><tr>
+                    <td ><div id="switchonoff" class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+                        <label class="onoffswitch-label" for="myonoffswitch">
+                            <div class="onoffswitch-inner"></div>
+                            <div class="onoffswitch-switch"></div>
+                        </label>
+                    </div></td><td width='30px'><label  hidden> *********  </label></td><td><div><input id="statusbutton" type="button" value="STATUS"></div></td></tr></table>
+                </tr>
+                <tr><table id="CSV_TRIGGER_lbl_tble_header" ><tr><label align='bottom' name='error' id='CSV_TRIGGER_lbl_conformation_message' class="srctitle" visible="false" ></label></tr></table>
+                </tr>
+            </table>
+        </form>
+    </div>
 </body>
 </html>

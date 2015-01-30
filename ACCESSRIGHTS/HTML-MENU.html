@@ -1,3 +1,4 @@
+
 <!--//*******************************************FILE DESCRIPTION*********************************************
 //***************************************************MENU***********************************************//
 //DONE BY:PUNI
@@ -19,199 +20,199 @@ DONE BY:SAFIYULLAH.M
  VER 0.01 - INITIAL VERSION-SD:09/11/2013 ED:07/01/2014;TRACKER NO: 651-->
 <html>
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
-<script>
-var ErrorControl ={MsgBox:'false'}
-/////
-var MenuPage=1;
-var SubPage=2;
-function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
-}
-/////
-//FUNCTION TO ALERT TRY CATCH ERROR MESSAGE
-function onFailure(ACRMENU_error) {
-$(".preloader").hide();
-if(ACRMENU_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-ACRMENU_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#cssmenu').replaceWith('<center><label class="dberrormsg">'+ACRMENU_error+'</label></center>');
-}
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MENU",msgcontent:ACRMENU_error,position:{top:150,left:500}}}); 
-}
-}
-//function to show msg using confirm msgbox
-var Page_url;
-function ShowConfirmMsg(){
-var  newPos= adjustPosition(100,200,200);
-resetPreloader(newPos);
-$("#confrmmaskpanel").show();
-Page_url =$(this).data('pageurl');
-$( "#Confirmmsgbox" ).text("Do You Want to Open "+$(this).attr("class")+" "+$(this).text()+" ?").dialog( "open" ).css('font-weight', 'bold');
-$(".ui-dialog-titlebar").addClass("MessageBoxTitle");
-$(".ui-dialog").css({top:150, left:500})
-return false;
-}
-$(document).ready(function(){
-$( "#Confirmmsgbox" ).dialog({
-resizable: !1,
-draggable: false,
-position:[0, 50],
-autoOpen: false, 
-width: 340,
-height: 160,
-modal: !0,
-buttons:  [
-{
-text: "OK",
-"class": 'msgbtn',
-click: function() {
-$(this).dialog("close"); 
-if(Page_url){
-$('#form_page_url').val(Page_url);
-$('#target').submit();
-$("#confrmmaskpanel").hide();
-var  newPos= adjustPosition(100,200,200);
-resetPreloader(newPos);
-$(".preloader").show();
-}
-}
-},
-{
-text: "CANCEL",
-"class": 'msgbtn',
-click: function() { 
-$(this).dialog("close"); 
-$("#confrmmaskpanel").hide();
-}
-}
-]
-});
-$("#cssmenu").hide()  
-$("#mainmaskpanel").show();
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <script>
+        var ErrorControl ={MsgBox:'false'}
+        /////
+        var MenuPage=1;
+        var SubPage=2;
+        function CheckPageStatus(){
+            if(MenuPage!=1 && SubPage!=1)
+                $(".preloader").hide();
+        }
+        /////
+        //FUNCTION TO ALERT TRY CATCH ERROR MESSAGE
+        function onFailure(ACRMENU_error) {
+            $(".preloader").hide();
+            if(ACRMENU_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+            {
+                ACRMENU_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+                $('#cssmenu').replaceWith('<center><label class="dberrormsg">'+ACRMENU_error+'</label></center>');
+            }
+            else{
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"MENU",msgcontent:ACRMENU_error,position:{top:150,left:500}}});
+            }
+        }
+        //function to show msg using confirm msgbox
+        var Page_url;
+        function ShowConfirmMsg(){
+            var  newPos= adjustPosition(100,200,200);
+            resetPreloader(newPos);
+            $("#confrmmaskpanel").show();
+            Page_url =$(this).data('pageurl');
+            $( "#Confirmmsgbox" ).text("Do You Want to Open "+$(this).attr("class")+" "+$(this).text()+" ?").dialog( "open" ).css('font-weight', 'bold');
+            $(".ui-dialog-titlebar").addClass("MessageBoxTitle");
+            $(".ui-dialog").css({top:150, left:500})
+            return false;
+        }
+        $(document).ready(function(){
+            $( "#Confirmmsgbox" ).dialog({
+                resizable: !1,
+                draggable: false,
+                position:[0, 50],
+                autoOpen: false,
+                width: 340,
+                height: 160,
+                modal: !0,
+                buttons:  [
+                    {
+                        text: "OK",
+                        "class": 'msgbtn',
+                        click: function() {
+                            $(this).dialog("close");
+                            if(Page_url){
+                                $('#form_page_url').val(Page_url);
+                                $('#target').submit();
+                                $("#confrmmaskpanel").hide();
+                                var  newPos= adjustPosition(100,200,200);
+                                resetPreloader(newPos);
+                                $(".preloader").show();
+                            }
+                        }
+                    },
+                    {
+                        text: "CANCEL",
+                        "class": 'msgbtn',
+                        click: function() {
+                            $(this).dialog("close");
+                            $("#confrmmaskpanel").hide();
+                        }
+                    }
+                ]
+            });
+            $("#cssmenu").hide()
+            $("#mainmaskpanel").show();
 //FUNCTION TO GET ALL MENUS
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(ACRMENU_getallmenu_result).ACRMENU_getallmenu();
+            google.script.run.withFailureHandler(onFailure).withSuccessHandler(ACRMENU_getallmenu_result).ACRMENU_getallmenu();
 //FUNCTION TO SET ALL MENUS
-function ACRMENU_getallmenu_result(finalmenu_result)
-{
-var ACRMENU_finalmenu=finalmenu_result.menu//all menus
-var ACRMENU_mainmenu=ACRMENU_finalmenu[0]//main menu
-var ARCMENU_first_submenu=ACRMENU_finalmenu[1]//submenu
-var ARCMENU_second_submenu=ACRMENU_finalmenu[2]//submenu1
-var filelist=ACRMENU_finalmenu[3]//html file name
-var script_flag=ACRMENU_finalmenu[4];
-var count=0;
-var mainmenuItem="";
-var submenuItem="";
-var sub_submenuItem="";
-var url = finalmenu_result.url//get script url based on site or standalone deploy
-var ACRMENU_error_msg=finalmenu_result.ACRMENU_errorAarray;
-var userStamp=finalmenu_result.UserStamp;
+            function ACRMENU_getallmenu_result(finalmenu_result)
+            {
+                var ACRMENU_finalmenu=finalmenu_result.menu//all menus
+                var ACRMENU_mainmenu=ACRMENU_finalmenu[0]//main menu
+                var ARCMENU_first_submenu=ACRMENU_finalmenu[1]//submenu
+                var ARCMENU_second_submenu=ACRMENU_finalmenu[2]//submenu1
+                var filelist=ACRMENU_finalmenu[3]//html file name
+                var script_flag=ACRMENU_finalmenu[4];
+                var count=0;
+                var mainmenuItem="";
+                var submenuItem="";
+                var sub_submenuItem="";
+                var url = finalmenu_result.url//get script url based on site or standalone deploy
+                var ACRMENU_error_msg=finalmenu_result.ACRMENU_errorAarray;
+                var userStamp=finalmenu_result.UserStamp;
 //////////////////////////////////////////////
-var pattern='sites.google.com/a/macros/ssomens.com/s/';
-var new_url = url.substr(pattern.length+url.indexOf(pattern));
-var form= '<form hiddens id="target" method="get" action="'+url+'">\
+                var pattern='sites.google.com/a/macros/ssomens.com/s/';
+                var new_url = url.substr(pattern.length+url.indexOf(pattern));
+                var form= '<form hiddens id="target" method="get" action="'+url+'">\
 <input hidden type="text" name="page" id="form_page_url" value="">\
 </form>';
-$('body').append(form);
+                $('body').append(form);
 ///////////////////////////////////////////////
-if(ACRMENU_mainmenu.length==0){
-var ee_msg=(ACRMENU_error_msg.toString()).replace('[LOGIN ID]',userStamp)
-$('#ACRMENU_lbl_errormsg').text(ee_msg)
-$('#ACRMENU_lbl_errormsg').show();
-$(".preloader").hide();
-}
-else{
-$('#ACRMENU_lbl_errormsg').hide();
-for(var i=0;i<ACRMENU_mainmenu.length;i++)//add main menu
-{
-var main='mainmenu'+i
-var submen='submenu'+i;
-if(ARCMENU_first_submenu.length==0)
-{
-mainmenuItem='<li class="active"><a data-pageurl="'+filelist[count]+'" href="'+url+'?page='+filelist[count]+'" class="'+ACRMENU_mainmenu[i]+'" onclick="return ShowConfirmMsg()" >'+ACRMENU_mainmenu[i]+'</a></li>'
-}
-else
-{
-mainmenuItem='<li class="has-sub"><a href="#" >'+ACRMENU_mainmenu[i]+'</a><ul class='+submen+'>'
-}
-$(".ACRMENU_ulclass_mainmenu").append(mainmenuItem);
-for(var j=0;j<ARCMENU_first_submenu.length;j++)
-{
-if(i==j)
-{
-for(var k=0;k<ARCMENU_first_submenu[j].length;k++)//add submenu1 
-{
-var sub_submenu='sub_submenu'+j+k;
-if(ARCMENU_second_submenu[count].length==0)
-{
-if(script_flag[count]!='X'){
-var file_name=filelist[count]
-}
-else{
+                if(ACRMENU_mainmenu.length==0){
+                    var ee_msg=(ACRMENU_error_msg.toString()).replace('[LOGIN ID]',userStamp)
+                    $('#ACRMENU_lbl_errormsg').text(ee_msg)
+                    $('#ACRMENU_lbl_errormsg').show();
+                    $(".preloader").hide();
+                }
+                else{
+                    $('#ACRMENU_lbl_errormsg').hide();
+                    for(var i=0;i<ACRMENU_mainmenu.length;i++)//add main menu
+                    {
+                        var main='mainmenu'+i
+                        var submen='submenu'+i;
+                        if(ARCMENU_first_submenu.length==0)
+                        {
+                            mainmenuItem='<li class="active"><a data-pageurl="'+filelist[count]+'" href="'+url+'?page='+filelist[count]+'" class="'+ACRMENU_mainmenu[i]+'" onclick="return ShowConfirmMsg()" >'+ACRMENU_mainmenu[i]+'</a></li>'
+                        }
+                        else
+                        {
+                            mainmenuItem='<li class="has-sub"><a href="#" >'+ACRMENU_mainmenu[i]+'</a><ul class='+submen+'>'
+                        }
+                        $(".ACRMENU_ulclass_mainmenu").append(mainmenuItem);
+                        for(var j=0;j<ARCMENU_first_submenu.length;j++)
+                        {
+                            if(i==j)
+                            {
+                                for(var k=0;k<ARCMENU_first_submenu[j].length;k++)//add submenu1
+                                {
+                                    var sub_submenu='sub_submenu'+j+k;
+                                    if(ARCMENU_second_submenu[count].length==0)
+                                    {
+                                        if(script_flag[count]!='X'){
+                                            var file_name=filelist[count]
+                                        }
+                                        else{
 
-var file_name='HTML-SITE_MAINTENANCE_ERROR'
-}
-submenuItem='<li class="active"><a data-pageurl="'+file_name+'" href="'+url+'?page='+file_name+'" class="'+ACRMENU_mainmenu[i]+'" onclick="return ShowConfirmMsg()">'+ARCMENU_first_submenu[j][k]+'</a></li></ul>'
-}
-else
-{
-submenuItem='<li class="has-sub"><a href="#" >'+ARCMENU_first_submenu[j][k]+'</a><ul class='+sub_submenu+'>'
-}
-$("."+submen).append(submenuItem);
-for(var m=0;m<ARCMENU_second_submenu[count].length;m++)//add submenu2
-{
-if(script_flag[count][m]!='X'){
-var file_name=filelist[count][m]
-}
-else{
-var file_name='HTML-SITE_MAINTENANCE_ERROR'
-}
-sub_submenuItem='<li class="active"><a data-pageurl="'+file_name+'" href="'+url+'?page='+file_name+'" class="'+ARCMENU_first_submenu[j][k]+'"  onclick="return ShowConfirmMsg()">'+ARCMENU_second_submenu[count][m]+'</a></li>'
-$("."+sub_submenu).append(sub_submenuItem);}
-count++;
-$(".ACRMENU_ulclass_mainmenu").append('</ul></li>');
-}
-}
-}
-$(".ACRMENU_ulclass_mainmenu").append('</li>');
-}
-$("#cssmenu").show()  
+                                            var file_name='HTML-SITE_MAINTENANCE_ERROR'
+                                        }
+                                        submenuItem='<li class="active"><a data-pageurl="'+file_name+'" href="'+url+'?page='+file_name+'" class="'+ACRMENU_mainmenu[i]+'" onclick="return ShowConfirmMsg()">'+ARCMENU_first_submenu[j][k]+'</a></li></ul>'
+                                    }
+                                    else
+                                    {
+                                        submenuItem='<li class="has-sub"><a href="#" >'+ARCMENU_first_submenu[j][k]+'</a><ul class='+sub_submenu+'>'
+                                    }
+                                    $("."+submen).append(submenuItem);
+                                    for(var m=0;m<ARCMENU_second_submenu[count].length;m++)//add submenu2
+                                    {
+                                        if(script_flag[count][m]!='X'){
+                                            var file_name=filelist[count][m]
+                                        }
+                                        else{
+                                            var file_name='HTML-SITE_MAINTENANCE_ERROR'
+                                        }
+                                        sub_submenuItem='<li class="active"><a data-pageurl="'+file_name+'" href="'+url+'?page='+file_name+'" class="'+ARCMENU_first_submenu[j][k]+'"  onclick="return ShowConfirmMsg()">'+ARCMENU_second_submenu[count][m]+'</a></li>'
+                                        $("."+sub_submenu).append(sub_submenuItem);}
+                                    count++;
+                                    $(".ACRMENU_ulclass_mainmenu").append('</ul></li>');
+                                }
+                            }
+                        }
+                        $(".ACRMENU_ulclass_mainmenu").append('</li>');
+                    }
+                    $("#cssmenu").show()
 ////////
-MenuPage=0;
-CheckPageStatus();
-}
-}
+                    MenuPage=0;
+                    CheckPageStatus();
+                }
+            }
 ///
-});
-</script>
-<title>MENU</title>
+        });
+    </script>
+    <title>MENU</title>
 </head>
 <body>
 <div class="wrapper">
-<div  id="confrmmaskpanel" class="preloader MaskPanel" hidden></div>
-<div  id="mainmaskpanel" class="preloader MaskPanel" hidden><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
-<div id='cssmenu' hidden>
-<ul class="ACRMENU_ulclass_mainmenu" id="nav"><!--main menu--></ul>
-</div>
-<label id="ACRMENU_lbl_errormsg" class="errormsg" hidden ></label>
+    <div  id="confrmmaskpanel" class="preloader MaskPanel" hidden></div>
+    <div  id="mainmaskpanel" class="preloader MaskPanel" hidden><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+    <div id='cssmenu' hidden>
+        <ul class="ACRMENU_ulclass_mainmenu" id="nav"><!--main menu--></ul>
+    </div>
+    <label id="ACRMENU_lbl_errormsg" class="errormsg" hidden ></label>
 </div>
 <div style="display:none" id="Confirmmsgbox" title="MENU CONFIRMATION">
 </div>

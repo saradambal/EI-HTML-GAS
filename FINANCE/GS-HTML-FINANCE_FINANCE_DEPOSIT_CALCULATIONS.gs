@@ -48,10 +48,8 @@ try
       var  DDC_unitno=DDC_unitvalue.getString("UNIT_NO");
       DDC_unit_array.push({DDC_unitno:DDC_unitno,DDC_customerid:DDC_unitvalue.getString("CUSTOMER_ID"),DDC_customername:DDC_unitvalue.getString("CUSTOMER_NAME")});
     }
-    DDC_unitvalue.close();DDC_stmt.close();
-    var DDC_stmt = DDC_conn.createStatement();
-    DDC_stmt.execute("DROP TABLE "+DDC_temptble_name+"");
-    DDC_stmt.close();
+    DDC_unitvalue.close();DDC_stmt.close();  
+    eilib.DropTempTable(DDC_conn,DDC_temptble_name);    
     var DDC_select_err_msg="248,251,252,253,254,255,256,257,258,259,260,261,262,271,380,449,450,451,459,468"
     var DDC_errorAarray=[];
     DDC_errorAarray=eilib.GetErrorMessageList(DDC_conn,DDC_select_err_msg);
@@ -843,9 +841,7 @@ try
       var black_row1 = output_sheet.getRange(output_sheet.getLastRow()+1,1,1,4).setBackgroundColor('black');
       output_sheet.insertRows(output_sheet.getLastRow()+5, 50) 
     }
-    var stmt = conn.createStatement();
-    stmt.execute("DROP TABLE "+DDC_temptble_name+"");
-    stmt.close();  conn.close();
+    eilib.DropTempTable(conn,DDC_temptble_name);
     var DDC_ref_unitcustomer=DDC_getunitlistbox('DDC_flag_refresh')
     return DDC_ref_unitcustomer;
   }

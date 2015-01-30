@@ -23,769 +23,769 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
 var ErrorControl ={AmountCompare:'InValid'}
 $(document).ready(function() {
-$('#CHEQUE_SRC_ta_comments').autogrow({onInitialize: true});
-$(document).on('click','#CHEQUE_SRC_tbl_htmltable tr td input[type="radio"]',function() {
-$('#CHEQUE_SRC_tbl_htmltable tr').removeClass('higlightrow');
-$(this).closest('tr').addClass('higlightrow');
-})
-$(".preloader").show();
-var errormsg=[];
-$("#CHEQUE_SRC_tb_chequeno").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
-$("#CHEQUE_SRC_tb_fromamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'CHEQUE_SRC_tb_toamount'}});
-$("#CHEQUE_SRC_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'CHEQUE_SRC_tb_fromamount'}});
-$('#CHEQUE_SRC_tble_amountrangetable').hide();
-$('#CHEQUE_SRC_tble_datesearch').hide();
-$('#CHEQUE_SRC_unitsearch_table').hide();
-$('#CHEQUE_SRC_chequenosearch_table').hide();
-$('#CHEQUE_SRC_div_htmltable').hide();
-$('#CHEQUE_SRC_lbl_error').hide();
-$('#CHEQUE_SRC_tble_Updationtable').hide();
-$('#CHEQUE_SRC_lbl_debited').hide();
+    $('#CHEQUE_SRC_ta_comments').autogrow({onInitialize: true});
+    $(document).on('click','#CHEQUE_SRC_tbl_htmltable tr td input[type="radio"]',function() {
+        $('#CHEQUE_SRC_tbl_htmltable tr').removeClass('higlightrow');
+        $(this).closest('tr').addClass('higlightrow');
+    })
+    $(".preloader").show();
+    var errormsg=[];
+    $("#CHEQUE_SRC_tb_chequeno").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
+    $("#CHEQUE_SRC_tb_fromamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'CHEQUE_SRC_tb_toamount'}});
+    $("#CHEQUE_SRC_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'CHEQUE_SRC_tb_fromamount'}});
+    $('#CHEQUE_SRC_tble_amountrangetable').hide();
+    $('#CHEQUE_SRC_tble_datesearch').hide();
+    $('#CHEQUE_SRC_unitsearch_table').hide();
+    $('#CHEQUE_SRC_chequenosearch_table').hide();
+    $('#CHEQUE_SRC_div_htmltable').hide();
+    $('#CHEQUE_SRC_lbl_error').hide();
+    $('#CHEQUE_SRC_tble_Updationtable').hide();
+    $('#CHEQUE_SRC_lbl_debited').hide();
 //$(document).doValidation({rule:'fromto',prop:{elem1:'CHEQUE_SRCL_db_fromdate',elem2:'CHEQUE_SRCL_db_todate'}}); 
-$('#CHEQUE_SRC_db_debited').datepicker({
-dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true
-});
-$(".autosize").doValidation({rule:'alphanumeric',prop:{whitespace:true,autosize:true}});
-$(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-$(".numonly").doValidation({rule:'numbersonly'});
-$('#CHEQUE_SRCL_db_fromdate').datepicker({
-dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true
-});
-$('#CHEQUE_SRCL_db_fromdate').datepicker("option","minDate",new Date(2005,00));
-$('#CHEQUE_SRCL_db_fromdate').datepicker("option","maxDate",new Date());
-$('#CHEQUE_SRCL_db_todate').datepicker({
-dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true
-});
-$('#CHEQUE_SRCL_db_fromdate').change(function(){
-var startdate=$('#CHEQUE_SRCL_db_fromdate').val()
-var currentdate=new Date( Date.parse( FormTableDateFormat(startdate)) )
-var date1 = $('#CHEQUE_SRCL_db_fromdate').datepicker('getDate');           
-var date = new Date( Date.parse( date1 ) ); 
-date.setDate(date.getDate());        
-var newDate = date.toDateString(); 
-newDate = new Date( Date.parse( newDate ));                      
-$('#CHEQUE_SRCL_db_todate').datepicker("option","minDate",newDate);
-$('#CHEQUE_SRCL_db_todate').datepicker("option","maxDate",new Date());
-});
-$("#CHEQUE_SRC_db_date").datepicker({dateFormat:'dd-mm-yy',changeYear: true,changeMonth: true});
-$('#CHEQUE_SRC_db_date').datepicker("option","minDate",new Date(2005,00));
-var chequenewdate=new Date();
-$('#CHEQUE_SRC_db_date').datepicker("option","maxDate",new Date());
-$('#CHEQUE_SRC_lb_main').change(function(){
-$('#CHEQUE_SRC_div_htmltable').hide();
-$('#chequesearchbutton').hide();
-$('#CHEQUE_SRC_lbl_error').hide();
-$('#CHEQUE_SRC_tble_Updationtable').hide();
-$('#CHEQUE_SRC_lbl_unitsearcherrormsg').hide();
-var CHEQUE_SRC_OPTION=$('#CHEQUE_SRC_lb_main').val();
-if(CHEQUE_SRC_OPTION==1)
-{
-$('#CHEQUE_SRC_unitsearch_table').hide();
-$('#CHEQUE_SRC_tble_amountrangetable').show();
-$('#CHEQUE_SRC_tble_datesearch').hide();
-$('#CHEQUE_SRC_chequenosearch_table').hide();
-}
-if(CHEQUE_SRC_OPTION==3)
-{
-$('#CHEQUE_SRC_unitsearch_table').hide();
-$('#CHEQUE_SRC_tble_amountrangetable').hide();
-$('#CHEQUE_SRC_tble_datesearch').show();
-$('#CHEQUE_SRC_chequenosearch_table').hide();
-}
-if(CHEQUE_SRC_OPTION=="SELECT")
-{
-$('#CHEQUE_SRC_unitsearch_table').hide();
-$('#CHEQUE_SRC_tble_amountrangetable').hide();
-$('#CHEQUE_SRC_tble_datesearch').hide();
-$('#CHEQUE_SRC_chequenosearch_table').hide();
-}
-if(CHEQUE_SRC_OPTION==4)
-{
-$('#CHEQUE_SRC_tble_amountrangetable').hide();
-$('#CHEQUE_SRC_tble_datesearch').hide();
-$('#CHEQUE_SRC_chequenosearch_table').hide();
-$(".preloader").show();
-var  newPos= adjustPosition($('#CHEQUE_SRC_lb_unitsearch').position(),100,280);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_unitsearchresponse).CHEQUE_SRC_autocompletesearchdetails(CHEQUE_SRC_OPTION)
-}
-if(CHEQUE_SRC_OPTION==2)
-{
-$('#CHEQUE_SRC_btn_chequenosearchbutton').attr("disabled", "disabled")
-$('#CHEQUE_SRC_unitsearch_table').hide();
-$('#CHEQUE_SRC_tble_amountrangetable').hide();
-$('#CHEQUE_SRC_tble_datesearch').hide();
-$('#CHEQUE_SRC_chequenosearch_table').show();
-$(".preloader").show();
-var  newPos= adjustPosition($('#CHEQUE_SRC_btn_chequenosearchbutton').position(),100,280);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_chequenosearchresponse).CHEQUE_SRC_autocompletesearchdetails(CHEQUE_SRC_OPTION)
-}
-});
-function CHEQUE_SRC_unitsearchresponse(res)
-{
-$('#CHEQUE_SRC_lbl_unitsearcherrormsg').hide();
-var unit=res;
-if(unit!="")
-{
-var CHEQUE_SRC_unitvalue='<option>SELECT</option>';
-for(var i=0;i<unit.length;i++)
-{
-CHEQUE_SRC_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
-}
-$('#CHEQUE_SRC_lb_unitsearch').html(CHEQUE_SRC_unitvalue);
-$('#CHEQUE_SRC_unitsearch_table').show();
-$('#CHEQUE_SRC_lbl_unitsearch').show();
-$('#CHEQUE_SRC_lb_unitsearch').show();
-$('#CHEQUE_SRC_btn_unitsearchbutton').show();
-}
-else
-{
-$('#CHEQUE_SRC_unitsearch_table').show();
-$('#CHEQUE_SRC_lbl_unitsearcherrormsg').show();
-$('#CHEQUE_SRC_lbl_unitsearch').hide();
-$('#CHEQUE_SRC_lb_unitsearch').hide();
-$('#CHEQUE_SRC_btn_unitsearchbutton').hide();
-}
-$(".preloader").hide();
-}
+    $('#CHEQUE_SRC_db_debited').datepicker({
+        dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true
+    });
+    $(".autosize").doValidation({rule:'alphanumeric',prop:{whitespace:true,autosize:true}});
+    $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+    $(".numonly").doValidation({rule:'numbersonly'});
+    $('#CHEQUE_SRCL_db_fromdate').datepicker({
+        dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true
+    });
+    $('#CHEQUE_SRCL_db_fromdate').datepicker("option","minDate",new Date(2005,00));
+    $('#CHEQUE_SRCL_db_fromdate').datepicker("option","maxDate",new Date());
+    $('#CHEQUE_SRCL_db_todate').datepicker({
+        dateFormat: "dd-mm-yy",changeYear: true,changeMonth: true
+    });
+    $('#CHEQUE_SRCL_db_fromdate').change(function(){
+        var startdate=$('#CHEQUE_SRCL_db_fromdate').val()
+        var currentdate=new Date( Date.parse( FormTableDateFormat(startdate)) )
+        var date1 = $('#CHEQUE_SRCL_db_fromdate').datepicker('getDate');
+        var date = new Date( Date.parse( date1 ) );
+        date.setDate(date.getDate());
+        var newDate = date.toDateString();
+        newDate = new Date( Date.parse( newDate ));
+        $('#CHEQUE_SRCL_db_todate').datepicker("option","minDate",newDate);
+        $('#CHEQUE_SRCL_db_todate').datepicker("option","maxDate",new Date());
+    });
+    $("#CHEQUE_SRC_db_date").datepicker({dateFormat:'dd-mm-yy',changeYear: true,changeMonth: true});
+    $('#CHEQUE_SRC_db_date').datepicker("option","minDate",new Date(2005,00));
+    var chequenewdate=new Date();
+    $('#CHEQUE_SRC_db_date').datepicker("option","maxDate",new Date());
+    $('#CHEQUE_SRC_lb_main').change(function(){
+        $('#CHEQUE_SRC_div_htmltable').hide();
+        $('#chequesearchbutton').hide();
+        $('#CHEQUE_SRC_lbl_error').hide();
+        $('#CHEQUE_SRC_tble_Updationtable').hide();
+        $('#CHEQUE_SRC_lbl_unitsearcherrormsg').hide();
+        var CHEQUE_SRC_OPTION=$('#CHEQUE_SRC_lb_main').val();
+        if(CHEQUE_SRC_OPTION==1)
+        {
+            $('#CHEQUE_SRC_unitsearch_table').hide();
+            $('#CHEQUE_SRC_tble_amountrangetable').show();
+            $('#CHEQUE_SRC_tble_datesearch').hide();
+            $('#CHEQUE_SRC_chequenosearch_table').hide();
+        }
+        if(CHEQUE_SRC_OPTION==3)
+        {
+            $('#CHEQUE_SRC_unitsearch_table').hide();
+            $('#CHEQUE_SRC_tble_amountrangetable').hide();
+            $('#CHEQUE_SRC_tble_datesearch').show();
+            $('#CHEQUE_SRC_chequenosearch_table').hide();
+        }
+        if(CHEQUE_SRC_OPTION=="SELECT")
+        {
+            $('#CHEQUE_SRC_unitsearch_table').hide();
+            $('#CHEQUE_SRC_tble_amountrangetable').hide();
+            $('#CHEQUE_SRC_tble_datesearch').hide();
+            $('#CHEQUE_SRC_chequenosearch_table').hide();
+        }
+        if(CHEQUE_SRC_OPTION==4)
+        {
+            $('#CHEQUE_SRC_tble_amountrangetable').hide();
+            $('#CHEQUE_SRC_tble_datesearch').hide();
+            $('#CHEQUE_SRC_chequenosearch_table').hide();
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#CHEQUE_SRC_lb_unitsearch').position(),100,280);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_unitsearchresponse).CHEQUE_SRC_autocompletesearchdetails(CHEQUE_SRC_OPTION)
+        }
+        if(CHEQUE_SRC_OPTION==2)
+        {
+            $('#CHEQUE_SRC_btn_chequenosearchbutton').attr("disabled", "disabled")
+            $('#CHEQUE_SRC_unitsearch_table').hide();
+            $('#CHEQUE_SRC_tble_amountrangetable').hide();
+            $('#CHEQUE_SRC_tble_datesearch').hide();
+            $('#CHEQUE_SRC_chequenosearch_table').show();
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#CHEQUE_SRC_btn_chequenosearchbutton').position(),100,280);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_chequenosearchresponse).CHEQUE_SRC_autocompletesearchdetails(CHEQUE_SRC_OPTION)
+        }
+    });
+    function CHEQUE_SRC_unitsearchresponse(res)
+    {
+        $('#CHEQUE_SRC_lbl_unitsearcherrormsg').hide();
+        var unit=res;
+        if(unit!="")
+        {
+            var CHEQUE_SRC_unitvalue='<option>SELECT</option>';
+            for(var i=0;i<unit.length;i++)
+            {
+                CHEQUE_SRC_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+            }
+            $('#CHEQUE_SRC_lb_unitsearch').html(CHEQUE_SRC_unitvalue);
+            $('#CHEQUE_SRC_unitsearch_table').show();
+            $('#CHEQUE_SRC_lbl_unitsearch').show();
+            $('#CHEQUE_SRC_lb_unitsearch').show();
+            $('#CHEQUE_SRC_btn_unitsearchbutton').show();
+        }
+        else
+        {
+            $('#CHEQUE_SRC_unitsearch_table').show();
+            $('#CHEQUE_SRC_lbl_unitsearcherrormsg').show();
+            $('#CHEQUE_SRC_lbl_unitsearch').hide();
+            $('#CHEQUE_SRC_lb_unitsearch').hide();
+            $('#CHEQUE_SRC_btn_unitsearchbutton').hide();
+        }
+        $(".preloader").hide();
+    }
 //////CHEQUE NO AUTO COMPLETE/////////////
-function CHEQUE_SEARCH_highlightSearchText() {
-$.ui.autocomplete.prototype._renderItem = function( ul, item) {
-var re = new RegExp(this.term, "i") ;
-var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
-return $( "<li></li>" )
-.data("item.autocomplete", item)
-.append("<a>" + t + "</a>")
-.appendTo(ul);
-};
-}
-var chequeno_array=[];
-function CHEQUE_SRC_chequenosearchresponse(cheque_response)
-{
-chequeno_array=cheque_response;
-$("#CHEQUE_SRC_tb_chequenosearch").val("");
-$(".preloader").hide();
-}
-$("#CHEQUE_SRC_tb_chequenosearch").keypress(function(){
-flag=0;
-CHEQUE_SEARCH_highlightSearchText();
-$("#CHEQUE_SRC_btn_updationbutton").attr("disabled", "disabled");
-$('#CHEQUE_SRC_div_htmltable').hide();
-$('#chequesearchbutton').hide();
-$('#CHEQUE_SRC_lbl_error').hide();
-$('#CHEQUE_SRC_tble_Updationtable').hide();
-$( "#CHEQUE_SRC_tb_chequenosearch").autocomplete({
-source: chequeno_array,
-select: CHEQUE_SEARCH_AutoCompleteSelectHandler
-});
-});
-var flag;
-function CHEQUE_SEARCH_AutoCompleteSelectHandler(event, ui) {
-flag=1;
-$('#CHEQUE_SRC_btn_chequenosearchbutton').removeAttr("disabled");
-$('#autocompleteerrormsg').hide();
-}
-$(document).on('change','.chequenoresultsvalidate',function(){
-if(flag==1){
-$('#autocompleteerrormsg').hide();
-}
-else
-{
-$('#autocompleteerrormsg').show();
-$("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
-}
-});
+    function CHEQUE_SEARCH_highlightSearchText() {
+        $.ui.autocomplete.prototype._renderItem = function( ul, item) {
+            var re = new RegExp(this.term, "i") ;
+            var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
+            return $( "<li></li>" )
+                    .data("item.autocomplete", item)
+                    .append("<a>" + t + "</a>")
+                    .appendTo(ul);
+        };
+    }
+    var chequeno_array=[];
+    function CHEQUE_SRC_chequenosearchresponse(cheque_response)
+    {
+        chequeno_array=cheque_response;
+        $("#CHEQUE_SRC_tb_chequenosearch").val("");
+        $(".preloader").hide();
+    }
+    $("#CHEQUE_SRC_tb_chequenosearch").keypress(function(){
+        flag=0;
+        CHEQUE_SEARCH_highlightSearchText();
+        $("#CHEQUE_SRC_btn_updationbutton").attr("disabled", "disabled");
+        $('#CHEQUE_SRC_div_htmltable').hide();
+        $('#chequesearchbutton').hide();
+        $('#CHEQUE_SRC_lbl_error').hide();
+        $('#CHEQUE_SRC_tble_Updationtable').hide();
+        $( "#CHEQUE_SRC_tb_chequenosearch").autocomplete({
+            source: chequeno_array,
+            select: CHEQUE_SEARCH_AutoCompleteSelectHandler
+        });
+    });
+    var flag;
+    function CHEQUE_SEARCH_AutoCompleteSelectHandler(event, ui) {
+        flag=1;
+        $('#CHEQUE_SRC_btn_chequenosearchbutton').removeAttr("disabled");
+        $('#autocompleteerrormsg').hide();
+    }
+    $(document).on('change','.chequenoresultsvalidate',function(){
+        if(flag==1){
+            $('#autocompleteerrormsg').hide();
+        }
+        else
+        {
+            $('#autocompleteerrormsg').show();
+            $("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
+        }
+    });
 //////CHEQUE AUTO COMPLETE VALIDATION////
-$(document).on('change','.chequeautovalidate',function(){
-if(flag==1){
-$('#autocompleteerrormsg').hide();
-}
-else
-{
-$('#autocompleteerrormsg').show();
-$("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
-}
-if($('#CHEQUE_SRC_tb_chequenosearch').val()=="")
-{
-$('#autocompleteerrormsg').hide();
-$("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
-}
-});
+    $(document).on('change','.chequeautovalidate',function(){
+        if(flag==1){
+            $('#autocompleteerrormsg').hide();
+        }
+        else
+        {
+            $('#autocompleteerrormsg').show();
+            $("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
+        }
+        if($('#CHEQUE_SRC_tb_chequenosearch').val()=="")
+        {
+            $('#autocompleteerrormsg').hide();
+            $("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
+        }
+    });
 
 /////////////////UPDATION FORM VALIDATION////////////
-$(document).on('change','.chequeupdationform',function(){
-var status=$('#CHEQUE_SRC_lb_status').val();
-if((status!="SELECT")&&(status!="CREATED") && (status!="CANCELLED"))
-{
-if($('#CHEQUE_SRC_db_date').val()!='' && status!="SELECT" && $('#CHEQUE_SRC_tb_chequeno').val()!='' && $('#CHEQUE_SRC_tb_chequeto').val()!='' && $('#CHEQUE_SRC_tb_chequefor').val()!='' && $('#CHEQUE_SRC_tb_amount').val()!='' && $('#CHEQUE_SRC_tb_amount').val()!='' && $('#CHEQUE_SRC_db_debited').val()!='')
-{
-$("#CHEQUE_SRC_btn_updationbutton").removeAttr("disabled");
-}
-else
-{
-$("#CHEQUE_SRC_btn_updationbutton").attr("disabled", "disabled");
-}
-}
-else
-{
-if($('#CHEQUE_SRC_db_date').val()!='' && status!="SELECT" && $('#CHEQUE_SRC_tb_chequeno').val()!='' && $('#CHEQUE_SRC_tb_chequeto').val()!='' && $('#CHEQUE_SRC_tb_chequefor').val()!='' && $('#CHEQUE_SRC_tb_amount').val()!="")
-{
-$("#CHEQUE_SRC_btn_updationbutton").removeAttr("disabled");
-}
-else
-{
-$("#CHEQUE_SRC_btn_updationbutton").attr("disabled", "disabled");
-}
-}
-});
-google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_getCommonvalues_result).CHEQUE_SRC_commonvalues();
+    $(document).on('change','.chequeupdationform',function(){
+        var status=$('#CHEQUE_SRC_lb_status').val();
+        if((status!="SELECT")&&(status!="CREATED") && (status!="CANCELLED"))
+        {
+            if($('#CHEQUE_SRC_db_date').val()!='' && status!="SELECT" && $('#CHEQUE_SRC_tb_chequeno').val()!='' && $('#CHEQUE_SRC_tb_chequeto').val()!='' && $('#CHEQUE_SRC_tb_chequefor').val()!='' && $('#CHEQUE_SRC_tb_amount').val()!='' && $('#CHEQUE_SRC_tb_amount').val()!='' && $('#CHEQUE_SRC_db_debited').val()!='')
+            {
+                $("#CHEQUE_SRC_btn_updationbutton").removeAttr("disabled");
+            }
+            else
+            {
+                $("#CHEQUE_SRC_btn_updationbutton").attr("disabled", "disabled");
+            }
+        }
+        else
+        {
+            if($('#CHEQUE_SRC_db_date').val()!='' && status!="SELECT" && $('#CHEQUE_SRC_tb_chequeno').val()!='' && $('#CHEQUE_SRC_tb_chequeto').val()!='' && $('#CHEQUE_SRC_tb_chequefor').val()!='' && $('#CHEQUE_SRC_tb_amount').val()!="")
+            {
+                $("#CHEQUE_SRC_btn_updationbutton").removeAttr("disabled");
+            }
+            else
+            {
+                $("#CHEQUE_SRC_btn_updationbutton").attr("disabled", "disabled");
+            }
+        }
+    });
+    google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_getCommonvalues_result).CHEQUE_SRC_commonvalues();
 /////////////INITIAL LISTBOX LOADING FUNCTION///////////////
-function CHEQUE_SRC_getCommonvalues_result(CHEQUE_SRC_result)
-{
-errormsg=CHEQUE_SRC_result.error;
-var status=CHEQUE_SRC_result.status;
-var searchoption=CHEQUE_SRC_result.Chequesearchoption;
-$('#CHEQUE_SRC_tb_fromamount').prop('title',errormsg[1])
-$('#CHEQUE_SRC_tb_toamount').prop('title',errormsg[1])
-$('#CHEQUE_SRC_lbl_amounterrormsg').text(errormsg[3]);
-$('#CHEQUE_SRC_lbl_amounterrormsg').hide();
-var CHEQUE_SRC_searchoptionvalue='<option>SELECT</option>';
-for(var i=0;i<searchoption.length;i++)
-{
-var searchoptionlist=searchoption[i];
-CHEQUE_SRC_searchoptionvalue += '<option value="' + searchoptionlist.CHEQUEoptionid + '">' + searchoptionlist.CHEQUEoptiondata + '</option>';
-}
-$('#CHEQUE_SRC_lb_main').html(CHEQUE_SRC_searchoptionvalue);
-var CHEQUE_SRC_statusvalue='<option>SELECT</option>';
-for(var i=0;i<status.length;i++)
-{
-CHEQUE_SRC_statusvalue += '<option value="' + status[i] + '">' + status[i] + '</option>';
-}
-$('#CHEQUE_SRC_lb_status').html(CHEQUE_SRC_statusvalue);
-$('#CHEQUE_SRC_lbl_main').show();
-$('#CHEQUE_SRC_lb_main').show();
-$('#autocompleteerrormsg').text(errormsg[5]);
-$('#CHEQUE_SRC_form_mainform').show()
-$(".preloader").hide();
-}
+    function CHEQUE_SRC_getCommonvalues_result(CHEQUE_SRC_result)
+    {
+        errormsg=CHEQUE_SRC_result.error;
+        var status=CHEQUE_SRC_result.status;
+        var searchoption=CHEQUE_SRC_result.Chequesearchoption;
+        $('#CHEQUE_SRC_tb_fromamount').prop('title',errormsg[1])
+        $('#CHEQUE_SRC_tb_toamount').prop('title',errormsg[1])
+        $('#CHEQUE_SRC_lbl_amounterrormsg').text(errormsg[3]);
+        $('#CHEQUE_SRC_lbl_amounterrormsg').hide();
+        var CHEQUE_SRC_searchoptionvalue='<option>SELECT</option>';
+        for(var i=0;i<searchoption.length;i++)
+        {
+            var searchoptionlist=searchoption[i];
+            CHEQUE_SRC_searchoptionvalue += '<option value="' + searchoptionlist.CHEQUEoptionid + '">' + searchoptionlist.CHEQUEoptiondata + '</option>';
+        }
+        $('#CHEQUE_SRC_lb_main').html(CHEQUE_SRC_searchoptionvalue);
+        var CHEQUE_SRC_statusvalue='<option>SELECT</option>';
+        for(var i=0;i<status.length;i++)
+        {
+            CHEQUE_SRC_statusvalue += '<option value="' + status[i] + '">' + status[i] + '</option>';
+        }
+        $('#CHEQUE_SRC_lb_status').html(CHEQUE_SRC_statusvalue);
+        $('#CHEQUE_SRC_lbl_main').show();
+        $('#CHEQUE_SRC_lb_main').show();
+        $('#autocompleteerrormsg').text(errormsg[5]);
+        $('#CHEQUE_SRC_form_mainform').show()
+        $(".preloader").hide();
+    }
 ////////////AMOUNT RANGE SEARCH SUBMIT BUTTON VALIDATION //////////// 
-$('.amountvalidation').blur(function(){
-$('#CHEQUE_SRC_div_htmltable').hide();
-$('#chequesearchbutton').hide();
-$('#CHEQUE_SRC_lbl_error').hide();
-$('#CHEQUE_SRC_tble_Updationtable').hide()
-if($('#CHEQUE_SRC_tb_fromamount').val()!='' && $('#CHEQUE_SRC_tb_toamount').val()!='')
-{
-if(ErrorControl.AmountCompare=='Valid')
-{
-$("#CHEQUE_SRC_btn_amountrangesearchbutton").removeAttr("disabled");
-$('#CHEQUE_SRC_lbl_amounterrormsg').hide();
-}
-else
-{
-$('#CHEQUE_SRC_lbl_amounterrormsg').show();
-$("#CHEQUE_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
-}
-}
-});
+    $('.amountvalidation').blur(function(){
+        $('#CHEQUE_SRC_div_htmltable').hide();
+        $('#chequesearchbutton').hide();
+        $('#CHEQUE_SRC_lbl_error').hide();
+        $('#CHEQUE_SRC_tble_Updationtable').hide()
+        if($('#CHEQUE_SRC_tb_fromamount').val()!='' && $('#CHEQUE_SRC_tb_toamount').val()!='')
+        {
+            if(ErrorControl.AmountCompare=='Valid')
+            {
+                $("#CHEQUE_SRC_btn_amountrangesearchbutton").removeAttr("disabled");
+                $('#CHEQUE_SRC_lbl_amounterrormsg').hide();
+            }
+            else
+            {
+                $('#CHEQUE_SRC_lbl_amounterrormsg').show();
+                $("#CHEQUE_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
+            }
+        }
+    });
 ////////////////////DEBITED DATE /////////////////
-$('#CHEQUE_SRC_lb_status').change(function()
-{
-if(($('#CHEQUE_SRC_lb_status').val()!="SELECT")&&($('#CHEQUE_SRC_lb_status').val()!="ENTERED")&&($('#CHEQUE_SRC_lb_status').val()!="CREATED")&&($('#CHEQUE_SRC_lb_status').val()!="CANCELLED"))
-{
-$('#CHEQUE_SRC_db_debited').show().val('');
-$('#CHEQUE_SRC_lbl_debited').show();
-}
-else
-{
-$('#CHEQUE_SRC_db_debited').hide().val('');
-$('#CHEQUE_SRC_lbl_debited').hide();
-}
-});
+    $('#CHEQUE_SRC_lb_status').change(function()
+    {
+        if(($('#CHEQUE_SRC_lb_status').val()!="SELECT")&&($('#CHEQUE_SRC_lb_status').val()!="ENTERED")&&($('#CHEQUE_SRC_lb_status').val()!="CREATED")&&($('#CHEQUE_SRC_lb_status').val()!="CANCELLED"))
+        {
+            $('#CHEQUE_SRC_db_debited').show().val('');
+            $('#CHEQUE_SRC_lbl_debited').show();
+        }
+        else
+        {
+            $('#CHEQUE_SRC_db_debited').hide().val('');
+            $('#CHEQUE_SRC_lbl_debited').hide();
+        }
+    });
 ////////////DATE RANGE SEARCH SUBMIT BUTTON VALIDATION //////////// 
-$('#CHEQUE_SRC_tble_datesearch').change(function(){
-$('#CHEQUE_SRC_div_htmltable').hide();
-$('#chequesearchbutton').hide();
-$('#CHEQUE_SRC_lbl_error').hide();
-$('#CHEQUE_SRC_tble_Updationtable').hide()
-if(($("#CHEQUE_SRCL_db_fromdate").val()!="")&&($("#CHEQUE_SRCL_db_todate").val()!=""))
-{
-$("#CHEQUE_SRC_btn_datesearchbutton").removeAttr("disabled");
-}
-else
-{
-$("#CHEQUE_SRC_btn_datesearchbutton").attr("disabled", "disabled");
-}
-});
+    $('#CHEQUE_SRC_tble_datesearch').change(function(){
+        $('#CHEQUE_SRC_div_htmltable').hide();
+        $('#chequesearchbutton').hide();
+        $('#CHEQUE_SRC_lbl_error').hide();
+        $('#CHEQUE_SRC_tble_Updationtable').hide()
+        if(($("#CHEQUE_SRCL_db_fromdate").val()!="")&&($("#CHEQUE_SRCL_db_todate").val()!=""))
+        {
+            $("#CHEQUE_SRC_btn_datesearchbutton").removeAttr("disabled");
+        }
+        else
+        {
+            $("#CHEQUE_SRC_btn_datesearchbutton").attr("disabled", "disabled");
+        }
+    });
 //////////////////////UNIT SEARCH BUTTON VALIDATION///////////////////////////
-$('#CHEQUE_SRC_lb_unitsearch').change(function(){
-$('#CHEQUE_SRC_div_htmltable').hide();
-$('#chequesearchbutton').hide();
-$('#CHEQUE_SRC_lbl_error').hide();
-$('#CHEQUE_SRC_tble_Updationtable').hide()
-if($('#CHEQUE_SRC_lb_unitsearch').val()!="SELECT")
-{
-$("#CHEQUE_SRC_btn_unitsearchbutton").removeAttr("disabled");
-}
-else
-{
-$("#CHEQUE_SRC_btn_unitsearchbutton").attr("disabled", "disabled");
-}
-});
+    $('#CHEQUE_SRC_lb_unitsearch').change(function(){
+        $('#CHEQUE_SRC_div_htmltable').hide();
+        $('#chequesearchbutton').hide();
+        $('#CHEQUE_SRC_lbl_error').hide();
+        $('#CHEQUE_SRC_tble_Updationtable').hide()
+        if($('#CHEQUE_SRC_lb_unitsearch').val()!="SELECT")
+        {
+            $("#CHEQUE_SRC_btn_unitsearchbutton").removeAttr("disabled");
+        }
+        else
+        {
+            $("#CHEQUE_SRC_btn_unitsearchbutton").attr("disabled", "disabled");
+        }
+    });
 //////////////////////CHEQUE SEARCH BUTTON VALIDATION///////////////////////////
-$('#CHEQUE_SRC_lb_chequenosearch').change(function(){
-$('#CHEQUE_SRC_div_htmltable').hide();
-$('#chequesearchbutton').hide();
-$('#CHEQUE_SRC_lbl_error').hide();
-$('#CHEQUE_SRC_tble_Updationtable').hide()
-if($('#CHEQUE_SRC_lb_chequenosearch').val()!="SELECT")
-{
-$("#CHEQUE_SRC_btn_chequenosearchbutton").removeAttr("disabled");
-}
-else
-{
-$("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
-}
-});
+    $('#CHEQUE_SRC_lb_chequenosearch').change(function(){
+        $('#CHEQUE_SRC_div_htmltable').hide();
+        $('#chequesearchbutton').hide();
+        $('#CHEQUE_SRC_lbl_error').hide();
+        $('#CHEQUE_SRC_tble_Updationtable').hide()
+        if($('#CHEQUE_SRC_lb_chequenosearch').val()!="SELECT")
+        {
+            $("#CHEQUE_SRC_btn_chequenosearchbutton").removeAttr("disabled");
+        }
+        else
+        {
+            $("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
+        }
+    });
 ///////////////AMOUNT RANGE SEARCH////////////
-$('#CHEQUE_SRC_btn_amountrangesearchbutton').click(function(){
-$(".preloader").show(); 
-var  newPos= adjustPosition($('#CHEQUE_SRC_btn_amountrangesearchbutton').position(),100,280);
-resetPreloader(newPos);
-var fromamount=$("#CHEQUE_SRC_tb_fromamount").val();
-var toamount=$("#CHEQUE_SRC_tb_toamount").val();
-var head=$('#CHEQUE_SRC_lb_main').val();
-$('#CHEQUE_SRC_tble_Updationtable').hide()
-google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_get_result).CHEQUE_SRC_search(fromamount,toamount,head);
-});
+    $('#CHEQUE_SRC_btn_amountrangesearchbutton').click(function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#CHEQUE_SRC_btn_amountrangesearchbutton').position(),100,280);
+        resetPreloader(newPos);
+        var fromamount=$("#CHEQUE_SRC_tb_fromamount").val();
+        var toamount=$("#CHEQUE_SRC_tb_toamount").val();
+        var head=$('#CHEQUE_SRC_lb_main').val();
+        $('#CHEQUE_SRC_tble_Updationtable').hide()
+        google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_get_result).CHEQUE_SRC_search(fromamount,toamount,head);
+    });
 ////////////////////CHEQUE NO SEARCH/////////////////
-$('#CHEQUE_SRC_btn_chequenosearchbutton').click(function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#CHEQUE_SRC_btn_chequenosearchbutton').position(),100,280);
-resetPreloader(newPos);
-var chequeno=$('#CHEQUE_SRC_tb_chequenosearch').val();
-var empty='';
-var head=$('#CHEQUE_SRC_lb_main').val();
-google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_get_result).CHEQUE_SRC_search(chequeno,empty,head);
-});
+    $('#CHEQUE_SRC_btn_chequenosearchbutton').click(function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#CHEQUE_SRC_btn_chequenosearchbutton').position(),100,280);
+        resetPreloader(newPos);
+        var chequeno=$('#CHEQUE_SRC_tb_chequenosearch').val();
+        var empty='';
+        var head=$('#CHEQUE_SRC_lb_main').val();
+        google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_get_result).CHEQUE_SRC_search(chequeno,empty,head);
+    });
 //////////////UNIT SEARCH////////////
-$('#CHEQUE_SRC_btn_unitsearchbutton').click(function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#CHEQUE_SRC_btn_unitsearchbutton').position(),100,280);
-resetPreloader(newPos);
-var unitno=$('#CHEQUE_SRC_lb_unitsearch').val();
-var empty='';
-var head=$('#CHEQUE_SRC_lb_main').val();
-google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_get_result).CHEQUE_SRC_search(unitno,empty,head);
-});
+    $('#CHEQUE_SRC_btn_unitsearchbutton').click(function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#CHEQUE_SRC_btn_unitsearchbutton').position(),100,280);
+        resetPreloader(newPos);
+        var unitno=$('#CHEQUE_SRC_lb_unitsearch').val();
+        var empty='';
+        var head=$('#CHEQUE_SRC_lb_main').val();
+        google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_get_result).CHEQUE_SRC_search(unitno,empty,head);
+    });
 /////////////////DATE RANGE//////////////
-$('#CHEQUE_SRC_btn_datesearchbutton').click(function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#CHEQUE_SRC_btn_datesearchbutton').position(),100,280);
-resetPreloader(newPos);
-var fromdate=$("#CHEQUE_SRCL_db_fromdate").val();
-var todate=$("#CHEQUE_SRCL_db_todate").val();
-var head=$('#CHEQUE_SRC_lb_main').val();
-$('#CHEQUE_SRC_tble_Updationtable').hide()
-google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_get_result).CHEQUE_SRC_search(fromdate,todate,head);
-});
+    $('#CHEQUE_SRC_btn_datesearchbutton').click(function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#CHEQUE_SRC_btn_datesearchbutton').position(),100,280);
+        resetPreloader(newPos);
+        var fromdate=$("#CHEQUE_SRCL_db_fromdate").val();
+        var todate=$("#CHEQUE_SRCL_db_todate").val();
+        var head=$('#CHEQUE_SRC_lb_main').val();
+        $('#CHEQUE_SRC_tble_Updationtable').hide()
+        google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_get_result).CHEQUE_SRC_search(fromdate,todate,head);
+    });
 //////////////HTML TABLE LOADING FUNCTION//////////////////
-function CHEQUE_SRC_get_result(CHEQUE_SRC_response)
-{
-var selectedoption=$('#CHEQUE_SRC_lb_main').val();
-$('#CHEQUE_SRC_lbl_error').text("");
-var CHEQUE_RESULT_LENGTH=CHEQUE_SRC_response;
-if(CHEQUE_RESULT_LENGTH.length > 10){ var px = '600px'}
-else
-{ 
-var x = CHEQUE_RESULT_LENGTH.length*60+85;
-if(x <=100){var px = '155px'}
-else{
-var px = x+"px" }
-}
-if(CHEQUE_RESULT_LENGTH.length == 1) {var px ="150px"}
-$('#CHEQUE_SRC_div_htmltable').css('height',px)
-var value=''
-var value1='<thead class="srcresult"><tr><th width="25px"></th><th width="75px">DATE</th><th width="50px">CHEQUE NO</th><th width="250px">CHEQUE TO</th><th width="250px">CHEQUE FOR</th><th width="50px">CHEQUE AMOUNT</th><th width="100px">UNIT</th><th width="75px">STATUS</th><th width="75px">DEBITED / REJECTED DATE</th><th width="250px">COMMENTS</th><th width="150px">USERSTAMP</th><th width="100px">TIMESTAMP</th></tr></thead>'
-$('#CHEQUE_SRC_lbl_error').show();
-$('#CHEQUE_SRC_tbl_htmltable').html(value1);
-if(CHEQUE_RESULT_LENGTH.length!=0)
-{
-for(var i=0;i<CHEQUE_RESULT_LENGTH.length;i++)
-{
-var rowid=(i+1);
-var CHEQUE_RESULT=CHEQUE_RESULT_LENGTH[i];
-value='<tbody><tr><td><input id = '+rowid+' type="radio" name="radiobuttons" value= '+CHEQUE_RESULT.ID+' class="chequeupdateformrecords"></td><td>'+CHEQUE_RESULT.DATE+'</td><td>'+CHEQUE_RESULT.CHEQUENO+'</td><td>'+CHEQUE_RESULT.CHEQUETO+'</td><td>'+CHEQUE_RESULT.CHEQUEFOR+'</td><td>'+CHEQUE_RESULT.CHEQUEAMOUNT+'</td><td>'+CHEQUE_RESULT.UNIT+'</td><td>'+CHEQUE_RESULT.STATUS+'</td><td>'+CHEQUE_RESULT.DEBITED+'</td><td>'+CHEQUE_RESULT.COMMENTS+'</td><td>'+CHEQUE_RESULT.USERSTAMP+'</td><td>'+CHEQUE_RESULT.TIMESTAMP+'</td></tr>'
-$('#CHEQUE_SRC_tbl_htmltable').append(value);
-}
-}
-if(selectedoption==1)
-{
-var fromamount=$("#CHEQUE_SRC_tb_fromamount").val();
-var toamount=$("#CHEQUE_SRC_tb_toamount").val();
-if((selectedoption==1)&&(CHEQUE_RESULT_LENGTH.length!=0))
-{
-var CHEQUE_errorflag=0;
-var CHEQUE_tableheader="DETAILS OF SELECTED AMOUNT RANGE : "+fromamount+" TO "+toamount
-$('#CHEQUE_SRC_div_htmltable').show();
-$('#chequesearchbutton').show();
-}
-else
-{
-CHEQUE_errorflag=1;
-CHEQUE_tableheader="NO DETAILS OF SELECTED AMOUNT RANGE : "+fromamount+" TO "+toamount
-}
-}
-if(selectedoption==3)
-{
-var fromdate=$("#CHEQUE_SRCL_db_fromdate").val();
-var todate=$("#CHEQUE_SRCL_db_todate").val();
-if((selectedoption==3)&&(CHEQUE_RESULT_LENGTH.length!=0))
-{
-var CHEQUE_errorflag=0;
-var CHEQUE_tableheader="DETAILS OF SELECTED DATE RANGE : "+fromdate+" TO "+todate
-$('#CHEQUE_SRC_div_htmltable').show();
-$('#chequesearchbutton').show();
-}
-else
-{
-CHEQUE_errorflag=1;
-CHEQUE_tableheader="NO DETAILS OF SELECTED DATE RANGE : "+fromdate+" TO "+todate
-}
-}
-if(selectedoption==2)
-{
-var chequeno=$('#CHEQUE_SRC_tb_chequenosearch').val();
-if((selectedoption==2)&&(CHEQUE_RESULT_LENGTH.length!=0))
-{
-var CHEQUE_errorflag=0;
-var CHEQUE_tableheader="DETAILS OF SELECTED CHEQUE NO : "+chequeno
-$('#CHEQUE_SRC_div_htmltable').show();
-$('#chequesearchbutton').show();
-}
-else
-{
-CHEQUE_errorflag=1;
-CHEQUE_tableheader="NO DETAILS OF SELECTED CHEQUE NO : "+chequeno
-}
-}
-if(selectedoption==4)
-{
-var unitno=$('#CHEQUE_SRC_lb_unitsearch').val();
-if((selectedoption==4)&&(CHEQUE_RESULT_LENGTH.length!=0))
-{
-var CHEQUE_errorflag=0;
-var CHEQUE_tableheader="DETAILS OF SELECTED UNIT : "+unitno
-$('#CHEQUE_SRC_div_htmltable').show();
-$('#chequesearchbutton').show();
-}
-else
-{
-CHEQUE_errorflag=1;
-CHEQUE_tableheader="NO DETAILS OF SELECTED UNIT : "+unitno
-}
-}
-if(CHEQUE_errorflag==0)
-{
-$(".preloader").hide();
-$('#CHEQUE_SRC_lbl_error').text(CHEQUE_tableheader);
-$('#CHEQUE_SRC_lbl_error').removeClass("errormsg");
-$('#CHEQUE_SRC_lbl_error').addClass("srctitle").show();
-$('#CHEQUE_SRC_div_htmltable').show();
-$('#chequesearchbutton').show();
-}else
-{
-$(".preloader").hide();
-$('#CHEQUE_SRC_lbl_error').text(CHEQUE_tableheader);
-$('#CHEQUE_SRC_lbl_error').removeClass("srctitle");
-$('#CHEQUE_SRC_lbl_error').addClass("errormsg").show();
-}
-$('#CHEQUE_SRC_form_mainform').find('input[type=text]').val('');
-$("#CHEQUE_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
-$("#CHEQUE_SRC_tb_fromamount").val('');
-$("#CHEQUE_SRC_tb_toamount").val('');
-$("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
-$('#CHEQUE_SRC_tb_chequenosearch').val();
-$("#CHEQUE_SRC_btn_unitsearchbutton").attr("disabled", "disabled");
-$('#CHEQUE_SRC_lb_unitsearch')[0].selectedIndex = 0;
-$("#CHEQUE_SRC_btn_datesearchbutton").attr("disabled", "disabled");
-$("#CHEQUE_SRCL_db_fromdate").val('');
-$("#CHEQUE_SRCL_db_todate").val('');
-$(".preloader").hide();
-}
+    function CHEQUE_SRC_get_result(CHEQUE_SRC_response)
+    {
+        var selectedoption=$('#CHEQUE_SRC_lb_main').val();
+        $('#CHEQUE_SRC_lbl_error').text("");
+        var CHEQUE_RESULT_LENGTH=CHEQUE_SRC_response;
+        if(CHEQUE_RESULT_LENGTH.length > 10){ var px = '600px'}
+        else
+        {
+            var x = CHEQUE_RESULT_LENGTH.length*60+85;
+            if(x <=100){var px = '155px'}
+            else{
+                var px = x+"px" }
+        }
+        if(CHEQUE_RESULT_LENGTH.length == 1) {var px ="150px"}
+        $('#CHEQUE_SRC_div_htmltable').css('height',px)
+        var value=''
+        var value1='<thead class="srcresult"><tr><th width="25px"></th><th width="75px">DATE</th><th width="50px">CHEQUE NO</th><th width="250px">CHEQUE TO</th><th width="250px">CHEQUE FOR</th><th width="50px">CHEQUE AMOUNT</th><th width="100px">UNIT</th><th width="75px">STATUS</th><th width="75px">DEBITED / REJECTED DATE</th><th width="250px">COMMENTS</th><th width="150px">USERSTAMP</th><th width="100px">TIMESTAMP</th></tr></thead>'
+        $('#CHEQUE_SRC_lbl_error').show();
+        $('#CHEQUE_SRC_tbl_htmltable').html(value1);
+        if(CHEQUE_RESULT_LENGTH.length!=0)
+        {
+            for(var i=0;i<CHEQUE_RESULT_LENGTH.length;i++)
+            {
+                var rowid=(i+1);
+                var CHEQUE_RESULT=CHEQUE_RESULT_LENGTH[i];
+                value='<tbody><tr><td><input id = '+rowid+' type="radio" name="radiobuttons" value= '+CHEQUE_RESULT.ID+' class="chequeupdateformrecords"></td><td>'+CHEQUE_RESULT.DATE+'</td><td>'+CHEQUE_RESULT.CHEQUENO+'</td><td>'+CHEQUE_RESULT.CHEQUETO+'</td><td>'+CHEQUE_RESULT.CHEQUEFOR+'</td><td>'+CHEQUE_RESULT.CHEQUEAMOUNT+'</td><td>'+CHEQUE_RESULT.UNIT+'</td><td>'+CHEQUE_RESULT.STATUS+'</td><td>'+CHEQUE_RESULT.DEBITED+'</td><td>'+CHEQUE_RESULT.COMMENTS+'</td><td>'+CHEQUE_RESULT.USERSTAMP+'</td><td>'+CHEQUE_RESULT.TIMESTAMP+'</td></tr>'
+                $('#CHEQUE_SRC_tbl_htmltable').append(value);
+            }
+        }
+        if(selectedoption==1)
+        {
+            var fromamount=$("#CHEQUE_SRC_tb_fromamount").val();
+            var toamount=$("#CHEQUE_SRC_tb_toamount").val();
+            if((selectedoption==1)&&(CHEQUE_RESULT_LENGTH.length!=0))
+            {
+                var CHEQUE_errorflag=0;
+                var CHEQUE_tableheader="DETAILS OF SELECTED AMOUNT RANGE : "+fromamount+" TO "+toamount
+                $('#CHEQUE_SRC_div_htmltable').show();
+                $('#chequesearchbutton').show();
+            }
+            else
+            {
+                CHEQUE_errorflag=1;
+                CHEQUE_tableheader="NO DETAILS OF SELECTED AMOUNT RANGE : "+fromamount+" TO "+toamount
+            }
+        }
+        if(selectedoption==3)
+        {
+            var fromdate=$("#CHEQUE_SRCL_db_fromdate").val();
+            var todate=$("#CHEQUE_SRCL_db_todate").val();
+            if((selectedoption==3)&&(CHEQUE_RESULT_LENGTH.length!=0))
+            {
+                var CHEQUE_errorflag=0;
+                var CHEQUE_tableheader="DETAILS OF SELECTED DATE RANGE : "+fromdate+" TO "+todate
+                $('#CHEQUE_SRC_div_htmltable').show();
+                $('#chequesearchbutton').show();
+            }
+            else
+            {
+                CHEQUE_errorflag=1;
+                CHEQUE_tableheader="NO DETAILS OF SELECTED DATE RANGE : "+fromdate+" TO "+todate
+            }
+        }
+        if(selectedoption==2)
+        {
+            var chequeno=$('#CHEQUE_SRC_tb_chequenosearch').val();
+            if((selectedoption==2)&&(CHEQUE_RESULT_LENGTH.length!=0))
+            {
+                var CHEQUE_errorflag=0;
+                var CHEQUE_tableheader="DETAILS OF SELECTED CHEQUE NO : "+chequeno
+                $('#CHEQUE_SRC_div_htmltable').show();
+                $('#chequesearchbutton').show();
+            }
+            else
+            {
+                CHEQUE_errorflag=1;
+                CHEQUE_tableheader="NO DETAILS OF SELECTED CHEQUE NO : "+chequeno
+            }
+        }
+        if(selectedoption==4)
+        {
+            var unitno=$('#CHEQUE_SRC_lb_unitsearch').val();
+            if((selectedoption==4)&&(CHEQUE_RESULT_LENGTH.length!=0))
+            {
+                var CHEQUE_errorflag=0;
+                var CHEQUE_tableheader="DETAILS OF SELECTED UNIT : "+unitno
+                $('#CHEQUE_SRC_div_htmltable').show();
+                $('#chequesearchbutton').show();
+            }
+            else
+            {
+                CHEQUE_errorflag=1;
+                CHEQUE_tableheader="NO DETAILS OF SELECTED UNIT : "+unitno
+            }
+        }
+        if(CHEQUE_errorflag==0)
+        {
+            $(".preloader").hide();
+            $('#CHEQUE_SRC_lbl_error').text(CHEQUE_tableheader);
+            $('#CHEQUE_SRC_lbl_error').removeClass("errormsg");
+            $('#CHEQUE_SRC_lbl_error').addClass("srctitle").show();
+            $('#CHEQUE_SRC_div_htmltable').show();
+            $('#chequesearchbutton').show();
+        }else
+        {
+            $(".preloader").hide();
+            $('#CHEQUE_SRC_lbl_error').text(CHEQUE_tableheader);
+            $('#CHEQUE_SRC_lbl_error').removeClass("srctitle");
+            $('#CHEQUE_SRC_lbl_error').addClass("errormsg").show();
+        }
+        $('#CHEQUE_SRC_form_mainform').find('input[type=text]').val('');
+        $("#CHEQUE_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
+        $("#CHEQUE_SRC_tb_fromamount").val('');
+        $("#CHEQUE_SRC_tb_toamount").val('');
+        $("#CHEQUE_SRC_btn_chequenosearchbutton").attr("disabled", "disabled");
+        $('#CHEQUE_SRC_tb_chequenosearch').val();
+        $("#CHEQUE_SRC_btn_unitsearchbutton").attr("disabled", "disabled");
+        $('#CHEQUE_SRC_lb_unitsearch')[0].selectedIndex = 0;
+        $("#CHEQUE_SRC_btn_datesearchbutton").attr("disabled", "disabled");
+        $("#CHEQUE_SRCL_db_fromdate").val('');
+        $("#CHEQUE_SRCL_db_todate").val('');
+        $(".preloader").hide();
+    }
 
-$(document).on('change','.chequeupdateformrecords',function(){
-$("#CHEQUE_SRC_btn_searchbutton").removeAttr("disabled");
-});
+    $(document).on('change','.chequeupdateformrecords',function(){
+        $("#CHEQUE_SRC_btn_searchbutton").removeAttr("disabled");
+    });
 //////////////////////UPDATION FORM LOADING FUNCTION///////////////////
-$(document).on('click','#CHEQUE_SRC_btn_searchbutton',function(){
-var CHEQUE_SRC_id=$("input[name=radiobuttons]:checked").val();
-$("#CHEQUE_SRC_btn_searchbutton").attr("disabled","disabled");
-$("#CHEQUE_SRC_btn_updationbutton").attr("disabled","disabled");
-$('#CHEQUE_SRC_tb_id').val(CHEQUE_SRC_id)
-var rowid=$("input[name=radiobuttons]:checked").attr('id');
-$('#CHEQUE_SRC_tbl_htmltable tr:eq('+rowid+')').each(function () {
-var $tds = $(this).find('td'),
-date = $tds.eq(1).text(),
-chequeno = $tds.eq(2).text(),
-chequeto= $tds.eq(3).text(),
-chequefor= $tds.eq(4).text(),
-amount= $tds.eq(5).text(),
-unit= $tds.eq(6).text(),
-status= $tds.eq(7).text(),
-debited= $tds.eq(8).text(),
-comments= $tds.eq(9).text();
-var unitlength=unit.length;
-var CCRE_date1=date;
-var CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(CCRE_date1))); 
-CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());  
-var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
-CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) );
-$('#CHEQUE_SRC_db_debited').datepicker("option","minDate",CCRE_db_chkindate1);
-$('#CHEQUE_SRC_db_debited').datepicker("option","maxDate",new Date());
-$('#CHEQUE_SRC_db_date').val(date);
-$('#CHEQUE_SRC_tb_chequeno').val(chequeno);
-$('#CHEQUE_SRC_tb_chequeto').val(chequeto);
-$('#CHEQUE_SRC_tb_chequeto').attr("size",(chequeto).length+2);
-$('#CHEQUE_SRC_tb_chequefor').val(chequefor);
-$('#CHEQUE_SRC_tb_chequefor').attr("size",(chequefor).length+2);
-$('#CHEQUE_SRC_tb_amount').val(amount);
-$('#CHEQUE_SRC_lb_status').val(status);
-if(status!="CREATED" && status!="CANCELLED" )
-{
-$('#CHEQUE_SRC_lbl_debited').show();
-$('#CHEQUE_SRC_db_debited').val(debited).show();
-}
-else
-{
-$('#CHEQUE_SRC_lbl_debited').hide();
-$('#CHEQUE_SRC_db_debited').val('').hide();
-}
-$('#CHEQUE_SRC_tb_unit').val(unit);
- $('#CHEQUE_SRC_tb_unit').attr("size",unitlength);
-$('#CHEQUE_SRC_ta_comments').val(comments);
-$('#CHEQUE_SRC_tble_Updationtable').show();
-$("#CHEQUE_SRC_btn_searchbutton").attr("disabled","disabled");
-});
-});
+    $(document).on('click','#CHEQUE_SRC_btn_searchbutton',function(){
+        var CHEQUE_SRC_id=$("input[name=radiobuttons]:checked").val();
+        $("#CHEQUE_SRC_btn_searchbutton").attr("disabled","disabled");
+        $("#CHEQUE_SRC_btn_updationbutton").attr("disabled","disabled");
+        $('#CHEQUE_SRC_tb_id').val(CHEQUE_SRC_id)
+        var rowid=$("input[name=radiobuttons]:checked").attr('id');
+        $('#CHEQUE_SRC_tbl_htmltable tr:eq('+rowid+')').each(function () {
+            var $tds = $(this).find('td'),
+                    date = $tds.eq(1).text(),
+                    chequeno = $tds.eq(2).text(),
+                    chequeto= $tds.eq(3).text(),
+                    chequefor= $tds.eq(4).text(),
+                    amount= $tds.eq(5).text(),
+                    unit= $tds.eq(6).text(),
+                    status= $tds.eq(7).text(),
+                    debited= $tds.eq(8).text(),
+                    comments= $tds.eq(9).text();
+            var unitlength=unit.length;
+            var CCRE_date1=date;
+            var CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(CCRE_date1)));
+            CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());
+            var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString();
+            CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) );
+            $('#CHEQUE_SRC_db_debited').datepicker("option","minDate",CCRE_db_chkindate1);
+            $('#CHEQUE_SRC_db_debited').datepicker("option","maxDate",new Date());
+            $('#CHEQUE_SRC_db_date').val(date);
+            $('#CHEQUE_SRC_tb_chequeno').val(chequeno);
+            $('#CHEQUE_SRC_tb_chequeto').val(chequeto);
+            $('#CHEQUE_SRC_tb_chequeto').attr("size",(chequeto).length+2);
+            $('#CHEQUE_SRC_tb_chequefor').val(chequefor);
+            $('#CHEQUE_SRC_tb_chequefor').attr("size",(chequefor).length+2);
+            $('#CHEQUE_SRC_tb_amount').val(amount);
+            $('#CHEQUE_SRC_lb_status').val(status);
+            if(status!="CREATED" && status!="CANCELLED" )
+            {
+                $('#CHEQUE_SRC_lbl_debited').show();
+                $('#CHEQUE_SRC_db_debited').val(debited).show();
+            }
+            else
+            {
+                $('#CHEQUE_SRC_lbl_debited').hide();
+                $('#CHEQUE_SRC_db_debited').val('').hide();
+            }
+            $('#CHEQUE_SRC_tb_unit').val(unit);
+            $('#CHEQUE_SRC_tb_unit').attr("size",unitlength);
+            $('#CHEQUE_SRC_ta_comments').val(comments);
+            $('#CHEQUE_SRC_tble_Updationtable').show();
+            $("#CHEQUE_SRC_btn_searchbutton").attr("disabled","disabled");
+        });
+    });
 
-function FormTableDateFormat(inputdate){
-var string = inputdate.split("-");
-return string[2]+'-'+ string[1]+'-'+string[0];
-}
+    function FormTableDateFormat(inputdate){
+        var string = inputdate.split("-");
+        return string[2]+'-'+ string[1]+'-'+string[0];
+    }
 //////////////////PASSING UPDATION FORM VALUES TO GS FUNCTION///////////////
-$('#CHEQUE_SRC_btn_updationbutton').click(function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#CHEQUE_SRC_btn_updationbutton').position(),100,280);
-resetPreloader(newPos);
-var id=$('#CHEQUE_SRC_tb_id').val();
-var date=$('#CHEQUE_SRC_db_date').val();
-var chequeno=$('#CHEQUE_SRC_tb_chequeno').val();
-var chequeto=$('#CHEQUE_SRC_tb_chequeto').val();
-var chequefor=$('#CHEQUE_SRC_tb_chequefor').val();
-var amount=$('#CHEQUE_SRC_tb_amount').val();
-var unit=$('#CHEQUE_SRC_tb_unit').val();
-var status=$('#CHEQUE_SRC_lb_status').val();
-var debited=$('#CHEQUE_SRC_db_debited').val();
-var comments=$('#CHEQUE_SRC_ta_comments').val();
-google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_updation_result).CHEQUE_SRC_chequeupdation(id,date,chequeno,chequeto,chequefor,amount,unit,status,debited,comments);
-});
-$('#CHEQUE_SRC_db_date').change(function(){
-var debiteddate=$('#CHEQUE_SRC_db_date').val()
-var CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(debiteddate))); 
-CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());  
-var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString(); 
-CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) );
-$('#CHEQUE_SRC_db_debited').datepicker("option","minDate",CCRE_db_chkindate1);
-});
+    $('#CHEQUE_SRC_btn_updationbutton').click(function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#CHEQUE_SRC_btn_updationbutton').position(),100,280);
+        resetPreloader(newPos);
+        var id=$('#CHEQUE_SRC_tb_id').val();
+        var date=$('#CHEQUE_SRC_db_date').val();
+        var chequeno=$('#CHEQUE_SRC_tb_chequeno').val();
+        var chequeto=$('#CHEQUE_SRC_tb_chequeto').val();
+        var chequefor=$('#CHEQUE_SRC_tb_chequefor').val();
+        var amount=$('#CHEQUE_SRC_tb_amount').val();
+        var unit=$('#CHEQUE_SRC_tb_unit').val();
+        var status=$('#CHEQUE_SRC_lb_status').val();
+        var debited=$('#CHEQUE_SRC_db_debited').val();
+        var comments=$('#CHEQUE_SRC_ta_comments').val();
+        google.script.run.withFailureHandler(CHEQUE_SRC_error_message).withSuccessHandler(CHEQUE_SRC_updation_result).CHEQUE_SRC_chequeupdation(id,date,chequeno,chequeto,chequefor,amount,unit,status,debited,comments);
+    });
+    $('#CHEQUE_SRC_db_date').change(function(){
+        var debiteddate=$('#CHEQUE_SRC_db_date').val()
+        var CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(debiteddate)));
+        CCRE_db_chkindate1.setDate( CCRE_db_chkindate1.getDate());
+        var CCRE_db_chkindate1 = CCRE_db_chkindate1.toDateString();
+        CCRE_db_chkindate1 = new Date( Date.parse( CCRE_db_chkindate1 ) );
+        $('#CHEQUE_SRC_db_debited').datepicker("option","minDate",CCRE_db_chkindate1);
+    });
 ////////////UPDATION CONFORMATION RESULT/////////////////
-function CHEQUE_SRC_updation_result(responsemsg)
-{
-if(responsemsg==1)
-{
-$('#CHEQUE_SRC_form_mainform').find('input[type=text]').val('');
-$("#CHEQUE_SRC_btn_updationbutton").attr("disabled", "disabled");
-$('#CHEQUE_SRC_div_htmltable').hide();
-$('#chequesearchbutton').hide();
-$('#CHEQUE_SRC_lbl_error').hide();
-$('#CHEQUE_SRC_tble_Updationtable').hide();
-$('#CHEQUE_SRC_ta_comments').val('');
-$('#CHEQUE_SRC_lb_status')[0].selectedIndex = 0;
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE SEARCH/UPDATE",msgcontent:errormsg[2],position:$('#CHEQUE_SRC_lb_main').position()}});
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE SEARCH/UPDATE",msgcontent:errormsg[6],position:$('#CHEQUE_SRC_btn_updationbutton').position()}});
-}
-$(".preloader").hide(); 
-}
-function CHEQUE_SRC_error_message(CHEQUE_SRC_err)
-{
-if(CHEQUE_SRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-  {
-  CHEQUE_SRC_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-  $('#CHEQUE_SRC_form_mainform').replaceWith('<center><label class="dberrormsg">'+CHEQUE_SRC_err+'</label></center>');
-  }
-  else
-  {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE SEARCH/UPDATE",msgcontent:CHEQUE_SRC_err,position:$('#CHEQUE_SRC_form_mainform').position()}});
-  }
-  $(".preloader").hide(); 
-}
+    function CHEQUE_SRC_updation_result(responsemsg)
+    {
+        if(responsemsg==1)
+        {
+            $('#CHEQUE_SRC_form_mainform').find('input[type=text]').val('');
+            $("#CHEQUE_SRC_btn_updationbutton").attr("disabled", "disabled");
+            $('#CHEQUE_SRC_div_htmltable').hide();
+            $('#chequesearchbutton').hide();
+            $('#CHEQUE_SRC_lbl_error').hide();
+            $('#CHEQUE_SRC_tble_Updationtable').hide();
+            $('#CHEQUE_SRC_ta_comments').val('');
+            $('#CHEQUE_SRC_lb_status')[0].selectedIndex = 0;
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE SEARCH/UPDATE",msgcontent:errormsg[2],position:$('#CHEQUE_SRC_lb_main').position()}});
+        }
+        else
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE SEARCH/UPDATE",msgcontent:errormsg[6],position:$('#CHEQUE_SRC_btn_updationbutton').position()}});
+        }
+        $(".preloader").hide();
+    }
+    function CHEQUE_SRC_error_message(CHEQUE_SRC_err)
+    {
+        if(CHEQUE_SRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+        {
+            CHEQUE_SRC_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+            $('#CHEQUE_SRC_form_mainform').replaceWith('<center><label class="dberrormsg">'+CHEQUE_SRC_err+'</label></center>');
+        }
+        else
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE SEARCH/UPDATE",msgcontent:CHEQUE_SRC_err,position:$('#CHEQUE_SRC_form_mainform').position()}});
+        }
+        $(".preloader").hide();
+    }
 });
 </script>
 <body bgcolor="#E6E6FA">
 <div class="wrapper">
-<div class="preloader MaskPanel">
-<div class="preloader statusarea">
-<div style="padding-top:90px; text-align:center">
-<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
-</div>
-</div>
-</div>
-<div class="title" id="fhead">
-<div style="padding-left:500px; text-align:left;">
-<p>
-<h3>CHEQUE SEARCH/UPDATE
-</h3>
-<p>
-</div>
-</div>
-<form id='CHEQUE_SRC_errormessageform' hidden>
-<table id='CHEQUE_SRC_errormessagetable'>
-</table>
-</form>
-<form class="content" id="CHEQUE_SRC_form_mainform" hidden>
-<table id="CHEQUE_SRC_tble_maintable">
-<tr>
-<td><label class="fontstyle" id="CHEQUE_SRC_lbl_main"hidden>CHEQUE SEARCH BY<em>*</em></label></td>
-<td><select  id='CHEQUE_SRC_lb_main' name="CHEQUE_SRC_lb_main"hidden>
-</select>
-</tr>
-</table>
-<table cellspacing="5px" id="CHEQUE_SRC_tble_amountrangetable">
-<tr><td><label class="srctitle"> AMOUNT RANGE SEARCH </label></td></tr> 
-<tr>
-<td><label>FROM AMOUNT<em>*</em></label></td>
-<td>
-<input  type="text" name="CHEQUE_SRC_tb_fromamount" id="CHEQUE_SRC_tb_fromamount" class="amountvalidation" style="width:55px;"/></td>
-</tr>
-<tr>
-<td><label>TO AMOUNT<em>*</em></label></td>
-<td>
-<input  type="text" name="CHEQUE_SRC_tb_toamount" id="CHEQUE_SRC_tb_toamount" class="amountvalidation" style="width:55px;"/></td><td><label id="CHEQUE_SRC_lbl_amounterrormsg" class='errormsg'></label></td>
-</tr>
-<tr><td>
-<input type="button"  id="CHEQUE_SRC_btn_amountrangesearchbutton" class="maxbtn"  value="SEARCH" disabled/> 
-</td></tr>
-</table>
-<table cellspacing="5px" id="CHEQUE_SRC_tble_datesearch">
-<tr><td><label class="srctitle"> DATE RANGE SEARCH </label></td></tr> 
-<tr>
-<td><label >FROM DATE<em>*</em></label></td>
-<td><input  type="text" name="CHEQUE_SRCL_db_fromdate" id="CHEQUE_SRCL_db_fromdate" class="datemandtry" style="width:75px;height:20px"/></td>
-</tr>
-<tr>
-<td><label >TO DATE<em>*</em></label></td>
-<td>
-<input  type="text" name="CHEQUE_SRCL_db_todate" id="CHEQUE_SRCL_db_todate" class="datemandtry" style="width:75px;height:20px"/></td>
-</tr>
-<tr><td>
-<input type="button"  id="CHEQUE_SRC_btn_datesearchbutton" class="maxbtn"  value="SEARCH" disabled  /> 
-</td></tr>
-</table>
-<table cellspacing="5px" id="CHEQUE_SRC_unitsearch_table">
-<tr><td><label class="srctitle" id="CHEQUE_SRC_lbl_unitlabel" name="CHEQUE_SRC_lbl_unitlabel"> UNIT NO SEARCH </label></td></tr> 
-<tr>
-<td><label id="CHEQUE_SRC_lbl_unitsearch">UNIT<em>*</em></label></td>
-<td><select  id='CHEQUE_SRC_lb_unitsearch' name="CHEQUE_SRC_lb_unitsearch">
-<option>SELECT</option>
-</select>
-</tr>
-<tr><td>
-<input type="button"  id="CHEQUE_SRC_btn_unitsearchbutton" class="maxbtn" value="SEARCH" disabled/> 
-</td></tr>
-<tr>
-<td><label id="CHEQUE_SRC_lbl_unitsearcherrormsg" class="errormsg">NO UNIT(S) AVAILABLE IN CHEQUE DETAILS TABLE</label></td>
-</tr>
-</table>
-<table cellspacing="5px" id="CHEQUE_SRC_chequenosearch_table">
-<tr><td><label class="srctitle" id="v" name="CHEQUE_SRC_lbl_chequenolabel"> CHEQUE NO SEARCH </label></td></tr> 
-<tr>
-<td><label>CHEQUE NO<em>*</em></label></td>
-<td><input  type="text"id='CHEQUE_SRC_tb_chequenosearch' name="CHEQUE_SRC_tb_chequenosearch" class="chequenoresultsvalidate chequeautovalidate" maxlength="6" style="width:100px" ></td><td><label id="autocompleteerrormsg" class="errormsg" hidden></label></td>
-</tr>
-<tr><td>
-<input type="button"  id="CHEQUE_SRC_btn_chequenosearchbutton" class="maxbtn" value="SEARCH" disabled /> 
-</td></tr>
-</table>
-<table id="CHEQUE_SRC_tble_header" ><tr><label align='bottom' name='error' id='CHEQUE_SRC_lbl_error' class="srctitle" visible="false" ></label></tr></table>
-<div id ="CHEQUE_SRC_div_htmltable" style="width:2020px; height: 800px; overflow:auto;">
-<table id="CHEQUE_SRC_tbl_htmltable" border="1"  cellspacing="0" class="srcresult" style="width:2000px" >  
-</table>
-</div>
-<table id='chequesearchbutton' hidden>
-<tr><td><input type="button" class="maxbtn"  value="SEARCH" id="CHEQUE_SRC_btn_searchbutton" disabled  /></td></tr> 
-</table>
-<table id="CHEQUE_SRC_tble_Updationtable">
-<tr>
-<td><label class="srctitle" >CHEQUE UPDATION FORM</label></td>
-</tr>
-<tr>
-<td><label >CHEQUE DATE<em>*</em></label></td><td> <input type="text" name="CHEQUE_SRC_db_date" id="CHEQUE_SRC_db_date" class="chequeupdationform datemandtry" style="width:75px"/></td><td> <input type="text" name="CHEQUE_SRC_tb_id" id="CHEQUE_SRC_tb_id" style="width:75px" hidden/></td>
-</tr>
-<tr>
-<td><label>CHEQUE NO<em>*</em></label></td><td> <input  type="text" name="CHEQUE_SRC_tb_chequeno" id="CHEQUE_SRC_tb_chequeno"  maxlength="6" class="chequeupdationform " style="width:55px" /></td>
-</tr>
-<tr>
-<td><label >CHEQUE TO<em>*</em></label></td><td> <input  type="text" name="CHEQUE_SRC_tb_chequeto" id="CHEQUE_SRC_tb_chequeto" maxlength="100" class="autosize chequeupdationform"/></td>
-</tr>
-<tr>
-<td><label >CHEQUE FOR<em>*</em></label></td><td> <input  type="text" name="CHEQUE_SRC_tb_chequefor" id="CHEQUE_SRC_tb_chequefor" maxlength="100" class="autosize chequeupdationform"/></td>
-</tr>
-<tr>
-<td><label >CHEQUE AMOUNT<em>*</em></label></td><td> <input type="text" name="CHEQUE_SRC_tb_amount" id="CHEQUE_SRC_tb_amount"  maxlength="7" style="width:55px" class="amtonly chequeupdationform"/></td> 
-</tr>
-<tr>
-<td><label id='CHEQUE_SRC_lbl_status'>STATUS<em>*</em></label></td>
-<td><select id='CHEQUE_SRC_lb_status' name="CHEQUE_SRC_lb_status" class="chequeupdationform" >
-<option>SELECT</option>
-</select>
-</tr>
-<tr>
-<td><label id="CHEQUE_SRC_lbl_debited" >DEBITED/REJECTED DATE<em>*</em></label></td><td> <input type="text" name="CHEQUE_SRC_db_debited" id="CHEQUE_SRC_db_debited" style="width:75px" class="chequeupdationform datemandtry"/></td>
-</tr>
-<tr>
-<td><label >UNIT</label></td><td> <input  type="text" name="CHEQUE_SRC_tb_unit" id="CHEQUE_SRC_tb_unit" maxlength="25" class="chequeupdationform numberonlycommas"/></td>
-</tr>
-<tr>
-<td><label >COMMENTS</label></td><td><textarea  name="CHEQUE_SRC_ta_comments" id="CHEQUE_SRC_ta_comments"rows="5" cols="20" class="chequeupdationform" style = 'width = 2000px;'></textarea></td>
-</tr>
-<tr><td><input type="button" class="maxbtn"  value="UPDATE" id="CHEQUE_SRC_btn_updationbutton" disabled  /></td></tr> 
-</table>
-</form>
+    <div class="preloader MaskPanel">
+        <div class="preloader statusarea">
+            <div style="padding-top:90px; text-align:center">
+                <img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+            </div>
+        </div>
+    </div>
+    <div class="title" id="fhead">
+        <div style="padding-left:500px; text-align:left;">
+            <p>
+            <h3>CHEQUE SEARCH/UPDATE
+            </h3>
+            <p>
+        </div>
+    </div>
+    <form id='CHEQUE_SRC_errormessageform' hidden>
+        <table id='CHEQUE_SRC_errormessagetable'>
+        </table>
+    </form>
+    <form class="content" id="CHEQUE_SRC_form_mainform" hidden>
+        <table id="CHEQUE_SRC_tble_maintable">
+            <tr>
+                <td><label class="fontstyle" id="CHEQUE_SRC_lbl_main"hidden>CHEQUE SEARCH BY<em>*</em></label></td>
+                <td><select  id='CHEQUE_SRC_lb_main' name="CHEQUE_SRC_lb_main"hidden>
+                </select>
+            </tr>
+        </table>
+        <table cellspacing="5px" id="CHEQUE_SRC_tble_amountrangetable">
+            <tr><td><label class="srctitle"> AMOUNT RANGE SEARCH </label></td></tr>
+            <tr>
+                <td><label>FROM AMOUNT<em>*</em></label></td>
+                <td>
+                    <input  type="text" name="CHEQUE_SRC_tb_fromamount" id="CHEQUE_SRC_tb_fromamount" class="amountvalidation" style="width:55px;"/></td>
+            </tr>
+            <tr>
+                <td><label>TO AMOUNT<em>*</em></label></td>
+                <td>
+                    <input  type="text" name="CHEQUE_SRC_tb_toamount" id="CHEQUE_SRC_tb_toamount" class="amountvalidation" style="width:55px;"/></td><td><label id="CHEQUE_SRC_lbl_amounterrormsg" class='errormsg'></label></td>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CHEQUE_SRC_btn_amountrangesearchbutton" class="maxbtn"  value="SEARCH" disabled/>
+            </td></tr>
+        </table>
+        <table cellspacing="5px" id="CHEQUE_SRC_tble_datesearch">
+            <tr><td><label class="srctitle"> DATE RANGE SEARCH </label></td></tr>
+            <tr>
+                <td><label >FROM DATE<em>*</em></label></td>
+                <td><input  type="text" name="CHEQUE_SRCL_db_fromdate" id="CHEQUE_SRCL_db_fromdate" class="datemandtry" style="width:75px;height:20px"/></td>
+            </tr>
+            <tr>
+                <td><label >TO DATE<em>*</em></label></td>
+                <td>
+                    <input  type="text" name="CHEQUE_SRCL_db_todate" id="CHEQUE_SRCL_db_todate" class="datemandtry" style="width:75px;height:20px"/></td>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CHEQUE_SRC_btn_datesearchbutton" class="maxbtn"  value="SEARCH" disabled  />
+            </td></tr>
+        </table>
+        <table cellspacing="5px" id="CHEQUE_SRC_unitsearch_table">
+            <tr><td><label class="srctitle" id="CHEQUE_SRC_lbl_unitlabel" name="CHEQUE_SRC_lbl_unitlabel"> UNIT NO SEARCH </label></td></tr>
+            <tr>
+                <td><label id="CHEQUE_SRC_lbl_unitsearch">UNIT<em>*</em></label></td>
+                <td><select  id='CHEQUE_SRC_lb_unitsearch' name="CHEQUE_SRC_lb_unitsearch">
+                    <option>SELECT</option>
+                </select>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CHEQUE_SRC_btn_unitsearchbutton" class="maxbtn" value="SEARCH" disabled/>
+            </td></tr>
+            <tr>
+                <td><label id="CHEQUE_SRC_lbl_unitsearcherrormsg" class="errormsg">NO UNIT(S) AVAILABLE IN CHEQUE DETAILS TABLE</label></td>
+            </tr>
+        </table>
+        <table cellspacing="5px" id="CHEQUE_SRC_chequenosearch_table">
+            <tr><td><label class="srctitle" id="v" name="CHEQUE_SRC_lbl_chequenolabel"> CHEQUE NO SEARCH </label></td></tr>
+            <tr>
+                <td><label>CHEQUE NO<em>*</em></label></td>
+                <td><input  type="text"id='CHEQUE_SRC_tb_chequenosearch' name="CHEQUE_SRC_tb_chequenosearch" class="chequenoresultsvalidate chequeautovalidate" maxlength="6" style="width:100px" ></td><td><label id="autocompleteerrormsg" class="errormsg" hidden></label></td>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CHEQUE_SRC_btn_chequenosearchbutton" class="maxbtn" value="SEARCH" disabled />
+            </td></tr>
+        </table>
+        <table id="CHEQUE_SRC_tble_header" ><tr><label align='bottom' name='error' id='CHEQUE_SRC_lbl_error' class="srctitle" visible="false" ></label></tr></table>
+        <div id ="CHEQUE_SRC_div_htmltable" style="width:2020px; height: 800px; overflow:auto;">
+            <table id="CHEQUE_SRC_tbl_htmltable" border="1"  cellspacing="0" class="srcresult" style="width:2000px" >
+            </table>
+        </div>
+        <table id='chequesearchbutton' hidden>
+            <tr><td><input type="button" class="maxbtn"  value="SEARCH" id="CHEQUE_SRC_btn_searchbutton" disabled  /></td></tr>
+        </table>
+        <table id="CHEQUE_SRC_tble_Updationtable">
+            <tr>
+                <td><label class="srctitle" >CHEQUE UPDATION FORM</label></td>
+            </tr>
+            <tr>
+                <td><label >CHEQUE DATE<em>*</em></label></td><td> <input type="text" name="CHEQUE_SRC_db_date" id="CHEQUE_SRC_db_date" class="chequeupdationform datemandtry" style="width:75px"/></td><td> <input type="text" name="CHEQUE_SRC_tb_id" id="CHEQUE_SRC_tb_id" style="width:75px" hidden/></td>
+            </tr>
+            <tr>
+                <td><label>CHEQUE NO<em>*</em></label></td><td> <input  type="text" name="CHEQUE_SRC_tb_chequeno" id="CHEQUE_SRC_tb_chequeno"  maxlength="6" class="chequeupdationform " style="width:55px" /></td>
+            </tr>
+            <tr>
+                <td><label >CHEQUE TO<em>*</em></label></td><td> <input  type="text" name="CHEQUE_SRC_tb_chequeto" id="CHEQUE_SRC_tb_chequeto" maxlength="100" class="autosize chequeupdationform"/></td>
+            </tr>
+            <tr>
+                <td><label >CHEQUE FOR<em>*</em></label></td><td> <input  type="text" name="CHEQUE_SRC_tb_chequefor" id="CHEQUE_SRC_tb_chequefor" maxlength="100" class="autosize chequeupdationform"/></td>
+            </tr>
+            <tr>
+                <td><label >CHEQUE AMOUNT<em>*</em></label></td><td> <input type="text" name="CHEQUE_SRC_tb_amount" id="CHEQUE_SRC_tb_amount"  maxlength="7" style="width:55px" class="amtonly chequeupdationform"/></td>
+            </tr>
+            <tr>
+                <td><label id='CHEQUE_SRC_lbl_status'>STATUS<em>*</em></label></td>
+                <td><select id='CHEQUE_SRC_lb_status' name="CHEQUE_SRC_lb_status" class="chequeupdationform" >
+                    <option>SELECT</option>
+                </select>
+            </tr>
+            <tr>
+                <td><label id="CHEQUE_SRC_lbl_debited" >DEBITED/REJECTED DATE<em>*</em></label></td><td> <input type="text" name="CHEQUE_SRC_db_debited" id="CHEQUE_SRC_db_debited" style="width:75px" class="chequeupdationform datemandtry"/></td>
+            </tr>
+            <tr>
+                <td><label >UNIT</label></td><td> <input  type="text" name="CHEQUE_SRC_tb_unit" id="CHEQUE_SRC_tb_unit" maxlength="25" class="chequeupdationform numberonlycommas"/></td>
+            </tr>
+            <tr>
+                <td><label >COMMENTS</label></td><td><textarea  name="CHEQUE_SRC_ta_comments" id="CHEQUE_SRC_ta_comments"rows="5" cols="20" class="chequeupdationform" style = 'width = 2000px;'></textarea></td>
+            </tr>
+            <tr><td><input type="button" class="maxbtn"  value="UPDATE" id="CHEQUE_SRC_btn_updationbutton" disabled  /></td></tr>
+        </table>
+    </form>
 </body>
 </html>

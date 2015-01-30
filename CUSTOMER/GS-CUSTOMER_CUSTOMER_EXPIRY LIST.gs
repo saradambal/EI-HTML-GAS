@@ -1,6 +1,8 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************CUSTOMER EXPIRY LIST***********************************************//
 //DONE BY:PUNI
+//VER 1.6-SD:22/12/2014 ED:22/12/2014;TRACKER NO:690;added droptemp table function from eilib
+//VER 1.5-SD:22/12/2014 ED:22/12/2014;TRACKER NO:690;added droptemp table function from eilib
 //VER 1.4-SD:09/10/2014 ED:09/10/2014,TRACKER NO:690;changed preloader n msgbox position
 //VER 1.3-SD:26/08/2014 ED:26/08/2014,TRACKER NO:690;updated new links BY PUNI.
 //DONE BY:SAFIYULLAH.M
@@ -18,10 +20,10 @@
 //VER 0.01 - INITIAL VERSION-SD:12/08/2013 ED:02/09/2013;TRACKER NO:363;
 //*********************************************************************************************************//
 
-//FUNCTION TO GET INITIAL VALUES
+  //FUNCTION TO GET INITIAL VALUES
 try{
   
-  function CEXP_get_initial_values(){    
+    function CEXP_get_initial_values(){    
     var CEXP_conn = eilib.db_GetConnection();    
     var CEXP_error_msg_stmt = CEXP_conn.createStatement();
     var CEXP_errorAarray=[];
@@ -70,7 +72,7 @@ try{
       var CEXP_equaltemptblname="";
       while(CEXP_equalfeetemptblres.next())
       {
-        CEXP_equaltemptblname=CEXP_equalfeetemptblres.getString(1);
+      CEXP_equaltemptblname=CEXP_equalfeetemptblres.getString(1);
       }
       CEXP_equalfeetemptblres.close();
       CEXP_equalfeetemptbl_stmt.close();
@@ -78,7 +80,7 @@ try{
       var CEXP_select_expirylist_equaldate="SELECT UNITNO,CUSTOMERFIRSTNAME,CUSTOMERLASTNAME,STARTDATE,ENDDATE,DEPOSIT,PAYMENT,PROCESSINGFEE,ROOMTYPE,EXTENSIONFLAG,RECHECKINGFLAG,COMMENTS,PRETERMINATEDATE,USERSTAMP,DATE_FORMAT(CONVERT_TZ(EXPIRY_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS EXPIRY_TIMESTAMP from  "+CEXP_equaltemptblname+""
       var CEXP_expirylist_rs = CEXP_alldata_equal_stmt.executeQuery(CEXP_select_expirylist_equaldate);
       var tablename=CEXP_equaltemptblname
-      } 
+    } 
     //TO CHECK ON OR BEFORE DATE
     if(CEXP_check_radio_value=="BEFORE"){      
       var CEXP_temptable_before_stmt = CEXP_conn.createStatement();
@@ -90,14 +92,14 @@ try{
       var CEXP_beforetemptblname="";
       while(CEXP_beforefeetemptblres.next())
       {
-        CEXP_beforetemptblname=CEXP_beforefeetemptblres.getString(1);
+      CEXP_beforetemptblname=CEXP_beforefeetemptblres.getString(1);
       }
       CEXP_beforefeetemptblres.close();
       CEXP_beforefeetemptbl_stmt.close();
       var CEXP_alldata_before_stmt = CEXP_conn.createStatement();
       var CEXP_select_expirylist_beforedate="SELECT UNITNO,CUSTOMERFIRSTNAME,CUSTOMERLASTNAME,STARTDATE,ENDDATE,DEPOSIT,PAYMENT,PROCESSINGFEE,ROOMTYPE,EXTENSIONFLAG,RECHECKINGFLAG,COMMENTS,PRETERMINATEDATE,USERSTAMP,DATE_FORMAT(CONVERT_TZ(EXPIRY_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS EXPIRY_TIMESTAMP from  "+CEXP_beforetemptblname+""
       var CEXP_expirylist_rs = CEXP_alldata_before_stmt.executeQuery(CEXP_select_expirylist_beforedate);
-      var tablename=CEXP_beforetemptblname;
+            var tablename=CEXP_beforetemptblname;
     }
     //TO CHECK BETWEEN DATE
     if(CEXP_check_radio_value=="BETWEEN"){      
@@ -110,7 +112,7 @@ try{
       var CEXP_betweentemptblname="";
       while(CEXP_betweenfeetemptblres.next())
       {
-        CEXP_betweentemptblname=CEXP_betweenfeetemptblres.getString(1);
+      CEXP_betweentemptblname=CEXP_betweenfeetemptblres.getString(1);
       }
       CEXP_betweenfeetemptblres.close();
       CEXP_betweenfeetemptbl_stmt.close();
@@ -178,15 +180,15 @@ try{
     CEXP_temptable_weeklyexpiry_stmt.execute("CALL SP_CUSTOMER_WEEKLY_EXPIRY('"+CWEXP_weekBefore+"','"+UserStamp+"',@CEXP_WEEKLYFEETMPTBLNAM)");
     CEXP_temptable_weeklyexpiry_stmt.close();
     var CEXP_beforefeetemptbl_stmt=CWEXP_conn.createStatement();
-    var CEXP_beforefeetemptbl_query="SELECT @CEXP_WEEKLYFEETMPTBLNAM";
-    var CEXP_beforefeetemptblres=CEXP_beforefeetemptbl_stmt.executeQuery(CEXP_beforefeetemptbl_query);
-    var CEXP_weeklytemptblname="";
-    while(CEXP_beforefeetemptblres.next())
-    {
+      var CEXP_beforefeetemptbl_query="SELECT @CEXP_WEEKLYFEETMPTBLNAM";
+      var CEXP_beforefeetemptblres=CEXP_beforefeetemptbl_stmt.executeQuery(CEXP_beforefeetemptbl_query);
+      var CEXP_weeklytemptblname="";
+      while(CEXP_beforefeetemptblres.next())
+      {
       CEXP_weeklytemptblname=CEXP_beforefeetemptblres.getString(1);
-    }
-    CEXP_beforefeetemptblres.close();
-    CEXP_beforefeetemptbl_stmt.close();
+      }
+      CEXP_beforefeetemptblres.close();
+      CEXP_beforefeetemptbl_stmt.close();
     var CWEXP_customerdetails_stmt = CWEXP_conn.createStatement();
     var CEXP_select_customerdetails="SELECT * FROM "+CEXP_weeklytemptblname+""
     var CWEXP_customerdetails_result=CWEXP_customerdetails_stmt.executeQuery(CEXP_select_customerdetails);  
@@ -207,7 +209,7 @@ try{
       CWEXP_check_week_flag=1;
       CWEXP_emailmessage += '<body>'+'<table border="1" width="700" >'+'<tr align="center">'+'<td width=25%>'+CWEXP_unitno+'</td>'+'<td width=25%>'+CWEXP_cust_name+'</td>'+'<td width=25%>'+CWEXP_newdate+'</td>'+'<td width=25%>'+CWEXP_rental+'</td>'+'</tr>'+'</table>'+'</body>';      
     }    
-    CEXP_droptemptable(CWEXP_conn,CEXP_weeklytemptblname)
+     CEXP_droptemptable(CWEXP_conn,CEXP_weeklytemptblname)
     CWEXP_conn.close();
     if(CWEXP_check_week_flag==0){ 
       CWEXP_check_weekly_expiry_list='false'
@@ -222,10 +224,7 @@ try{
   }  
   function CEXP_droptemptable(conn,tablename)
   {
-    var CEXP_temp_stmt= conn.createStatement();
-    var CEXP_HKunitnospquery="DROP TABLE IF EXISTS "+tablename+"";
-    CEXP_temp_stmt.execute(CEXP_HKunitnospquery);
-    CEXP_temp_stmt.close();
+     eilib.DropTempTable(conn,tablename); 
   }  
 }
 catch(err){}

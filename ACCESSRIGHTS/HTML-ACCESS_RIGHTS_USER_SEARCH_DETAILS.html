@@ -19,121 +19,121 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
-<!--SCRIPT TAG START-->
-<script>
-//CHECK PRELOADER STATUS N HIDE START
-var SubPage=1;
-function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
-}
-//CHECK PRELOADER STATUS N HIDE END
-//FAILURE FUNCTION START
-function USD_SRC_onFailure(USD_SRC_error) {
-$(".preloader").hide();
-if(USD_SRC_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-USD_SRC_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#USD_SRC_form_user').replaceWith('<center><label class="dberrormsg">'+USD_SRC_error+'</label></center>');
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"USER SEARCH DETAILS",msgcontent:USD_SRC_error,position:{top:150,left:500}}});
-}
-}
-//FAILURE FUNCTION END
-var USD_SRC_srch_result_array=[];
-var USD_SRC_errorMsg;
-//DOCUMENT READY FUNCTION START
-$(document).ready(function(){
-$(".preloader").show();
-google.script.run.withSuccessHandler(USD_SRC_geterrresult).withFailureHandler(USD_SRC_onFailure).USD_SRC_get_err();
-google.script.run.withSuccessHandler(USD_SRC_srch_result).withFailureHandler(USD_SRC_onFailure).USD_SRC_flextable_getdatas();
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <!--SCRIPT TAG START-->
+    <script>
+        //CHECK PRELOADER STATUS N HIDE START
+        var SubPage=1;
+        function CheckPageStatus(){
+            if(MenuPage!=1 && SubPage!=1)
+                $(".preloader").hide();
+        }
+        //CHECK PRELOADER STATUS N HIDE END
+        //FAILURE FUNCTION START
+        function USD_SRC_onFailure(USD_SRC_error) {
+            $(".preloader").hide();
+            if(USD_SRC_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+            {
+                USD_SRC_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+                $('#USD_SRC_form_user').replaceWith('<center><label class="dberrormsg">'+USD_SRC_error+'</label></center>');
+            }
+            else
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"USER SEARCH DETAILS",msgcontent:USD_SRC_error,position:{top:150,left:500}}});
+            }
+        }
+        //FAILURE FUNCTION END
+        var USD_SRC_srch_result_array=[];
+        var USD_SRC_errorMsg;
+        //DOCUMENT READY FUNCTION START
+        $(document).ready(function(){
+            $(".preloader").show();
+            google.script.run.withSuccessHandler(USD_SRC_geterrresult).withFailureHandler(USD_SRC_onFailure).USD_SRC_get_err();
+            google.script.run.withSuccessHandler(USD_SRC_srch_result).withFailureHandler(USD_SRC_onFailure).USD_SRC_flextable_getdatas();
 //SUCCESS FUNCTION FOR ERROR MESSAGE
-function USD_SRC_geterrresult(USD_SRC_geterrresult_response)
-{
-$('#USD_SRC_form_user').show();
-USD_SRC_errorMsg=USD_SRC_geterrresult_response;
+            function USD_SRC_geterrresult(USD_SRC_geterrresult_response)
+            {
+                $('#USD_SRC_form_user').show();
+                USD_SRC_errorMsg=USD_SRC_geterrresult_response;
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+                SubPage=0;
+                CheckPageStatus();
 //TO HIDE PRELOADER END
-}
+            }
 //SUCCESS FUNCTION FOR SELECTING DATA
-function USD_SRC_srch_result(response)
-{
+            function USD_SRC_srch_result(response)
+            {
 //FLEX TABLE FOR HAVING DATA
-USD_SRC_srch_result_array=response
-if(USD_SRC_srch_result_array.length!=0)
-{
-if(USD_SRC_srch_result_array.length > 10){ var px = '1500px'}
-else
-{ 
-var x = USD_SRC_srch_result_array.length*50+50;
-if(x <=100){var px = '200px'}
-else{
-var px = x+"500px" }
-}
-$('#USD_SRC_div_flexdata_result').css('height',px)
-USD_SRC_srch_result_array=response
-var USD_SRC_value='';
-var USD_SRC_header='<tr><th width:20px>LOGIN ID</th><th width:20px>ROLE</th><th hidden>RECORD VERSION</th><th width:20px>JOIN DATE</th><th width:20px>TERMINATION DATE</th><th width:150px>REASON OF TERMINATION</th><th width:70px>USERSTAMP</th><th width:180px>TIMESTAMP</th></tr>'
-$('#USD_SRC_tble_htmltable').html(USD_SRC_header);
-for(var i=0;i<USD_SRC_srch_result_array.length;i++)
-{
-var USD_SRC_values=USD_SRC_srch_result_array[i]
-USD_SRC_value='<tr><td>'+USD_SRC_values.loginid+'</td><td>'+USD_SRC_values.rcid+'</td><td hidden>'+USD_SRC_values.recordver+'</td><td>'+USD_SRC_values.joindate+'</td><td>'+USD_SRC_values.terminationdate+'</td><td>'+USD_SRC_values.reasonoftermination+'</td><td>'+USD_SRC_values.userstamp+'</td><td>'+USD_SRC_values.timestamp+'</td></tr>'
-$('#USD_SRC_tble_htmltable').append(USD_SRC_value);
-}
-$('#USD_SRC_tble_htmltable').show();
-}
+                USD_SRC_srch_result_array=response
+                if(USD_SRC_srch_result_array.length!=0)
+                {
+                    if(USD_SRC_srch_result_array.length > 10){ var px = '1500px'}
+                    else
+                    {
+                        var x = USD_SRC_srch_result_array.length*50+50;
+                        if(x <=100){var px = '200px'}
+                        else{
+                            var px = x+"500px" }
+                    }
+                    $('#USD_SRC_div_flexdata_result').css('height',px)
+                    USD_SRC_srch_result_array=response
+                    var USD_SRC_value='';
+                    var USD_SRC_header='<tr><th width:20px>LOGIN ID</th><th width:20px>ROLE</th><th hidden>RECORD VERSION</th><th width:20px>JOIN DATE</th><th width:20px>TERMINATION DATE</th><th width:150px>REASON OF TERMINATION</th><th width:70px>USERSTAMP</th><th width:180px>TIMESTAMP</th></tr>'
+                    $('#USD_SRC_tble_htmltable').html(USD_SRC_header);
+                    for(var i=0;i<USD_SRC_srch_result_array.length;i++)
+                    {
+                        var USD_SRC_values=USD_SRC_srch_result_array[i]
+                        USD_SRC_value='<tr><td>'+USD_SRC_values.loginid+'</td><td>'+USD_SRC_values.rcid+'</td><td hidden>'+USD_SRC_values.recordver+'</td><td>'+USD_SRC_values.joindate+'</td><td>'+USD_SRC_values.terminationdate+'</td><td>'+USD_SRC_values.reasonoftermination+'</td><td>'+USD_SRC_values.userstamp+'</td><td>'+USD_SRC_values.timestamp+'</td></tr>'
+                        $('#USD_SRC_tble_htmltable').append(USD_SRC_value);
+                    }
+                    $('#USD_SRC_tble_htmltable').show();
+                }
 //FLEX TABLE FOR NO DATA
-else
-{
-$('#USD_SRC_form_user').replaceWith('<p><label class="errormsg">'+USD_SRC_errorMsg+'</label></p>')
-$('#USD_SRC_tble_htmltable').hide();
-}
+                else
+                {
+                    $('#USD_SRC_form_user').replaceWith('<p><label class="errormsg">'+USD_SRC_errorMsg+'</label></p>')
+                    $('#USD_SRC_tble_htmltable').hide();
+                }
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+                SubPage=0;
+                CheckPageStatus();
 //TO HIDE PRELOADER END
-}
-});
-//DOCUMENT READY FUNCTION END
-</script>
-<!--SCRIPT TAG END-->
+            }
+        });
+        //DOCUMENT READY FUNCTION END
+    </script>
+    <!--SCRIPT TAG END-->
 </head>
 <!--HEAD TAG END-->
 <!--BODY TAG START-->
 <body>
 <div>
-<?!=include('HTML-MENU') ?>
-<div class="wrapper">
-<div class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
-<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>USER SEARCH DETAILS </h3><p></div></div>
-<form class="content" name="USD_SRC_form_user" id="USD_SRC_form_user" hidden>
-<div id ="USD_SRC_flexdata_result" style="height:1350px;width:1200px;overflow:auto;">
-<table id="USD_SRC_tble_htmltable" border="1" cellspacing="0" class="srcresult" style="width:1185px">  
-</table>
-</div>
-</form>
-</div>
+    <?!=include('HTML-MENU') ?>
+    <div class="wrapper">
+        <div class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+        <div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>USER SEARCH DETAILS </h3><p></div></div>
+        <form class="content" name="USD_SRC_form_user" id="USD_SRC_form_user" hidden>
+            <div id ="USD_SRC_flexdata_result" style="height:1350px;width:1200px;overflow:auto;">
+                <table id="USD_SRC_tble_htmltable" border="1" cellspacing="0" class="srcresult" style="width:1185px">
+                </table>
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 <!--BODY TAG END-->

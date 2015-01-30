@@ -2,7 +2,7 @@
 //***********************************************TICKLER HISTORY**********************************************//
 //DONE BY:PUNITHA
 //VER 1.5-SD:24/09/2014 ED:24/09/2014,TRACKER NO:694,changed preloader position,msgbox position
-//VER 1.4-SD:24/09/2014 ED:24/09/2014,TRACKER NO:694,used function from jquery to replace<> tag in old val n new val,changed script as per corrected sp ,used drop table function from eilib,corrected sort by timestamp in query,changed preloader position,msgbox position
+//VER 1.4-SD:24/09/2014 ED:24/09/2014,TRACKER NO:694,used function from jquery to replace<> tag in old val n new val,changed script as per corrected sp ,used droptable function from eilib,corrected sort by timestamp in query,changed preloader position,msgbox position
 //DONE BY:SARADAMBAL
 //VER 1.3-SD:22/08/2014 ED:22/08/2014,TRACKER NO:694,updated new links
 //DONE BY:LALITHA
@@ -51,16 +51,16 @@ try
     TH_conn.close();
     return TH_dataArray;
   }
-  function CallTicklerSP(TH_conn)
+function CallTicklerSP(TH_conn)
   {
     var TH_stmt=TH_conn.createStatement();
     TH_stmt.execute("CALL SP_CUSTOMER_TICKLER_DATA('"+UserStamp+"',@CUSTOMER_TICKLER_HISTORY_TMPTBL)");
     TH_stmt.close();
     var TH_stmt_temptble = TH_conn.createStatement();
     var TH_rs_temptble  = TH_stmt_temptble.executeQuery("SELECT @CUSTOMER_TICKLER_HISTORY_TMPTBL");
-    while(TH_rs_temptble.next()){   
+     while(TH_rs_temptble.next()){   
       var TH_temptblename= TH_rs_temptble.getString("@CUSTOMER_TICKLER_HISTORY_TMPTBL");
-    }
+     }
     TH_rs_temptble.close();
     TH_stmt_temptble.close();
     return TH_temptblename;

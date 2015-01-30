@@ -1,6 +1,7 @@
 //<!--**********************************CUSTOMER SEARCH/UPDATE/DELETE ***********************************************************************//-->
 //<!--//*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY PUNI
+//VER 2.2-SD:22/12/2014 ED:22/12/2014;TRACKER NO:833;added droptemp table function from eilib
 //VER 2.1-SD:08/10/2014 ED:08/10/2014,TRACKER NO:833-Corrected proloader and message box position.
 //DONE BY KUMAR
 //VER 2.00-SD:06/10/2014 ED:06/10/2014,TRACKER NO:833-updated proloader and message box position.
@@ -26,7 +27,7 @@
 //*********************************************************************************************************//
 try
 {
-  /////////////FUNCTION TO CALCULATE PRORATED BASED ON STARTDATE AND ENDDATE////////////////////
+   /////////////FUNCTION TO CALCULATE PRORATED BASED ON STARTDATE AND ENDDATE////////////////////
   var CSRCcustomer_id;
   var CSRCcedrecver;
   var CSRCcalendarname;
@@ -46,6 +47,10 @@ try
   var afterdelcalevents;
   var aftercreatecalevents;
   var CSRC_TEMPtable;
+//   function doGet(e) 
+//  {
+//      return HtmlService.createTemplateFromFile('HTML-CUSTOMER_CUSTOMER_SEARCH/UPDATE/DELETE').evaluate().setSandboxMode(HtmlService.SandboxMode.EMULATED);
+//   }
   /////////////FUNCTION TO CALCULATE PRORATED BASED ON STARTDATE AND ENDDATE////////////////////
   function CSRC_prorated(CSRC_startdate,CSRC_enddate)
   {
@@ -423,9 +428,7 @@ try
     }
     CSRC_personalarray=eilib.unique(CSRC_personalarray)
     var searchreturnarray=[CSRC_finalyarray,CSRC_searchoption,table_header,CSRC_personalarray];
-    var CSRC_tempdelstmt=CSRC_conn.createStatement();
-    CSRC_tempdelstmt.execute("DROP TABLE "+CSRC_TEMPTABLENAME+"");
-    CSRC_tempdelstmt.close();
+    eilib.DropTempTable(CSRC_conn,CSRC_TEMPTABLENAME); 
     return searchreturnarray;
     CSRC_conn.close();
   }
@@ -647,11 +650,8 @@ try
     {
       expense=0;
     }
-    CSRC_recverstmt.execute("DROP TABLE IF EXISTS "+Recvertablename+"");
-    CSRC_recverstmt.close();   
-    var temptabledropstmt=CSRC_conn.createStatement();
-    temptabledropstmt.execute("DROP TABLE IF EXISTS "+CSRC_TEMPTTABLENAME+"");
-    temptabledropstmt.close();
+    eilib.DropTempTable(CSRC_conn,Recvertablename); 
+    eilib.DropTempTable(CSRC_conn,CSRC_TEMPTTABLENAME); 
     var oldtimeanduserstamp=CSRC_userstamp+','+CSRC_timestamp;
     var userProperties_userandtimestamp = PropertiesService.getUserProperties();
     userProperties_userandtimestamp.setProperty("USERTIME", oldtimeanduserstamp);
@@ -1088,9 +1088,7 @@ function CSRC_customerrecord_delete(CSRC_customerid)
     CSRC_conn.commit();
     if(CSRC_TEMPtable!=null || CSRC_TEMPtable!=undefined)
     {
-      var rollbackstmt=CSRC_conn.createStatement();
-      rollbackstmt.execute("DROP TABLE IF EXISTS "+CSRC_TEMPtable+"");
-      rollbackstmt.close();
+      eilib.DropTempTable(CSRC_conn,CSRC_TEMPtable); 
     }
     CSRC_conn.close();
     return customerdeletion_flag;
@@ -1102,9 +1100,8 @@ function CSRC_customerrecord_delete(CSRC_customerid)
     CSRC_expconn.rollback();
     if(CSRC_TEMPtable!=null || CSRC_TEMPtable!=undefined)
     {
-      var rollbackstmt=CSRC_expconn.createStatement();
-      rollbackstmt.execute("DROP TABLE IF EXISTS "+CSRC_TEMPtable+"");
-      rollbackstmt.close();
+            eilib.DropTempTable(CSRC_expconn,CSRC_TEMPtable); 
+
     }
     return (Logger.getLog());
   }
@@ -1197,8 +1194,8 @@ function CAL_DEL_CREATE(CSRC_conn,CSRC_customerid,status)
     var ed_date=new Date(eddate[0],eddate[1]-1,eddate[2]);
     if(sd_date<ed_date)
     {
-      calevents_array.push({unit:CSRC_calunit,roomtype:CSRC_calroomtype,sdate:CSRC_calsddate,stime:CSRC_SD_start_time_in,etime:CSRC_SD_start_time_out});
-      calevents_array.push({unit:CSRC_calunit,roomtype:CSRC_calroomtype,sdate:CSRC_caleddate,stime:CSRC_ED_end_time_in,etime:CSRC_ED_end_time_out});
+    calevents_array.push({unit:CSRC_calunit,roomtype:CSRC_calroomtype,sdate:CSRC_calsddate,stime:CSRC_SD_start_time_in,etime:CSRC_SD_start_time_out});
+    calevents_array.push({unit:CSRC_calunit,roomtype:CSRC_calroomtype,sdate:CSRC_caleddate,stime:CSRC_ED_end_time_in,etime:CSRC_ED_end_time_out});
     }
   }
   CSRC_caldetailsresult.close();

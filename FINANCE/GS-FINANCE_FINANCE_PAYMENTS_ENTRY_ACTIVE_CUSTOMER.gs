@@ -25,7 +25,7 @@
 try
 {
   /*********************CUSTOMER NAME FOR SELECTED UNIT*********************/
-  function FIN_ENTRY_Customer(unit,no)
+function FIN_ENTRY_Customer(unit,no)
   {
     var FIN_ENTRYcustomername_array=[];
     var FIN_ENTRY_conn=eilib.db_GetConnection();

@@ -51,7 +51,7 @@ try
     var ET_ENTRY_flag_rs=ET_ENTRY_stmt_flag.executeQuery(ET_ENTRY_flag_select);
     if(ET_ENTRY_flag_rs.next())
     {
-      var ET_ENTRY_flag_insert=ET_ENTRY_flag_rs.getString("@EMAILINSERT_FLAG");
+    var ET_ENTRY_flag_insert=ET_ENTRY_flag_rs.getString("@EMAILINSERT_FLAG");
     }
     ET_ENTRY_flag_rs.close();
     ET_ENTRY_stmt_flag.close();

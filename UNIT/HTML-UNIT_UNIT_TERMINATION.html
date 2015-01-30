@@ -21,234 +21,234 @@ VER 0.02-SD:30/09/2013 ED:30/09/2013,TRACKER NO:249,updated eilib connection,mes
 VER 0.01-INITIAL VERSION,TRACKER NO:249,SD:04/09/2013,ED:05/09/2013-->
 <html>
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
-<script>
-//CHECK PRELOADER STATUS N HIDE START
-var SubPage=1;
-function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
-}
-/*----------------------------------------------- FAILURE FUNTION FOR UNIT TERMINATION----------------------------------*/
-function UTERM_onFailure(UTERM_error)
-{
-$(".preloader").hide();
-if(UTERM_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-UTERM_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#UTERM_form_termination').replaceWith('<center><label class="dberrormsg">'+UTERM_error+'</label></center>');
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_error,position:{top:150,left:500}}});
-}}
-$(document).ready(function(){
-$('textarea').autogrow({onInitialize: true});
-/*----------------------------------------highlight selected row start------------------------------*/
-var all_tr = $('#USRC_UPDCODE_tble_doorcode tr');
-$('#USRC_UPDCODE_tble_doorcode tr td input[type="radio"]').on('click', function () {
-    all_tr.removeClass('higlightrow');
-    $(this).closest('tr').addClass('higlightrow');
-});
-/*-------------------------------------------FUNCTION FOR ERROR MS AND LOAD UNIT NO.-----------------------------------------*/
-$(".preloader").show();
-$("#UTERM_ta_comments").doValidation({rule:'general',prop:{uppercase:false}});
-google.script.run.withSuccessHandler(UTERM_refreshSuccess).withFailureHandler(UTERM_onFailure).UTERM_get_errormsg_unitno();
-var UTERM_errorarray =[];
-var UTERM_types_array= [];
-/*------------------------------------------FUNCTION FOR CHANGING DATE FORMAT----------------------------------------------------*/
-function DatePickerFormat(inputdate){
-var string  = inputdate.split("-");
-return string[2]+'-'+ string[1]+'-'+string[0];
-}
-/*-------------------------------------------SUCCESS FUNCTION FOR ERROR MS AND LOAD UNIT NO.-----------------------------------------*/
-function UTERM_refreshSuccess(UTERM_response)
-{
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <script>
+        //CHECK PRELOADER STATUS N HIDE START
+        var SubPage=1;
+        function CheckPageStatus(){
+            if(MenuPage!=1 && SubPage!=1)
+                $(".preloader").hide();
+        }
+        /*----------------------------------------------- FAILURE FUNTION FOR UNIT TERMINATION----------------------------------*/
+        function UTERM_onFailure(UTERM_error)
+        {
+            $(".preloader").hide();
+            if(UTERM_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+            {
+                UTERM_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+                $('#UTERM_form_termination').replaceWith('<center><label class="dberrormsg">'+UTERM_error+'</label></center>');
+            }
+            else
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_error,position:{top:150,left:500}}});
+            }}
+        $(document).ready(function(){
+            $('textarea').autogrow({onInitialize: true});
+            /*----------------------------------------highlight selected row start------------------------------*/
+            var all_tr = $('#USRC_UPDCODE_tble_doorcode tr');
+            $('#USRC_UPDCODE_tble_doorcode tr td input[type="radio"]').on('click', function () {
+                all_tr.removeClass('higlightrow');
+                $(this).closest('tr').addClass('higlightrow');
+            });
+            /*-------------------------------------------FUNCTION FOR ERROR MS AND LOAD UNIT NO.-----------------------------------------*/
+            $(".preloader").show();
+            $("#UTERM_ta_comments").doValidation({rule:'general',prop:{uppercase:false}});
+            google.script.run.withSuccessHandler(UTERM_refreshSuccess).withFailureHandler(UTERM_onFailure).UTERM_get_errormsg_unitno();
+            var UTERM_errorarray =[];
+            var UTERM_types_array= [];
+            /*------------------------------------------FUNCTION FOR CHANGING DATE FORMAT----------------------------------------------------*/
+            function DatePickerFormat(inputdate){
+                var string  = inputdate.split("-");
+                return string[2]+'-'+ string[1]+'-'+string[0];
+            }
+            /*-------------------------------------------SUCCESS FUNCTION FOR ERROR MS AND LOAD UNIT NO.-----------------------------------------*/
+            function UTERM_refreshSuccess(UTERM_response)
+            {
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
-UTERM_errorarray=UTERM_response.UTERM_errormsg;
-UTERM_types_array=UTERM_response.UTERM_unitno;
-if(UTERM_types_array.length==0){
-$('#UTERM_form_termination').replaceWith('<p><label class="errormsg"> '+UTERM_errorarray[3]+'</label></p>')
-}
-else{
-var UTERM_options ='<option>SELECT</option>';
-for (var i = 0; i < UTERM_types_array.length; i++) 
-{
-UTERM_options += '<option value="' + UTERM_types_array[i]  + '">' + UTERM_types_array[i] + '</option>';
-}
-$('#UTERM_lb_unitnumber').html(UTERM_options);
-$("#UTERM_form_termination").show();
-}}
-/*-------------------------------------------CHANGE EVENT FUNCTION FOR UNIT NUMBER-----------------------------------*/
-$("#UTERM_lb_unitnumber").change(function(){
-if($('#UTERM_lb_unitnumber').val()!='SELECT')
-{
-$(".preloader").show();
-var  newPos= adjustPosition($(this).position(),100,200);
-resetPreloader(newPos);
-var UTERM_unitnumber=$('#UTERM_lb_unitnumber').val();
-$("#UTERM_div_form").hide();
-$("#UTERM_btn_terminate").attr("disabled", "disabled");
-google.script.run.withSuccessHandler(UTERM_selectSuccess).withFailureHandler(UTERM_onFailure).UTERM_unitdetails(UTERM_unitnumber,'UTERM_flag_select');
-}
-else
-{
-$("#UTERM_div_form").hide();
-}
-});
-/*-----------------------------------------------SUCCESS FUNTION FOR UNIT DETAILS----------------------------------*/
-function UTERM_selectSuccess(UTERM_response)
-{
-$(".preloader").hide();
-var UTERM_startdate=DatePickerFormat(UTERM_response.UTERM_sdate);
-var UTERM_enddate=DatePickerFormat(UTERM_response.UTERM_edate);
-var UTERM_rental=UTERM_response.UTERM_rent;
-var UTERM_comments=UTERM_response.UTERM_comment
-if((UTERM_startdate!='')&&(UTERM_enddate!='')&&(UTERM_rental!=''))
-{
-$("#UTERM_div_form").show();
-$("#UTERM_db_startdate").val(UTERM_startdate);
-$("#UTERM_db_enddate").val(UTERM_enddate);
-$("#UTERM_tb_unitrental").val(UTERM_rental);
-$("#UTERM_ta_comments").val(UTERM_comments);
-$("#UTERM_btn_terminate").removeAttr("disabled");
-}}
-/*----------------------------------------------CLICK FUNCTION FOR UPDATION-------------------------------------------------*/
-$("#UTERM_btn_terminate").click(function(){
-$(".preloader").show();
-var UTERM_unitnumber=$('#UTERM_lb_unitnumber').val();
-google.script.run.withSuccessHandler(UTERM_checkSuccess).withFailureHandler(UTERM_onFailure).UTERM_unitdetails(UTERM_unitnumber,'UTERM_flag_check',$('#UTERM_ta_comments').val());
-$("#UTERM_div_form").hide();
-});
-/*-------------------------------------SUCCESS FUNTION FOR UNIT DETAILS----------------------------------*/
-function UTERM_checkSuccess(UTERM_response){
-$(".preloader").hide();
-if(UTERM_response.UTERM_UPDCODE_obj_flag==1)
-{
-var UTERM_unitnumber= $("#UTERM_lb_unitnumber").val();
-var UTERM_errmsg =UTERM_errorarray[0].replace('[UNITNO]',UTERM_unitnumber);
-if(UTERM_response.UTERM_UPDCODE_unitno_obj.length==0){
-$('#UTERM_form_termination').replaceWith('<p><label class="errormsg"> '+UTERM_errorarray[3]+'</label></p>')
-}
-else{
-var UTERM_options ='<option>SELECT</option>';
-for (var i = 0; i < UTERM_response.UTERM_UPDCODE_unitno_obj.length; i++) 
-{
-UTERM_options += '<option value="' + UTERM_response.UTERM_UPDCODE_unitno_obj[i]  + '">' + UTERM_response.UTERM_UPDCODE_unitno_obj[i] + '</option>';
-}
-$('#UTERM_lb_unitnumber').html(UTERM_options);
-}
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_errmsg,position:$("#UTERM_lb_unitnumber").position()}});
-$('#UTERM_lb_unitnumber').val('SELECT');}
-else if(UTERM_response.UTERM_UPDCODE_obj_flag==0)
-{
-$('#UTERM_lb_unitnumber').val('SELECT');
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_errorarray[1],position:$("#UTERM_lb_unitnumber").position()}});
-}
-$('textarea').height(20);
-}
-/*-------------------------------------------CLICK EVENT FUNCTION FOR RESET---------------------------------------*/
-$("#UTERM_btn_reset").click(function(){
-$("#UTERM_div_form").hide();
-$('#UTERM_lb_unitnumber').val('SELECT');
-$('textarea').height(20);
-});
-/*--------------------------------------------KEYPRESS EVENT OF COMMENTS--------------------------------------*/
-});
-</script>
-<!--SCRIPT TAG END-->
+                SubPage=0;
+                CheckPageStatus();
+                UTERM_errorarray=UTERM_response.UTERM_errormsg;
+                UTERM_types_array=UTERM_response.UTERM_unitno;
+                if(UTERM_types_array.length==0){
+                    $('#UTERM_form_termination').replaceWith('<p><label class="errormsg"> '+UTERM_errorarray[3]+'</label></p>')
+                }
+                else{
+                    var UTERM_options ='<option>SELECT</option>';
+                    for (var i = 0; i < UTERM_types_array.length; i++)
+                    {
+                        UTERM_options += '<option value="' + UTERM_types_array[i]  + '">' + UTERM_types_array[i] + '</option>';
+                    }
+                    $('#UTERM_lb_unitnumber').html(UTERM_options);
+                    $("#UTERM_form_termination").show();
+                }}
+            /*-------------------------------------------CHANGE EVENT FUNCTION FOR UNIT NUMBER-----------------------------------*/
+            $("#UTERM_lb_unitnumber").change(function(){
+                if($('#UTERM_lb_unitnumber').val()!='SELECT')
+                {
+                    $(".preloader").show();
+                    var  newPos= adjustPosition($(this).position(),100,200);
+                    resetPreloader(newPos);
+                    var UTERM_unitnumber=$('#UTERM_lb_unitnumber').val();
+                    $("#UTERM_div_form").hide();
+                    $("#UTERM_btn_terminate").attr("disabled", "disabled");
+                    google.script.run.withSuccessHandler(UTERM_selectSuccess).withFailureHandler(UTERM_onFailure).UTERM_unitdetails(UTERM_unitnumber,'UTERM_flag_select');
+                }
+                else
+                {
+                    $("#UTERM_div_form").hide();
+                }
+            });
+            /*-----------------------------------------------SUCCESS FUNTION FOR UNIT DETAILS----------------------------------*/
+            function UTERM_selectSuccess(UTERM_response)
+            {
+                $(".preloader").hide();
+                var UTERM_startdate=DatePickerFormat(UTERM_response.UTERM_sdate);
+                var UTERM_enddate=DatePickerFormat(UTERM_response.UTERM_edate);
+                var UTERM_rental=UTERM_response.UTERM_rent;
+                var UTERM_comments=UTERM_response.UTERM_comment
+                if((UTERM_startdate!='')&&(UTERM_enddate!='')&&(UTERM_rental!=''))
+                {
+                    $("#UTERM_div_form").show();
+                    $("#UTERM_db_startdate").val(UTERM_startdate);
+                    $("#UTERM_db_enddate").val(UTERM_enddate);
+                    $("#UTERM_tb_unitrental").val(UTERM_rental);
+                    $("#UTERM_ta_comments").val(UTERM_comments);
+                    $("#UTERM_btn_terminate").removeAttr("disabled");
+                }}
+            /*----------------------------------------------CLICK FUNCTION FOR UPDATION-------------------------------------------------*/
+            $("#UTERM_btn_terminate").click(function(){
+                $(".preloader").show();
+                var UTERM_unitnumber=$('#UTERM_lb_unitnumber').val();
+                google.script.run.withSuccessHandler(UTERM_checkSuccess).withFailureHandler(UTERM_onFailure).UTERM_unitdetails(UTERM_unitnumber,'UTERM_flag_check',$('#UTERM_ta_comments').val());
+                $("#UTERM_div_form").hide();
+            });
+            /*-------------------------------------SUCCESS FUNTION FOR UNIT DETAILS----------------------------------*/
+            function UTERM_checkSuccess(UTERM_response){
+                $(".preloader").hide();
+                if(UTERM_response.UTERM_UPDCODE_obj_flag==1)
+                {
+                    var UTERM_unitnumber= $("#UTERM_lb_unitnumber").val();
+                    var UTERM_errmsg =UTERM_errorarray[0].replace('[UNITNO]',UTERM_unitnumber);
+                    if(UTERM_response.UTERM_UPDCODE_unitno_obj.length==0){
+                        $('#UTERM_form_termination').replaceWith('<p><label class="errormsg"> '+UTERM_errorarray[3]+'</label></p>')
+                    }
+                    else{
+                        var UTERM_options ='<option>SELECT</option>';
+                        for (var i = 0; i < UTERM_response.UTERM_UPDCODE_unitno_obj.length; i++)
+                        {
+                            UTERM_options += '<option value="' + UTERM_response.UTERM_UPDCODE_unitno_obj[i]  + '">' + UTERM_response.UTERM_UPDCODE_unitno_obj[i] + '</option>';
+                        }
+                        $('#UTERM_lb_unitnumber').html(UTERM_options);
+                    }
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_errmsg,position:$("#UTERM_lb_unitnumber").position()}});
+                    $('#UTERM_lb_unitnumber').val('SELECT');}
+                else if(UTERM_response.UTERM_UPDCODE_obj_flag==0)
+                {
+                    $('#UTERM_lb_unitnumber').val('SELECT');
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"UNIT TERMINATION",msgcontent:UTERM_errorarray[1],position:$("#UTERM_lb_unitnumber").position()}});
+                }
+                $('textarea').height(20);
+            }
+            /*-------------------------------------------CLICK EVENT FUNCTION FOR RESET---------------------------------------*/
+            $("#UTERM_btn_reset").click(function(){
+                $("#UTERM_div_form").hide();
+                $('#UTERM_lb_unitnumber').val('SELECT');
+                $('textarea').height(20);
+            });
+            /*--------------------------------------------KEYPRESS EVENT OF COMMENTS--------------------------------------*/
+        });
+    </script>
+    <!--SCRIPT TAG END-->
 </head>
 <body>
 <div class="wrapper">
     <div class="preloader MaskPanel">
-		<div class="preloader statusarea">
-			<div style="padding-top:90px; text-align:center">
-				<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
-			</div>
-		</div>
-	</div>
-	<div class="title" id="fhead">
-		<div style="padding-left:500px; text-align:left;">
-			<p>
-				<h3>UNIT TERMINATION</h3>
-				<p>
-				</div>
-			</div>
-			<form class="content" name="UTERM_form_termination" id="UTERM_form_termination" hidden>
-				<table>
-				<tr>
-					<td style="width:130px">
-						<label>UNIT NUMBER<em>*</em></label>
-					</td>
-					<td>
-						<select id="UTERM_lb_unitnumber" name="UTERM_lb_unitnumber">
-							<option>SELECT</option>
-						</select>
-					</td>
-				</tr>
-				</table>
-				<div id="UTERM_div_form" hidden>
-					<table>
-					<tr>
-						<td style="width:130px">
-							<label>START DATE</label>
-						</td>
-						<td>
-							<input type="text" class="rdonly" name="UTERM_db_startdate" id="UTERM_db_startdate" style="width:75px" readonly/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<label>END DATE</label>
-						</td>
-						<td>
-							<input type="text" class="rdonly" name="UTERM_db_enddate" id="UTERM_db_enddate" style="width:75px" readonly/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<label>UNIT RENTAL</label>
-						</td>
-						<td>
-							<input type="text" class="rdonly" name="UTERM_tb_unitrental" id="UTERM_tb_unitrental" style="width:40px" readonly/>
-						</td>
-						</tr>
-                        <tr>
-						<td>
-							<label>COMMENTS</label>
-						</td>
-						<td>
-							<textarea  name="UTERM_ta_comments" id="UTERM_ta_comments" ></textarea>
-						</td>
-						</tr>
-                        <tr>
-							<td align="right">
-								<input type="button" class="maxbtn" value="TERMINATE" name="UTERM_btn_terminate" id="UTERM_btn_terminate" disabled/>
-							</td>
-							<td align="left">
-								<input type="button" class="maxbtn" name="reset" value="RESET" id="UTERM_btn_reset"/>
-							</td>
-						</tr>
-						</table>
-					</div>
-				</form>
-			</div>
-			</body>
-			</html>
+        <div class="preloader statusarea">
+            <div style="padding-top:90px; text-align:center">
+                <img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+            </div>
+        </div>
+    </div>
+    <div class="title" id="fhead">
+        <div style="padding-left:500px; text-align:left;">
+            <p>
+            <h3>UNIT TERMINATION</h3>
+            <p>
+        </div>
+    </div>
+    <form class="content" name="UTERM_form_termination" id="UTERM_form_termination" hidden>
+        <table>
+            <tr>
+                <td style="width:130px">
+                    <label>UNIT NUMBER<em>*</em></label>
+                </td>
+                <td>
+                    <select id="UTERM_lb_unitnumber" name="UTERM_lb_unitnumber">
+                        <option>SELECT</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div id="UTERM_div_form" hidden>
+            <table>
+                <tr>
+                    <td style="width:130px">
+                        <label>START DATE</label>
+                    </td>
+                    <td>
+                        <input type="text" class="rdonly" name="UTERM_db_startdate" id="UTERM_db_startdate" style="width:75px" readonly/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>END DATE</label>
+                    </td>
+                    <td>
+                        <input type="text" class="rdonly" name="UTERM_db_enddate" id="UTERM_db_enddate" style="width:75px" readonly/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>UNIT RENTAL</label>
+                    </td>
+                    <td>
+                        <input type="text" class="rdonly" name="UTERM_tb_unitrental" id="UTERM_tb_unitrental" style="width:40px" readonly/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>COMMENTS</label>
+                    </td>
+                    <td>
+                        <textarea  name="UTERM_ta_comments" id="UTERM_ta_comments" ></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <input type="button" class="maxbtn" value="TERMINATE" name="UTERM_btn_terminate" id="UTERM_btn_terminate" disabled/>
+                    </td>
+                    <td align="left">
+                        <input type="button" class="maxbtn" name="reset" value="RESET" id="UTERM_btn_reset"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+</body>
+</html>

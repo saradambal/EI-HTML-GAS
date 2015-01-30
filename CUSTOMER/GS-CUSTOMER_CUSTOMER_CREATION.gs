@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************CUSTOMER CREATION*********************************************//
 //DONE BY:PUNI
+//VER 2.1-SD:22/12/2014 ED:22/12/2014;TRACKER NO:833;added droptemp table function from eilib
 //VER 2.0-SD:08/10/2014 ED:08/10/2014,TRACKER NO:833-changed proloader position.
 //DONE BY:KUMAR
 //VER 1.09-SD:06/10/2014 ED:06/10/2014,TRACKER NO:833-updated proloader and message box position.
@@ -34,10 +35,10 @@ try
   var CCRE_expconn;
   var temptablename;
   var calevent_array;
-  //  function doGet()
-  //  {
-  //    return HtmlService.createTemplateFromFile('HTML-CUSTOMER_CUSTOMER_CREATION').evaluate();
-  //  }
+//  function doGet()
+//  {
+//    return HtmlService.createTemplateFromFile('HTML-CUSTOMER_CUSTOMER_CREATION').evaluate();
+//  }
   /************************FUNCTION TO GET ROOMTYPE FOR SELECTED UNIT*****************************/
   function CCRE_Roomtype(CCRE_unit,CCRE_nullpara)
   {
@@ -316,13 +317,11 @@ function CCRE_processFormSubmit(customercreation)
     }
     if(temptablename!=null || temptablename!=undefined)
     {
-      var rollbackstmt=CCRE_conn.createStatement();
-      rollbackstmt.execute("DROP TABLE IF EXISTS "+temptablename+"");
-      rollbackstmt.close();
+      eilib.DropTempTable(CCRE_expconn,temptablename);       
     }
     CCRE_conn.commit();
-    return returnflag;
-    CCRE_conn.close();
+   return returnflag;
+   CCRE_conn.close();
   }
   catch(err)
   {
@@ -330,9 +329,7 @@ function CCRE_processFormSubmit(customercreation)
     CCRE_expconn.rollback();
     if(temptablename!=null || temptablename!=undefined)
     {
-      var rollbackstmt=CCRE_expconn.createStatement();
-      rollbackstmt.execute("DROP TABLE IF EXISTS "+temptablename+"");
-      rollbackstmt.close();
+      eilib.DropTempTable(CCRE_expconn,temptablename);   
     }
     if(checkstatusflag==1)
     {

@@ -20,7 +20,7 @@
 //*********************************************************************************************************//-->
 try
 { 
-  //FUNCTION TO GET CALENDAR TIME N ERROR MESSAGES
+ //FUNCTION TO GET CALENDAR TIME N ERROR MESSAGES
   function CTERM_getErrMsgCalTime()
   {
     var CTERM_errcon =eilib.db_GetConnection();
@@ -669,11 +669,11 @@ try
       {
         if(CTERM_customerptd!="")
         {
-          for(var ijk=0;ijk<CALEVENTS.length;ijk++)
-          {
-            eilib.CUST_customerTermcalenderdeletion(CTERM_custid,calenderIDcode,CALEVENTS[ijk].sddate,CALEVENTS[ijk].sdtimein,CALEVENTS[ijk].sdtimeout,CALEVENTS[ijk].eddate,CALEVENTS[ijk].edtimein,CALEVENTS[ijk].edtimeout,"")
-          }
-          eilib.CTermExtn_Calevent(CTERM_custdtlsconn,CTERM_custid,CTERM_recver,calenderIDcode,"TERMINATION",CTERM_updateflag);    
+        for(var ijk=0;ijk<CALEVENTS.length;ijk++)
+        {
+          eilib.CUST_customerTermcalenderdeletion(CTERM_custid,calenderIDcode,CALEVENTS[ijk].sddate,CALEVENTS[ijk].sdtimein,CALEVENTS[ijk].sdtimeout,CALEVENTS[ijk].eddate,CALEVENTS[ijk].edtimein,CALEVENTS[ijk].edtimeout,"")
+        }
+        eilib.CTermExtn_Calevent(CTERM_custdtlsconn,CTERM_custid,CTERM_recver,calenderIDcode,"TERMINATION",CTERM_updateflag);    
         }
       }
       CTERM_updateflag_rs.close();

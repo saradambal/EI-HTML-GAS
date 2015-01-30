@@ -1,7 +1,7 @@
 /**
-* @param {String} currencyInString
-* @return {String}
-*/
+ * @param {String} currencyInString
+ * @return {String}
+ */
 function currencyToWord(currencyInString){
   var array=currencyInString.split('.');
   var dollar = converter(array[0]);
@@ -11,9 +11,9 @@ function currencyToWord(currencyInString){
   }
   else if(dollar==''&&cent!=''){
     if(array[1]=='01')
-      return (cent+' Cent');
+    return (cent+' Cent');
     else
-      return (cent+' Cents');
+    return (cent+' Cents');
   }
   else if(dollar!=''&&cent==''){
     if(array[0]=='1')
@@ -46,13 +46,13 @@ var dg = ['Zero','One','Two','Three','Four', 'Five','Six','Seven','Eight','Nine'
 var tn = ['Ten','Eleven','Twelve','Thirteen', 'Fourteen','Fifteen','Sixteen', 'Seventeen','Eighteen','Nineteen']; 
 var tw = ['Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety']; 
 /**
-* @param {Number} s
-* @return {String}
-*/
+ * @param {Number} s
+ * @return {String}
+ */
 function converter(s){
   s = s.toString(); s = s.replace(/[\, ]/g,''); 
   if (s != parseFloat(s)) 
-  return 'not a number'; 
+    return 'not a number'; 
   var x = s.indexOf('.'); 
   if (x == -1)
     x = s.length; 

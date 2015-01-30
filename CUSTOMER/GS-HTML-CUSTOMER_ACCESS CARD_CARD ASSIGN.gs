@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************CARD ASSIGN***********************************************//
 //DONE BY:PUNI
+//VER 1.4-SD:22/12/2014 ED:22/12/2014;TRACKER NO:779;added droptemp table function from eilib
 //VER 1.3-SD:08/10/2014 ED:08/10/2014;TRACKER NO:779;changed preloader n msgbox position
 //VER 1.2-SD:25/08/2014 ED:25/08/2014;TRACKER NO:779;updated new links n AG
 //DONE BY:SAFIYULLAH.M
@@ -19,7 +20,7 @@
 
 //*************FUNCTION AND CUSTOMER DETAILS ERROR MSG*************************//
 try{
-  function CCARD_getinitial_values()
+   function CCARD_getinitial_values()
   {    
     var CCARD_conn = eilib.db_GetConnection();
     var CCARD_all_cust_values=[];
@@ -68,11 +69,11 @@ try{
     }
     if(flag==1){
       var CCARD_checkcard_stmt=CCARD_conn.createStatement();
-      var CCARD_checkcard_select="SELECT CLP.UASD_ID FROM CUSTOMER_LP_DETAILS CLP,CUSTOMER_ENTRY_DETAILS CED WHERE CLP.CUSTOMER_ID="+CCARD_custid+" AND CED.CED_REC_VER="+(prev_recver-1)+" and CLP.CUSTOMER_ID=CED.CUSTOMER_ID AND CLP.CED_REC_VER=CED.CED_REC_VER AND CED.CED_PRETERMINATE IS NOT NULL AND CLP.UASD_ID IS NULL and CLP.CED_REC_VER in (select CED_REC_VER  FROM VW_CARDASSIGN)";
-      var CCARD_checkcard_rs=CCARD_checkcard_stmt.executeQuery(CCARD_checkcard_select);
+    var CCARD_checkcard_select="SELECT CLP.UASD_ID FROM CUSTOMER_LP_DETAILS CLP,CUSTOMER_ENTRY_DETAILS CED WHERE CLP.CUSTOMER_ID="+CCARD_custid+" AND CED.CED_REC_VER="+(prev_recver-1)+" and CLP.CUSTOMER_ID=CED.CUSTOMER_ID AND CLP.CED_REC_VER=CED.CED_REC_VER AND CED.CED_PRETERMINATE IS NOT NULL AND CLP.UASD_ID IS NULL and CLP.CED_REC_VER in (select CED_REC_VER  FROM VW_CARDASSIGN)";
+    var CCARD_checkcard_rs=CCARD_checkcard_stmt.executeQuery(CCARD_checkcard_select);
       if(CCARD_checkcard_rs.next()){      
         var prev_recver=prev_recver-1;
-      }      
+    }      
     }
     var CCARD_today_date=Utilities.formatDate(new Date(),TimeZone, 'yyyy-MM-dd')    
     var CCARD_roomtype_stmt = CCARD_conn.createStatement();
@@ -158,12 +159,8 @@ try{
     CCARD_alldata_array.push(prev_recver)
     PropertiesService.getUserProperties().setProperty('rec_ver',CCARD_redver)
     CCARD_alldetails_rs.close()
-    CCARD_alldetails_stmt.close()
-    var CCARD_drop_stmt=CCARD_conn.createStatement();
-    var CCARD_drop_query=("DROP TABLE IF EXISTS "+CCARD_temptblname+"")
-    CCARD_drop_stmt.execute(CCARD_drop_query)
-    CCARD_drop_stmt.close()
-    CCARD_conn.close();    
+    CCARD_alldetails_stmt.close();
+    eilib.DropTempTable(CCARD_conn,CCARD_temptblname);    
     return CCARD_alldata_array; 
   }  
   //*******************FUNCTION TO RETURN AVAILABLE CARD'S AND CUSTOMER CARD'S*****************************//
@@ -434,11 +431,11 @@ try{
     } 
     var CCARD_save_stmt = CCARD_conn.createStatement();    
     if(CCARD_cardclick=='CARD'){     
-      
+
       CCARD_save_stmt.execute("CALL SP_CUSTOMER_CARDASSIGN_INSERT("+CCARD_custid+","+CCARD_unitno+","+CCARD_CLP_rec_ver+",'"+card+"','"+CCARD_startdate_new+"','"+CCARD_guestcard+"','"+CCARD_startdate_new+"','"+CCARD_enddate+"','"+CCARD_comment+"','"+CCARD_userstamp+"',@card_flag)");
     }
     else{ 
-      
+
       CCARD_save_stmt.execute("CALL SP_CUSTOMER_CARDASSIGN_INSERT("+CCARD_custid+","+CCARD_unitno+","+CCARD_CLP_rec_ver+",' ','"+CCARD_startdate_new+"',' ','"+CCARD_startdate_new+"','"+CCARD_enddate+"','"+CCARD_comment+"','"+CCARD_userstamp+"',@card_flag)");
       
     }

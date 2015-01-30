@@ -113,10 +113,7 @@ try
     }
     FIN_SRC_unitsearchresult.close();
     FIN_SRC_unitstmt.close();
-    var FIN_SRC_delstmt=FIN_SRC_UPD_DEL_conn.createStatement();
-    var FIN_SRC_delquery="DROP TABLE "+FIN_TEMPTABLENAME+"";
-    FIN_SRC_delstmt.execute(FIN_SRC_delquery);
-    FIN_SRC_delstmt.close();
+    eilib.DropTempTable(FIN_SRC_UPD_DEL_conn,FIN_TEMPTABLENAME);
     var FIN_SRC_unitarray=[2]
     var FIN_SRC_returnarray=[FIN_SRC_unitsearcharray,label,FIN_SRC_unitarray];
     return FIN_SRC_returnarray;
@@ -184,8 +181,8 @@ try
       var preterminatedate=FIN_SRC_UPD_recordresult.getString("CLP_PRETERMINATE_DATE");
       if(preterminatedate!=null)
       {
-        var enddate=preterminatedate;
-        var lpenddate=Utilities.formatDate(new Date(FIN_SRC_UPD_recordresult.getDate("CLP_PRETERMINATE_DATE").getTime()), TimeZone, 'dd-MMM-yyyy');
+       var enddate=preterminatedate;
+       var lpenddate=Utilities.formatDate(new Date(FIN_SRC_UPD_recordresult.getDate("CLP_PRETERMINATE_DATE").getTime()), TimeZone, 'dd-MMM-yyyy');
       }
       else
       {
@@ -217,7 +214,7 @@ try
     var fin_paiddate=eilib.SqlDateFormat(paiddate);
     if(comments!="")
     {
-      comments=eilib.ConvertSpclCharString(comments);
+    comments=eilib.ConvertSpclCharString(comments);
     }
     var FIN_SRC_UPD_DEL_updatestmt=FIN_SRC_UPD_DEL_conn.createStatement();
     var FIN_SRC_UPD_DEL_updatequery="CALL SP_PAYMENT_DETAIL_UPDATE("+id+","+unit+","+customer+",'"+payment+"',"+lp[2]+","+amount+",'"+period+"','"+fin_paiddate+"',"+paymentflag+",'"+comments+"','"+UserStamp+"',@ERRORMSG)";
@@ -433,11 +430,11 @@ try
   }
   function PaymentHeaderbgcolorsetting(paymentsheet)
   {
-    var paymentlastrow1=paymentsheet.getLastRow()+1;
-    paymentsheet.getRange(paymentlastrow1,1).setValue('end');
-    paymentsheet.getRange(paymentlastrow1, 1, 1, 12).setBackground('#000000');
-    paymentsheet.setFrozenRows(1);
-    paymentsheet.getRange(1, 1, 1, paymentsheet.getLastColumn()).setBackground('#498af3').setFontColor('white').setFontSize(12).setFontStyle('BOLD');
+      var paymentlastrow1=paymentsheet.getLastRow()+1;
+      paymentsheet.getRange(paymentlastrow1,1).setValue('end');
+      paymentsheet.getRange(paymentlastrow1, 1, 1, 12).setBackground('#000000');
+      paymentsheet.setFrozenRows(1);
+      paymentsheet.getRange(1, 1, 1, paymentsheet.getLastColumn()).setBackground('#498af3').setFontColor('white').setFontSize(12).setFontStyle('BOLD');
   }
 }
 catch(err)

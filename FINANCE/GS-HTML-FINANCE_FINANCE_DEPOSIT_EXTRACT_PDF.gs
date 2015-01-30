@@ -542,7 +542,7 @@ try
       newSpreadsheet.getSheetByName('sheet1').activate();
       var DDC_newspread_ssid=newSpreadsheet.getId();
       newSpreadsheet.deleteActiveSheet();
-      //      var contents = DriveApp.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
+//      var contents = DriveApp.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
       var contents = DocsList.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
       var getattachfile={fileName:selectedunit+'-'+customername+".pdf", content:contents, mimeType:"application//pdf"};
       advancedArgs.push(getattachfile);
@@ -575,3 +575,4 @@ try
 }
 catch(error){
 }
+

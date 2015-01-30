@@ -89,7 +89,6 @@ function CERM_ENTRY_processFormSubmit(ERM_ENTRY_details)
     }
     var ERM_ENTRY_others=ERM_ENTRY_details.CERM_ENTRY_tb_others;
     var ERM_ENTRY_guests=ERM_ENTRY_details.CERM_ENTRY_tb_noofguests;
-    Logger.log(ERM_ENTRY_guests)
     if(ERM_ENTRY_guests=="")
     {
       var mailguests="";ERM_ENTRY_guests=null;
@@ -98,7 +97,6 @@ function CERM_ENTRY_processFormSubmit(ERM_ENTRY_details)
     {
       var mailguests=ERM_ENTRY_guests;ERM_ENTRY_guests="'"+eilib.ConvertSpclCharString(ERM_ENTRY_guests)+"'";
     }
-    Logger.log(ERM_ENTRY_guests)
     var ERM_ENTRY_age=ERM_ENTRY_details.CERM_ENTRY_tb_age;
     if(ERM_ENTRY_age=="")
     { 

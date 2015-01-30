@@ -882,7 +882,7 @@ function quarterCalc(startdate,enddate)
           }
         }
       }
-    }    
+    }	
     
     
     else if(btw_year>0){

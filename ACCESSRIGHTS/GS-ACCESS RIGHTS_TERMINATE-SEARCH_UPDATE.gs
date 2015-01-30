@@ -114,7 +114,8 @@ try
         eilib.DropTempTable(URT_SRC_conn,URT_SRC_terminatetemplogidtbl);}
       //********************** RESHARE CALENDAR 
       if(URSRC_sharecalflag==1){
-        USRC_shareUnSharecalender(URT_SRC_conn,URT_SRC_emailid,'writer');}
+        USRC_shareUnSharecalender(URT_SRC_conn,URT_SRC_emailid,'writer');
+      }
       //********************** RESHARE SITE
       if(sitermoveflag==1){
         URSRC_addViewer(URT_SRC_conn,URT_SRC_emailid);}
@@ -266,7 +267,7 @@ try
     var URT_SRC_stmt_terminate = URT_SRC_conn.createStatement();
     var URT_SRC_upd_enddate= eilib.SqlDateFormat(URT_SRC_upd_edate);
     var URT_SRC_sucess_flag=0;
-    if (URT_SRC_upd_recver==null)
+    if (URT_SRC_upd_recver==null||URT_SRC_upd_recver=="SELECT")
     {
       var URT_SRC_update_terminate =" UPDATE USER_ACCESS SET UA_END_DATE='"+URT_SRC_upd_enddate+"',UA_REASON='"+URT_SRC_upd_reason+"',UA_USERSTAMP='"+UserStamp+"' WHERE ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+URT_SRC_upd_loginid+"') AND UA_REC_VER=1";
     }

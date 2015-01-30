@@ -66,7 +66,7 @@ try
     return model_flag;
     MODEL_SRC_conn.close();
   }
-  function MODEL_SRC_modelupdation(modelname,modelid,obsolute)
+ function MODEL_SRC_modelupdation(modelname,modelid,obsolute)
   {
     var MODEL_SRC_conn =eilib.db_GetConnection();
     var flag='X'
@@ -97,8 +97,8 @@ try
     }
     else
     {
-      flag=eilib.DeleteRecord(MODEL_SRC_conn, 73, modelid);
-    }
+    flag=eilib.DeleteRecord(MODEL_SRC_conn, 73, modelid);
+   }
     var model=eilib.getBankTransferModels(MODEL_SRC_conn);
     var returnvalue=[model,flag]
     return returnvalue;

@@ -20,157 +20,157 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
-//CHECK PRELOADER STATUS N HIDE START
-var SubPage=1;
-function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
-}
-//CHECK PRELOADER STATUS N HIDE END
-$(document).ready(function() {
-$('#CHEQUE_ENTRY_ta_comments').autogrow({onInitialize: true});
-  $(".preloader").show(); 
-  var errormsg=[];
-  $("#CHEQUE_ENTRY_tb_chequeno").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
-  $(".autosize").doValidation({rule:'alphanumeric',prop:{whitespace:true,autosize:true}});
-  $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-  $(".numonly").doValidation({rule:'numbersonly'});
-  $( "#CHEQUE_ENTRY_db_date").datepicker({dateFormat:'dd-mm-yy',changeYear: true,changeMonth: true});
-  $('#CHEQUE_ENTRY_db_date').datepicker("option","maxDate",new Date());
-  $('#CHEQUE_ENTRY_db_date').datepicker("option","minDate",new Date(2005,00));
-  google.script.run.withFailureHandler(CHEQUE_ENTRY_error_message).withSuccessHandler(CHEQUE_ENTRY_getCommonvalues_result).CHEQUE_ENTRY_commonvalues();
-  function CHEQUE_ENTRY_getCommonvalues_result(CHEQUE_ENTRY_result)
-  {
-    errormsg=CHEQUE_ENTRY_result.errormessage;
-    $('#CHEQUE_ENTRY_tb_chequeno').prop('title',errormsg[0])
-    $('#CHEQUE_ENTRY_tb_amount').prop('title',errormsg[0])
-    //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus(); 
-    $('#CHEQUE_ENTRY_form_mainform').show();
-  }
-  $('.chequeformvalidation').blur(function(){
-    if($('#CHEQUE_ENTRY_db_date').val()!='' && $('#CHEQUE_ENTRY_tb_chequeno').val()!='' && $('#CHEQUE_ENTRY_tb_chequeto').val()!='' && $('#CHEQUE_ENTRY_tb_chequefor').val()!='' && $('#CHEQUE_ENTRY_tb_amount').val()!='' && $('#CHEQUE_ENTRY_tb_amount').val()!='')
-    {
-      $("#CHEQUE_ENTRY_btn_savebutton").removeAttr("disabled");
+    //CHECK PRELOADER STATUS N HIDE START
+    var SubPage=1;
+    function CheckPageStatus(){
+        if(MenuPage!=1 && SubPage!=1)
+            $(".preloader").hide();
     }
-    else
-    {
-      $("#CHEQUE_ENTRY_btn_savebutton").attr("disabled", "disabled");
-    }
-  });
-  $('#CHEQUE_ENTRY_btn_savebutton').click(function(){
-    $(".preloader").show(); 
-    var  newPos= adjustPosition($('#CHEQUE_ENTRY_btn_savebutton').position(),100,230);
-    resetPreloader(newPos);
-    var chequedate=$('#CHEQUE_ENTRY_db_date').val();
-    var chequeno=$('#CHEQUE_ENTRY_tb_chequeno').val();
-    var chequeto=$('#CHEQUE_ENTRY_tb_chequeto').val();
-    var chequefor=$('#CHEQUE_ENTRY_tb_chequefor').val();
-    var chequeamount=$('#CHEQUE_ENTRY_tb_amount').val();
-    var chequeunit=$('#CHEQUE_ENTRY_tb_unit').val();
-    var chequecomments=$('#CHEQUE_ENTRY_ta_comments').val();
-    google.script.run.withFailureHandler(CHEQUE_ENTRY_error_message).withSuccessHandler(CHEQUE_ENTRY_Conformation).CHEQUE_ENTRY_processFormSubmit(chequedate,chequeno,chequeto,chequefor,chequeamount,chequeunit,chequecomments);
-  });
-  function CHEQUE_ENTRY_Conformation(response)
-  {
-  if(response==1)
-  {
-    $('#CHEQUE_ENTRY_form_mainform').find('input:text').prop("size","20");
-    $('#CHEQUE_ENTRY_form_mainform').find('input[type=text]').val('');
-    $('#CHEQUE_ENTRY_ta_comments').val('');
-    $("#CHEQUE_ENTRY_btn_savebutton").attr("disabled", "disabled");
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:errormsg[1],position:$('#CHEQUE_ENTRY_btn_savebutton').position()}});
-    }
-    else
-    {
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:errormsg[2],position:$('#CHEQUE_ENTRY_btn_savebutton').position()}});
-    }
-    $(".preloader").hide(); 
-  }
-  $('#CHEQUE_ENTRY_btn_reset').click(function(){
-    $('#CHEQUE_ENTRY_form_mainform').find('input:text').prop("size","20");
-    $('#CHEQUE_ENTRY_form_mainform').find('input[type=text]').val('');
-    $('#CHEQUE_ENTRY_ta_comments').val('');
-    $("#CHEQUE_ENTRY_btn_savebutton").attr("disabled", "disabled");
-  });
-  function CHEQUE_ENTRY_error_message(CHEQUE_ENTRY_err)
-  {
-  if(CHEQUE_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-  {
-  CHEQUE_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-  $('#CHEQUE_ENTRY_form_mainform').replaceWith('<center><label class="dberrormsg">'+CHEQUE_ENTRY_err+'</label></center>');
-  }
-  else
-  {
-    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:CHEQUE_ENTRY_err,position:$('#CHEQUE_ENTRY_form_mainform').position()}});
-  }
-  $(".preloader").hide(); 
-  }
-});
+    //CHECK PRELOADER STATUS N HIDE END
+    $(document).ready(function() {
+        $('#CHEQUE_ENTRY_ta_comments').autogrow({onInitialize: true});
+        $(".preloader").show();
+        var errormsg=[];
+        $("#CHEQUE_ENTRY_tb_chequeno").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
+        $(".autosize").doValidation({rule:'alphanumeric',prop:{whitespace:true,autosize:true}});
+        $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+        $(".numonly").doValidation({rule:'numbersonly'});
+        $( "#CHEQUE_ENTRY_db_date").datepicker({dateFormat:'dd-mm-yy',changeYear: true,changeMonth: true});
+        $('#CHEQUE_ENTRY_db_date').datepicker("option","maxDate",new Date());
+        $('#CHEQUE_ENTRY_db_date').datepicker("option","minDate",new Date(2005,00));
+        google.script.run.withFailureHandler(CHEQUE_ENTRY_error_message).withSuccessHandler(CHEQUE_ENTRY_getCommonvalues_result).CHEQUE_ENTRY_commonvalues();
+        function CHEQUE_ENTRY_getCommonvalues_result(CHEQUE_ENTRY_result)
+        {
+            errormsg=CHEQUE_ENTRY_result.errormessage;
+            $('#CHEQUE_ENTRY_tb_chequeno').prop('title',errormsg[0])
+            $('#CHEQUE_ENTRY_tb_amount').prop('title',errormsg[0])
+            //TO HIDE PRELOADER START
+            SubPage=0;
+            CheckPageStatus();
+            $('#CHEQUE_ENTRY_form_mainform').show();
+        }
+        $('.chequeformvalidation').blur(function(){
+            if($('#CHEQUE_ENTRY_db_date').val()!='' && $('#CHEQUE_ENTRY_tb_chequeno').val()!='' && $('#CHEQUE_ENTRY_tb_chequeto').val()!='' && $('#CHEQUE_ENTRY_tb_chequefor').val()!='' && $('#CHEQUE_ENTRY_tb_amount').val()!='' && $('#CHEQUE_ENTRY_tb_amount').val()!='')
+            {
+                $("#CHEQUE_ENTRY_btn_savebutton").removeAttr("disabled");
+            }
+            else
+            {
+                $("#CHEQUE_ENTRY_btn_savebutton").attr("disabled", "disabled");
+            }
+        });
+        $('#CHEQUE_ENTRY_btn_savebutton').click(function(){
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#CHEQUE_ENTRY_btn_savebutton').position(),100,230);
+            resetPreloader(newPos);
+            var chequedate=$('#CHEQUE_ENTRY_db_date').val();
+            var chequeno=$('#CHEQUE_ENTRY_tb_chequeno').val();
+            var chequeto=$('#CHEQUE_ENTRY_tb_chequeto').val();
+            var chequefor=$('#CHEQUE_ENTRY_tb_chequefor').val();
+            var chequeamount=$('#CHEQUE_ENTRY_tb_amount').val();
+            var chequeunit=$('#CHEQUE_ENTRY_tb_unit').val();
+            var chequecomments=$('#CHEQUE_ENTRY_ta_comments').val();
+            google.script.run.withFailureHandler(CHEQUE_ENTRY_error_message).withSuccessHandler(CHEQUE_ENTRY_Conformation).CHEQUE_ENTRY_processFormSubmit(chequedate,chequeno,chequeto,chequefor,chequeamount,chequeunit,chequecomments);
+        });
+        function CHEQUE_ENTRY_Conformation(response)
+        {
+            if(response==1)
+            {
+                $('#CHEQUE_ENTRY_form_mainform').find('input:text').prop("size","20");
+                $('#CHEQUE_ENTRY_form_mainform').find('input[type=text]').val('');
+                $('#CHEQUE_ENTRY_ta_comments').val('');
+                $("#CHEQUE_ENTRY_btn_savebutton").attr("disabled", "disabled");
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:errormsg[1],position:$('#CHEQUE_ENTRY_btn_savebutton').position()}});
+            }
+            else
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:errormsg[2],position:$('#CHEQUE_ENTRY_btn_savebutton').position()}});
+            }
+            $(".preloader").hide();
+        }
+        $('#CHEQUE_ENTRY_btn_reset').click(function(){
+            $('#CHEQUE_ENTRY_form_mainform').find('input:text').prop("size","20");
+            $('#CHEQUE_ENTRY_form_mainform').find('input[type=text]').val('');
+            $('#CHEQUE_ENTRY_ta_comments').val('');
+            $("#CHEQUE_ENTRY_btn_savebutton").attr("disabled", "disabled");
+        });
+        function CHEQUE_ENTRY_error_message(CHEQUE_ENTRY_err)
+        {
+            if(CHEQUE_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+            {
+                CHEQUE_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+                $('#CHEQUE_ENTRY_form_mainform').replaceWith('<center><label class="dberrormsg">'+CHEQUE_ENTRY_err+'</label></center>');
+            }
+            else
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CHEQUE ENTRY",msgcontent:CHEQUE_ENTRY_err,position:$('#CHEQUE_ENTRY_form_mainform').position()}});
+            }
+            $(".preloader").hide();
+        }
+    });
 </script>
 <body bgcolor="#E6E6FA">
 <div class="wrapper">
-<div class="preloader MaskPanel">
-<div class="preloader statusarea">
-<div style="padding-top:90px; text-align:center">
-<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
-</div>
-</div>
-</div>
-<div class="title" id="fhead">
-<div style="padding-left:500px; text-align:left;">
-<p>
-<h3>CHEQUE ENTRY
-</h3>
-<p>
-</div>
-</div>
-<form class="content" id="CHEQUE_ENTRY_form_mainform" hidden>
-<table id="CHEQUE_ENTRY_tble_maintable">
-<tr>
-<td><label >CHEQUE DATE<em>*</em></label></td><td> <input type="text" name="CHEQUE_ENTRY_db_date" id="CHEQUE_ENTRY_db_date" class="chequeformvalidation datemandtry" style="width:75px"/></td>
-</tr>
-<tr>
-<td><label>CHEQUE NO<em>*</em></label></td><td> <input  type="text" name="CHEQUE_ENTRY_tb_chequeno" id="CHEQUE_ENTRY_tb_chequeno"  maxlength="6" class="chequeformvalidation" style="width:55px" /></td>
-</tr>
-<tr>
-<td><label >CHEQUE TO<em>*</em></label></td><td> <input  type="text" name="CHEQUE_ENTRY_tb_chequeto" id="CHEQUE_ENTRY_tb_chequeto" maxlength="100" class="autosize chequeformvalidation"/></td>
-</tr>
-<tr>
-<td><label >CHEQUE FOR<em>*</em></label></td><td> <input  type="text" name="CHEQUE_ENTRY_tb_chequefor" id="CHEQUE_ENTRY_tb_chequefor" maxlength="100" class="autosize chequeformvalidation" /></td>
-</tr>
-<tr>
-<td><label >CHEQUE AMOUNT<em>*</em></label></td><td> <input type="text" name="CHEQUE_ENTRY_tb_amount" id="CHEQUE_ENTRY_tb_amount"  maxlength="7" style="width:55px" class="amtonly chequeformvalidation"/></td> 
-</tr>
-<tr>
-<td><label >UNIT</label></td><td> <input  type="text" name="CHEQUE_ENTRY_tb_unit" id="CHEQUE_ENTRY_tb_unit" maxlength="25" class="numberonlycommas"/></td>
-</tr>
-<tr>
-<td><label >COMMENTS</label></td><td><textarea  name="CHEQUE_ENTRY_ta_comments" id="CHEQUE_ENTRY_ta_comments"rows="5" cols="20" style = 'width = 2000px;' class="chequeformvalidation"></textarea></td>
-</tr>
-<tr><td><input type="button" class="btn chequeformvalidation"  value="SAVE"  id="CHEQUE_ENTRY_btn_savebutton" disabled  /></td><td>  <input type="button" class="btn chequeformvalidation"  name="reset" id="CHEQUE_ENTRY_btn_reset"  value="RESET" /></td></tr> 
-</table>
-</form>
+    <div class="preloader MaskPanel">
+        <div class="preloader statusarea">
+            <div style="padding-top:90px; text-align:center">
+                <img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+            </div>
+        </div>
+    </div>
+    <div class="title" id="fhead">
+        <div style="padding-left:500px; text-align:left;">
+            <p>
+            <h3>CHEQUE ENTRY
+            </h3>
+            <p>
+        </div>
+    </div>
+    <form class="content" id="CHEQUE_ENTRY_form_mainform" hidden>
+        <table id="CHEQUE_ENTRY_tble_maintable">
+            <tr>
+                <td><label >CHEQUE DATE<em>*</em></label></td><td> <input type="text" name="CHEQUE_ENTRY_db_date" id="CHEQUE_ENTRY_db_date" class="chequeformvalidation datemandtry" style="width:75px"/></td>
+            </tr>
+            <tr>
+                <td><label>CHEQUE NO<em>*</em></label></td><td> <input  type="text" name="CHEQUE_ENTRY_tb_chequeno" id="CHEQUE_ENTRY_tb_chequeno"  maxlength="6" class="chequeformvalidation" style="width:55px" /></td>
+            </tr>
+            <tr>
+                <td><label >CHEQUE TO<em>*</em></label></td><td> <input  type="text" name="CHEQUE_ENTRY_tb_chequeto" id="CHEQUE_ENTRY_tb_chequeto" maxlength="100" class="autosize chequeformvalidation"/></td>
+            </tr>
+            <tr>
+                <td><label >CHEQUE FOR<em>*</em></label></td><td> <input  type="text" name="CHEQUE_ENTRY_tb_chequefor" id="CHEQUE_ENTRY_tb_chequefor" maxlength="100" class="autosize chequeformvalidation" /></td>
+            </tr>
+            <tr>
+                <td><label >CHEQUE AMOUNT<em>*</em></label></td><td> <input type="text" name="CHEQUE_ENTRY_tb_amount" id="CHEQUE_ENTRY_tb_amount"  maxlength="7" style="width:55px" class="amtonly chequeformvalidation"/></td>
+            </tr>
+            <tr>
+                <td><label >UNIT</label></td><td> <input  type="text" name="CHEQUE_ENTRY_tb_unit" id="CHEQUE_ENTRY_tb_unit" maxlength="25" class="numberonlycommas"/></td>
+            </tr>
+            <tr>
+                <td><label >COMMENTS</label></td><td><textarea  name="CHEQUE_ENTRY_ta_comments" id="CHEQUE_ENTRY_ta_comments"rows="5" cols="20" style = 'width = 2000px;' class="chequeformvalidation"></textarea></td>
+            </tr>
+            <tr><td><input type="button" class="btn chequeformvalidation"  value="SAVE"  id="CHEQUE_ENTRY_btn_savebutton" disabled  /></td><td>  <input type="button" class="btn chequeformvalidation"  name="reset" id="CHEQUE_ENTRY_btn_reset"  value="RESET" /></td></tr>
+        </table>
+    </form>
 </body>
 </html>

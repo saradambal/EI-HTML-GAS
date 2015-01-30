@@ -24,21 +24,21 @@ try
   var BANKTT_ENTRYconn;
   function BANKTT_ENTRY_Customer(unit)
   {
-    var BANKTT_ENTRYcustomername_array=[];
-    var BANKTT_ENTRY_conn=eilib.db_GetConnection();
-    var BANKTT_ENTRYstmt = BANKTT_ENTRY_conn.createStatement();
-    var BANKTT_ENTRYactivecustomerquery="SELECT DISTINCT C.CUSTOMER_ID,CONCAT(CUSTOMER_FIRST_NAME,' ',CUSTOMER_LAST_NAME)AS CUSTOMERNAME FROM UNIT U,CUSTOMER_ENTRY_DETAILS CED,CUSTOMER C WHERE C.CUSTOMER_ID=CED.CUSTOMER_ID AND CED.UNIT_ID=U.UNIT_ID AND U.UNIT_NO="+unit+" ORDER BY CUSTOMER_FIRST_NAME ASC "
-    var BANKTT_ENTRY_customerresult = BANKTT_ENTRYstmt.executeQuery(BANKTT_ENTRYactivecustomerquery);//3.CUSTOMER
-    while(BANKTT_ENTRY_customerresult.next())
-    {
-      BANKTT_ENTRYcustomername_array.push({customername:BANKTT_ENTRY_customerresult.getString("CUSTOMERNAME"),customerid:BANKTT_ENTRY_customerresult.getString("CUSTOMER_ID")});
-    }
-    return BANKTT_ENTRYcustomername_array;
-    BANKTT_ENTRY_customerresult.close();
-    BANKTT_ENTRYstmt.close();
-    BANKTT_ENTRY_conn.close();
+      var BANKTT_ENTRYcustomername_array=[];
+      var BANKTT_ENTRY_conn=eilib.db_GetConnection();
+      var BANKTT_ENTRYstmt = BANKTT_ENTRY_conn.createStatement();
+      var BANKTT_ENTRYactivecustomerquery="SELECT DISTINCT C.CUSTOMER_ID,CONCAT(CUSTOMER_FIRST_NAME,' ',CUSTOMER_LAST_NAME)AS CUSTOMERNAME FROM UNIT U,CUSTOMER_ENTRY_DETAILS CED,CUSTOMER C WHERE C.CUSTOMER_ID=CED.CUSTOMER_ID AND CED.UNIT_ID=U.UNIT_ID AND U.UNIT_NO="+unit+" ORDER BY CUSTOMER_FIRST_NAME ASC "
+      var BANKTT_ENTRY_customerresult = BANKTT_ENTRYstmt.executeQuery(BANKTT_ENTRYactivecustomerquery);//3.CUSTOMER
+      while(BANKTT_ENTRY_customerresult.next())
+      {
+        BANKTT_ENTRYcustomername_array.push({customername:BANKTT_ENTRY_customerresult.getString("CUSTOMERNAME"),customerid:BANKTT_ENTRY_customerresult.getString("CUSTOMER_ID")});
+      }
+      return BANKTT_ENTRYcustomername_array;
+      BANKTT_ENTRY_customerresult.close();
+      BANKTT_ENTRYstmt.close();
+      BANKTT_ENTRY_conn.close();
   }
-  function BANKTT_ENTRY_commonvalues()
+   function BANKTT_ENTRY_commonvalues()
   {
     var BANKTT_ENTRY_conn =eilib.db_GetConnection();
     ////////////UNIT NO TABLE/////////////
@@ -86,10 +86,10 @@ catch(err)
 {
 }
 /****************ENTRY DETAILS ***************************/
-function BANKTT_ENTRY_processFormSubmit(BANKTT_ENTRY_DETAILS)
-{
-  try
+ function BANKTT_ENTRY_processFormSubmit(BANKTT_ENTRY_DETAILS)
   {
+    try
+    {
     var BANKTT_ENTRY_conn =eilib.db_GetConnection();
     BANKTT_ENTRYconn=BANKTT_ENTRY_conn;
     var tttype=BANKTT_ENTRY_DETAILS.BANKTT_ENTRY_lb_tttype;
@@ -153,7 +153,7 @@ function BANKTT_ENTRY_processFormSubmit(BANKTT_ENTRY_DETAILS)
     var BANKTT_ENTRY_insertstmt=BANKTT_ENTRY_conn.createStatement();
     var BANKTT_ENTRY_insertquery="CALL SP_BANK_TT_INSERT('"+configdatas+"',"+modelname+","+unit+","+customerid+",'"+date+"',"+amount+","+accountname+","+accountno+","+bankcode+","+branchcode+",'"+bankaddress+"',"+swiftcode+",'"+custref+"','"+invdetails+"','"+comments+"','"+UserStamp+"',@BANK_SUCCESSFLAG)";
     BANKTT_ENTRY_insertstmt.execute(BANKTT_ENTRY_insertquery);
-    var BANKTT_SRC_insertresult=BANKTT_ENTRY_insertstmt.executeQuery("SELECT @BANK_SUCCESSFLAG");
+     var BANKTT_SRC_insertresult=BANKTT_ENTRY_insertstmt.executeQuery("SELECT @BANK_SUCCESSFLAG");
     if(BANKTT_SRC_insertresult.next())
     {
       var returnflag=BANKTT_SRC_insertresult.getString(1);
@@ -162,34 +162,33 @@ function BANKTT_ENTRY_processFormSubmit(BANKTT_ENTRY_DETAILS)
     BANKTT_ENTRY_insertstmt.close();
     if(returnflag==1)
     {
-      var bankttmailid=eilib.getProfileEmailId(BANKTT_ENTRY_conn,"BANKTT")
-      var banktttomailid=bankttmailid[0].toString();
-      var username=banktttomailid.split('@');
-      var mailusername=username[0].toUpperCase();
-      var headerarray=['DATE','TRANSACTION TYPE','MODEL NAME','ACC NAME','ACC NO','AMOUNT','UNIT','CUSTOMER','BANK CODE','BRANCH CODE','BANK ADDRESS','SWIFT CODE','CHARGES TO','CUST REF','INV DETAILS','COMMENTS'];
-      var dataarray=[bankttdate,tttype,mailmodelname,accname,accno,amount,unit,customer,bank,branch,mailbankaddress,swift,charge,custref,mailinvdetails,mailcomments];
-      var subject="HELLO "+" <font color='gray'>"+"</font>"+"<font color='#498af3'><b>"+mailusername+"</b> </font>"+"<br>"+" PLEASE FIND ATTACHED NEW TRANSACTION DETAILS FROM BANK TT: "+"<br>";
-      var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'</body>';
-      for(var i=0;i<dataarray.length;i++)
-      {
-        var value=dataarray[i];
-        if(value!=null){value=value.replace('_',' ')}
-        if(value=="" || value=="SELECT" || value==null)continue;
-        message += '<body>'+'<table border="1"width="600" >'+'<tr align="left" >'+'<td width=40%>'+headerarray[i]+'</td>'+'<td width=60%>'+value+'</td>'+'</tr>'+'</table>'+'</body>';
-      }
-      var emailsubject="BANK TRANSFER";
-      var displayname =eilib.Get_MailDisplayName('BANK_TT');
-      var advancedArgs={cc:bankttmailid[1],name:displayname,htmlBody:message};
-      MailApp.sendEmail(banktttomailid,emailsubject,message ,advancedArgs);
+    var bankttmailid=eilib.getProfileEmailId(BANKTT_ENTRY_conn,"BANKTT")
+    var banktttomailid=bankttmailid[0].toString();
+    var username=banktttomailid.split('@');
+    var mailusername=username[0].toUpperCase();
+    var headerarray=['DATE','TRANSACTION TYPE','MODEL NAME','ACC NAME','ACC NO','AMOUNT','UNIT','CUSTOMER','BANK CODE','BRANCH CODE','BANK ADDRESS','SWIFT CODE','CHARGES TO','CUST REF','INV DETAILS','COMMENTS'];
+    var dataarray=[bankttdate,tttype,mailmodelname,accname,accno,amount,unit,customer,bank,branch,mailbankaddress,swift,charge,custref,mailinvdetails,mailcomments];
+    var subject="HELLO "+" <font color='gray'>"+"</font>"+"<font color='#498af3'><b>"+mailusername+"</b> </font>"+"<br>"+" PLEASE FIND ATTACHED NEW TRANSACTION DETAILS FROM BANK TT: "+"<br>";
+    var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'</body>';
+    for(var i=0;i<dataarray.length;i++)
+    {
+      var value=dataarray[i];
+      if(value!=null){value=value.replace('_',' ')}
+      if(value=="" || value=="SELECT" || value==null)continue;
+      message += '<body>'+'<table border="1"width="600" >'+'<tr align="left" >'+'<td width=40%>'+headerarray[i]+'</td>'+'<td width=60%>'+value+'</td>'+'</tr>'+'</table>'+'</body>';
+    }
+    var emailsubject="BANK TRANSFER";
+    var displayname =eilib.Get_MailDisplayName('BANK_TT');
+    var advancedArgs={cc:bankttmailid[1],name:displayname,htmlBody:message};
+    MailApp.sendEmail(banktttomailid,emailsubject,message ,advancedArgs);
     }
     BANKTT_ENTRY_conn.commit();
     BANKTT_ENTRY_conn.close();
     return returnflag;
+    }
+    catch(err)
+    {
+      BANKTT_ENTRYconn.rollback();
+      Logger.log(err)
+    }
   }
-  catch(err)
-  {
-    Logger.log(BANKTT_ENTRYconn)
-    BANKTT_ENTRYconn.rollback();
-    Logger.log(err)
-  }
-}

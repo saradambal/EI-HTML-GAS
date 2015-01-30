@@ -41,385 +41,385 @@
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={EmailId:'Invalid'}
 //DOCUMENT READY FUNCTION START
 $(document).ready(function(){
-$(".preloader").show(); 
-$('textarea').autogrow({onInitialize: true});
-var EMP_ENTRY_multi_array=[];
-google.script.run.withFailureHandler(EMP_error).withSuccessHandler(EMP_ENTRY_getempdomain_errresult).EMP_ENTRY_getempdomain_err();
-var EMP_ENTRY_emparr_employeedesig=[];
-var EMP_ENTRY_errorMsg_array=[];
-var EMP_ENTRY_expensearr_unitnumber=[];
-var EMP_ENTRY_unitArray=[];
+    $(".preloader").show();
+    $('textarea').autogrow({onInitialize: true});
+    var EMP_ENTRY_multi_array=[];
+    google.script.run.withFailureHandler(EMP_error).withSuccessHandler(EMP_ENTRY_getempdomain_errresult).EMP_ENTRY_getempdomain_err();
+    var EMP_ENTRY_emparr_employeedesig=[];
+    var EMP_ENTRY_errorMsg_array=[];
+    var EMP_ENTRY_expensearr_unitnumber=[];
+    var EMP_ENTRY_unitArray=[];
 //SUCCESS FUNCTION FOR EMPLOYEE DESIGNATION NAME,ERROR MESSAGE
-function EMP_ENTRY_getempdomain_errresult(EMP_ENTRY_getempdomain_errresult_response)
-{
-EMP_ENTRY_emparr_employeedesig=EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_employeename;
-EMP_ENTRY_errorMsg_array=EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_errormsg;
-EMP_ENTRY_multi_array=EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_multi_array;
-EMP_ENTRY_unitArray=EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_unitArray;
-$(".EMP_ENTRY_title_alpha").prop("title",EMP_ENTRY_errorMsg_array[0]);
-$("#EMP_ENTRY_tb_mobile").prop("title",EMP_ENTRY_errorMsg_array[1])
-if(((EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_unitArray).length!=0))
-{
-$('#EMP_ENTRY_form_errormsg').show();
-$('#EMP_ENTRY_table_employeetbl').show();
-$('#EMP_ENTRY_table_errormsg tr').remove().hide();
-var EMP_ENTRY_emparray_employeedesig ='<option>SELECT</option>';
-for (var i = 0; i < EMP_ENTRY_emparr_employeedesig.length; i++) 
-{
-EMP_ENTRY_emparray_employeedesig += '<option value="' + EMP_ENTRY_emparr_employeedesig[i]  + '">' + EMP_ENTRY_emparr_employeedesig[i] + '</option>';
-}
-$('#EMP_ENTRY_lb_empdesig').html(EMP_ENTRY_emparray_employeedesig).show();
-}
-else 
-{
-if((EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_unitArray).length==0)
-{
-$('#EMP_ENTRY_table_errormsg').show();
-$('#EMP_ENTRY_form_employeename').hide();
-var uniterrormsg='<p><label class="errormsg">'+EMP_ENTRY_errorMsg_array[5]+'</label></p>';
-$('#EMP_ENTRY_table_errormsg').append(uniterrormsg);
-}
-}
+    function EMP_ENTRY_getempdomain_errresult(EMP_ENTRY_getempdomain_errresult_response)
+    {
+        EMP_ENTRY_emparr_employeedesig=EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_employeename;
+        EMP_ENTRY_errorMsg_array=EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_errormsg;
+        EMP_ENTRY_multi_array=EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_multi_array;
+        EMP_ENTRY_unitArray=EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_unitArray;
+        $(".EMP_ENTRY_title_alpha").prop("title",EMP_ENTRY_errorMsg_array[0]);
+        $("#EMP_ENTRY_tb_mobile").prop("title",EMP_ENTRY_errorMsg_array[1])
+        if(((EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_unitArray).length!=0))
+        {
+            $('#EMP_ENTRY_form_errormsg').show();
+            $('#EMP_ENTRY_table_employeetbl').show();
+            $('#EMP_ENTRY_table_errormsg tr').remove().hide();
+            var EMP_ENTRY_emparray_employeedesig ='<option>SELECT</option>';
+            for (var i = 0; i < EMP_ENTRY_emparr_employeedesig.length; i++)
+            {
+                EMP_ENTRY_emparray_employeedesig += '<option value="' + EMP_ENTRY_emparr_employeedesig[i]  + '">' + EMP_ENTRY_emparr_employeedesig[i] + '</option>';
+            }
+            $('#EMP_ENTRY_lb_empdesig').html(EMP_ENTRY_emparray_employeedesig).show();
+        }
+        else
+        {
+            if((EMP_ENTRY_getempdomain_errresult_response.EMP_ENTRY_unitArray).length==0)
+            {
+                $('#EMP_ENTRY_table_errormsg').show();
+                $('#EMP_ENTRY_form_employeename').hide();
+                var uniterrormsg='<p><label class="errormsg">'+EMP_ENTRY_errorMsg_array[5]+'</label></p>';
+                $('#EMP_ENTRY_table_errormsg').append(uniterrormsg);
+            }
+        }
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
+    }
 //CLASS USED FOR TREE VIEW//
-$(document).on("click",'.exp,.collapse', function (){
-var id=$(this).attr("id")
-var btnid=id.split("_");
-var menu_btnid=btnid[1]
-  if($(this).val()=='+'){
-  $(this).replaceWith('<input type="button"   value="-" id='+id+'  height="3" width="3" class="collapse" />');
-    $('#sub'+menu_btnid).toggle("fold",100);
-  }
-  else
-  {
-    $('#sub'+menu_btnid).toggle("fold",100);
-  $(this).replaceWith('<input type="button"   value="+" id='+id+'  height="3" width="3" class="exp" />');
-  }
-});
+    $(document).on("click",'.exp,.collapse', function (){
+        var id=$(this).attr("id")
+        var btnid=id.split("_");
+        var menu_btnid=btnid[1]
+        if($(this).val()=='+'){
+            $(this).replaceWith('<input type="button"   value="-" id='+id+'  height="3" width="3" class="collapse" />');
+            $('#sub'+menu_btnid).toggle("fold",100);
+        }
+        else
+        {
+            $('#sub'+menu_btnid).toggle("fold",100);
+            $(this).replaceWith('<input type="button"   value="+" id='+id+'  height="3" width="3" class="exp" />');
+        }
+    });
 //VALIDATION FOR MENU SUB MENU FULLY CHECKED BOX CLICKING 
-$(document).on("change",'.tree ', function (){
-    var val = $(this).attr("checked");
-    $(this).parent().find("input:checkbox").each(function() {
-        if (val!=undefined) {
-            $(this).attr("checked", "checked");
-        } else {
-            $(this).removeAttr("checked");
-            $(this).parents('ul').each(function()
-           {
-            $(this).prev('input:checkbox').removeAttr("checked");
-            $(this).closest('ul').prev().attr('checked', false);
-           });
-                }
-   });
-});
+    $(document).on("change",'.tree ', function (){
+        var val = $(this).attr("checked");
+        $(this).parent().find("input:checkbox").each(function() {
+            if (val!=undefined) {
+                $(this).attr("checked", "checked");
+            } else {
+                $(this).removeAttr("checked");
+                $(this).parents('ul').each(function()
+                {
+                    $(this).prev('input:checkbox').removeAttr("checked");
+                    $(this).closest('ul').prev().attr('checked', false);
+                });
+            }
+        });
+    });
 //JQUERY LIB VALIDATION START
-$('#EMP_ENTRY_tb_email').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
-$(".autosizealph").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
-$("#EMP_ENTRY_tb_mobile").doValidation({rule:'numbersonly',prop:{realpart:10,leadzero:true}});
+    $('#EMP_ENTRY_tb_email').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
+    $(".autosizealph").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+    $("#EMP_ENTRY_tb_mobile").doValidation({rule:'numbersonly',prop:{realpart:10,leadzero:true}});
 //JQUERY LIB VALIDATION END
 //BLUR FUNCTION FOR EMAIL ID
-$("#EMP_ENTRY_tb_email").blur(function(){
-var EMP_ENTRY_email = $("#EMP_ENTRY_tb_email").val();
-if(EMP_ENTRY_email.length==0)
-{
-$('#EMP_ENTRY_lbl_validemailid').hide();
-$("#EMP_ENTRY_tb_email").removeClass('invalid');
-}
-else
-{
-var validtype=ErrorControl.EmailId;
-if(validtype=='Valid')
-{
-$('#EMP_ENTRY_lbl_validemailid').hide();
-$("#EMP_ENTRY_tb_email").removeClass('invalid');
-$('#EMP_ENTRY_tb_email').val($('#EMP_ENTRY_tb_email').val().toLowerCase())
-}
-else
-{
-$('#EMP_ENTRY_lbl_validemailid').text(EMP_ENTRY_errorMsg_array[3]).show();
-$("#EMP_ENTRY_tb_email").addClass('invalid');
-$("#EMP_ENTRY_btn_save").attr("disabled","disabled");
-}
-}
-});
+    $("#EMP_ENTRY_tb_email").blur(function(){
+        var EMP_ENTRY_email = $("#EMP_ENTRY_tb_email").val();
+        if(EMP_ENTRY_email.length==0)
+        {
+            $('#EMP_ENTRY_lbl_validemailid').hide();
+            $("#EMP_ENTRY_tb_email").removeClass('invalid');
+        }
+        else
+        {
+            var validtype=ErrorControl.EmailId;
+            if(validtype=='Valid')
+            {
+                $('#EMP_ENTRY_lbl_validemailid').hide();
+                $("#EMP_ENTRY_tb_email").removeClass('invalid');
+                $('#EMP_ENTRY_tb_email').val($('#EMP_ENTRY_tb_email').val().toLowerCase())
+            }
+            else
+            {
+                $('#EMP_ENTRY_lbl_validemailid').text(EMP_ENTRY_errorMsg_array[3]).show();
+                $("#EMP_ENTRY_tb_email").addClass('invalid');
+                $("#EMP_ENTRY_btn_save").attr("disabled","disabled");
+            }
+        }
+    });
 //SUBMIT BUTTON VALIDATION//
-$(document).on("blur",'.empsubmitvalidat',function () 
-{
-var EMP_ENTRY_Firstname= $("#EMP_ENTRY_tb_firstname").val();
-var EMP_ENTRY_Lastname =$("#EMP_ENTRY_tb_lastname").val();
-var EMP_ENTRY_empdesig =$("#EMP_ENTRY_lb_empdesig").val();
-var EMP_ENTRY_Mobileno = $("#EMP_ENTRY_tb_mobile").val();
-var EMP_ENTRY_email = $("#EMP_ENTRY_tb_email").val();
-var EMP_ENTRY_unitno = $("#EMP_ENTRY_lb_unitno").val();
-var EMP_ENTRY_menu=$("input[name=menu]").is(":checked");
-var EMP_ENTRY_submenu=$("input[name=submenu]").is(":checked");
-if((( EMP_ENTRY_menu==true && EMP_ENTRY_submenu==true &&(EMP_ENTRY_multi_array.length!=0)) || $('#EMP_ENTRY_radio_null').is(":checked")==true) && (EMP_ENTRY_Firstname!='') && (EMP_ENTRY_Lastname!='' )&&( EMP_ENTRY_Mobileno!='' && (parseInt($('#EMP_ENTRY_tb_mobile').val())!=0) ) && (EMP_ENTRY_Mobileno.length>=6) && (EMP_ENTRY_empdesig!='SELECT'))
-{
-$("#EMP_ENTRY_btn_save").removeAttr("disabled");
-}
-else
-{
-$("#EMP_ENTRY_btn_save").attr("disabled","disabled");
-}
-});
+    $(document).on("blur",'.empsubmitvalidat',function ()
+    {
+        var EMP_ENTRY_Firstname= $("#EMP_ENTRY_tb_firstname").val();
+        var EMP_ENTRY_Lastname =$("#EMP_ENTRY_tb_lastname").val();
+        var EMP_ENTRY_empdesig =$("#EMP_ENTRY_lb_empdesig").val();
+        var EMP_ENTRY_Mobileno = $("#EMP_ENTRY_tb_mobile").val();
+        var EMP_ENTRY_email = $("#EMP_ENTRY_tb_email").val();
+        var EMP_ENTRY_unitno = $("#EMP_ENTRY_lb_unitno").val();
+        var EMP_ENTRY_menu=$("input[name=menu]").is(":checked");
+        var EMP_ENTRY_submenu=$("input[name=submenu]").is(":checked");
+        if((( EMP_ENTRY_menu==true && EMP_ENTRY_submenu==true &&(EMP_ENTRY_multi_array.length!=0)) || $('#EMP_ENTRY_radio_null').is(":checked")==true) && (EMP_ENTRY_Firstname!='') && (EMP_ENTRY_Lastname!='' )&&( EMP_ENTRY_Mobileno!='' && (parseInt($('#EMP_ENTRY_tb_mobile').val())!=0) ) && (EMP_ENTRY_Mobileno.length>=6) && (EMP_ENTRY_empdesig!='SELECT'))
+        {
+            $("#EMP_ENTRY_btn_save").removeAttr("disabled");
+        }
+        else
+        {
+            $("#EMP_ENTRY_btn_save").attr("disabled","disabled");
+        }
+    });
 //EMPLOYEE SAVE BUTTON VALIDATION
-$("#EMP_ENTRY_form_employeename").change(function(){
-var EMP_ENTRY_Firstname= $("#EMP_ENTRY_tb_firstname").val();
-var EMP_ENTRY_Lastname =$("#EMP_ENTRY_tb_lastname").val();
-var EMP_ENTRY_empdesig =$("#EMP_ENTRY_lb_empdesig").val();
-var EMP_ENTRY_Mobileno = $("#EMP_ENTRY_tb_mobile").val();
-var EMP_ENTRY_email = $("#EMP_ENTRY_tb_email").val();
-var EMP_ENTRY_unitno = $("#EMP_ENTRY_lb_unitno").val();
-var EMP_ENTRY_menu=$("input[name=menu]").is(":checked");
-var EMP_ENTRY_submenu=$("input[name=submenu]").is(":checked");
-if(EMP_ENTRY_empdesig=='STAFF'){
-if((( EMP_ENTRY_menu==true && EMP_ENTRY_submenu==true &&(EMP_ENTRY_multi_array.length!=0)) || $('#EMP_ENTRY_radio_null').is(":checked")==true) && (EMP_ENTRY_Firstname!='') && (EMP_ENTRY_Lastname!='' )&&( EMP_ENTRY_Mobileno!='' && (parseInt($('#EMP_ENTRY_tb_mobile').val())!=0) ) && (EMP_ENTRY_Mobileno.length>=6)&& (EMP_ENTRY_empdesig!='SELECT'))
-{
-$("#EMP_ENTRY_btn_save").removeAttr("disabled");
-}
-else
-{
-$("#EMP_ENTRY_btn_save").attr("disabled","disabled");
-}
-}
-else if(EMP_ENTRY_empdesig=='CLEANER'){
-if((EMP_ENTRY_Firstname!='') && (EMP_ENTRY_Lastname!='' )&&( EMP_ENTRY_Mobileno!='' && (parseInt($('#EMP_ENTRY_tb_mobile').val())!=0)) && (EMP_ENTRY_Mobileno.length>=6)&& (EMP_ENTRY_empdesig!='SELECT'))
-{
-$("#EMP_ENTRY_btn_save").removeAttr("disabled");
-}
-else
-{
-$("#EMP_ENTRY_btn_save").attr("disabled","disabled");
-}
-}
-else
-{
-$("#EMP_ENTRY_btn_save").attr("disabled","disabled");
-}
-});
+    $("#EMP_ENTRY_form_employeename").change(function(){
+        var EMP_ENTRY_Firstname= $("#EMP_ENTRY_tb_firstname").val();
+        var EMP_ENTRY_Lastname =$("#EMP_ENTRY_tb_lastname").val();
+        var EMP_ENTRY_empdesig =$("#EMP_ENTRY_lb_empdesig").val();
+        var EMP_ENTRY_Mobileno = $("#EMP_ENTRY_tb_mobile").val();
+        var EMP_ENTRY_email = $("#EMP_ENTRY_tb_email").val();
+        var EMP_ENTRY_unitno = $("#EMP_ENTRY_lb_unitno").val();
+        var EMP_ENTRY_menu=$("input[name=menu]").is(":checked");
+        var EMP_ENTRY_submenu=$("input[name=submenu]").is(":checked");
+        if(EMP_ENTRY_empdesig=='STAFF'){
+            if((( EMP_ENTRY_menu==true && EMP_ENTRY_submenu==true &&(EMP_ENTRY_multi_array.length!=0)) || $('#EMP_ENTRY_radio_null').is(":checked")==true) && (EMP_ENTRY_Firstname!='') && (EMP_ENTRY_Lastname!='' )&&( EMP_ENTRY_Mobileno!='' && (parseInt($('#EMP_ENTRY_tb_mobile').val())!=0) ) && (EMP_ENTRY_Mobileno.length>=6)&& (EMP_ENTRY_empdesig!='SELECT'))
+            {
+                $("#EMP_ENTRY_btn_save").removeAttr("disabled");
+            }
+            else
+            {
+                $("#EMP_ENTRY_btn_save").attr("disabled","disabled");
+            }
+        }
+        else if(EMP_ENTRY_empdesig=='CLEANER'){
+            if((EMP_ENTRY_Firstname!='') && (EMP_ENTRY_Lastname!='' )&&( EMP_ENTRY_Mobileno!='' && (parseInt($('#EMP_ENTRY_tb_mobile').val())!=0)) && (EMP_ENTRY_Mobileno.length>=6)&& (EMP_ENTRY_empdesig!='SELECT'))
+            {
+                $("#EMP_ENTRY_btn_save").removeAttr("disabled");
+            }
+            else
+            {
+                $("#EMP_ENTRY_btn_save").attr("disabled","disabled");
+            }
+        }
+        else
+        {
+            $("#EMP_ENTRY_btn_save").attr("disabled","disabled");
+        }
+    });
 //CLICK EVENT FOR SAVE BUTTON
-$("#EMP_ENTRY_btn_save").click(function(){ 
-var  newPos= adjustPosition($(this).position(),100,230);
-resetPreloader(newPos);
-$(".preloader").show(); 
-var EMP_ENTRY_mobilenolength=$('#EMP_ENTRY_tb_mobile').val();
-if(EMP_ENTRY_mobilenolength.length<6 ||EMP_ENTRY_mobilenolength=="" )
-{$(".preloader").hide(); 
-$('#EMP_ENTRY_tb_mobile').addClass('invalid');
-$("#EMP_ENTRY_btn_save").attr("disabled","disabled");
-$("#EMP_ENTRY_lbl_errmsg").text(EMP_ENTRY_errorMsg_array[6]).show();
-}
-else
-{
-google.script.run.withFailureHandler(EMP_error).withSuccessHandler(EMP_ENTRY_save_result).EMP_ENTRY_save(document.getElementById('EMP_ENTRY_form_employeename'));
-}
-});
+    $("#EMP_ENTRY_btn_save").click(function(){
+        var  newPos= adjustPosition($(this).position(),100,230);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        var EMP_ENTRY_mobilenolength=$('#EMP_ENTRY_tb_mobile').val();
+        if(EMP_ENTRY_mobilenolength.length<6 ||EMP_ENTRY_mobilenolength=="" )
+        {$(".preloader").hide();
+            $('#EMP_ENTRY_tb_mobile').addClass('invalid');
+            $("#EMP_ENTRY_btn_save").attr("disabled","disabled");
+            $("#EMP_ENTRY_lbl_errmsg").text(EMP_ENTRY_errorMsg_array[6]).show();
+        }
+        else
+        {
+            google.script.run.withFailureHandler(EMP_error).withSuccessHandler(EMP_ENTRY_save_result).EMP_ENTRY_save(document.getElementById('EMP_ENTRY_form_employeename'));
+        }
+    });
 //SUCCESS FUNCTION FOR SAVE
-function EMP_ENTRY_save_result(response)
-{
-$(".preloader").hide();
-var EMP_ENTRY_multi_array=[];
-EMP_ENTRY_multi_array=response.EMP_ENTRY_multi_arrayre;
-var EMP_ENTRY_flagrslt=response.EMP_ENTRY_getresultdate;
-if(EMP_ENTRY_flagrslt==1)
-{
-EMP_ENTRY_multitreeview(EMP_ENTRY_multi_array);
+    function EMP_ENTRY_save_result(response)
+    {
+        $(".preloader").hide();
+        var EMP_ENTRY_multi_array=[];
+        EMP_ENTRY_multi_array=response.EMP_ENTRY_multi_arrayre;
+        var EMP_ENTRY_flagrslt=response.EMP_ENTRY_getresultdate;
+        if(EMP_ENTRY_flagrslt==1)
+        {
+            EMP_ENTRY_multitreeview(EMP_ENTRY_multi_array);
 //MESSAGE BOX FOR SAVED SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_errorMsg_array[4],position:{top:150,left:500}}}); 
-EMP_ENTRY_employeedetailrset();
-}
-else{
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_errorMsg_array[4],position:{top:150,left:500}}});
+            EMP_ENTRY_employeedetailrset();
+        }
+        else{
 //MESSAGE BOX FOR NOT SAVED 
-if(EMP_ENTRY_flagrslt==0){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_errorMsg_array[7],position:{top:150,left:500}}}); 
-}
-else
-{
+            if(EMP_ENTRY_flagrslt==0){
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_errorMsg_array[7],position:{top:150,left:500}}});
+            }
+            else
+            {
 //CARD SHOULD NOT BE ASSIGNED
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_flagrslt,position:{top:150,left:500}}});
-}
-}
-}
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:EMP_ENTRY_flagrslt,position:{top:150,left:500}}});
+            }
+        }
+    }
 //SHOW THE TREE VIEW FORMATE//
-function EMP_ENTRY_multitreeview(EMP_ENTRY_multi_arraynew)
-{
-if((EMP_ENTRY_multi_arraynew.length)==0)
-{
-EMP_ENTRY_multi_array=EMP_ENTRY_multi_arraynew;
-}else
-{
-var EMPENTRY_multi_array=[];
-EMPENTRY_multi_array=EMP_ENTRY_multi_arraynew
-EMP_ENTRY_multi_array=EMPENTRY_multi_array;
-}
-if(EMP_ENTRY_multi_array==""||EMP_ENTRY_multi_array.length==0 || EMP_ENTRY_multi_array.length==null)
-{
-$('#EMP_ENTRY_lbl_cardno').hide();
-if($('#EMP_ENTRY_radio_selectcard').is(":checked")==true)
-{
-$('#EMP_ENTRY_lbl_error').text(EMP_ENTRY_errorMsg_array[2]).show();
-}
-$("#EMP_ENTRY_tble_menu").hide();
-}
-else
-{
+    function EMP_ENTRY_multitreeview(EMP_ENTRY_multi_arraynew)
+    {
+        if((EMP_ENTRY_multi_arraynew.length)==0)
+        {
+            EMP_ENTRY_multi_array=EMP_ENTRY_multi_arraynew;
+        }else
+        {
+            var EMPENTRY_multi_array=[];
+            EMPENTRY_multi_array=EMP_ENTRY_multi_arraynew
+            EMP_ENTRY_multi_array=EMPENTRY_multi_array;
+        }
+        if(EMP_ENTRY_multi_array==""||EMP_ENTRY_multi_array.length==0 || EMP_ENTRY_multi_array.length==null)
+        {
+            $('#EMP_ENTRY_lbl_cardno').hide();
+            if($('#EMP_ENTRY_radio_selectcard').is(":checked")==true)
+            {
+                $('#EMP_ENTRY_lbl_error').text(EMP_ENTRY_errorMsg_array[2]).show();
+            }
+            $("#EMP_ENTRY_tble_menu").hide();
+        }
+        else
+        {
 //SHOW TREE VIEW FORMATE//
-$('#EMP_ENTRY_lbl_cardno').show();
-$('#EMP_ENTRY_lbl_error').hide();
-$("#EMP_ENTRY_tble_menu").replaceWith("<table id ='EMP_ENTRY_tble_menu'></table>");
-var EMP_ENTRY_menu=''
-for (var j = 0; j < EMP_ENTRY_multi_array[0].length; j++) {
-var id="EMP_ENTRY_tble_submenu"+j;
-var id1="menu"+"_"+j;
-var id2="sub"+j;
-var id_menu=j+'m'
-var mainmenuid=j;
-EMP_ENTRY_menu = '<div ><ul style="list-style: none;" ><li style="list-style: none;" ><tr ><td>&nbsp;&nbsp;&nbsp;<input value="+" type="button"   id='+id1+' height="5" width="5" class="exp" /><input type="checkbox" name="menu" id='+id_menu+' value='+EMP_ENTRY_multi_array[0][j]+' level="parent" class="tree empsubmitvalidat"  />' + EMP_ENTRY_multi_array[0][j] + '</td></tr>';
-EMP_ENTRY_menu+='<div id='+id2+' hidden ><tr><td><table id='+id+' class="EMP_ENTRY_class_submenu"  ></table></tr></div></li></ul></div>';
-$('#EMP_ENTRY_tble_menu').append(EMP_ENTRY_menu);
-var EMP_ENTRY_submenu='';
-var submenulength=EMP_ENTRY_multi_array[j+1].length;
-for (var j1 = 0; j1 < EMP_ENTRY_multi_array[j+1].length; j1++) {
-var id3="EMP_ENTRY_tble_submenu1"+j1;
-var submenuids="EMP_submenus-"+mainmenuid+'-'+submenulength+'-'+j1;
-EMP_ENTRY_submenu='<div><ul style="list-style: none;"><li style="list-style: none;" ><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="submenu" id='+submenuids+' value='+EMP_ENTRY_multi_array[j+1][j1]+' class="tree submenucheck Child" level="child" />' + EMP_ENTRY_multi_array[j+1][j1] + '</td></tr>';
-$('#'+"EMP_ENTRY_tble_submenu"+j).append(EMP_ENTRY_submenu);
-}
-}
-}
-}
+            $('#EMP_ENTRY_lbl_cardno').show();
+            $('#EMP_ENTRY_lbl_error').hide();
+            $("#EMP_ENTRY_tble_menu").replaceWith("<table id ='EMP_ENTRY_tble_menu'></table>");
+            var EMP_ENTRY_menu=''
+            for (var j = 0; j < EMP_ENTRY_multi_array[0].length; j++) {
+                var id="EMP_ENTRY_tble_submenu"+j;
+                var id1="menu"+"_"+j;
+                var id2="sub"+j;
+                var id_menu=j+'m'
+                var mainmenuid=j;
+                EMP_ENTRY_menu = '<div ><ul style="list-style: none;" ><li style="list-style: none;" ><tr ><td>&nbsp;&nbsp;&nbsp;<input value="+" type="button"   id='+id1+' height="5" width="5" class="exp" /><input type="checkbox" name="menu" id='+id_menu+' value='+EMP_ENTRY_multi_array[0][j]+' level="parent" class="tree empsubmitvalidat"  />' + EMP_ENTRY_multi_array[0][j] + '</td></tr>';
+                EMP_ENTRY_menu+='<div id='+id2+' hidden ><tr><td><table id='+id+' class="EMP_ENTRY_class_submenu"  ></table></tr></div></li></ul></div>';
+                $('#EMP_ENTRY_tble_menu').append(EMP_ENTRY_menu);
+                var EMP_ENTRY_submenu='';
+                var submenulength=EMP_ENTRY_multi_array[j+1].length;
+                for (var j1 = 0; j1 < EMP_ENTRY_multi_array[j+1].length; j1++) {
+                    var id3="EMP_ENTRY_tble_submenu1"+j1;
+                    var submenuids="EMP_submenus-"+mainmenuid+'-'+submenulength+'-'+j1;
+                    EMP_ENTRY_submenu='<div><ul style="list-style: none;"><li style="list-style: none;" ><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="submenu" id='+submenuids+' value='+EMP_ENTRY_multi_array[j+1][j1]+' class="tree submenucheck Child" level="child" />' + EMP_ENTRY_multi_array[j+1][j1] + '</td></tr>';
+                    $('#'+"EMP_ENTRY_tble_submenu"+j).append(EMP_ENTRY_submenu);
+                }
+            }
+        }
+    }
 //CLICK EVENT FUCNTION FOR RESET
-$('#EMP_ENTRY_btn_reset').click(function()
-{
-EMP_ENTRY_employeedetailrset()
-});
+    $('#EMP_ENTRY_btn_reset').click(function()
+    {
+        EMP_ENTRY_employeedetailrset()
+    });
 //CHECK THE MOBILE NO//
-$('#EMP_ENTRY_tb_mobile').change(function()
-{
-var EMP_ENTRY_mobilenolength=$('#EMP_ENTRY_tb_mobile').val();
-if(EMP_ENTRY_mobilenolength.length<6)
-{
-$('#EMP_ENTRY_tb_mobile').addClass('invalid');
-$("#EMP_ENTRY_btn_save").attr("disabled","disabled");
-$("#EMP_ENTRY_lbl_errmsg").text(EMP_ENTRY_errorMsg_array[6]).show();
-}
-else
-{
-$('#EMP_ENTRY_tb_mobile').removeClass('invalid');
-$("#EMP_ENTRY_lbl_errmsg").hide();
-}
-});
+    $('#EMP_ENTRY_tb_mobile').change(function()
+    {
+        var EMP_ENTRY_mobilenolength=$('#EMP_ENTRY_tb_mobile').val();
+        if(EMP_ENTRY_mobilenolength.length<6)
+        {
+            $('#EMP_ENTRY_tb_mobile').addClass('invalid');
+            $("#EMP_ENTRY_btn_save").attr("disabled","disabled");
+            $("#EMP_ENTRY_lbl_errmsg").text(EMP_ENTRY_errorMsg_array[6]).show();
+        }
+        else
+        {
+            $('#EMP_ENTRY_tb_mobile').removeClass('invalid');
+            $("#EMP_ENTRY_lbl_errmsg").hide();
+        }
+    });
 //CLEAR ALL FIELDS
-function EMP_ENTRY_employeedetailrset()
-{
-$("#EMP_ENTRY_form_employeename")[0].reset();
-$("#EMP_ENTRY_btn_save").attr("disabled", "disabled");
-$('#EMP_ENTRY_lbl_validemailid').hide();
-$('#EMP_ENTRY_tble_avail_cardno').hide();
-$('#EMP_ENTRY_div_avail_cardno').hide();
-$("#EMP_ENTRY_tb_email").removeClass('invalid');
-$('#EMP_ENTRY_tble_menu').hide();
-$('#EMP_ENTRY_tb_mobile').removeClass('invalid');
-$("#EMP_ENTRY_lbl_errmsg").hide();
-$('#EMP_ENTRY_lbl_error').hide();
-$('#EMP_ENTRY_table_errormsg').hide();
-$('.sizefix').prop("size","20");
-$('#EMP_ENTRY_lbl_cardno').hide();
-$('#EMP_ENTRY_nullcard').hide();
-$('#EMP_ENTRY_lbl_shwcardno').hide();
-$('#EMP_ENTRY_radio_selectcard').hide();
-$('#EMP_ENTRY_radio_null').hide();
-$('#EMP_ENTRY_tble_menu').hide();
-$('textarea').height(20);
-}
+    function EMP_ENTRY_employeedetailrset()
+    {
+        $("#EMP_ENTRY_form_employeename")[0].reset();
+        $("#EMP_ENTRY_btn_save").attr("disabled", "disabled");
+        $('#EMP_ENTRY_lbl_validemailid').hide();
+        $('#EMP_ENTRY_tble_avail_cardno').hide();
+        $('#EMP_ENTRY_div_avail_cardno').hide();
+        $("#EMP_ENTRY_tb_email").removeClass('invalid');
+        $('#EMP_ENTRY_tble_menu').hide();
+        $('#EMP_ENTRY_tb_mobile').removeClass('invalid');
+        $("#EMP_ENTRY_lbl_errmsg").hide();
+        $('#EMP_ENTRY_lbl_error').hide();
+        $('#EMP_ENTRY_table_errormsg').hide();
+        $('.sizefix').prop("size","20");
+        $('#EMP_ENTRY_lbl_cardno').hide();
+        $('#EMP_ENTRY_nullcard').hide();
+        $('#EMP_ENTRY_lbl_shwcardno').hide();
+        $('#EMP_ENTRY_radio_selectcard').hide();
+        $('#EMP_ENTRY_radio_null').hide();
+        $('#EMP_ENTRY_tble_menu').hide();
+        $('textarea').height(20);
+    }
 //ERROR MESSAGE//
-function EMP_error(err)
-{
-$(".preloader").hide(); 
-if(err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#EMP_ENTRY_form_employeename').replaceWith('<center><label class="dberrormsg">'+err+'</label></center>');
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:err.message,position:{top:150,left:500}}}); 
-}
-}
+    function EMP_error(err)
+    {
+        $(".preloader").hide();
+        if(err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+        {
+            err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+            $('#EMP_ENTRY_form_employeename').replaceWith('<center><label class="dberrormsg">'+err+'</label></center>');
+        }
+        else
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMPLOYEE DETAIL ENTRY",msgcontent:err.message,position:{top:150,left:500}}});
+        }
+    }
 //VALIDATION FOR SUB MENU CHECK BOX CLICKING
-$(document).on('click','.submenucheck',function(){
-var idvalid=$(this).attr("id");
-var idsplit=idvalid.split('-');
-var countchecking=0;
-for(var g=0;g<idsplit[2];g++)
-{
-var EMP_checked='EMP_submenus-'+idsplit[1]+'-'+idsplit[2]+'-'+g;
-var EMP_checked=$('#'+EMP_checked).attr("checked");
-if(EMP_checked)
-{
- countchecking++;
-}
-}
-if(countchecking!=0)
-{
-$('#'+idsplit[1]+'m').prop('checked',true);
-}
-else
-{
-$('#'+idsplit[1]+'m').prop('checked',false);
-}
-});
+    $(document).on('click','.submenucheck',function(){
+        var idvalid=$(this).attr("id");
+        var idsplit=idvalid.split('-');
+        var countchecking=0;
+        for(var g=0;g<idsplit[2];g++)
+        {
+            var EMP_checked='EMP_submenus-'+idsplit[1]+'-'+idsplit[2]+'-'+g;
+            var EMP_checked=$('#'+EMP_checked).attr("checked");
+            if(EMP_checked)
+            {
+                countchecking++;
+            }
+        }
+        if(countchecking!=0)
+        {
+            $('#'+idsplit[1]+'m').prop('checked',true);
+        }
+        else
+        {
+            $('#'+idsplit[1]+'m').prop('checked',false);
+        }
+    });
 //CLICK FUNCTION FOR RADIO BUTTON
-$('.radio_selected').click(function()
-{
-var EMP_ENTRY_radio=$("input[name=EMP_ENTRY_selectcard]:checked").val()
-if(EMP_ENTRY_radio=='CARD')
-{
-EMP_ENTRY_multitreeview(EMP_ENTRY_multi_array);
-$('#EMP_ENTRY_tble_menu').show();
-$(".preloader").hide(); 
-}else
-{
-$('#EMP_ENTRY_tble_menu').hide();
-$('#EMP_ENTRY_lbl_error').hide();
-$(".preloader").hide(); 
-}
-});
+    $('.radio_selected').click(function()
+    {
+        var EMP_ENTRY_radio=$("input[name=EMP_ENTRY_selectcard]:checked").val()
+        if(EMP_ENTRY_radio=='CARD')
+        {
+            EMP_ENTRY_multitreeview(EMP_ENTRY_multi_array);
+            $('#EMP_ENTRY_tble_menu').show();
+            $(".preloader").hide();
+        }else
+        {
+            $('#EMP_ENTRY_tble_menu').hide();
+            $('#EMP_ENTRY_lbl_error').hide();
+            $(".preloader").hide();
+        }
+    });
 //CHANGE FUNCTION FOR DESIGNATION
-$("#EMP_ENTRY_lb_empdesig").change(function(){
-var EMP_ENTRY_desigoption=$(this).val();
-if((EMP_ENTRY_desigoption=="CLEANER")||(EMP_ENTRY_desigoption=="SELECT"))
-{
-$('#EMP_ENTRY_lbl_cardno').hide();
-$('#EMP_ENTRY_nullcard').hide();
-$('#EMP_ENTRY_lbl_shwcardno').hide();
-$('#EMP_ENTRY_radio_selectcard').hide();
-$('#EMP_ENTRY_radio_null').hide();
-$('#EMP_ENTRY_tble_menu').hide();
-}
-else
-{
-$('#EMP_ENTRY_lbl_cardno').show();
-$('#EMP_ENTRY_nullcard').show();
-$('#EMP_ENTRY_lbl_shwcardno').show();
-$('#EMP_ENTRY_radio_selectcard').show();
-$('#EMP_ENTRY_radio_null').show();
-$('input[name="EMP_ENTRY_selectcard"]').prop('checked', false);
-$('input[name="menu"]').prop('checked', false);
-$('input[name="submenu"]').prop('checked', false);
-}
-});
+    $("#EMP_ENTRY_lb_empdesig").change(function(){
+        var EMP_ENTRY_desigoption=$(this).val();
+        if((EMP_ENTRY_desigoption=="CLEANER")||(EMP_ENTRY_desigoption=="SELECT"))
+        {
+            $('#EMP_ENTRY_lbl_cardno').hide();
+            $('#EMP_ENTRY_nullcard').hide();
+            $('#EMP_ENTRY_lbl_shwcardno').hide();
+            $('#EMP_ENTRY_radio_selectcard').hide();
+            $('#EMP_ENTRY_radio_null').hide();
+            $('#EMP_ENTRY_tble_menu').hide();
+        }
+        else
+        {
+            $('#EMP_ENTRY_lbl_cardno').show();
+            $('#EMP_ENTRY_nullcard').show();
+            $('#EMP_ENTRY_lbl_shwcardno').show();
+            $('#EMP_ENTRY_radio_selectcard').show();
+            $('#EMP_ENTRY_radio_null').show();
+            $('input[name="EMP_ENTRY_selectcard"]').prop('checked', false);
+            $('input[name="menu"]').prop('checked', false);
+            $('input[name="submenu"]').prop('checked', false);
+        }
+    });
 });
 //DOCUMENT READY FUNCTION END
 </script>
@@ -429,65 +429,65 @@ $('input[name="submenu"]').prop('checked', false);
 <!--BODY TAG START-->
 <body>
 <div class="wrapper">
-<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
-<div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>EMPLOYEE DETAIL ENTRY</h3><p></div></div>
-<form id="EMP_ENTRY_form_errormsg">
-<table id="EMP_ENTRY_table_errormsg">
-</table>
-</form>
-<form class="content" name="EMP_ENTRY_form_employeename" id="EMP_ENTRY_form_employeename">
-<table border=0 id="EMP_ENTRY_table_employeetbl" hidden>
-<tr>
-<td>
-<label name="EMP_ENTRY_lbl_firstname" id="EMP_ENTRY_lbl_firstname">FIRST NAME <em>*</em></label></td> 
-<td><input type="text" name="EMP_ENTRY_tb_firstname" id="EMP_ENTRY_tb_firstname" maxlength='30' class="autosizealph EMP_ENTRY_title_alpha empsubmitvalidat sizefix"></td>
-</tr>
-<tr>
-<td>
-<label name="EMP_ENTRY_lbl_lastname" id="EMP_ENTRY_lbl_lastname">LAST NAME <em>*</em></label></td> 
-<td><input type="text" name="EMP_ENTRY_tb_lastname" id="EMP_ENTRY_tb_lastname"  maxlength='30' class="autosizealph EMP_ENTRY_title_alpha empsubmitvalidat sizefix"></td>
-</tr>
-<tr>
-<tr>
-<td><label name="EMP_ENTRY_lbl_empdesig" id="EMP_ENTRY_lbl_empdesig">DESIGNATION<em>*</em></label></td>
-<td><select name="EMP_ENTRY_lb_empdesig" id="EMP_ENTRY_lb_empdesig">
-<option>SELECT</option>
-</select></td></tr>
-<tr>
-<td style="width:250px"><label style="width:230px" id= "EMP_ENTRY_lbl_cardno" hidden>SELECT THE CARD</label></td><td><input type="radio" name="EMP_ENTRY_selectcard" id="EMP_ENTRY_radio_selectcard" value='CARD' class='radio_selected empsubmitvalidat' hidden /><label id="EMP_ENTRY_lbl_shwcardno" hidden>CARD NUMBER</label></td><td><label></label><label align='bottom' name='error' id='EMP_ENTRY_lbl_error' visible="false" class='errormsg' ></label></td>
-</tr>
-<tr><td style="width:150px;"></td><td><table id="EMP_ENTRY_tble_menu" hidden></table></td>
-</tr>
-<tr>
-<td><td><input type="radio" name="EMP_ENTRY_selectcard" id="EMP_ENTRY_radio_null" value='NULL' class='radio_selected empsubmitvalidat' hidden/><label id="EMP_ENTRY_nullcard" hidden>NULL </label></td>
-</tr>
-<tr>
-<td>
-<div id="EMP_ENTRY_div_avail_cardno">
-<td><table id="EMP_ENTRY_tble_avail_cardno" hidden></table></td></div></td>
-</tr>
-<tr>
-<td>
-<label name="EMP_ENTRY_lbl_mobile" id="EMP_ENTRY_lbl_mobile">MOBILE<em>*</em></label></td> 
-<td><input type="text" name="EMP_ENTRY_tb_mobile" id="EMP_ENTRY_tb_mobile"  maxlength='10' style="width:75px"></td><td><label hidden name="EMP_ENTRY_lbl_errmsg" id="EMP_ENTRY_lbl_errmsg" class="errormsg"></label></td>
-</tr>
-<tr>
-<td>
-<label name="EMP_ENTRY_lbl_email" id="EMP_ENTRY_lbl_email">E-MAIL ID</label></td> 
-<td><input type="text" name="EMP_ENTRY_tb_email" id="EMP_ENTRY_tb_email" maxlength="40" class="sizefix"></td>
-<td><div><label id="EMP_ENTRY_lbl_validemailid" name="EMP_ENTRY_lbl_validemailid" class="errormsg"></label></div></td>
-</tr>
-<tr>
-<td>
-<label name="EMP_ENTRY_lbl_comments" id="EMP_ENTRY_lbl_comments">COMMENTS</label></td> 
-<td><textarea name="EMP_ENTRY_ta_comments" id="EMP_ENTRY_ta_comments" class="autosize"></textarea></td>
-</tr>
-<tr>
-<td align="right"><input type="button" class="btn" name="EMP_ENTRY_btn_save" id="EMP_ENTRY_btn_save" disabled="" value="SAVE"></td>
-<td align="left"><input type="button" class="btn" name="EMP_ENTRY_btn_reset" id="EMP_ENTRY_btn_reset" value="RESET"></td>
-</tr>
-</table>
-</form>
+    <div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+    <div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>EMPLOYEE DETAIL ENTRY</h3><p></div></div>
+    <form id="EMP_ENTRY_form_errormsg">
+        <table id="EMP_ENTRY_table_errormsg">
+        </table>
+    </form>
+    <form class="content" name="EMP_ENTRY_form_employeename" id="EMP_ENTRY_form_employeename">
+        <table border=0 id="EMP_ENTRY_table_employeetbl" hidden>
+            <tr>
+                <td>
+                    <label name="EMP_ENTRY_lbl_firstname" id="EMP_ENTRY_lbl_firstname">FIRST NAME <em>*</em></label></td>
+                <td><input type="text" name="EMP_ENTRY_tb_firstname" id="EMP_ENTRY_tb_firstname" maxlength='30' class="autosizealph EMP_ENTRY_title_alpha empsubmitvalidat sizefix"></td>
+            </tr>
+            <tr>
+                <td>
+                    <label name="EMP_ENTRY_lbl_lastname" id="EMP_ENTRY_lbl_lastname">LAST NAME <em>*</em></label></td>
+                <td><input type="text" name="EMP_ENTRY_tb_lastname" id="EMP_ENTRY_tb_lastname"  maxlength='30' class="autosizealph EMP_ENTRY_title_alpha empsubmitvalidat sizefix"></td>
+            </tr>
+            <tr>
+            <tr>
+                <td><label name="EMP_ENTRY_lbl_empdesig" id="EMP_ENTRY_lbl_empdesig">DESIGNATION<em>*</em></label></td>
+                <td><select name="EMP_ENTRY_lb_empdesig" id="EMP_ENTRY_lb_empdesig">
+                    <option>SELECT</option>
+                </select></td></tr>
+            <tr>
+                <td style="width:250px"><label style="width:230px" id= "EMP_ENTRY_lbl_cardno" hidden>SELECT THE CARD</label></td><td><input type="radio" name="EMP_ENTRY_selectcard" id="EMP_ENTRY_radio_selectcard" value='CARD' class='radio_selected empsubmitvalidat' hidden /><label id="EMP_ENTRY_lbl_shwcardno" hidden>CARD NUMBER</label></td><td><label></label><label align='bottom' name='error' id='EMP_ENTRY_lbl_error' visible="false" class='errormsg' ></label></td>
+            </tr>
+            <tr><td style="width:150px;"></td><td><table id="EMP_ENTRY_tble_menu" hidden></table></td>
+            </tr>
+            <tr>
+                <td><td><input type="radio" name="EMP_ENTRY_selectcard" id="EMP_ENTRY_radio_null" value='NULL' class='radio_selected empsubmitvalidat' hidden/><label id="EMP_ENTRY_nullcard" hidden>NULL </label></td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="EMP_ENTRY_div_avail_cardno">
+                        <td><table id="EMP_ENTRY_tble_avail_cardno" hidden></table></td></div></td>
+            </tr>
+            <tr>
+                <td>
+                    <label name="EMP_ENTRY_lbl_mobile" id="EMP_ENTRY_lbl_mobile">MOBILE<em>*</em></label></td>
+                <td><input type="text" name="EMP_ENTRY_tb_mobile" id="EMP_ENTRY_tb_mobile"  maxlength='10' style="width:75px"></td><td><label hidden name="EMP_ENTRY_lbl_errmsg" id="EMP_ENTRY_lbl_errmsg" class="errormsg"></label></td>
+            </tr>
+            <tr>
+                <td>
+                    <label name="EMP_ENTRY_lbl_email" id="EMP_ENTRY_lbl_email">E-MAIL ID</label></td>
+                <td><input type="text" name="EMP_ENTRY_tb_email" id="EMP_ENTRY_tb_email" maxlength="40" class="sizefix"></td>
+                <td><div><label id="EMP_ENTRY_lbl_validemailid" name="EMP_ENTRY_lbl_validemailid" class="errormsg"></label></div></td>
+            </tr>
+            <tr>
+                <td>
+                    <label name="EMP_ENTRY_lbl_comments" id="EMP_ENTRY_lbl_comments">COMMENTS</label></td>
+                <td><textarea name="EMP_ENTRY_ta_comments" id="EMP_ENTRY_ta_comments" class="autosize"></textarea></td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" class="btn" name="EMP_ENTRY_btn_save" id="EMP_ENTRY_btn_save" disabled="" value="SAVE"></td>
+                <td align="left"><input type="button" class="btn" name="EMP_ENTRY_btn_reset" id="EMP_ENTRY_btn_reset" value="RESET"></td>
+            </tr>
+        </table>
+    </form>
 </div>
 </body>
 <!--BODY TAG END-->

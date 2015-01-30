@@ -1,6 +1,7 @@
 //<!--//*******************************************FILE DESCRIPTION*********************************************//
 ////************************************CUSTOMER CANCEL***********************************************//
 ////DONE BY:PUNI
+//VER 1.2-SD:22/12/2014 ED:22/12/2014;TRACKER NO:790;added droptemp table function from eilib
 ////VER 1.1-SD:08/10/2014 ED:08/10/2014;TRACKER NO:790;CHANGED PRELOADER N MSGBOX POSITION
 ////DONE BY:SAFIYULLAH.M
 ////VER 1.0-31/07/2014 ED:04/08/2014;TRACKER NO:790;UPDATED SCRIPT SIDE ROLLBACK AND COMMIT
@@ -23,7 +24,7 @@ try{
   var CCAN_uncancel_temptable2;
   var CCAN_uncancel_temptable3;
   var CCAN_uncancel_temptable4;
-  //FUNCTION TO CHECK CUSTOMER AVAILABLE
+   //FUNCTION TO CHECK CUSTOMER AVAILABLE
   function CCAN_getcustomer(){    
     var CCAN_conn = eilib.db_GetConnection();
     var CCAN_cust_values_stmt = CCAN_conn.createStatement();
@@ -106,7 +107,7 @@ try{
     }
     if(CCAN_select_type=="UNCANCEL CUSTOMER"){
       var CCAN_alldata="SELECT  * FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD on CED.CUSTOMER_ID=CCD.CUSTOMER_ID left join CUSTOMER_LP_DETAILS CLP on CED.CUSTOMER_ID=CLP.CUSTOMER_ID left join CUSTOMER_ACCESS_CARD_DETAILS CACD on CED.CUSTOMER_ID=CACD.CUSTOMER_ID and (CLP.UASD_ID=CACD.UASD_ID) AND CACD.ACN_ID IS NULL left join UNIT_ACCESS_STAMP_DETAILS UASD on  (UASD.UASD_ID=CACD.UASD_ID) left join "+CCAN_temptblname+" CF on  CED.CUSTOMER_ID=CF.CUSTOMER_ID left join CUSTOMER C on CED.CUSTOMER_ID=C.CUSTOMER_ID left join  CUSTOMER_PERSONAL_DETAILS CPD on CED.CUSTOMER_ID=CPD.CUSTOMER_ID ,NATIONALITY_CONFIGURATION NC ,UNIT U  where   (CED.UNIT_ID=U.UNIT_ID)AND (CED.CUSTOMER_ID="+CCAN_custid+") and(CPD.NC_ID=NC.NC_ID)and(CLP.CLP_TERMINATE is null) and (CED.CED_CANCEL_DATE is not null) and  (CED.CED_REC_VER=CF.CUSTOMER_VER)  and(CED.CED_REC_VER="+CCAN_recver+") AND CED.CED_REC_VER=CLP.CED_REC_VER  order by CED.CED_REC_VER "
-    }
+     }
     var CCAN_alldata_rs = CCAN_alldata_stmt.executeQuery(CCAN_alldata);    
     while(CCAN_alldata_rs.next()){ 
       var CCAN_cardno2 = CCAN_alldata_rs.getString("UASD_ACCESS_CARD");      
@@ -167,69 +168,66 @@ try{
     PropertiesService.getUserProperties().setProperty('CCAN_rec_ver',CCAN_redver);
     CCAN_alldata_rs.close()
     CCAN_alldata_stmt.close()
-    var CCAN_drop_stmt=CCAN_conn.createStatement();
-    var CCAN_drop_query=("DROP TABLE IF EXISTS "+CCAN_temptblname+"")
-    CCAN_drop_stmt.execute(CCAN_drop_query)
-    CCAN_drop_stmt.close()
+    eilib.DropTempTable(CCAN_conn,CCAN_temptblname); 
     CCAN_conn.close();   
     return CCAN_data_array; 
   }
-  
+ 
   //Function to cancel customer
   function CCAN_cancel(cancelform)
   {
     try{
-      var CCAN_unit_value=cancelform.CCAN_unitnumber;
-      var CCAN_firstname = cancelform.CCAN_tb_firstname; 
-      var CCAN_lastname  = cancelform.CCAN_tb_lastname;
-      var CCAN_comments_fetch = cancelform.CCAN_ta_comments;
-      var card_array=[];
-      var CCAN_custid=PropertiesService.getUserProperties().getProperty('CCAN_custid');
-      var CCAN_rec_ver=PropertiesService.getUserProperties().getProperty('CCAN_rec_ver')
-      var CCAN_userStamp=UserStamp;    
-      if(CCAN_comments_fetch!=''){
-        CCAN_comments_fetch=eilib.ConvertSpclCharString(CCAN_comments_fetch)
-      } 
-      var type="CANCEL"
+    var CCAN_unit_value=cancelform.CCAN_unitnumber;
+    var CCAN_firstname = cancelform.CCAN_tb_firstname; 
+    var CCAN_lastname  = cancelform.CCAN_tb_lastname;
+    var CCAN_comments_fetch = cancelform.CCAN_ta_comments;
+    var card_array=[];
+    var CCAN_custid=PropertiesService.getUserProperties().getProperty('CCAN_custid');
+    var CCAN_rec_ver=PropertiesService.getUserProperties().getProperty('CCAN_rec_ver')
+    var CCAN_userStamp=UserStamp;    
+    if(CCAN_comments_fetch!=''){
+      CCAN_comments_fetch=eilib.ConvertSpclCharString(CCAN_comments_fetch)
+    } 
+       var type="CANCEL"
       var CCAN_conn = eilib.db_GetConnection();
       CCAN_finalconn=CCAN_conn;
-      CCAN_conn.setAutoCommit(false);
-      var CCAN_save_stmt=CCAN_conn.createStatement();
-      CCAN_save_stmt.execute("CALL SP_CUSTOMER_CANCEL_INSERT("+CCAN_custid+","+CCAN_rec_ver+",'"+UserStamp+"','"+CCAN_comments_fetch+"',@cancel_temptable1,@cancel_temptable2,@cancel_flag)")
-      CCAN_save_stmt.close();
-      var CCAN_return_flag_stmt=CCAN_conn.createStatement();
-      var CCAN_getresult= CCAN_return_flag_stmt.executeQuery("SELECT @cancel_temptable1,@cancel_temptable2,@cancel_flag");
-      while(CCAN_getresult.next()){
-        CCAN_temptable1=CCAN_getresult.getString("@cancel_temptable1");
+    CCAN_conn.setAutoCommit(false);
+    var CCAN_save_stmt=CCAN_conn.createStatement();
+    CCAN_save_stmt.execute("CALL SP_CUSTOMER_CANCEL_INSERT("+CCAN_custid+","+CCAN_rec_ver+",'"+UserStamp+"','"+CCAN_comments_fetch+"',@cancel_temptable1,@cancel_temptable2,@cancel_flag)")
+    CCAN_save_stmt.close();
+    var CCAN_return_flag_stmt=CCAN_conn.createStatement();
+    var CCAN_getresult= CCAN_return_flag_stmt.executeQuery("SELECT @cancel_temptable1,@cancel_temptable2,@cancel_flag");
+    while(CCAN_getresult.next()){
+      CCAN_temptable1=CCAN_getresult.getString("@cancel_temptable1");
         CCAN_temptable2=CCAN_getresult.getString("@cancel_temptable2")
-        var CCAN_chkcancelflag=CCAN_getresult.getString("@cancel_flag");
-      }
-      if(CCAN_chkcancelflag==1){     
-        var CCAN_customerevent="SELECT CED.CUSTOMER_ID, b.CTP_DATA as CED_SD_STIME, c.CTP_DATA as CED_SD_ETIME, d.CTP_DATA as CED_ED_STIME ,e.CTP_DATA as CED_ED_ETIME ,CLP.CLP_STARTDATE,CLP.CLP_ENDDATE FROM CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_TIME_PROFILE b ON CED.CED_SD_STIME = b.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE c ON CED.CED_SD_ETIME = c.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE d ON CED.CED_ED_STIME = d.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE e ON CED.CED_ED_ETIME = e.CTP_ID ,CUSTOMER_LP_DETAILS CLP  WHERE    (CED.CUSTOMER_ID="+CCAN_custid+")AND (CLP.CUSTOMER_ID=CED.CUSTOMER_ID) AND (CED.CED_REC_VER=CLP.CED_REC_VER) AND (CLP.CLP_GUEST_CARD IS NULL) and CED.CED_REC_VER>="+CCAN_rec_ver+" AND CLP.CLP_TERMINATE IS NULL"
-        var CCAN_custevent_stmt = CCAN_conn.createStatement();
-        var CCAN_custeventrs = CCAN_custevent_stmt.executeQuery(CCAN_customerevent);  
-        while( CCAN_custeventrs.next())
-        { 
-          var CCAN_checkin_date = CCAN_custeventrs.getString("CLP_STARTDATE");          
-          var CCAN_checkout_date = CCAN_custeventrs.getString("CLP_ENDDATE");
-          var CCAN_calenderIDcode= eilib.CUST_getCalenderId(CCAN_conn);
-          var CCAN_cal = CalendarApp.getCalendarsByName(CCAN_calenderIDcode)[0] ; 
-          var CCAN_start_time_in=CCAN_custeventrs.getString("CED_SD_STIME");
-          var CCAN_start_time_out=CCAN_custeventrs.getString("CED_SD_ETIME");
-          var CCAN_end_time_in=CCAN_custeventrs.getString("CED_ED_STIME");
-          var CCAN_end_time_out=CCAN_custeventrs.getString("CED_ED_ETIME");                        
-          eilib.CUST_customercalenderdeletion(CCAN_custid,CCAN_calenderIDcode,CCAN_checkin_date,CCAN_start_time_in,CCAN_start_time_out,CCAN_checkout_date,CCAN_end_time_in,CCAN_end_time_out,"")      
-        }      
-      }   
-      eilib.DropTempTable(CCAN_conn,CCAN_temptable1)
-      eilib.DropTempTable(CCAN_conn,CCAN_temptable2)
+      var CCAN_chkcancelflag=CCAN_getresult.getString("@cancel_flag");
+    }
+     if(CCAN_chkcancelflag==1){     
+      var CCAN_customerevent="SELECT CED.CUSTOMER_ID, b.CTP_DATA as CED_SD_STIME, c.CTP_DATA as CED_SD_ETIME, d.CTP_DATA as CED_ED_STIME ,e.CTP_DATA as CED_ED_ETIME ,CLP.CLP_STARTDATE,CLP.CLP_ENDDATE FROM CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_TIME_PROFILE b ON CED.CED_SD_STIME = b.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE c ON CED.CED_SD_ETIME = c.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE d ON CED.CED_ED_STIME = d.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE e ON CED.CED_ED_ETIME = e.CTP_ID ,CUSTOMER_LP_DETAILS CLP  WHERE    (CED.CUSTOMER_ID="+CCAN_custid+")AND (CLP.CUSTOMER_ID=CED.CUSTOMER_ID) AND (CED.CED_REC_VER=CLP.CED_REC_VER) AND (CLP.CLP_GUEST_CARD IS NULL) and CED.CED_REC_VER>="+CCAN_rec_ver+" AND CLP.CLP_TERMINATE IS NULL"
+      var CCAN_custevent_stmt = CCAN_conn.createStatement();
+      var CCAN_custeventrs = CCAN_custevent_stmt.executeQuery(CCAN_customerevent);  
+      while( CCAN_custeventrs.next())
+      { 
+        var CCAN_checkin_date = CCAN_custeventrs.getString("CLP_STARTDATE");          
+        var CCAN_checkout_date = CCAN_custeventrs.getString("CLP_ENDDATE");
+        var CCAN_calenderIDcode= eilib.CUST_getCalenderId(CCAN_conn);
+        var CCAN_cal = CalendarApp.getCalendarsByName(CCAN_calenderIDcode)[0] ; 
+        var CCAN_start_time_in=CCAN_custeventrs.getString("CED_SD_STIME");
+        var CCAN_start_time_out=CCAN_custeventrs.getString("CED_SD_ETIME");
+        var CCAN_end_time_in=CCAN_custeventrs.getString("CED_ED_STIME");
+        var CCAN_end_time_out=CCAN_custeventrs.getString("CED_ED_ETIME");                        
+        eilib.CUST_customercalenderdeletion(CCAN_custid,CCAN_calenderIDcode,CCAN_checkin_date,CCAN_start_time_in,CCAN_start_time_out,CCAN_checkout_date,CCAN_end_time_in,CCAN_end_time_out,"")      
+      }      
+    }   
+     eilib.DropTempTable(CCAN_conn,CCAN_temptable1)
+     eilib.DropTempTable(CCAN_conn,CCAN_temptable2)
       CCAN_conn.commit();
-      CCAN_conn.close();
-      return CCAN_chkcancelflag 
+       CCAN_conn.close();
+    return CCAN_chkcancelflag 
     }
     catch(err){
       
-      CCAN_finalconn.rollback();
+       CCAN_finalconn.rollback();
       eilib.DropTempTable(CCAN_finalconn,CCAN_temptable1)
       eilib.DropTempTable(CCAN_finalconn,CCAN_temptable2)
       Logger.log(err)
@@ -240,61 +238,61 @@ try{
   //Function to Uncancel customer
   function CCAN_uncancel(uncancelform){
     try{
-      var CCAN_unit_value=uncancelform.CCAN_unitnumber;
-      var CCAN_firstname = uncancelform.CCAN_tb_firstname; 
-      var CCAN_lastname  = uncancelform.CCAN_tb_lastname;
-      var CCAN_comments_fetch = uncancelform.CCAN_ta_comments;
-      var CCAN_roomType=uncancelform.CCAN_tb_roomtype;
-      var CCAN_custid=PropertiesService.getUserProperties().getProperty('CCAN_custid');
-      var CCAN_rec_ver=PropertiesService.getUserProperties().getProperty('CCAN_rec_ver')
-      var CCAN_userStamp=UserStamp;
-      var CCAN_conn = eilib.db_GetConnection();
-      CCAN_conn.setAutoCommit(false);
-      var CCAN_customerevent="SELECT  URTD.URTD_ROOM_TYPE,U.UNIT_NO,CPD.CPD_EMAIL,CCD.CCD_OFFICE_NO,CLP.CLP_STARTDATE,CLP.CLP_ENDDATE,CED.CED_REC_VER,CED.CED_CANCEL_DATE,CED.CUSTOMER_ID, b.CTP_DATA as CED_SD_STIME, c.CTP_DATA as CED_SD_ETIME, d.CTP_DATA as CED_ED_STIME ,e.CTP_DATA as CED_ED_ETIME,CPD.CPD_MOBILE,CPD.CPD_INTL_MOBILE FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_TIME_PROFILE b ON CED.CED_SD_STIME = b.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE c ON CED.CED_SD_ETIME = c.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE d ON CED.CED_ED_STIME = d.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE e ON CED.CED_ED_ETIME = e.CTP_ID LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD ON CED.CUSTOMER_ID=CCD.CUSTOMER_ID LEFT JOIN  CUSTOMER_PERSONAL_DETAILS CPD ON CED.CUSTOMER_ID=CPD.CUSTOMER_ID,CUSTOMER_LP_DETAILS CLP,UNIT_ROOM_TYPE_DETAILS URTD, UNIT_ACCESS_STAMP_DETAILS UASD ,UNIT U  WHERE  CED.UNIT_ID=U.UNIT_ID AND (CED.CUSTOMER_ID="+CCAN_custid+")AND (CLP.CUSTOMER_ID=CED.CUSTOMER_ID) AND (CED.CED_REC_VER=CLP.CED_REC_VER) AND (CLP.CLP_GUEST_CARD IS NULL) AND CED.CED_CANCEL_DATE IS  NOT NULL AND(UASD.UASD_ID=CED.UASD_ID) AND(UASD.URTD_ID=URTD.URTD_ID)and CED.CED_REC_VER>="+CCAN_rec_ver+" order by CED.CED_REC_VER"
-      var CCAN_custevent_stmt = CCAN_conn.createStatement();
-      var CCAN_custeventrs = CCAN_custevent_stmt.executeQuery(CCAN_customerevent); 
-      var count=0;
-      var type='UNCANCEL'    
-      var lease_period_array=[];
-      var quaters_array=[];
-      var recver_array=[];
-      var cancel_date_array=[]
-      var unit_no_array=[];
-      while( CCAN_custeventrs.next())
-      {     
-        var CCAN_checkin_date = CCAN_custeventrs.getString("CLP_STARTDATE");          
-        var CCAN_checkout_date = CCAN_custeventrs.getString("CLP_ENDDATE");
-        var recver=CCAN_custeventrs.getString("CED_REC_VER");
-        var CCAN_sdate=CCAN_checkin_date.split('-');
-        var CCAN_edate=CCAN_checkout_date.split('-');
-        var CCAN_Leaseperiod  = eilib.leasePeriodCalc(new Date(CCAN_sdate[0],CCAN_sdate[1]-1,CCAN_sdate[2]),new Date(CCAN_edate[0],CCAN_edate[1]-1,CCAN_edate[2]));
-        var CCAN_quators  = eilib.quarterCalc(new Date(CCAN_sdate[0],CCAN_sdate[1]-1,CCAN_sdate[2]),new Date(CCAN_edate[0],CCAN_edate[1]-1,CCAN_edate[2]));
-        lease_period_array.push(CCAN_Leaseperiod)
-        quaters_array.push(CCAN_quators)
-        recver_array.push(recver)     
-      }       
-      var lease_quaters=''
-      for(var k=0;k<recver_array.length;k++){
-        lease_quaters+=recver_array[k]+',&'+lease_period_array[k]+',&'+quaters_array[k]      
-        if(k==recver_array.length-1)break; 
-        lease_quaters+=',&';
-      }   
-      if(CCAN_comments_fetch!=''){
-        CCAN_comments_fetch=eilib.ConvertSpclCharString(CCAN_comments_fetch)
-      }    
-      var CCAN_save_stmt=CCAN_conn.createStatement();
-      CCAN_save_stmt.execute("CALL SP_CUSTOMER_UNCANCEL_INSERT("+CCAN_custid+","+CCAN_rec_ver+",'"+CCAN_comments_fetch+"','"+lease_quaters+"','"+UserStamp+"',@uncancel_temptable1,@uncancel_temptable2,@uncancel_temptable3,@uncancel_temptable4,@uncancel_flag)")
-      CCAN_save_stmt.close();
-      var CCAN_return_flag_stmt=CCAN_conn.createStatement();
-      var CCAN_getresult= CCAN_return_flag_stmt.executeQuery("SELECT @uncancel_temptable1,@uncancel_temptable2,@uncancel_temptable3,@uncancel_temptable4,@uncancel_flag");
-      while(CCAN_getresult.next()){
-        CCAN_uncancel_temptable1=CCAN_getresult.getString("@uncancel_temptable1");
-        CCAN_uncancel_temptable2=CCAN_getresult.getString("@uncancel_temptable2");
-        CCAN_uncancel_temptable3=CCAN_getresult.getString("@uncancel_temptable3");
-        CCAN_uncancel_temptable4=CCAN_getresult.getString("@uncancel_temptable4");
-        var CCAN_chkuncancelflag=CCAN_getresult.getString("@uncancel_flag");
-      }
-      if(CCAN_chkuncancelflag==1){        
+    var CCAN_unit_value=uncancelform.CCAN_unitnumber;
+    var CCAN_firstname = uncancelform.CCAN_tb_firstname; 
+    var CCAN_lastname  = uncancelform.CCAN_tb_lastname;
+    var CCAN_comments_fetch = uncancelform.CCAN_ta_comments;
+    var CCAN_roomType=uncancelform.CCAN_tb_roomtype;
+    var CCAN_custid=PropertiesService.getUserProperties().getProperty('CCAN_custid');
+    var CCAN_rec_ver=PropertiesService.getUserProperties().getProperty('CCAN_rec_ver')
+    var CCAN_userStamp=UserStamp;
+    var CCAN_conn = eilib.db_GetConnection();
+       CCAN_conn.setAutoCommit(false);
+    var CCAN_customerevent="SELECT  URTD.URTD_ROOM_TYPE,U.UNIT_NO,CPD.CPD_EMAIL,CCD.CCD_OFFICE_NO,CLP.CLP_STARTDATE,CLP.CLP_ENDDATE,CED.CED_REC_VER,CED.CED_CANCEL_DATE,CED.CUSTOMER_ID, b.CTP_DATA as CED_SD_STIME, c.CTP_DATA as CED_SD_ETIME, d.CTP_DATA as CED_ED_STIME ,e.CTP_DATA as CED_ED_ETIME,CPD.CPD_MOBILE,CPD.CPD_INTL_MOBILE FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_TIME_PROFILE b ON CED.CED_SD_STIME = b.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE c ON CED.CED_SD_ETIME = c.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE d ON CED.CED_ED_STIME = d.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE e ON CED.CED_ED_ETIME = e.CTP_ID LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD ON CED.CUSTOMER_ID=CCD.CUSTOMER_ID LEFT JOIN  CUSTOMER_PERSONAL_DETAILS CPD ON CED.CUSTOMER_ID=CPD.CUSTOMER_ID,CUSTOMER_LP_DETAILS CLP,UNIT_ROOM_TYPE_DETAILS URTD, UNIT_ACCESS_STAMP_DETAILS UASD ,UNIT U  WHERE  CED.UNIT_ID=U.UNIT_ID AND (CED.CUSTOMER_ID="+CCAN_custid+")AND (CLP.CUSTOMER_ID=CED.CUSTOMER_ID) AND (CED.CED_REC_VER=CLP.CED_REC_VER) AND (CLP.CLP_GUEST_CARD IS NULL) AND CED.CED_CANCEL_DATE IS  NOT NULL AND(UASD.UASD_ID=CED.UASD_ID) AND(UASD.URTD_ID=URTD.URTD_ID)and CED.CED_REC_VER>="+CCAN_rec_ver+" order by CED.CED_REC_VER"
+    var CCAN_custevent_stmt = CCAN_conn.createStatement();
+    var CCAN_custeventrs = CCAN_custevent_stmt.executeQuery(CCAN_customerevent); 
+    var count=0;
+    var type='UNCANCEL'    
+    var lease_period_array=[];
+    var quaters_array=[];
+    var recver_array=[];
+    var cancel_date_array=[]
+    var unit_no_array=[];
+    while( CCAN_custeventrs.next())
+    {     
+      var CCAN_checkin_date = CCAN_custeventrs.getString("CLP_STARTDATE");          
+      var CCAN_checkout_date = CCAN_custeventrs.getString("CLP_ENDDATE");
+      var recver=CCAN_custeventrs.getString("CED_REC_VER");
+      var CCAN_sdate=CCAN_checkin_date.split('-');
+      var CCAN_edate=CCAN_checkout_date.split('-');
+      var CCAN_Leaseperiod  = eilib.leasePeriodCalc(new Date(CCAN_sdate[0],CCAN_sdate[1]-1,CCAN_sdate[2]),new Date(CCAN_edate[0],CCAN_edate[1]-1,CCAN_edate[2]));
+      var CCAN_quators  = eilib.quarterCalc(new Date(CCAN_sdate[0],CCAN_sdate[1]-1,CCAN_sdate[2]),new Date(CCAN_edate[0],CCAN_edate[1]-1,CCAN_edate[2]));
+      lease_period_array.push(CCAN_Leaseperiod)
+      quaters_array.push(CCAN_quators)
+      recver_array.push(recver)     
+    }       
+    var lease_quaters=''
+    for(var k=0;k<recver_array.length;k++){
+      lease_quaters+=recver_array[k]+',&'+lease_period_array[k]+',&'+quaters_array[k]      
+      if(k==recver_array.length-1)break; 
+      lease_quaters+=',&';
+    }   
+     if(CCAN_comments_fetch!=''){
+      CCAN_comments_fetch=eilib.ConvertSpclCharString(CCAN_comments_fetch)
+    }    
+    var CCAN_save_stmt=CCAN_conn.createStatement();
+    CCAN_save_stmt.execute("CALL SP_CUSTOMER_UNCANCEL_INSERT("+CCAN_custid+","+CCAN_rec_ver+",'"+CCAN_comments_fetch+"','"+lease_quaters+"','"+UserStamp+"',@uncancel_temptable1,@uncancel_temptable2,@uncancel_temptable3,@uncancel_temptable4,@uncancel_flag)")
+    CCAN_save_stmt.close();
+    var CCAN_return_flag_stmt=CCAN_conn.createStatement();
+    var CCAN_getresult= CCAN_return_flag_stmt.executeQuery("SELECT @uncancel_temptable1,@uncancel_temptable2,@uncancel_temptable3,@uncancel_temptable4,@uncancel_flag");
+    while(CCAN_getresult.next()){
+      CCAN_uncancel_temptable1=CCAN_getresult.getString("@uncancel_temptable1");
+      CCAN_uncancel_temptable2=CCAN_getresult.getString("@uncancel_temptable2");
+      CCAN_uncancel_temptable3=CCAN_getresult.getString("@uncancel_temptable3");
+      CCAN_uncancel_temptable4=CCAN_getresult.getString("@uncancel_temptable4");
+      var CCAN_chkuncancelflag=CCAN_getresult.getString("@uncancel_flag");
+    }
+       if(CCAN_chkuncancelflag==1){        
         var CCAN_customerevent="SELECT  URTD.URTD_ROOM_TYPE,U.UNIT_NO,CPD.CPD_EMAIL,CCD.CCD_OFFICE_NO,CLP.CLP_STARTDATE,CLP.CLP_ENDDATE,CED.CED_REC_VER,CED.CED_CANCEL_DATE,CED.CUSTOMER_ID, b.CTP_DATA as CED_SD_STIME, c.CTP_DATA as CED_SD_ETIME, d.CTP_DATA as CED_ED_STIME ,e.CTP_DATA as CED_ED_ETIME,CPD.CPD_MOBILE,CPD.CPD_INTL_MOBILE FROM  CUSTOMER_ENTRY_DETAILS CED LEFT JOIN CUSTOMER_TIME_PROFILE b ON CED.CED_SD_STIME = b.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE c ON CED.CED_SD_ETIME = c.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE d ON CED.CED_ED_STIME = d.CTP_ID LEFT JOIN CUSTOMER_TIME_PROFILE e ON CED.CED_ED_ETIME = e.CTP_ID LEFT JOIN CUSTOMER_COMPANY_DETAILS CCD ON CED.CUSTOMER_ID=CCD.CUSTOMER_ID LEFT JOIN  CUSTOMER_PERSONAL_DETAILS CPD ON CED.CUSTOMER_ID=CPD.CUSTOMER_ID,CUSTOMER_LP_DETAILS CLP,UNIT_ROOM_TYPE_DETAILS URTD, UNIT_ACCESS_STAMP_DETAILS UASD ,UNIT U  WHERE  CED.UNIT_ID=U.UNIT_ID AND (CED.CUSTOMER_ID="+CCAN_custid+")AND (CLP.CUSTOMER_ID=CED.CUSTOMER_ID) AND (CED.CED_REC_VER=CLP.CED_REC_VER) AND (CLP.CLP_GUEST_CARD IS NULL) AND CED.CED_CANCEL_DATE IS   NULL AND(UASD.UASD_ID=CED.UASD_ID) AND(UASD.URTD_ID=URTD.URTD_ID)and CED.CED_REC_VER>="+CCAN_rec_ver+" order by CED.CED_REC_VER"
         var CCAN_custevent_stmt = CCAN_conn.createStatement();
         var CCAN_custeventrs = CCAN_custevent_stmt.executeQuery(CCAN_customerevent); 
@@ -385,5 +383,5 @@ try{
       
     }
   }
-}
+   }
 catch(err){}

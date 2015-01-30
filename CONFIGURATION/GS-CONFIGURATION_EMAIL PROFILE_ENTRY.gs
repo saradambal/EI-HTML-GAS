@@ -57,7 +57,7 @@ try
     var EP_ENTRY_select="SELECT MAX(EL_ID) AS PRIMARY_ID FROM EMAIL_LIST";
     var EP_ENTRY_rs_primaryid=EP_ENTRY_stmt_primaryid.executeQuery(EP_ENTRY_select);
     while(EP_ENTRY_rs_primaryid.next())
-      var EP_ENTRY_primaryid=EP_ENTRY_rs_primaryid.getString("PRIMARY_ID");
+    var EP_ENTRY_primaryid=EP_ENTRY_rs_primaryid.getString("PRIMARY_ID");
     EP_ENTRY_rs_primaryid.close();
     EP_ENTRY_stmt_primaryid.close();
     EP_ENTRY_conn.close();
@@ -78,7 +78,7 @@ try
     EP_ENTRY_conn.close();
     var EP_ENTRY_primaryid_after=EP_ENTRY_getmaxprimaryid()
     if(parseInt(EP_ENTRY_primaryid_before)<parseInt(EP_ENTRY_primaryid_after))
-    return true;
+      return true;
     else
       return false;
   }

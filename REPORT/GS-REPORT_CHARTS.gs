@@ -113,9 +113,7 @@ try
     }  
     CHART_rs_unit.close();CHART_stmt_sel.close();
     var CHART_res_invoice_exp={"CHART_obj_flexarr":CHART_flex_twodimens_arr};
-    var CHART_temp_stmt= CHART_conn.createStatement();
-    CHART_temp_stmt.execute("DROP TABLE "+CHART_temptblename+"");
-    CHART_temp_stmt.close();
+    eilib.DropTempTable(CHART_conn,CHART_temptblename);  
     return CHART_res_invoice_exp;
   }
 }

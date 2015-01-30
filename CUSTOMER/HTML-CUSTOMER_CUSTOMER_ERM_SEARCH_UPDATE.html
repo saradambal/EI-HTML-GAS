@@ -26,22 +26,22 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
@@ -49,1048 +49,1048 @@
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 var ErrorControl ={AmountCompare:'InValid'}
 $(document).ready(function() {
-$('#CERM_SRC_ta_comments').autogrow({onInitialize: true});
-/**********************ERROR MESSAGE********************************/
- function CERN_SRC_error_message(ERM_SRC_err)
-   {
-  if(ERM_SRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-  {
-  ERM_SRC_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-  $('#CERM_SRC_formmainform').replaceWith('<center><label class="dberrormsg">'+ERM_SRC_err+'</label></center>');
-  }
-  else
-  {
-  $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:ERM_SRC_err,position:{top:150,left:500}}});
-  }
-  $(".preloader").hide(); 
-  }
-$('#CERM_SRC_formmainform').hide();
-$('#CERM_errormessageform').hide();
-var errormsg=[];
-var CERM_oldvalue=[];
-var autocompleteerrormessage;
-$(".preloader").show();
- $("#CERM_SRC_tb_contact").doValidation({rule:'numbersonly',prop:{realpart:20,leadzero:true}});
-$(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
-$(".compautosize").doValidation({rule:'general',prop:{autosize:true}});
- $('#CERM_SRC_tb_mailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
-$(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-$(".numonly").doValidation({rule:'numbersonly'});
-//$(document).doValidation({rule:'fromto',prop:{elem1:'CERM_SRC_db_fromtimestamp',elem2:'CERM_SRC_db_totimestamp'}}); 
-$("#CERM_SRC_tb_fromamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'CERM_SRC_tb_toamount'}});
-$("#CERM_SRC_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'CERM_SRC_tb_fromamount'}});
-$('#CERM_SRC_div_htmltable').hide();
-$('#ERM_formsearchbutton').hide();
-$('#CERM_SRC_lbl_error').hide();
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-$('#CERM_SRC_tble_amountrangetable').hide();
-$('#CERM_SRC_tble_contactnotable').hide();
-$('#CERM_SRC_tble_customernametable').hide();
-$('#CERM_SRC_tble_nationalitytable').hide();
-$('#CERM_SRC_tble_userstampsearchtable').hide();
-$('#CERM_SRC_tble_timestampsearchtable').hide();
-//********************INITIAL GS CALL FUNCTION***************************************//
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_getCommonvalues_result).CERM_SRC_commonvalues();
-function CERM_SRC_getCommonvalues_result(CERM_SRC_result)
-{
-errormsg=CERM_SRC_result.error;
-var customer=[];
-var nationality=[];
-var occupation=[];
-var contact=[];
-var userstamp=[];
-var searchoption=[];
-var emailname=CERM_SRC_result.emailname;
-var recordcheck=CERM_SRC_result.Record;
-searchoption=CERM_SRC_result.ERMsearchoption;
-customer=CERM_SRC_result.customer;
-nationality=CERM_SRC_result.nationality;
-occupation=CERM_SRC_result.occupation;
-contact=CERM_SRC_result.contact;
-userstamp=CERM_SRC_result.userstamp;
-var CERM_SRC_searchoptionvalue='<option>SELECT</option>';
-for(var i=0;i<searchoption.length;i++)
-{
-var searchlabel=searchoption[i];
-var searchoptionvalue=searchlabel.ERMoptiondata;
-var searchoptionid=searchlabel.ERMoptionid;
-CERM_SRC_searchoptionvalue += '<option value="' +searchoptionid + '">' + searchoptionvalue + '</option>';
-}
-$('#CERM_SRC_lb_main').html(CERM_SRC_searchoptionvalue);
-var CERM_SRC_nationalityvalue='<option>SELECT</option>';
-for(var i=0;i<nationality.length;i++)
-{
-CERM_SRC_nationalityvalue += '<option value="' + nationality[i] + '">' + nationality[i] + '</option>';
-}
-$('#CERM_SRC_lb_nationality').html(CERM_SRC_nationalityvalue);
-$('#CERM_SRC_lb_nationselect').html(CERM_SRC_nationalityvalue);
-var CERM_SRC_occupationvalue='<option>SELECT</option>';
-for(var i=0;i<occupation.length;i++)
-{
-CERM_SRC_occupationvalue += '<option value="' + occupation[i] + '">' + occupation[i] + '</option>';
-}
-$('#CERM_SRC_lb_occupation').html(CERM_SRC_occupationvalue);
-var CERM_SRC_userstampvalue='<option>SELECT</option>';
-for(var i=0;i<userstamp.length;i++)
-{
-CERM_SRC_userstampvalue += '<option value="' + userstamp[i] + '">' + userstamp[i] + '</option>';
-}
-$('#CERM_SRC_lb_userstamp').html(CERM_SRC_userstampvalue);
-$('#CERM_SRC_tb_fromamount').prop('title',errormsg[1]);
-$('#CERM_SRC_tb_toamount').prop('title',errormsg[1]);
-$('#CERM_SRC_tb_contact').prop('title',errormsg[1]);
-$('#CERM_SRC_tb_rent').prop('title',errormsg[1]);
-$('#CERM_SRC_tb_customername').prop('title',errormsg[0]);
-$('#CERM_SRC_lbl_emailiderrormsg').text(errormsg[5]);
-$('#CERM_SRC_lbl_emailiderrormsg').hide();
-$('#CERM_SRC_lbl_amounterrormsg').text(errormsg[6]);
-$('#CERM_SRC_lbl_amounterrormsg').hide();
-$('#CERM_SRC_lbl_main').show();
-$('#CERM_SRC_lb_main').show();
-$('#customernameautocompleteerrormsg').text(errormsg[11]);
-$('#contactnoautocompleteerrormsg').text(errormsg[11]);
-if(emailname!=null ||recordcheck==null)
-{
-   if(emailname==null)
+    $('#CERM_SRC_ta_comments').autogrow({onInitialize: true});
+    /**********************ERROR MESSAGE********************************/
+    function CERN_SRC_error_message(ERM_SRC_err)
     {
-     $('#CERM_SRC_errormessageform').show();
-     var emailerrormsg='<p><label class="errormsg">'+errormsg[4]+'</label></p>';
-     $('#CERM_SRC_errormessagetable').append(emailerrormsg);
-     $('#CERM_SRC_formmainform').hide();
+        if(ERM_SRC_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+        {
+            ERM_SRC_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+            $('#CERM_SRC_formmainform').replaceWith('<center><label class="dberrormsg">'+ERM_SRC_err+'</label></center>');
+        }
+        else
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:ERM_SRC_err,position:{top:150,left:500}}});
+        }
+        $(".preloader").hide();
     }
-    if(recordcheck==null)
-    {
-     $('#CERM_SRC_errormessageform').show();
-     var emailerrormsg='<p><label class="errormsg">RECORDS NOT AVAILABLE IN ERM ENTRY DETAILS TABLE</label></p>';
-     $('#CERM_SRC_errormessagetable').append(emailerrormsg);
-     $('#CERM_SRC_formmainform').hide();
-    }
- }
- else
-  {
+    $('#CERM_SRC_formmainform').hide();
     $('#CERM_errormessageform').hide();
-    $('#CERM_SRC_formmainform').show();
- }
+    var errormsg=[];
+    var CERM_oldvalue=[];
+    var autocompleteerrormessage;
+    $(".preloader").show();
+    $("#CERM_SRC_tb_contact").doValidation({rule:'numbersonly',prop:{realpart:20,leadzero:true}});
+    $(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+    $(".compautosize").doValidation({rule:'general',prop:{autosize:true}});
+    $('#CERM_SRC_tb_mailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
+    $(".amtonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+    $(".numonly").doValidation({rule:'numbersonly'});
+//$(document).doValidation({rule:'fromto',prop:{elem1:'CERM_SRC_db_fromtimestamp',elem2:'CERM_SRC_db_totimestamp'}}); 
+    $("#CERM_SRC_tb_fromamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'CERM_SRC_tb_toamount'}});
+    $("#CERM_SRC_tb_toamount").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'CERM_SRC_tb_fromamount'}});
+    $('#CERM_SRC_div_htmltable').hide();
+    $('#ERM_formsearchbutton').hide();
+    $('#CERM_SRC_lbl_error').hide();
+    $('#CERM_SRC_update_table').hide();
+    $('#updatebuttontable').hide();
+    $('#CERM_SRC_tble_amountrangetable').hide();
+    $('#CERM_SRC_tble_contactnotable').hide();
+    $('#CERM_SRC_tble_customernametable').hide();
+    $('#CERM_SRC_tble_nationalitytable').hide();
+    $('#CERM_SRC_tble_userstampsearchtable').hide();
+    $('#CERM_SRC_tble_timestampsearchtable').hide();
+//********************INITIAL GS CALL FUNCTION***************************************//
+    google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_getCommonvalues_result).CERM_SRC_commonvalues();
+    function CERM_SRC_getCommonvalues_result(CERM_SRC_result)
+    {
+        errormsg=CERM_SRC_result.error;
+        var customer=[];
+        var nationality=[];
+        var occupation=[];
+        var contact=[];
+        var userstamp=[];
+        var searchoption=[];
+        var emailname=CERM_SRC_result.emailname;
+        var recordcheck=CERM_SRC_result.Record;
+        searchoption=CERM_SRC_result.ERMsearchoption;
+        customer=CERM_SRC_result.customer;
+        nationality=CERM_SRC_result.nationality;
+        occupation=CERM_SRC_result.occupation;
+        contact=CERM_SRC_result.contact;
+        userstamp=CERM_SRC_result.userstamp;
+        var CERM_SRC_searchoptionvalue='<option>SELECT</option>';
+        for(var i=0;i<searchoption.length;i++)
+        {
+            var searchlabel=searchoption[i];
+            var searchoptionvalue=searchlabel.ERMoptiondata;
+            var searchoptionid=searchlabel.ERMoptionid;
+            CERM_SRC_searchoptionvalue += '<option value="' +searchoptionid + '">' + searchoptionvalue + '</option>';
+        }
+        $('#CERM_SRC_lb_main').html(CERM_SRC_searchoptionvalue);
+        var CERM_SRC_nationalityvalue='<option>SELECT</option>';
+        for(var i=0;i<nationality.length;i++)
+        {
+            CERM_SRC_nationalityvalue += '<option value="' + nationality[i] + '">' + nationality[i] + '</option>';
+        }
+        $('#CERM_SRC_lb_nationality').html(CERM_SRC_nationalityvalue);
+        $('#CERM_SRC_lb_nationselect').html(CERM_SRC_nationalityvalue);
+        var CERM_SRC_occupationvalue='<option>SELECT</option>';
+        for(var i=0;i<occupation.length;i++)
+        {
+            CERM_SRC_occupationvalue += '<option value="' + occupation[i] + '">' + occupation[i] + '</option>';
+        }
+        $('#CERM_SRC_lb_occupation').html(CERM_SRC_occupationvalue);
+        var CERM_SRC_userstampvalue='<option>SELECT</option>';
+        for(var i=0;i<userstamp.length;i++)
+        {
+            CERM_SRC_userstampvalue += '<option value="' + userstamp[i] + '">' + userstamp[i] + '</option>';
+        }
+        $('#CERM_SRC_lb_userstamp').html(CERM_SRC_userstampvalue);
+        $('#CERM_SRC_tb_fromamount').prop('title',errormsg[1]);
+        $('#CERM_SRC_tb_toamount').prop('title',errormsg[1]);
+        $('#CERM_SRC_tb_contact').prop('title',errormsg[1]);
+        $('#CERM_SRC_tb_rent').prop('title',errormsg[1]);
+        $('#CERM_SRC_tb_customername').prop('title',errormsg[0]);
+        $('#CERM_SRC_lbl_emailiderrormsg').text(errormsg[5]);
+        $('#CERM_SRC_lbl_emailiderrormsg').hide();
+        $('#CERM_SRC_lbl_amounterrormsg').text(errormsg[6]);
+        $('#CERM_SRC_lbl_amounterrormsg').hide();
+        $('#CERM_SRC_lbl_main').show();
+        $('#CERM_SRC_lb_main').show();
+        $('#customernameautocompleteerrormsg').text(errormsg[11]);
+        $('#contactnoautocompleteerrormsg').text(errormsg[11]);
+        if(emailname!=null ||recordcheck==null)
+        {
+            if(emailname==null)
+            {
+                $('#CERM_SRC_errormessageform').show();
+                var emailerrormsg='<p><label class="errormsg">'+errormsg[4]+'</label></p>';
+                $('#CERM_SRC_errormessagetable').append(emailerrormsg);
+                $('#CERM_SRC_formmainform').hide();
+            }
+            if(recordcheck==null)
+            {
+                $('#CERM_SRC_errormessageform').show();
+                var emailerrormsg='<p><label class="errormsg">RECORDS NOT AVAILABLE IN ERM ENTRY DETAILS TABLE</label></p>';
+                $('#CERM_SRC_errormessagetable').append(emailerrormsg);
+                $('#CERM_SRC_formmainform').hide();
+            }
+        }
+        else
+        {
+            $('#CERM_errormessageform').hide();
+            $('#CERM_SRC_formmainform').show();
+        }
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus(); 
-}
+        SubPage=0;
+        CheckPageStatus();
+    }
 //***************SET FROM TIMESTAMP DATEPICKER***************//
-$('#CERM_SRC_db_totimestamp').datepicker({
-dateFormat: "dd-mm-yy", 
-changeYear: true,
-changeMonth: true
-});
-var CCRE_d = new Date();
-var changedmonth=new Date(CCRE_d.setFullYear(2009));
-$('#CERM_SRC_db_totimestamp').datepicker("option","minDate",changedmonth);
-$('#CERM_SRC_db_totimestamp').datepicker("option","maxDate",new Date());
+    $('#CERM_SRC_db_totimestamp').datepicker({
+        dateFormat: "dd-mm-yy",
+        changeYear: true,
+        changeMonth: true
+    });
+    var CCRE_d = new Date();
+    var changedmonth=new Date(CCRE_d.setFullYear(2009));
+    $('#CERM_SRC_db_totimestamp').datepicker("option","minDate",changedmonth);
+    $('#CERM_SRC_db_totimestamp').datepicker("option","maxDate",new Date());
 //***************SET MOVINGDATE DATEPICKER***************//
-$('#CERM_SRC_db_movingdate').datepicker({
-dateFormat: "dd-mm-yy",
-changeYear: true,
-changeMonth: true
-});
+    $('#CERM_SRC_db_movingdate').datepicker({
+        dateFormat: "dd-mm-yy",
+        changeYear: true,
+        changeMonth: true
+    });
 
 //***************SET TO TIMESTAMP DATEPICKER***************//
-$("#CERM_SRC_db_fromtimestamp").datepicker({
-dateFormat: "dd-mm-yy",
-changeYear: true,
-changeMonth: true});
-$('#CERM_SRC_db_fromtimestamp').datepicker("option","minDate",changedmonth);
-$('#CERM_SRC_db_fromtimestamp').datepicker("option","maxDate",new Date());
-$(document).on('change','#CERM_SRC_db_fromtimestamp',function(){
-var startdate=$('#CERM_SRC_db_fromtimestamp').val();
-var FIN_ENTRY_db_chkindate1 = new Date( Date.parse(FormTableDateFormat(startdate)));
-FIN_ENTRY_db_chkindate1.setDate( FIN_ENTRY_db_chkindate1.getDate());  
-var FIN_ENTRY_db_chkindate1 = FIN_ENTRY_db_chkindate1.toDateString(); 
-FIN_ENTRY_db_chkindate1 = new Date( Date.parse( FIN_ENTRY_db_chkindate1));
-$('#CERM_SRC_db_totimestamp').datepicker("option","minDate",FIN_ENTRY_db_chkindate1);
-$('#CERM_SRC_db_totimestamp').datepicker("option","maxDate",new Date());
-});
+    $("#CERM_SRC_db_fromtimestamp").datepicker({
+        dateFormat: "dd-mm-yy",
+        changeYear: true,
+        changeMonth: true});
+    $('#CERM_SRC_db_fromtimestamp').datepicker("option","minDate",changedmonth);
+    $('#CERM_SRC_db_fromtimestamp').datepicker("option","maxDate",new Date());
+    $(document).on('change','#CERM_SRC_db_fromtimestamp',function(){
+        var startdate=$('#CERM_SRC_db_fromtimestamp').val();
+        var FIN_ENTRY_db_chkindate1 = new Date( Date.parse(FormTableDateFormat(startdate)));
+        FIN_ENTRY_db_chkindate1.setDate( FIN_ENTRY_db_chkindate1.getDate());
+        var FIN_ENTRY_db_chkindate1 = FIN_ENTRY_db_chkindate1.toDateString();
+        FIN_ENTRY_db_chkindate1 = new Date( Date.parse( FIN_ENTRY_db_chkindate1));
+        $('#CERM_SRC_db_totimestamp').datepicker("option","minDate",FIN_ENTRY_db_chkindate1);
+        $('#CERM_SRC_db_totimestamp').datepicker("option","maxDate",new Date());
+    });
 //***************UPDATION FORM VALIDATION***************//
-$(document).on('blur','.ermupdationclass',function(){
-var CERM_SRC_emailid=$("#CERM_SRC_tb_mailid").val();
-if(CERM_SRC_emailid!="")
-{
-var CERM_SRC_atpos=CERM_SRC_emailid.indexOf("@");
-var CERM_SRC_dotpos=CERM_SRC_emailid.lastIndexOf(".");
-if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(CERM_SRC_emailid) || "" == CERM_SRC_emailid)&&(CERM_SRC_dotpos-1!=CERM_SRC_emailid.indexOf(".")))
-{
-$('#CERM_SRC_lbl_emailiderrormsg').hide();
-var CERM_SRC_emailchk="valid";
-$('#CERM_SRC_tb_mailid').removeClass('invalid');
-$('#CERM_SRC_tb_mailid').val($('#CERM_SRC_tb_mailid').val().toLowerCase());
-}
-else
-{
-$('#CERM_SRC_lbl_emailiderrormsg').show();
-CERM_SRC_emailchk="invalid"
-$('#CERM_SRC_tb_mailid').addClass('invalid');
-}
-}
-else
-{
-CERM_SRC_emailchk="valid";
-$('#CERM_SRC_tb_mailid').removeClass('invalid');
-$('#CERM_SRC_lbl_emailiderrormsg').hide();
-}
-if($('#CERM_SRC_lb_occupation').val()!="OTHERS")
-{
-if($('#CERM_SRC_tb_customernamesrc').val()!="" && $('#CERM_SRC_tb_rent').val()!="" && $('#CERM_SRC_db_movingdate').val()!="" && $('#CERM_SRC_tb_minimumstay').val()!="" &&
-$('#CERM_SRC_lb_occupation').val()!="SELECT"  && $('#CERM_SRC_ta_comments').val()!="" &&(CERM_SRC_emailchk=="valid"))
-{
-$("#CERM_SRC_btn_ermupdatebutton").removeAttr("disabled");
-}
-else
-{
-$("#CERM_SRC_btn_ermupdatebutton").attr("disabled", "disabled");
-}
-}
-else
-{
-if($('#CERM_SRC_tb_customernamesrc').val()!="" && $('#CERM_SRC_tb_rent').val()!="" && $('#CERM_SRC_db_movingdate').val()!="" && $('#CERM_SRC_tb_minimumstay').val()!="" &&
-$('#CERM_SRC_lb_occupation').val()!="SELECT" && $('#CERM_SRC_tb_others').val()!="" && $('#CERM_SRC_ta_comments').val()!="" &&(CERM_SRC_emailchk=="valid"))
-{
-$("#CERM_SRC_btn_ermupdatebutton").removeAttr("disabled");
-}
-else
-{
-$("#CERM_SRC_btn_ermupdatebutton").attr("disabled", "disabled");
-}
-}
-});
+    $(document).on('blur','.ermupdationclass',function(){
+        var CERM_SRC_emailid=$("#CERM_SRC_tb_mailid").val();
+        if(CERM_SRC_emailid!="")
+        {
+            var CERM_SRC_atpos=CERM_SRC_emailid.indexOf("@");
+            var CERM_SRC_dotpos=CERM_SRC_emailid.lastIndexOf(".");
+            if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(CERM_SRC_emailid) || "" == CERM_SRC_emailid)&&(CERM_SRC_dotpos-1!=CERM_SRC_emailid.indexOf(".")))
+            {
+                $('#CERM_SRC_lbl_emailiderrormsg').hide();
+                var CERM_SRC_emailchk="valid";
+                $('#CERM_SRC_tb_mailid').removeClass('invalid');
+                $('#CERM_SRC_tb_mailid').val($('#CERM_SRC_tb_mailid').val().toLowerCase());
+            }
+            else
+            {
+                $('#CERM_SRC_lbl_emailiderrormsg').show();
+                CERM_SRC_emailchk="invalid"
+                $('#CERM_SRC_tb_mailid').addClass('invalid');
+            }
+        }
+        else
+        {
+            CERM_SRC_emailchk="valid";
+            $('#CERM_SRC_tb_mailid').removeClass('invalid');
+            $('#CERM_SRC_lbl_emailiderrormsg').hide();
+        }
+        if($('#CERM_SRC_lb_occupation').val()!="OTHERS")
+        {
+            if($('#CERM_SRC_tb_customernamesrc').val()!="" && $('#CERM_SRC_tb_rent').val()!="" && $('#CERM_SRC_db_movingdate').val()!="" && $('#CERM_SRC_tb_minimumstay').val()!="" &&
+                    $('#CERM_SRC_lb_occupation').val()!="SELECT"  && $('#CERM_SRC_ta_comments').val()!="" &&(CERM_SRC_emailchk=="valid"))
+            {
+                $("#CERM_SRC_btn_ermupdatebutton").removeAttr("disabled");
+            }
+            else
+            {
+                $("#CERM_SRC_btn_ermupdatebutton").attr("disabled", "disabled");
+            }
+        }
+        else
+        {
+            if($('#CERM_SRC_tb_customernamesrc').val()!="" && $('#CERM_SRC_tb_rent').val()!="" && $('#CERM_SRC_db_movingdate').val()!="" && $('#CERM_SRC_tb_minimumstay').val()!="" &&
+                    $('#CERM_SRC_lb_occupation').val()!="SELECT" && $('#CERM_SRC_tb_others').val()!="" && $('#CERM_SRC_ta_comments').val()!="" &&(CERM_SRC_emailchk=="valid"))
+            {
+                $("#CERM_SRC_btn_ermupdatebutton").removeAttr("disabled");
+            }
+            else
+            {
+                $("#CERM_SRC_btn_ermupdatebutton").attr("disabled", "disabled");
+            }
+        }
+    });
 //***************SEARCH LISTBOX VALIDATION***************//
-$('#CERM_SRC_lb_main').change(function(){
-var CERM_SRC_option=$('#CERM_SRC_lb_main').val();
-$('#CERM_SRC_div_htmltable').hide();
-$('#ERM_formsearchbutton').hide();
-$('#CERM_SRC_lbl_error').hide();
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-if(CERM_SRC_option==1)
-{
-$('#CERM_SRC_tble_amountrangetable').show();
-$('#CERM_SRC_tble_contactnotable').hide();
-$('#CERM_SRC_tble_customernametable').hide();
-$('#CERM_SRC_tble_nationalitytable').hide();
-$('#CERM_SRC_tble_userstampsearchtable').hide();
-$('#CERM_SRC_tble_timestampsearchtable').hide();
-}
-if(CERM_SRC_option==3)
-{
-$(".preloader").show();
- var  newPos= adjustPosition($(this).position(),100,230);
-resetPreloader(newPos);
-$('#CERM_SRC_tble_amountrangetable').hide();
-$('#CERM_SRC_tble_contactnotable').show();
-$('#CERM_SRC_tble_customernametable').hide();
-$('#CERM_SRC_tble_nationalitytable').hide();
-$('#CERM_SRC_tble_userstampsearchtable').hide();
-$('#CERM_SRC_tble_timestampsearchtable').hide();
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_contactsearchresponse).CERM_SRC_contactautocomplete();
-}
-if(CERM_SRC_option==2)
-{
-$(".preloader").show();
- var  newPos= adjustPosition($(this).position(),100,230);
-resetPreloader(newPos);
-$('#CERM_SRC_tble_amountrangetable').hide();
-$('#CERM_SRC_tble_contactnotable').hide();
-$('#CERM_SRC_tble_customernametable').show();
-$('#CERM_SRC_tble_nationalitytable').hide();
-$('#CERM_SRC_tble_userstampsearchtable').hide();
-$('#CERM_SRC_tble_timestampsearchtable').hide();
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_customersearchresponse).CERM_SRC_customernameautocomplete();
-}
-if(CERM_SRC_option==4)
-{
-$('#CERM_SRC_tble_amountrangetable').hide();
-$('#CERM_SRC_tble_contactnotable').hide();
-$('#CERM_SRC_tble_customernametable').hide();
-$('#CERM_SRC_tble_nationalitytable').show();
-$('#CERM_SRC_tble_userstampsearchtable').hide();
-$('#CERM_SRC_tble_timestampsearchtable').hide();
-}
-if(CERM_SRC_option==5)
-{
-$('#CERM_SRC_tble_amountrangetable').hide();
-$('#CERM_SRC_tble_contactnotable').hide();
-$('#CERM_SRC_tble_customernametable').hide();
-$('#CERM_SRC_tble_nationalitytable').hide();
-$('#CERM_SRC_tble_userstampsearchtable').hide();
-$('#CERM_SRC_tble_timestampsearchtable').show();
-}
-if(CERM_SRC_option==6)
-{
-$('#CERM_SRC_tble_amountrangetable').hide();
-$('#CERM_SRC_tble_contactnotable').hide();
-$('#CERM_SRC_tble_customernametable').hide();
-$('#CERM_SRC_tble_nationalitytable').hide();
-$('#CERM_SRC_tble_userstampsearchtable').show();
-$('#CERM_SRC_tble_timestampsearchtable').hide();
-}
-if(CERM_SRC_option=='SELECT')
-{
-$('#CERM_SRC_tble_amountrangetable').hide();
-$('#CERM_SRC_tble_contactnotable').hide();
-$('#CERM_SRC_tble_customernametable').hide();
-$('#CERM_SRC_tble_nationalitytable').hide();
-$('#CERM_SRC_tble_userstampsearchtable').hide();
-$('#CERM_SRC_tble_timestampsearchtable').hide();
-}
-});
+    $('#CERM_SRC_lb_main').change(function(){
+        var CERM_SRC_option=$('#CERM_SRC_lb_main').val();
+        $('#CERM_SRC_div_htmltable').hide();
+        $('#ERM_formsearchbutton').hide();
+        $('#CERM_SRC_lbl_error').hide();
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+        if(CERM_SRC_option==1)
+        {
+            $('#CERM_SRC_tble_amountrangetable').show();
+            $('#CERM_SRC_tble_contactnotable').hide();
+            $('#CERM_SRC_tble_customernametable').hide();
+            $('#CERM_SRC_tble_nationalitytable').hide();
+            $('#CERM_SRC_tble_userstampsearchtable').hide();
+            $('#CERM_SRC_tble_timestampsearchtable').hide();
+        }
+        if(CERM_SRC_option==3)
+        {
+            $(".preloader").show();
+            var  newPos= adjustPosition($(this).position(),100,230);
+            resetPreloader(newPos);
+            $('#CERM_SRC_tble_amountrangetable').hide();
+            $('#CERM_SRC_tble_contactnotable').show();
+            $('#CERM_SRC_tble_customernametable').hide();
+            $('#CERM_SRC_tble_nationalitytable').hide();
+            $('#CERM_SRC_tble_userstampsearchtable').hide();
+            $('#CERM_SRC_tble_timestampsearchtable').hide();
+            google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_contactsearchresponse).CERM_SRC_contactautocomplete();
+        }
+        if(CERM_SRC_option==2)
+        {
+            $(".preloader").show();
+            var  newPos= adjustPosition($(this).position(),100,230);
+            resetPreloader(newPos);
+            $('#CERM_SRC_tble_amountrangetable').hide();
+            $('#CERM_SRC_tble_contactnotable').hide();
+            $('#CERM_SRC_tble_customernametable').show();
+            $('#CERM_SRC_tble_nationalitytable').hide();
+            $('#CERM_SRC_tble_userstampsearchtable').hide();
+            $('#CERM_SRC_tble_timestampsearchtable').hide();
+            google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_customersearchresponse).CERM_SRC_customernameautocomplete();
+        }
+        if(CERM_SRC_option==4)
+        {
+            $('#CERM_SRC_tble_amountrangetable').hide();
+            $('#CERM_SRC_tble_contactnotable').hide();
+            $('#CERM_SRC_tble_customernametable').hide();
+            $('#CERM_SRC_tble_nationalitytable').show();
+            $('#CERM_SRC_tble_userstampsearchtable').hide();
+            $('#CERM_SRC_tble_timestampsearchtable').hide();
+        }
+        if(CERM_SRC_option==5)
+        {
+            $('#CERM_SRC_tble_amountrangetable').hide();
+            $('#CERM_SRC_tble_contactnotable').hide();
+            $('#CERM_SRC_tble_customernametable').hide();
+            $('#CERM_SRC_tble_nationalitytable').hide();
+            $('#CERM_SRC_tble_userstampsearchtable').hide();
+            $('#CERM_SRC_tble_timestampsearchtable').show();
+        }
+        if(CERM_SRC_option==6)
+        {
+            $('#CERM_SRC_tble_amountrangetable').hide();
+            $('#CERM_SRC_tble_contactnotable').hide();
+            $('#CERM_SRC_tble_customernametable').hide();
+            $('#CERM_SRC_tble_nationalitytable').hide();
+            $('#CERM_SRC_tble_userstampsearchtable').show();
+            $('#CERM_SRC_tble_timestampsearchtable').hide();
+        }
+        if(CERM_SRC_option=='SELECT')
+        {
+            $('#CERM_SRC_tble_amountrangetable').hide();
+            $('#CERM_SRC_tble_contactnotable').hide();
+            $('#CERM_SRC_tble_customernametable').hide();
+            $('#CERM_SRC_tble_nationalitytable').hide();
+            $('#CERM_SRC_tble_userstampsearchtable').hide();
+            $('#CERM_SRC_tble_timestampsearchtable').hide();
+        }
+    });
 //////////OCCUPATION LISTBOX VALIDATION/////////////
-$('#CERM_SRC_lb_occupation').change(function(){
-if($('#CERM_SRC_lb_occupation').val()=="OTHERS")
-{
-$('#CERM_SRC_tb_others').show();
-}
-else
-{
-$('#CERM_SRC_tb_others').val('').hide();
-}
-});
+    $('#CERM_SRC_lb_occupation').change(function(){
+        if($('#CERM_SRC_lb_occupation').val()=="OTHERS")
+        {
+            $('#CERM_SRC_tb_others').show();
+        }
+        else
+        {
+            $('#CERM_SRC_tb_others').val('').hide();
+        }
+    });
 //***************AMOUNTRANGESEARCH VALIDATION***************//
-$('.amountvalidation').blur(function(){
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-var CERM_SRC_fromamt=$('#CERM_SRC_tb_fromamount').val();
-var CERM_SRC_toamt=$('#CERM_SRC_tb_toamount').val();
-if(CERM_SRC_fromamt!='' && CERM_SRC_toamt!='')
-{
-if(ErrorControl.AmountCompare=='Valid')
-{
-$("#CERM_SRC_btn_amountrangesearchbutton").removeAttr("disabled");
-$('#CERM_SRC_lbl_amounterrormsg').hide();
-}
-else
-{
-$('#CERM_SRC_lbl_amounterrormsg').show();
-$("#CERM_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
-}
-}
-});
+    $('.amountvalidation').blur(function(){
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+        var CERM_SRC_fromamt=$('#CERM_SRC_tb_fromamount').val();
+        var CERM_SRC_toamt=$('#CERM_SRC_tb_toamount').val();
+        if(CERM_SRC_fromamt!='' && CERM_SRC_toamt!='')
+        {
+            if(ErrorControl.AmountCompare=='Valid')
+            {
+                $("#CERM_SRC_btn_amountrangesearchbutton").removeAttr("disabled");
+                $('#CERM_SRC_lbl_amounterrormsg').hide();
+            }
+            else
+            {
+                $('#CERM_SRC_lbl_amounterrormsg').show();
+                $("#CERM_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
+            }
+        }
+    });
 //***************CONTACT NO VALIDATION***************//
-$('#CERM_SRC_tble_contactnotable').change(function(){
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-var CERM_SRC_contactno=$('#CERM_SRC_lb_contactno').val();
-if(CERM_SRC_contactno!="SELECT")
-{
-$("#CERM_SRC_btn_contactnoseachbutton").removeAttr("disabled");
-}
-else
-{
-$("#CERM_SRC_btn_contactnoseachbutton").attr("disabled", "disabled");
-}
-});
+    $('#CERM_SRC_tble_contactnotable').change(function(){
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+        var CERM_SRC_contactno=$('#CERM_SRC_lb_contactno').val();
+        if(CERM_SRC_contactno!="SELECT")
+        {
+            $("#CERM_SRC_btn_contactnoseachbutton").removeAttr("disabled");
+        }
+        else
+        {
+            $("#CERM_SRC_btn_contactnoseachbutton").attr("disabled", "disabled");
+        }
+    });
 //***************CUSTOMER NAME VALIDATION***************//
-$('#CERM_SRC_tble_customernametable').change(function(){
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-var CERM_SRC_customername=$('#CERM_SRC_lb_customername').val();
-if(CERM_SRC_customername!="SELECT")
-{
-$("#CERM_SRC_btn_customernameseachbutton").removeAttr("disabled");
-}
-else
-{
-$("#CERM_SRC_btn_customernameseachbutton").attr("disabled", "disabled");
-}
-});
+    $('#CERM_SRC_tble_customernametable').change(function(){
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+        var CERM_SRC_customername=$('#CERM_SRC_lb_customername').val();
+        if(CERM_SRC_customername!="SELECT")
+        {
+            $("#CERM_SRC_btn_customernameseachbutton").removeAttr("disabled");
+        }
+        else
+        {
+            $("#CERM_SRC_btn_customernameseachbutton").attr("disabled", "disabled");
+        }
+    });
 //***************NATIONALITY VALIDATION***************//
-$('#CERM_SRC_tble_nationalitytable').change(function(){
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-var CERM_SRC_nationality=$('#CERM_SRC_lb_nationality').val();
-if(CERM_SRC_nationality!="SELECT")
-{
-$("#CERM_SRC_btn_nationalityseachbutton").removeAttr("disabled");
-}
-else
-{
-$("#CERM_SRC_btn_nationalityseachbutton").attr("disabled", "disabled");
-}
-});
+    $('#CERM_SRC_tble_nationalitytable').change(function(){
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+        var CERM_SRC_nationality=$('#CERM_SRC_lb_nationality').val();
+        if(CERM_SRC_nationality!="SELECT")
+        {
+            $("#CERM_SRC_btn_nationalityseachbutton").removeAttr("disabled");
+        }
+        else
+        {
+            $("#CERM_SRC_btn_nationalityseachbutton").attr("disabled", "disabled");
+        }
+    });
 //***************USERSTAMP VALIDATION***************//
-$('#CERM_SRC_tble_userstampsearchtable').change(function(){
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-var CERM_SRC_userstamp=$('#CERM_SRC_lb_userstamp').val();
-if(CERM_SRC_userstamp!="SELECT")
-{
-$("#CERM_SRC_btn_userstampseachbutton").removeAttr("disabled");
-}
-else
-{
-$("#CERM_SRC_btn_userstampseachbutton").attr("disabled", "disabled");
-}
-});
+    $('#CERM_SRC_tble_userstampsearchtable').change(function(){
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+        var CERM_SRC_userstamp=$('#CERM_SRC_lb_userstamp').val();
+        if(CERM_SRC_userstamp!="SELECT")
+        {
+            $("#CERM_SRC_btn_userstampseachbutton").removeAttr("disabled");
+        }
+        else
+        {
+            $("#CERM_SRC_btn_userstampseachbutton").attr("disabled", "disabled");
+        }
+    });
 //***************TIMESTAMP VALIDATION***************//
-$('#CERM_SRC_tble_timestampsearchtable').change(function(){
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-if(($('#CERM_SRC_db_fromtimestamp').val()!="")&&($('#CERM_SRC_db_totimestamp').val()!=""))
-{
-$("#CERM_SRC_btn_timestampseachbutton").removeAttr("disabled");
-}
-else
-{
-$("#CERM_SRC_btn_timestampseachbutton").attr("disabled", "disabled");
-}
-});
+    $('#CERM_SRC_tble_timestampsearchtable').change(function(){
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+        if(($('#CERM_SRC_db_fromtimestamp').val()!="")&&($('#CERM_SRC_db_totimestamp').val()!=""))
+        {
+            $("#CERM_SRC_btn_timestampseachbutton").removeAttr("disabled");
+        }
+        else
+        {
+            $("#CERM_SRC_btn_timestampseachbutton").attr("disabled", "disabled");
+        }
+    });
 //***************CUSTOMER NAME SEARCH CALL FUNCTION***************//
-$('#CERM_SRC_btn_customernameseachbutton').click(function(){
-$('#CERM_SRC_div_htmltable').hide();
-$('#ERM_formsearchbutton').hide();
-$('#CERM_SRC_lbl_error').hide();
-var CERM_SRC_customername=$('#CERM_SRC_tb_customername').val();
-var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
-var CERM_SRC_null='';
-if(CERM_SRC_customername!="SELECT")
-{
-$(".preloader").show();
-var  newPos= adjustPosition($('#CERM_SRC_btn_customernameseachbutton').position(),100,280);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_customername,CERM_SRC_null)
-}
-});
+    $('#CERM_SRC_btn_customernameseachbutton').click(function(){
+        $('#CERM_SRC_div_htmltable').hide();
+        $('#ERM_formsearchbutton').hide();
+        $('#CERM_SRC_lbl_error').hide();
+        var CERM_SRC_customername=$('#CERM_SRC_tb_customername').val();
+        var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
+        var CERM_SRC_null='';
+        if(CERM_SRC_customername!="SELECT")
+        {
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#CERM_SRC_btn_customernameseachbutton').position(),100,280);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_customername,CERM_SRC_null)
+        }
+    });
 //***************AMOUNT RANGE SEARCH CALL FUNCTION***************//
-$('#CERM_SRC_btn_amountrangesearchbutton').click(function(){
-$('#CERM_SRC_div_htmltable').hide();
-$('#ERM_formsearchbutton').hide();
-$('#CERM_SRC_lbl_error').hide();
-var CERM_SRC_fromamt=$('#CERM_SRC_tb_fromamount').val();
-var CERM_SRC_toamt=$('#CERM_SRC_tb_toamount').val();
-var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
-if((CERM_SRC_fromamt!="")&&(CERM_SRC_toamt!=""))
-{
-$(".preloader").show(); 
-var  newPos= adjustPosition($('#CERM_SRC_btn_amountrangesearchbutton').position(),100,280);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_fromamt,CERM_SRC_toamt)
-}
-});
+    $('#CERM_SRC_btn_amountrangesearchbutton').click(function(){
+        $('#CERM_SRC_div_htmltable').hide();
+        $('#ERM_formsearchbutton').hide();
+        $('#CERM_SRC_lbl_error').hide();
+        var CERM_SRC_fromamt=$('#CERM_SRC_tb_fromamount').val();
+        var CERM_SRC_toamt=$('#CERM_SRC_tb_toamount').val();
+        var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
+        if((CERM_SRC_fromamt!="")&&(CERM_SRC_toamt!=""))
+        {
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#CERM_SRC_btn_amountrangesearchbutton').position(),100,280);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_fromamt,CERM_SRC_toamt)
+        }
+    });
 //***************CONTACT NO SEARCH CALL FUNCTION***************//
-$('#CERM_SRC_btn_contactnoseachbutton').click(function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#CERM_SRC_btn_contactnoseachbutton').position(),100,280);
-resetPreloader(newPos);
-$('#CERM_SRC_div_htmltable').hide();
-$('#ERM_formsearchbutton').hide();
-$('#CERM_SRC_lbl_error').hide();
-var CERM_SRC_contactno=$('#CERM_SRC_tb_contactno').val();
-var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
-var CERM_SRC_null='';
-if(CERM_SRC_contactno!="SELECT")
-{
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_contactno,CERM_SRC_null)
-}
-});
+    $('#CERM_SRC_btn_contactnoseachbutton').click(function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#CERM_SRC_btn_contactnoseachbutton').position(),100,280);
+        resetPreloader(newPos);
+        $('#CERM_SRC_div_htmltable').hide();
+        $('#ERM_formsearchbutton').hide();
+        $('#CERM_SRC_lbl_error').hide();
+        var CERM_SRC_contactno=$('#CERM_SRC_tb_contactno').val();
+        var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
+        var CERM_SRC_null='';
+        if(CERM_SRC_contactno!="SELECT")
+        {
+            google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_contactno,CERM_SRC_null)
+        }
+    });
 //***************NATIONALITY SEARCH CALL FUNCTION***************//
-$('#CERM_SRC_btn_nationalityseachbutton').click(function(){
-$('#CERM_SRC_div_htmltable').hide();
-$('#ERM_formsearchbutton').hide();
-$('#CERM_SRC_lbl_error').hide();
-var CERM_SRC_nationality=$('#CERM_SRC_lb_nationality').val();
-var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
-var CERM_SRC_null='';
-if(CERM_SRC_nationality!="SELECT")
-{
-$(".preloader").show(); 
-var  newPos= adjustPosition($('#CERM_SRC_btn_nationalityseachbutton').position(),100,280);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_nationality,CERM_SRC_null)
-}
-});
+    $('#CERM_SRC_btn_nationalityseachbutton').click(function(){
+        $('#CERM_SRC_div_htmltable').hide();
+        $('#ERM_formsearchbutton').hide();
+        $('#CERM_SRC_lbl_error').hide();
+        var CERM_SRC_nationality=$('#CERM_SRC_lb_nationality').val();
+        var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
+        var CERM_SRC_null='';
+        if(CERM_SRC_nationality!="SELECT")
+        {
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#CERM_SRC_btn_nationalityseachbutton').position(),100,280);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_nationality,CERM_SRC_null)
+        }
+    });
 //***************USERSTAMP SEARCH CALL FUNCTION***************//
-$('#CERM_SRC_btn_userstampseachbutton').click(function(){
-$('#CERM_SRC_div_htmltable').hide();
-$('#ERM_formsearchbutton').hide();
-$('#CERM_SRC_lbl_error').hide();
-var CERM_SRC_userstamp=$('#CERM_SRC_lb_userstamp').val();
-var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
-var CERM_SRC_null='';
-if(CERM_SRC_userstamp!="SELECT")
-{
-$(".preloader").show();
-var  newPos= adjustPosition($('#CERM_SRC_btn_userstampseachbutton').position(),100,280);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_userstamp,CERM_SRC_null)
-}
-});
+    $('#CERM_SRC_btn_userstampseachbutton').click(function(){
+        $('#CERM_SRC_div_htmltable').hide();
+        $('#ERM_formsearchbutton').hide();
+        $('#CERM_SRC_lbl_error').hide();
+        var CERM_SRC_userstamp=$('#CERM_SRC_lb_userstamp').val();
+        var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
+        var CERM_SRC_null='';
+        if(CERM_SRC_userstamp!="SELECT")
+        {
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#CERM_SRC_btn_userstampseachbutton').position(),100,280);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_userstamp,CERM_SRC_null)
+        }
+    });
 //***************TIMESTAMP SEARCH CALL FUNCTION***************//
-$('#CERM_SRC_btn_timestampseachbutton').click(function(){
-$('#CERM_SRC_div_htmltable').hide();
-$('#ERM_formsearchbutton').hide();
-$('#CERM_SRC_lbl_error').hide();
-var CERM_SRC_fromtimestamp=$('#CERM_SRC_db_fromtimestamp').val();
-var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
-var CERM_SRC_totimestamp=$('#CERM_SRC_db_totimestamp').val();
-if((CERM_SRC_fromtimestamp!="")&&(CERM_SRC_fromtimestamp!=""))
-{
-$(".preloader").show();
-var  newPos= adjustPosition($('#CERM_SRC_btn_timestampseachbutton').position(),100,280);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_fromtimestamp,CERM_SRC_totimestamp)
-}
-});
-
- //***************auto complete highlighted function***************//
-  function CUSTOMER_SEARCH_highlightSearchText() {
-    $.ui.autocomplete.prototype._renderItem = function( ul, item) {
-      var re = new RegExp(this.term, "i") ;
-      var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
-      return $( "<li></li>" )
-      .data("item.autocomplete", item)
-      .append("<a>" + t + "</a>")
-      .appendTo(ul);
-    };
-  }
-
- //***************CUSTOMER NAME AUTOCOMPLETE***************//
-  var customername_array=[];
-  var CSRC_customerflag;
-  function FormTableDateFormat(inputdate)
-  {
-    var string = inputdate.split("-");
-    return string[2]+'-'+ string[1]+'-'+string[0];
-  }
-  function CERM_SRC_customersearchresponse(customer_response)
-  {
-    customername_array=customer_response;
-    $("#CERM_SRC_tb_customername").val("");
-    $(".preloader").hide();
-  }
-  $("#CERM_SRC_tb_customername").keypress(function(){
-  CSRC_customerflag=0;
-    CUSTOMER_SEARCH_highlightSearchText();
-    $('#CERM_SRC_tb_customername').autocomplete({
-      source: customername_array,
-      select: ERM_SEARCH_AutoCompleteSelectHandler
+    $('#CERM_SRC_btn_timestampseachbutton').click(function(){
+        $('#CERM_SRC_div_htmltable').hide();
+        $('#ERM_formsearchbutton').hide();
+        $('#CERM_SRC_lbl_error').hide();
+        var CERM_SRC_fromtimestamp=$('#CERM_SRC_db_fromtimestamp').val();
+        var CERM_SRC_ermoption=$('#CERM_SRC_lb_main').val();
+        var CERM_SRC_totimestamp=$('#CERM_SRC_db_totimestamp').val();
+        if((CERM_SRC_fromtimestamp!="")&&(CERM_SRC_fromtimestamp!=""))
+        {
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#CERM_SRC_btn_timestampseachbutton').position(),100,280);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_searchresponse).CERM_SRC_searchdetails(CERM_SRC_ermoption,CERM_SRC_fromtimestamp,CERM_SRC_totimestamp)
+        }
     });
-  });
 
- /**********CUSTOMER AUTO ERROR MESSAGE******************/
-$(document).on('change','.customernameautovalidate',function(){
-if(CSRC_customerflag==1){
-$('#customernameautocompleteerrormsg').hide();
-}
-else
-{
-$('#customernameautocompleteerrormsg').show();
-$("#CERM_SRC_btn_customernameseachbutton").attr("disabled", "disabled");
-}
-if($('#CERM_SRC_tb_customername').val()=="")
-{
-$('#customernameautocompleteerrormsg').hide();
-$("#CERM_SRC_btn_customernameseachbutton").attr("disabled", "disabled");
-}
-});
-function ERM_SEARCH_AutoCompleteSelectHandler(event, ui) {
-CSRC_customerflag=1;
-$('#customernameautocompleteerrormsg').hide();
-$('#CERM_SRC_btn_customernameseachbutton').removeAttr("disabled");
-}
+    //***************auto complete highlighted function***************//
+    function CUSTOMER_SEARCH_highlightSearchText() {
+        $.ui.autocomplete.prototype._renderItem = function( ul, item) {
+            var re = new RegExp(this.term, "i") ;
+            var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
+            return $( "<li></li>" )
+                    .data("item.autocomplete", item)
+                    .append("<a>" + t + "</a>")
+                    .appendTo(ul);
+        };
+    }
+
+    //***************CUSTOMER NAME AUTOCOMPLETE***************//
+    var customername_array=[];
+    var CSRC_customerflag;
+    function FormTableDateFormat(inputdate)
+    {
+        var string = inputdate.split("-");
+        return string[2]+'-'+ string[1]+'-'+string[0];
+    }
+    function CERM_SRC_customersearchresponse(customer_response)
+    {
+        customername_array=customer_response;
+        $("#CERM_SRC_tb_customername").val("");
+        $(".preloader").hide();
+    }
+    $("#CERM_SRC_tb_customername").keypress(function(){
+        CSRC_customerflag=0;
+        CUSTOMER_SEARCH_highlightSearchText();
+        $('#CERM_SRC_tb_customername').autocomplete({
+            source: customername_array,
+            select: ERM_SEARCH_AutoCompleteSelectHandler
+        });
+    });
+
+    /**********CUSTOMER AUTO ERROR MESSAGE******************/
+    $(document).on('change','.customernameautovalidate',function(){
+        if(CSRC_customerflag==1){
+            $('#customernameautocompleteerrormsg').hide();
+        }
+        else
+        {
+            $('#customernameautocompleteerrormsg').show();
+            $("#CERM_SRC_btn_customernameseachbutton").attr("disabled", "disabled");
+        }
+        if($('#CERM_SRC_tb_customername').val()=="")
+        {
+            $('#customernameautocompleteerrormsg').hide();
+            $("#CERM_SRC_btn_customernameseachbutton").attr("disabled", "disabled");
+        }
+    });
+    function ERM_SEARCH_AutoCompleteSelectHandler(event, ui) {
+        CSRC_customerflag=1;
+        $('#customernameautocompleteerrormsg').hide();
+        $('#CERM_SRC_btn_customernameseachbutton').removeAttr("disabled");
+    }
 //***************CONTACT NO AUTOCOMPLETE***************//
-  var contactno_array=[];
-  var CSRC_contactflag;
-  function CERM_SRC_contactsearchresponse(contact_response)
-  {
-    contactno_array=contact_response;
-    $("#CERM_SRC_tb_contactno").val("");
-    $(".preloader").hide();
-  }
-  $("#CERM_SRC_tb_contactno").keypress(function(){
-  CSRC_contactflag=0;
-    CUSTOMER_SEARCH_highlightSearchText();
-    $('#CERM_SRC_tb_contactno').autocomplete({
-      source: contactno_array,
-      select: ERM_SEARCH_contactAutoCompleteSelectHandler
+    var contactno_array=[];
+    var CSRC_contactflag;
+    function CERM_SRC_contactsearchresponse(contact_response)
+    {
+        contactno_array=contact_response;
+        $("#CERM_SRC_tb_contactno").val("");
+        $(".preloader").hide();
+    }
+    $("#CERM_SRC_tb_contactno").keypress(function(){
+        CSRC_contactflag=0;
+        CUSTOMER_SEARCH_highlightSearchText();
+        $('#CERM_SRC_tb_contactno').autocomplete({
+            source: contactno_array,
+            select: ERM_SEARCH_contactAutoCompleteSelectHandler
+        });
     });
-  });
 
- /**********CUSTOMER AUTO ERROR MESSAGE******************/
-$(document).on('change','.contactnoautovalidate',function(){
-if(CSRC_contactflag==1){
-$('#contactnoautocompleteerrormsg').hide();
-}
-else
-{
-$('#contactnoautocompleteerrormsg').show();
-$("#CERM_SRC_btn_contactnoseachbutton").attr("disabled", "disabled");
-}
-if($('#CERM_SRC_tb_contactno').val()=="")
-{
-$('#contactnoautocompleteerrormsg').hide();
-$("#CERM_SRC_btn_contactnoseachbutton").attr("disabled", "disabled");
-}
-});
-function ERM_SEARCH_contactAutoCompleteSelectHandler(event, ui) {
-CSRC_contactflag=1;
-$('#contactnoautocompleteerrormsg').hide();
-$('#CERM_SRC_btn_contactnoseachbutton').removeAttr("disabled");
-}
+    /**********CUSTOMER AUTO ERROR MESSAGE******************/
+    $(document).on('change','.contactnoautovalidate',function(){
+        if(CSRC_contactflag==1){
+            $('#contactnoautocompleteerrormsg').hide();
+        }
+        else
+        {
+            $('#contactnoautocompleteerrormsg').show();
+            $("#CERM_SRC_btn_contactnoseachbutton").attr("disabled", "disabled");
+        }
+        if($('#CERM_SRC_tb_contactno').val()=="")
+        {
+            $('#contactnoautocompleteerrormsg').hide();
+            $("#CERM_SRC_btn_contactnoseachbutton").attr("disabled", "disabled");
+        }
+    });
+    function ERM_SEARCH_contactAutoCompleteSelectHandler(event, ui) {
+        CSRC_contactflag=1;
+        $('#contactnoautocompleteerrormsg').hide();
+        $('#CERM_SRC_btn_contactnoseachbutton').removeAttr("disabled");
+    }
 //***************HTML TABLE FUNCTION***************//
-function CERM_SRC_searchresponse(response)
-{
-$("#CERM_SRC_btn_searchbutton").attr("disabled","disabled");
-$("#CERM_SRC_btn_deletebutton").attr("disabled","disabled");
-$('#CERM_SRC_lbl_error').text("");
-var CERM_SRC_resultarray=[];
-CERM_SRC_resultarray=response[0];
-var CERM_SRC_header=response[1];
-var CERM_SRC_input1=response[2];
-var CERM_SRC_input2=response[3];
-if(CERM_SRC_resultarray.length > 10){ 
-var px = '800px'
-$('#CERM_SRC_div_htmltable').css('height',px)
+    function CERM_SRC_searchresponse(response)
+    {
+        $("#CERM_SRC_btn_searchbutton").attr("disabled","disabled");
+        $("#CERM_SRC_btn_deletebutton").attr("disabled","disabled");
+        $('#CERM_SRC_lbl_error').text("");
+        var CERM_SRC_resultarray=[];
+        CERM_SRC_resultarray=response[0];
+        var CERM_SRC_header=response[1];
+        var CERM_SRC_input1=response[2];
+        var CERM_SRC_input2=response[3];
+        if(CERM_SRC_resultarray.length > 10){
+            var px = '800px'
+            $('#CERM_SRC_div_htmltable').css('height',px)
 //$('#CERM_SRC_tble_htmltable').css('height',px)
-}
-else
-{ 
-var x = CERM_SRC_resultarray.length*50+60;
-if(x <=100)
-{
-var px = '155px'
-$('#CERM_SRC_div_htmltable').css('height',px)
-$('#CERM_SRC_tble_htmltable').css('height',px)
-}
-else
-{
-var px = x+'px'
-$('#CERM_SRC_div_htmltable').css('height',px)
-$('#CERM_SRC_tble_htmltable').css('height',px)
-}
-}
-if(CERM_SRC_resultarray.length == 1) {var px ="125px"; $('#CERM_SRC_div_htmltable').css('height',px); $('#CERM_SRC_tble_htmltable').css('height',px)}
-     
-var value=''
-var value1='<thead class="srcresult"><tr><th width="20px"></th><th width="200px">CUSTOMER NAME</th><th width="50px">RENT</th><th width="75px">MOVINGDATE</th><th width="150px">MINIMUM STAY</th><th width="120px">OCCUPATION</th><th width="120px">NATIONALITY</th><th width="75px">NO OF GUESTS</th><th width="75px">AGE</th><th width="75px">CONTACT NO</th><th width="150px">EMAIL ID</th><th width="300px">COMMENTS</th><th width="200px">USERSTAMP</th><th width="120px">TIMESTAMP</th></tr></thead>'
-$('#CERM_SRC_lbl_error').show();
-$('#CERM_SRC_tble_htmltable').html(value1);
-if(CERM_SRC_resultarray.length!=0)
-{
-for(var i=0;i<CERM_SRC_resultarray.length;i++)
-{
-var rowid=i+1;
-var CERM_SRC_splitvalue=CERM_SRC_resultarray[i];
-value='<tbody><tr><td><input id = '+rowid+' type="radio" name="radiobuttons" value= '+CERM_SRC_splitvalue.ID+' class="updateformrecords"></td><td>'+CERM_SRC_splitvalue.CUSTOMER+'</td><td>'+CERM_SRC_splitvalue.RENT+'</td><td>'+CERM_SRC_splitvalue.MOVINGDATE+'</td><td>'+CERM_SRC_splitvalue.MINIMUMSTAY+'</td><td>'+CERM_SRC_splitvalue.OCCUPATION+'</td><td>'+CERM_SRC_splitvalue.NATIONALITY+'</td><td>'+CERM_SRC_splitvalue.GUEST+'</td><td>'+CERM_SRC_splitvalue.AGE+'</td><td>'+CERM_SRC_splitvalue.CONTACT+'</td><td>'+CERM_SRC_splitvalue.MAIL+'</td><td>'+CERM_SRC_splitvalue.COMMENTS+'</td><td>'+CERM_SRC_splitvalue.USERSTAMP+'</td><td>'+CERM_SRC_splitvalue.TIMESTAMP+'</td></tr>'
-$('#CERM_SRC_tble_htmltable').append(value);
-}
-}
-if(CERM_SRC_header==2)
-{
- if((CERM_SRC_header==2)&&(CERM_SRC_resultarray.length!=0))
- {
- var CERM_SRC_errorflag=0;
- var CERM_SRC_customerheader="DETAILS OF SELECTED CUSTOMER : "+CERM_SRC_input1
- $('#CERM_SRC_div_htmltable').show();
- }
- else
- {
- CERM_SRC_errorflag=1;
- CERM_SRC_customerheader="NO DETAILS OF SELECTED CUSTOMER: "+CERM_SRC_input1
- }
- }
- if(CERM_SRC_header==1)
- {
- if((CERM_SRC_header==1)&&(CERM_SRC_resultarray.length!=0))
- {
- var CERM_SRC_errorflag=0;
- var CERM_SRC_customerheader="DETAILS OF SELECTED AMOUNT RANGE : "+CERM_SRC_input1+" TO "+CERM_SRC_input2
- $('#CERM_SRC_div_htmltable').show();
- }
- else
- {
- CERM_SRC_errorflag=1;
- CERM_SRC_customerheader="DETAILS OF SELECTED AMOUNT RANGE : "+CERM_SRC_input1+" TO "+CERM_SRC_input2
- }
- }
- if(CERM_SRC_header==3)
- {
- if((CERM_SRC_header==3)&&(CERM_SRC_resultarray.length!=0))
- {
- var CERM_SRC_errorflag=0;
- var CERM_SRC_customerheader="DETAILS OF SELECTED CONTACT NO : "+CERM_SRC_input1
- $('#CERM_SRC_div_htmltable').show();
- }
- else
- {
- CERM_SRC_errorflag=1;
- CERM_SRC_customerheader="DETAILS OF SELECTED CONTACT NO : "+CERM_SRC_input1
- }
- }
- if(CERM_SRC_header==4)
-{
- if((CERM_SRC_header==4)&&(CERM_SRC_resultarray.length!=0))
- {
- var CERM_SRC_errorflag=0;
- var CERM_SRC_customerheader="DETAILS OF SELECTED NATIONALITY: "+CERM_SRC_input1
- $('#CERM_SRC_div_htmltable').show();
- }
- else
- {
- CERM_SRC_errorflag=1;
- CERM_SRC_customerheader="NO DETAILS OF SELECTED NATIONALITY: "+CERM_SRC_input1
- }
- }
-if(CERM_SRC_header==6)
-{
- if((CERM_SRC_header==6)&&(CERM_SRC_resultarray.length!=0))
- {
- var CERM_SRC_errorflag=0;
- var CERM_SRC_customerheader="DETAILS OF SELECTED USERSTAMP: "+CERM_SRC_input1
- $('#CERM_SRC_div_htmltable').show();
- }
- else
- {
- CERM_SRC_errorflag=1;
- CERM_SRC_customerheader="NO DETAILS OF SELECTED USERSTAMP: "+CERM_SRC_input1
- }
- }
- if(CERM_SRC_header==5)
-{
-var CERM_SRC_frominput=$('#CERM_SRC_db_fromtimestamp').val();
-var CERM_SRC_toinput=$('#CERM_SRC_db_totimestamp').val();
- if((CERM_SRC_header==5)&&(CERM_SRC_resultarray.length!=0))
- {
- var CERM_SRC_errorflag=0;
- var CERM_SRC_customerheader="DETAILS OF SELECTED TIMESTAMP: "+CERM_SRC_frominput+" TO "+CERM_SRC_toinput
- $('#CERM_SRC_div_htmltable').show();
- }
- else
- {
- CERM_SRC_errorflag=1;
- CERM_SRC_customerheader="NO DETAILS OF SELECTED TIMESTAMP: "+CERM_SRC_frominput+" TO "+CERM_SRC_toinput
- }
- }
- if(CERM_SRC_errorflag==0)
- {
-$('#CERM_SRC_lbl_error').text(CERM_SRC_customerheader);
-$('#CERM_SRC_lbl_error').removeClass("errormsg");
-$('#CERM_SRC_lbl_error').addClass("srctitle").show();
-$('#ERM_formsearchbutton').show();
-}else
-{
-$('#CERM_SRC_lbl_error').text(CERM_SRC_customerheader);
-$('#CERM_SRC_lbl_error').removeClass("srctitle");
-$('#CERM_SRC_lbl_error').addClass("errormsg").show();
-}
-$("#CERM_SRC_btn_customernameseachbutton").attr("disabled", "disabled");
-$("#CERM_SRC_tb_customername").val("")
-$("#CERM_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
-$('#CERM_SRC_tb_fromamount').val('');
-$('#CERM_SRC_tb_toamount').val('');
-$("#CERM_SRC_btn_contactnoseachbutton").attr("disabled", "disabled");
-$("#CERM_SRC_tb_contactno").val("");
-$('#CERM_SRC_lb_nationality')[0].selectedIndex=0;
-$("#CERM_SRC_btn_nationalityseachbutton").attr("disabled", "disabled");
-$('#CERM_SRC_lb_userstamp')[0].selectedIndex=0;
-$("#CERM_SRC_btn_userstampseachbutton").attr("disabled", "disabled");
-$('#CERM_SRC_db_fromtimestamp').val('');
-$('#CERM_SRC_db_totimestamp').val('');
-$("#CERM_SRC_btn_timestampseachbutton").attr("disabled", "disabled");
-$(".preloader").hide(); 
-}
-//***************PASSING UPDATION ERM RECORD ID***************//
-$(document).on('change','.updateformrecords',function(){
-$("#CERM_SRC_btn_searchbutton").removeAttr("disabled");
-$("#CERM_SRC_btn_deletebutton").removeAttr("disabled");
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-});
+        }
+        else
+        {
+            var x = CERM_SRC_resultarray.length*50+60;
+            if(x <=100)
+            {
+                var px = '155px'
+                $('#CERM_SRC_div_htmltable').css('height',px)
+                $('#CERM_SRC_tble_htmltable').css('height',px)
+            }
+            else
+            {
+                var px = x+'px'
+                $('#CERM_SRC_div_htmltable').css('height',px)
+                $('#CERM_SRC_tble_htmltable').css('height',px)
+            }
+        }
+        if(CERM_SRC_resultarray.length == 1) {var px ="125px"; $('#CERM_SRC_div_htmltable').css('height',px); $('#CERM_SRC_tble_htmltable').css('height',px)}
 
-$(document).on('click','#CERM_SRC_btn_searchbutton',function(){
-$(".preloader").show(); 
-var  newPos= adjustPosition($('#CERM_SRC_btn_searchbutton').position(),100,280);
-resetPreloader(newPos);
-$("#CERM_SRC_btn_searchbutton").attr("disabled","disabled");
-$("#CERM_SRC_btn_deletebutton").attr("disabled","disabled");
-$("#CERM_SRC_btn_savebutton").attr("disabled", "disabled");
-$("#CERM_SRC_btn_ermupdatebutton").attr("disabled", "disabled");
- var CERM_SRC_id=$("input[name=radiobuttons]:checked").val();
- $('#CERM_SRC_tb_id').val(CERM_SRC_id)
- var rowid=$("input[name=radiobuttons]:checked").attr('id');
-$('#CERM_SRC_tble_htmltable tr:eq('+rowid+')').each(function () {
-var $tds = $(this).find('td'),
-name = $tds.eq(1).text(),
-rent = $tds.eq(2).text(),
-movingdate = $tds.eq(3).text(),
-minimumstay = $tds.eq(4).text(),
-occupation = $tds.eq(5).text(),
-nationality = $tds.eq(6).text(),
-guest = $tds.eq(7).text(),
-age = $tds.eq(8).text(),
-contact = $tds.eq(9).text(),
-email = $tds.eq(10).text(),
-comments = $tds.eq(11).text();
-var namelength=name.length;
-var emaillength=email.length;
-$('#CERM_SRC_tb_customernamesrc').val(name)
-$('#CERM_SRC_tb_customernamesrc').attr("size",namelength);
-$('#CERM_SRC_tb_rent').val(rent);
-var newmovingdate=movingdate.split('-');
-var CERM_NEWsysdate = new Date();
-$('#CERM_SRC_db_movingdate').datepicker("option","minDate",new Date(newmovingdate[2]-1,newmovingdate[1]-1,newmovingdate[0]));
-$('#CERM_SRC_db_movingdate').datepicker("option","maxDate",new Date(CERM_NEWsysdate.getFullYear(),CERM_NEWsysdate.getMonth()+3,CERM_NEWsysdate.getDate()));
-$('#CERM_SRC_db_movingdate').val(movingdate);
-$('#CERM_SRC_tb_minimumstay').val(minimumstay);
-$('#CERM_SRC_lb_occupation').val(occupation);
-$('#CERM_SRC_tb_others').val('').hide();
-$('#CERM_SRC_lb_nationselect').val(nationality);
-$('#CERM_SRC_tb_noofguests').val(guest);
-$('#CERM_SRC_tb_age').val(age);
-$('#CERM_SRC_tb_contact').val(contact);
-$('#CERM_SRC_tb_mailid').val(email);
-$('#CERM_SRC_tb_mailid').attr("size",emaillength);
-$('#CERM_SRC_ta_comments').val(comments);
-$(".preloader").hide(); 
-});
-$('#CERM_SRC_update_table').show();
-$('#updatebuttontable').show();
-});
-$('#CERM_SRC_btn_ermupdatebutton').click(function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#CERM_SRC_btn_ermupdatebutton').position(),100,280);
-resetPreloader(newPos);
-var id=$('#CERM_SRC_tb_id').val();
-var customer=$('#CERM_SRC_tb_customernamesrc').val();
-var rent=$('#CERM_SRC_tb_rent').val();
-var movingdate=$('#CERM_SRC_db_movingdate').val();
-var minimumstay=$('#CERM_SRC_tb_minimumstay').val();
-var occupation=$('#CERM_SRC_lb_occupation').val();
-var others=$('#CERM_SRC_tb_others').val();
-var nationality=$('#CERM_SRC_lb_nationselect').val();
-var guests=$('#CERM_SRC_tb_noofguests').val();
-var age=$('#CERM_SRC_tb_age').val();
-var contact=$('#CERM_SRC_tb_contact').val();
-var mailid=$('#CERM_SRC_tb_mailid').val();
-var comments=$('#CERM_SRC_ta_comments').val();
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_ERMupdationtResponse).CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occupation,others,nationality,guests,age,contact,mailid,comments,CERM_oldvalue);
-});
-function ERM_updatereset()
-{
-$('#CERM_SRC_div_htmltable').hide();
-$('#CERM_SRC_lbl_error').hide();
-$('#CERM_SRC_formmainform').find('input[type=text]').val('');
-$('#CERM_SRC_update_table').hide();
-$('#updatebuttontable').hide();
-$("#CERM_SRC_btn_savebutton").attr("disabled", "disabled");
-$("#CERM_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
-$("#CERM_SRC_lb_nationselect")[0].selectedIndex = 0;
-$("#CERM_SRC_lb_occupation")[0].selectedIndex = 0;
-$('#ERM_formsearchbutton').hide();
-}
-function CERM_SRC_ERMupdationtResponse(res)
-{
-$(".preloader").hide();
-if(res=='UPDATION')
-{
-ERM_updatereset();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[9],position:{top:150,left:500}}});
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[12],position:$('#CERM_SRC_btn_ermupdatebutton').position()}});
-}
-}
-function CERM_SRC_ERMdeletionResponse(res)
-{
-$(".preloader").hide();
-if(res=='DELETION')
-{
-ERM_updatereset();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[10],position:{top:150,left:500}}});
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[7],position:$('#ERM_formsearchbutton').position()}});
-}
-}
-$('#CERM_SRC_btn_deletebutton').click(function(){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE/DELETE",msgcontent:errormsg[8],confirmation:true,position:$('#ERM_formsearchbutton').position()}});
-});
-$(document).on('click','.messageconfirm',function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#ERM_formsearchbutton').position(),100,230);
-resetPreloader(newPos);
-var CERM_SRC_id=$("input[name=radiobuttons]:checked").val();
-google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_ERMdeletionResponse).CERM_SRC_ERMdeletionrecord(CERM_SRC_id);
-});
-$('#CERM_SRC_formmainform').show();
+        var value=''
+        var value1='<thead class="srcresult"><tr><th width="20px"></th><th width="200px">CUSTOMER NAME</th><th width="50px">RENT</th><th width="75px">MOVINGDATE</th><th width="150px">MINIMUM STAY</th><th width="120px">OCCUPATION</th><th width="120px">NATIONALITY</th><th width="75px">NO OF GUESTS</th><th width="75px">AGE</th><th width="75px">CONTACT NO</th><th width="150px">EMAIL ID</th><th width="300px">COMMENTS</th><th width="200px">USERSTAMP</th><th width="120px">TIMESTAMP</th></tr></thead>'
+        $('#CERM_SRC_lbl_error').show();
+        $('#CERM_SRC_tble_htmltable').html(value1);
+        if(CERM_SRC_resultarray.length!=0)
+        {
+            for(var i=0;i<CERM_SRC_resultarray.length;i++)
+            {
+                var rowid=i+1;
+                var CERM_SRC_splitvalue=CERM_SRC_resultarray[i];
+                value='<tbody><tr><td><input id = '+rowid+' type="radio" name="radiobuttons" value= '+CERM_SRC_splitvalue.ID+' class="updateformrecords"></td><td>'+CERM_SRC_splitvalue.CUSTOMER+'</td><td>'+CERM_SRC_splitvalue.RENT+'</td><td>'+CERM_SRC_splitvalue.MOVINGDATE+'</td><td>'+CERM_SRC_splitvalue.MINIMUMSTAY+'</td><td>'+CERM_SRC_splitvalue.OCCUPATION+'</td><td>'+CERM_SRC_splitvalue.NATIONALITY+'</td><td>'+CERM_SRC_splitvalue.GUEST+'</td><td>'+CERM_SRC_splitvalue.AGE+'</td><td>'+CERM_SRC_splitvalue.CONTACT+'</td><td>'+CERM_SRC_splitvalue.MAIL+'</td><td>'+CERM_SRC_splitvalue.COMMENTS+'</td><td>'+CERM_SRC_splitvalue.USERSTAMP+'</td><td>'+CERM_SRC_splitvalue.TIMESTAMP+'</td></tr>'
+                $('#CERM_SRC_tble_htmltable').append(value);
+            }
+        }
+        if(CERM_SRC_header==2)
+        {
+            if((CERM_SRC_header==2)&&(CERM_SRC_resultarray.length!=0))
+            {
+                var CERM_SRC_errorflag=0;
+                var CERM_SRC_customerheader="DETAILS OF SELECTED CUSTOMER : "+CERM_SRC_input1
+                $('#CERM_SRC_div_htmltable').show();
+            }
+            else
+            {
+                CERM_SRC_errorflag=1;
+                CERM_SRC_customerheader="NO DETAILS OF SELECTED CUSTOMER: "+CERM_SRC_input1
+            }
+        }
+        if(CERM_SRC_header==1)
+        {
+            if((CERM_SRC_header==1)&&(CERM_SRC_resultarray.length!=0))
+            {
+                var CERM_SRC_errorflag=0;
+                var CERM_SRC_customerheader="DETAILS OF SELECTED AMOUNT RANGE : "+CERM_SRC_input1+" TO "+CERM_SRC_input2
+                $('#CERM_SRC_div_htmltable').show();
+            }
+            else
+            {
+                CERM_SRC_errorflag=1;
+                CERM_SRC_customerheader="DETAILS OF SELECTED AMOUNT RANGE : "+CERM_SRC_input1+" TO "+CERM_SRC_input2
+            }
+        }
+        if(CERM_SRC_header==3)
+        {
+            if((CERM_SRC_header==3)&&(CERM_SRC_resultarray.length!=0))
+            {
+                var CERM_SRC_errorflag=0;
+                var CERM_SRC_customerheader="DETAILS OF SELECTED CONTACT NO : "+CERM_SRC_input1
+                $('#CERM_SRC_div_htmltable').show();
+            }
+            else
+            {
+                CERM_SRC_errorflag=1;
+                CERM_SRC_customerheader="DETAILS OF SELECTED CONTACT NO : "+CERM_SRC_input1
+            }
+        }
+        if(CERM_SRC_header==4)
+        {
+            if((CERM_SRC_header==4)&&(CERM_SRC_resultarray.length!=0))
+            {
+                var CERM_SRC_errorflag=0;
+                var CERM_SRC_customerheader="DETAILS OF SELECTED NATIONALITY: "+CERM_SRC_input1
+                $('#CERM_SRC_div_htmltable').show();
+            }
+            else
+            {
+                CERM_SRC_errorflag=1;
+                CERM_SRC_customerheader="NO DETAILS OF SELECTED NATIONALITY: "+CERM_SRC_input1
+            }
+        }
+        if(CERM_SRC_header==6)
+        {
+            if((CERM_SRC_header==6)&&(CERM_SRC_resultarray.length!=0))
+            {
+                var CERM_SRC_errorflag=0;
+                var CERM_SRC_customerheader="DETAILS OF SELECTED USERSTAMP: "+CERM_SRC_input1
+                $('#CERM_SRC_div_htmltable').show();
+            }
+            else
+            {
+                CERM_SRC_errorflag=1;
+                CERM_SRC_customerheader="NO DETAILS OF SELECTED USERSTAMP: "+CERM_SRC_input1
+            }
+        }
+        if(CERM_SRC_header==5)
+        {
+            var CERM_SRC_frominput=$('#CERM_SRC_db_fromtimestamp').val();
+            var CERM_SRC_toinput=$('#CERM_SRC_db_totimestamp').val();
+            if((CERM_SRC_header==5)&&(CERM_SRC_resultarray.length!=0))
+            {
+                var CERM_SRC_errorflag=0;
+                var CERM_SRC_customerheader="DETAILS OF SELECTED TIMESTAMP: "+CERM_SRC_frominput+" TO "+CERM_SRC_toinput
+                $('#CERM_SRC_div_htmltable').show();
+            }
+            else
+            {
+                CERM_SRC_errorflag=1;
+                CERM_SRC_customerheader="NO DETAILS OF SELECTED TIMESTAMP: "+CERM_SRC_frominput+" TO "+CERM_SRC_toinput
+            }
+        }
+        if(CERM_SRC_errorflag==0)
+        {
+            $('#CERM_SRC_lbl_error').text(CERM_SRC_customerheader);
+            $('#CERM_SRC_lbl_error').removeClass("errormsg");
+            $('#CERM_SRC_lbl_error').addClass("srctitle").show();
+            $('#ERM_formsearchbutton').show();
+        }else
+        {
+            $('#CERM_SRC_lbl_error').text(CERM_SRC_customerheader);
+            $('#CERM_SRC_lbl_error').removeClass("srctitle");
+            $('#CERM_SRC_lbl_error').addClass("errormsg").show();
+        }
+        $("#CERM_SRC_btn_customernameseachbutton").attr("disabled", "disabled");
+        $("#CERM_SRC_tb_customername").val("")
+        $("#CERM_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
+        $('#CERM_SRC_tb_fromamount').val('');
+        $('#CERM_SRC_tb_toamount').val('');
+        $("#CERM_SRC_btn_contactnoseachbutton").attr("disabled", "disabled");
+        $("#CERM_SRC_tb_contactno").val("");
+        $('#CERM_SRC_lb_nationality')[0].selectedIndex=0;
+        $("#CERM_SRC_btn_nationalityseachbutton").attr("disabled", "disabled");
+        $('#CERM_SRC_lb_userstamp')[0].selectedIndex=0;
+        $("#CERM_SRC_btn_userstampseachbutton").attr("disabled", "disabled");
+        $('#CERM_SRC_db_fromtimestamp').val('');
+        $('#CERM_SRC_db_totimestamp').val('');
+        $("#CERM_SRC_btn_timestampseachbutton").attr("disabled", "disabled");
+        $(".preloader").hide();
+    }
+//***************PASSING UPDATION ERM RECORD ID***************//
+    $(document).on('change','.updateformrecords',function(){
+        $("#CERM_SRC_btn_searchbutton").removeAttr("disabled");
+        $("#CERM_SRC_btn_deletebutton").removeAttr("disabled");
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+    });
+
+    $(document).on('click','#CERM_SRC_btn_searchbutton',function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#CERM_SRC_btn_searchbutton').position(),100,280);
+        resetPreloader(newPos);
+        $("#CERM_SRC_btn_searchbutton").attr("disabled","disabled");
+        $("#CERM_SRC_btn_deletebutton").attr("disabled","disabled");
+        $("#CERM_SRC_btn_savebutton").attr("disabled", "disabled");
+        $("#CERM_SRC_btn_ermupdatebutton").attr("disabled", "disabled");
+        var CERM_SRC_id=$("input[name=radiobuttons]:checked").val();
+        $('#CERM_SRC_tb_id').val(CERM_SRC_id)
+        var rowid=$("input[name=radiobuttons]:checked").attr('id');
+        $('#CERM_SRC_tble_htmltable tr:eq('+rowid+')').each(function () {
+            var $tds = $(this).find('td'),
+                    name = $tds.eq(1).text(),
+                    rent = $tds.eq(2).text(),
+                    movingdate = $tds.eq(3).text(),
+                    minimumstay = $tds.eq(4).text(),
+                    occupation = $tds.eq(5).text(),
+                    nationality = $tds.eq(6).text(),
+                    guest = $tds.eq(7).text(),
+                    age = $tds.eq(8).text(),
+                    contact = $tds.eq(9).text(),
+                    email = $tds.eq(10).text(),
+                    comments = $tds.eq(11).text();
+            var namelength=name.length;
+            var emaillength=email.length;
+            $('#CERM_SRC_tb_customernamesrc').val(name)
+            $('#CERM_SRC_tb_customernamesrc').attr("size",namelength);
+            $('#CERM_SRC_tb_rent').val(rent);
+            var newmovingdate=movingdate.split('-');
+            var CERM_NEWsysdate = new Date();
+            $('#CERM_SRC_db_movingdate').datepicker("option","minDate",new Date(newmovingdate[2]-1,newmovingdate[1]-1,newmovingdate[0]));
+            $('#CERM_SRC_db_movingdate').datepicker("option","maxDate",new Date(CERM_NEWsysdate.getFullYear(),CERM_NEWsysdate.getMonth()+3,CERM_NEWsysdate.getDate()));
+            $('#CERM_SRC_db_movingdate').val(movingdate);
+            $('#CERM_SRC_tb_minimumstay').val(minimumstay);
+            $('#CERM_SRC_lb_occupation').val(occupation);
+            $('#CERM_SRC_tb_others').val('').hide();
+            $('#CERM_SRC_lb_nationselect').val(nationality);
+            $('#CERM_SRC_tb_noofguests').val(guest);
+            $('#CERM_SRC_tb_age').val(age);
+            $('#CERM_SRC_tb_contact').val(contact);
+            $('#CERM_SRC_tb_mailid').val(email);
+            $('#CERM_SRC_tb_mailid').attr("size",emaillength);
+            $('#CERM_SRC_ta_comments').val(comments);
+            $(".preloader").hide();
+        });
+        $('#CERM_SRC_update_table').show();
+        $('#updatebuttontable').show();
+    });
+    $('#CERM_SRC_btn_ermupdatebutton').click(function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#CERM_SRC_btn_ermupdatebutton').position(),100,280);
+        resetPreloader(newPos);
+        var id=$('#CERM_SRC_tb_id').val();
+        var customer=$('#CERM_SRC_tb_customernamesrc').val();
+        var rent=$('#CERM_SRC_tb_rent').val();
+        var movingdate=$('#CERM_SRC_db_movingdate').val();
+        var minimumstay=$('#CERM_SRC_tb_minimumstay').val();
+        var occupation=$('#CERM_SRC_lb_occupation').val();
+        var others=$('#CERM_SRC_tb_others').val();
+        var nationality=$('#CERM_SRC_lb_nationselect').val();
+        var guests=$('#CERM_SRC_tb_noofguests').val();
+        var age=$('#CERM_SRC_tb_age').val();
+        var contact=$('#CERM_SRC_tb_contact').val();
+        var mailid=$('#CERM_SRC_tb_mailid').val();
+        var comments=$('#CERM_SRC_ta_comments').val();
+        google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_ERMupdationtResponse).CERM_SRC_ERMupdationrecord(id,customer,rent,movingdate,minimumstay,occupation,others,nationality,guests,age,contact,mailid,comments,CERM_oldvalue);
+    });
+    function ERM_updatereset()
+    {
+        $('#CERM_SRC_div_htmltable').hide();
+        $('#CERM_SRC_lbl_error').hide();
+        $('#CERM_SRC_formmainform').find('input[type=text]').val('');
+        $('#CERM_SRC_update_table').hide();
+        $('#updatebuttontable').hide();
+        $("#CERM_SRC_btn_savebutton").attr("disabled", "disabled");
+        $("#CERM_SRC_btn_amountrangesearchbutton").attr("disabled", "disabled");
+        $("#CERM_SRC_lb_nationselect")[0].selectedIndex = 0;
+        $("#CERM_SRC_lb_occupation")[0].selectedIndex = 0;
+        $('#ERM_formsearchbutton').hide();
+    }
+    function CERM_SRC_ERMupdationtResponse(res)
+    {
+        $(".preloader").hide();
+        if(res=='UPDATION')
+        {
+            ERM_updatereset();
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[9],position:{top:150,left:500}}});
+        }
+        else
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[12],position:$('#CERM_SRC_btn_ermupdatebutton').position()}});
+        }
+    }
+    function CERM_SRC_ERMdeletionResponse(res)
+    {
+        $(".preloader").hide();
+        if(res=='DELETION')
+        {
+            ERM_updatereset();
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[10],position:{top:150,left:500}}});
+        }
+        else
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE",msgcontent:errormsg[7],position:$('#ERM_formsearchbutton').position()}});
+        }
+    }
+    $('#CERM_SRC_btn_deletebutton').click(function(){
+        $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ERM SEARCH/UPDATE/DELETE",msgcontent:errormsg[8],confirmation:true,position:$('#ERM_formsearchbutton').position()}});
+    });
+    $(document).on('click','.messageconfirm',function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#ERM_formsearchbutton').position(),100,230);
+        resetPreloader(newPos);
+        var CERM_SRC_id=$("input[name=radiobuttons]:checked").val();
+        google.script.run.withFailureHandler(CERN_SRC_error_message).withSuccessHandler(CERM_SRC_ERMdeletionResponse).CERM_SRC_ERMdeletionrecord(CERM_SRC_id);
+    });
+    $('#CERM_SRC_formmainform').show();
 });
 //***********************HTML PART***********************//
 </script>
 <body bgcolor="#E6E6FA" >
 <div class="wrapper">
-<div  class="preloader MaskPanel">
-<div class="preloader statusarea" >
-<div style="padding-top:90px; text-align:center">
-<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  />
-</div>
-</div>
-</div>
-<div class="title" id="fhead">
-<div style="padding-left:500px; text-align:left;">
-<p>
-<h3>ERM SEARCH/UPDATE/DELETE</h3>
-<p>
-</div>
-</div>
-<form id='CERM_SRC_errormessageform'>
-    			<table id='CERM_SRC_errormessagetable'>
-				</table>
-			</form>
-<form class="content" id="CERM_SRC_formmainform" hidden>
-<table>
-<tr>
-<td><label id="CERM_SRC_lbl_main" hidden>ERM SEARCH BY<em>*</em></label></td>
-<td><select  id='CERM_SRC_lb_main' name="CERM_SRC_lb_main" hidden>
-</select>
-</tr>
-</table>
-<table cellspacing="5px" id="CERM_SRC_tble_amountrangetable">
-<tr><td><label class="srctitle" id="CERM_SRC_amountrangesearch" name="CERM_SRC_amountrangesearch"> AMOUNT RANGE SEARCH </label></td></tr> 
-<tr>
-<td><label>FROM AMOUNT<em>*</em></label></td>
-<td>
-<input  type="text" name="CERM_SRC_tb_fromamount" id="CERM_SRC_tb_fromamount" class="amountvalidation" style="width:55px;"/></td>
-</tr>
-<tr>
-<td><label>TO AMOUNT<em>*</em></label></td>
-<td>
-<input  type="text" name="CERM_SRC_tb_toamount" id="CERM_SRC_tb_toamount" class="amountvalidation" style="width:55px;"/></td><td><label id="CERM_SRC_lbl_amounterrormsg" class='errormsg'></label></td>
-</tr>
-<tr><td>
-<input type="button"  id="CERM_SRC_btn_amountrangesearchbutton" class="maxbtn" value="SEARCH" disabled /> 
-</td></tr>
-</table>
-<table cellspacing="5px" id="CERM_SRC_tble_contactnotable">
-<tr><td><label class="srctitle"> CONTACT NO SEARCH </label></td></tr> 
-<tr>
-<td><label class="fontstyle">CONTACT NO<em>*</em></label></td>
-<td><input type="text"  id='CERM_SRC_tb_contactno' name="CERM_SRC_tb_contactno" class="contactnoautovalidate" ></td>
-<td><label id="contactnoautocompleteerrormsg" class="errormsg" hidden></label></td>
-</tr>
-<tr><td>
-<input type="button"  id="CERM_SRC_btn_contactnoseachbutton" class="maxbtn"  value="SEARCH" disabled  /> 
-</td></tr>
-</table>
-<table cellspacing="5px" id="CERM_SRC_tble_customernametable">
-<tr><td><label class="srctitle"> CUSTOMER NAME SEARCH </label></td></tr> 
-<tr>
-<td><label class="fontstyle">CUSTOMER NAME<em>*</em></label></td>
-<td><input type="text"  id='CERM_SRC_tb_customername' name="CERM_SRC_tb_customername" class="customernameautovalidate" ></td>
-<td><label id="customernameautocompleteerrormsg" class="errormsg" hidden></label></td>
-</tr>
-<tr><td>
-<input type="button"  id="CERM_SRC_btn_customernameseachbutton" class="maxbtn"  value="SEARCH" disabled/> 
-</td></tr>
-</table>
-<table cellspacing="5px" id="CERM_SRC_tble_nationalitytable">
-<tr><td><label class="srctitle"> NATIONALITY SEARCH </label></td></tr> 
-<tr>
-<td><label class="fontstyle">NATIONALITY<em>*</em></label></td>
-<td><select  id='CERM_SRC_lb_nationality' name="CERM_SRC_lb_nationality"  >
-<option>SELECT</option>
-</select>
-</tr>
-<tr><td>
-<input type="button"  id="CERM_SRC_btn_nationalityseachbutton" class="maxbtn"  value="SEARCH" disabled/> 
-</td></tr>
-</table>
-<table cellspacing="5px" id="CERM_SRC_tble_timestampsearchtable">
-<tr><td><label class="srctitle"> TIMESTAMP SEARCH </label></td></tr> 
-<tr>
-<td><label>FROM DATE<em>*</em></label></td>
-<td><input  type="text" name="CERM_SRC_db_fromtimestamp" id="CERM_SRC_db_fromtimestamp" class="timestampvalidation datemandtry" style="width:105px;height:20px"/></td>
-</tr>
-<tr>
-<td><label>TO DATE<em>*</em></label></td>
-<td>
-<input  type="text" name="CERM_SRC_db_totimestamp" id="CERM_SRC_db_totimestamp" class="timestampvalidation datemandtry" style="width:105px;height:20px"/></td>
-</tr>
-<tr><td>
-<input type="button"  id="CERM_SRC_btn_timestampseachbutton" class="maxbtn"  value="SEARCH" disabled /> 
-</td></tr>
-</table>
-<table cellspacing="5px" id="CERM_SRC_tble_userstampsearchtable">
-<tr><td><label class="srctitle"> USERSTAMP SEARCH </label></td></tr> 
-<tr>
-<td><label class="fontstyle">USERSTAMP<em>*</em></label></td>
-<td><select  id='CERM_SRC_lb_userstamp' name="CERM_SRC_lb_userstamp" >
-<option>SELECT</option>
-</select>
-</tr>
-<tr><td>
-<input type="button"  id="CERM_SRC_btn_userstampseachbutton" class="maxbtn"  value="SEARCH" disabled /> 
-</td></tr>
-</table>
-<table id="CERM_SRC_tble_header" ><tr><label align='bottom' name='error' id='CERM_SRC_lbl_error' class="srctitle" visible="false" ></label></tr></table>
-<div id ="CERM_SRC_div_htmltable" style="width:1820px;overflow:scroll;">
-<table id="CERM_SRC_tble_htmltable" border="1"  cellspacing="0" class="srcresult" style="width:1800px" >  
-</table>
-</div>
-<table id="ERM_formsearchbutton" hidden>
-<tr><td></td><td><input type="button" class="maxbtn"  value="SEARCH"  id="CERM_SRC_btn_searchbutton" disabled/></td><td><input type="button" class="maxbtn"  value="DELETE"  id="CERM_SRC_btn_deletebutton" disabled/></td></tr> 
-</table>
-<table cellspacing="5px" id="CERM_SRC_update_table">
-<tr><td><label class="srctitle"> ERM UPDATION FORM </label></td></tr> 
-<tr>
-<td><label >CUSTOMER NAME<em>*</em></label></td><td> <input  type="text" name="CERM_SRC_tb_customernamesrc" id="CERM_SRC_tb_customernamesrc" maxlength="50" class="autosize ermupdationclass"  /></td><td><input  type="text" name="CERM_SRC_tb_id" id="CERM_SRC_tb_id" hidden/></td>
-</tr>
-<tr>
-<td><label >RENT<em>*</em></label></td><td> <input type="text" name="CERM_SRC_tb_rent" id="CERM_SRC_tb_rent"  maxlength="8" style="width:75px" class="amtonly ermupdationclass"/></td> 
-</tr>
-<tr>
-<td><label >MOVING DATE<em>*</em></label></td><td> <input type="text" name="CERM_SRC_db_movingdate" id="CERM_SRC_db_movingdate" class="ermupdationclass datemandtry" style="width:75px"/></td>
-</tr>
-<tr>
-<td><label >MINIMUM STAY<em>*</em></label></td><td> <input type="text" name="CERM_SRC_tb_minimumstay" id="CERM_SRC_tb_minimumstay" class="ermupdationclass" maxlength="10" style="width:100px"/></td>
-</tr>
-<tr>
-<td><label >OCCUPATION<em>*</em></label></td>
-<td><select id='CERM_SRC_lb_occupation' name="CERM_SRC_lb_occupation" class="ermupdationclass" style="width:250px;" >
-<option>SELECT</option>
-</select>
-</tr>
-<tr>
-<td><label >  </label></td><td> <input type="text" name="CERM_SRC_tb_others" id="CERM_SRC_tb_others" maxlength="40"  class="autosize ermupdationclass" hidden/></td>
-</tr>
-<tr>
-<td><label >NATIONALITY</label></td>
-<td><select id='CERM_SRC_lb_nationselect' name="CERM_SRC_lb_nationselect" class="ermupdationclass" style="width:250px;">
-<option>SELECT</option>
-</select>
-</tr>
-<tr>
-<td><label >NUMBER OF GUESTS</label></td><td> <input type="text" name="CERM_SRC_tb_noofguests" id="CERM_SRC_tb_noofguests" style = 'width:75px;' maxlength="10" class="alphanumonly ermupdationclass"/></td>
-</tr>
-<tr>
-<td><label >AGE</label></td><td> <input type="text" name="CERM_SRC_tb_age" id="CERM_SRC_tb_age"  maxlength="10" style = 'width:75px;' class="alphanumonly ermupdationclass"/></td>
-</tr>
-<tr>
-<td><label >CONTACT NO</label></td><td> <input type="text" name="CERM_SRC_tb_contact" id="CERM_SRC_tb_contact"  maxlength="20" style = 'width:150px;' class="ermupdationclass"/></td>
-</tr>
-<tr>
-<td><label >E-MAIL ID</label></td><td> <input  type="text" name="CERM_SRC_tb_mailid" id="CERM_SRC_tb_mailid"  maxlength="40" class="ermupdationclass" /></td><td><label id="CERM_SRC_lbl_emailiderrormsg"  class="errormsg"></label></td>
-</tr>
-<tr>
-<td><label >COMMENTS<em>*</em></label></td><td><textarea  name="CERM_SRC_ta_comments" id="CERM_SRC_ta_comments"rows="5" class="ermupdationclass" cols="20" style = 'width = 2000px;'></textarea></td>
-</tr>
-</table>
-<table id="updatebuttontable">
-<tr><td width="50px"></td><td><input type="button" class="maxbtn"  value="UPDATE"  id="CERM_SRC_btn_ermupdatebutton" disabled/></td></tr> 
-</table>
-</form>
+    <div  class="preloader MaskPanel">
+        <div class="preloader statusarea" >
+            <div style="padding-top:90px; text-align:center">
+                <img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  />
+            </div>
+        </div>
+    </div>
+    <div class="title" id="fhead">
+        <div style="padding-left:500px; text-align:left;">
+            <p>
+            <h3>ERM SEARCH/UPDATE/DELETE</h3>
+            <p>
+        </div>
+    </div>
+    <form id='CERM_SRC_errormessageform'>
+        <table id='CERM_SRC_errormessagetable'>
+        </table>
+    </form>
+    <form class="content" id="CERM_SRC_formmainform" hidden>
+        <table>
+            <tr>
+                <td><label id="CERM_SRC_lbl_main" hidden>ERM SEARCH BY<em>*</em></label></td>
+                <td><select  id='CERM_SRC_lb_main' name="CERM_SRC_lb_main" hidden>
+                </select>
+            </tr>
+        </table>
+        <table cellspacing="5px" id="CERM_SRC_tble_amountrangetable">
+            <tr><td><label class="srctitle" id="CERM_SRC_amountrangesearch" name="CERM_SRC_amountrangesearch"> AMOUNT RANGE SEARCH </label></td></tr>
+            <tr>
+                <td><label>FROM AMOUNT<em>*</em></label></td>
+                <td>
+                    <input  type="text" name="CERM_SRC_tb_fromamount" id="CERM_SRC_tb_fromamount" class="amountvalidation" style="width:55px;"/></td>
+            </tr>
+            <tr>
+                <td><label>TO AMOUNT<em>*</em></label></td>
+                <td>
+                    <input  type="text" name="CERM_SRC_tb_toamount" id="CERM_SRC_tb_toamount" class="amountvalidation" style="width:55px;"/></td><td><label id="CERM_SRC_lbl_amounterrormsg" class='errormsg'></label></td>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CERM_SRC_btn_amountrangesearchbutton" class="maxbtn" value="SEARCH" disabled />
+            </td></tr>
+        </table>
+        <table cellspacing="5px" id="CERM_SRC_tble_contactnotable">
+            <tr><td><label class="srctitle"> CONTACT NO SEARCH </label></td></tr>
+            <tr>
+                <td><label class="fontstyle">CONTACT NO<em>*</em></label></td>
+                <td><input type="text"  id='CERM_SRC_tb_contactno' name="CERM_SRC_tb_contactno" class="contactnoautovalidate" ></td>
+                <td><label id="contactnoautocompleteerrormsg" class="errormsg" hidden></label></td>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CERM_SRC_btn_contactnoseachbutton" class="maxbtn"  value="SEARCH" disabled  />
+            </td></tr>
+        </table>
+        <table cellspacing="5px" id="CERM_SRC_tble_customernametable">
+            <tr><td><label class="srctitle"> CUSTOMER NAME SEARCH </label></td></tr>
+            <tr>
+                <td><label class="fontstyle">CUSTOMER NAME<em>*</em></label></td>
+                <td><input type="text"  id='CERM_SRC_tb_customername' name="CERM_SRC_tb_customername" class="customernameautovalidate" ></td>
+                <td><label id="customernameautocompleteerrormsg" class="errormsg" hidden></label></td>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CERM_SRC_btn_customernameseachbutton" class="maxbtn"  value="SEARCH" disabled/>
+            </td></tr>
+        </table>
+        <table cellspacing="5px" id="CERM_SRC_tble_nationalitytable">
+            <tr><td><label class="srctitle"> NATIONALITY SEARCH </label></td></tr>
+            <tr>
+                <td><label class="fontstyle">NATIONALITY<em>*</em></label></td>
+                <td><select  id='CERM_SRC_lb_nationality' name="CERM_SRC_lb_nationality"  >
+                    <option>SELECT</option>
+                </select>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CERM_SRC_btn_nationalityseachbutton" class="maxbtn"  value="SEARCH" disabled/>
+            </td></tr>
+        </table>
+        <table cellspacing="5px" id="CERM_SRC_tble_timestampsearchtable">
+            <tr><td><label class="srctitle"> TIMESTAMP SEARCH </label></td></tr>
+            <tr>
+                <td><label>FROM DATE<em>*</em></label></td>
+                <td><input  type="text" name="CERM_SRC_db_fromtimestamp" id="CERM_SRC_db_fromtimestamp" class="timestampvalidation datemandtry" style="width:105px;height:20px"/></td>
+            </tr>
+            <tr>
+                <td><label>TO DATE<em>*</em></label></td>
+                <td>
+                    <input  type="text" name="CERM_SRC_db_totimestamp" id="CERM_SRC_db_totimestamp" class="timestampvalidation datemandtry" style="width:105px;height:20px"/></td>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CERM_SRC_btn_timestampseachbutton" class="maxbtn"  value="SEARCH" disabled />
+            </td></tr>
+        </table>
+        <table cellspacing="5px" id="CERM_SRC_tble_userstampsearchtable">
+            <tr><td><label class="srctitle"> USERSTAMP SEARCH </label></td></tr>
+            <tr>
+                <td><label class="fontstyle">USERSTAMP<em>*</em></label></td>
+                <td><select  id='CERM_SRC_lb_userstamp' name="CERM_SRC_lb_userstamp" >
+                    <option>SELECT</option>
+                </select>
+            </tr>
+            <tr><td>
+                <input type="button"  id="CERM_SRC_btn_userstampseachbutton" class="maxbtn"  value="SEARCH" disabled />
+            </td></tr>
+        </table>
+        <table id="CERM_SRC_tble_header" ><tr><label align='bottom' name='error' id='CERM_SRC_lbl_error' class="srctitle" visible="false" ></label></tr></table>
+        <div id ="CERM_SRC_div_htmltable" style="width:1820px;overflow:scroll;">
+            <table id="CERM_SRC_tble_htmltable" border="1"  cellspacing="0" class="srcresult" style="width:1800px" >
+            </table>
+        </div>
+        <table id="ERM_formsearchbutton" hidden>
+            <tr><td></td><td><input type="button" class="maxbtn"  value="SEARCH"  id="CERM_SRC_btn_searchbutton" disabled/></td><td><input type="button" class="maxbtn"  value="DELETE"  id="CERM_SRC_btn_deletebutton" disabled/></td></tr>
+        </table>
+        <table cellspacing="5px" id="CERM_SRC_update_table">
+            <tr><td><label class="srctitle"> ERM UPDATION FORM </label></td></tr>
+            <tr>
+                <td><label >CUSTOMER NAME<em>*</em></label></td><td> <input  type="text" name="CERM_SRC_tb_customernamesrc" id="CERM_SRC_tb_customernamesrc" maxlength="50" class="autosize ermupdationclass"  /></td><td><input  type="text" name="CERM_SRC_tb_id" id="CERM_SRC_tb_id" hidden/></td>
+            </tr>
+            <tr>
+                <td><label >RENT<em>*</em></label></td><td> <input type="text" name="CERM_SRC_tb_rent" id="CERM_SRC_tb_rent"  maxlength="8" style="width:75px" class="amtonly ermupdationclass"/></td>
+            </tr>
+            <tr>
+                <td><label >MOVING DATE<em>*</em></label></td><td> <input type="text" name="CERM_SRC_db_movingdate" id="CERM_SRC_db_movingdate" class="ermupdationclass datemandtry" style="width:75px"/></td>
+            </tr>
+            <tr>
+                <td><label >MINIMUM STAY<em>*</em></label></td><td> <input type="text" name="CERM_SRC_tb_minimumstay" id="CERM_SRC_tb_minimumstay" class="ermupdationclass" maxlength="10" style="width:100px"/></td>
+            </tr>
+            <tr>
+                <td><label >OCCUPATION<em>*</em></label></td>
+                <td><select id='CERM_SRC_lb_occupation' name="CERM_SRC_lb_occupation" class="ermupdationclass" style="width:250px;" >
+                    <option>SELECT</option>
+                </select>
+            </tr>
+            <tr>
+                <td><label >  </label></td><td> <input type="text" name="CERM_SRC_tb_others" id="CERM_SRC_tb_others" maxlength="40"  class="autosize ermupdationclass" hidden/></td>
+            </tr>
+            <tr>
+                <td><label >NATIONALITY</label></td>
+                <td><select id='CERM_SRC_lb_nationselect' name="CERM_SRC_lb_nationselect" class="ermupdationclass" style="width:250px;">
+                    <option>SELECT</option>
+                </select>
+            </tr>
+            <tr>
+                <td><label >NUMBER OF GUESTS</label></td><td> <input type="text" name="CERM_SRC_tb_noofguests" id="CERM_SRC_tb_noofguests" style = 'width:75px;' maxlength="10" class="alphanumonly ermupdationclass"/></td>
+            </tr>
+            <tr>
+                <td><label >AGE</label></td><td> <input type="text" name="CERM_SRC_tb_age" id="CERM_SRC_tb_age"  maxlength="10" style = 'width:75px;' class="alphanumonly ermupdationclass"/></td>
+            </tr>
+            <tr>
+                <td><label >CONTACT NO</label></td><td> <input type="text" name="CERM_SRC_tb_contact" id="CERM_SRC_tb_contact"  maxlength="20" style = 'width:150px;' class="ermupdationclass"/></td>
+            </tr>
+            <tr>
+                <td><label >E-MAIL ID</label></td><td> <input  type="text" name="CERM_SRC_tb_mailid" id="CERM_SRC_tb_mailid"  maxlength="40" class="ermupdationclass" /></td><td><label id="CERM_SRC_lbl_emailiderrormsg"  class="errormsg"></label></td>
+            </tr>
+            <tr>
+                <td><label >COMMENTS<em>*</em></label></td><td><textarea  name="CERM_SRC_ta_comments" id="CERM_SRC_ta_comments"rows="5" class="ermupdationclass" cols="20" style = 'width = 2000px;'></textarea></td>
+            </tr>
+        </table>
+        <table id="updatebuttontable">
+            <tr><td width="50px"></td><td><input type="button" class="maxbtn"  value="UPDATE"  id="CERM_SRC_btn_ermupdatebutton" disabled/></td></tr>
+        </table>
+    </form>
 </body>
 </html>

@@ -103,7 +103,7 @@ try{
       CONF_ENTRY_stmt_customer.close();
       CONF_ENTRY_conn.commit();
       CONF_ENTRY_conn.close();
-      CONF_ENTRY_arr_data=true;
+        CONF_ENTRY_arr_data=true;
     }     
     return CONF_ENTRY_arr_data;
   }

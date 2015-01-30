@@ -22,22 +22,22 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
@@ -45,1764 +45,1764 @@
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 //JQUERY FUNCTIONALITIES
-$(document).ready(function() 
+$(document).ready(function()
 {
-$('textarea').autogrow({onInitialize: true});
+    $('textarea').autogrow({onInitialize: true});
 //FUNCTION TO ALERT TRY CATCH ERROR MESSAGE
-function onFailure(CEXTN_error) {
-$(".preloader").hide();
-if(CEXTN_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
+    function onFailure(CEXTN_error) {
+        $(".preloader").hide();
+        if(CEXTN_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+        {
 //$('#CEXTN_form').hide();
-CEXTN_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#CEXTN_form').replaceWith('<center><label class="dberrormsg">'+CEXTN_error+'</label></center>');
-}
-else
-{
-if(CEXTN_error=='TypeError: Cannot call method "getEvents" of undefined.'||CEXTN_error=='TypeError: Cannot call method "createEvent" of undefined.')
-{
-CEXTN_error=CEXTN_errmsgs[25];
-}
-else if(CEXTN_error=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
-{
-CEXTN_error=CEXTN_errmsgs[26];
-}
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_error,position:{top:150,left:500}}}); 
-}
-}
-$(".preloader").show();
-var CEXTN_cardcount=0;
-var CEXTN_chkunitdateflag=0;
-var CEXTN_chkcardlen=0;
-var CEXTN_chkfuturedate=0;
-var CEXTN_finalCard=[];
-var CEXTN_errmsgs=[];
-var CEXTN_diffunitlen=0;
-var CEXTN_allCustExtndts=[];
-var calentime=[];
-var CEXTN_currentcheckoutdate="";
-var CEXTN_initial_unitsdate="";
-var CEXTN_initial_unitedate="";
+            CEXTN_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+            $('#CEXTN_form').replaceWith('<center><label class="dberrormsg">'+CEXTN_error+'</label></center>');
+        }
+        else
+        {
+            if(CEXTN_error=='TypeError: Cannot call method "getEvents" of undefined.'||CEXTN_error=='TypeError: Cannot call method "createEvent" of undefined.')
+            {
+                CEXTN_error=CEXTN_errmsgs[25];
+            }
+            else if(CEXTN_error=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
+            {
+                CEXTN_error=CEXTN_errmsgs[26];
+            }
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_error,position:{top:150,left:500}}});
+        }
+    }
+    $(".preloader").show();
+    var CEXTN_cardcount=0;
+    var CEXTN_chkunitdateflag=0;
+    var CEXTN_chkcardlen=0;
+    var CEXTN_chkfuturedate=0;
+    var CEXTN_finalCard=[];
+    var CEXTN_errmsgs=[];
+    var CEXTN_diffunitlen=0;
+    var CEXTN_allCustExtndts=[];
+    var calentime=[];
+    var CEXTN_currentcheckoutdate="";
+    var CEXTN_initial_unitsdate="";
+    var CEXTN_initial_unitedate="";
 //JQUERY VALIDATION
-$('#CEXTN_tb_emailid').doValidation({rule:'general',prop:{uppercase:false,autosize:true}});
-$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
-$("#CEXTN_tb_passno").doValidation({rule:'general',prop:{autosize:true}});
-$("#CEXTN_tb_epno").doValidation({rule:'general',prop:{autosize:true}});
-$("#CEXTN_tb_comppostcode").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
-$(".numonly").doValidation({rule:'numbersonly',prop:{realpart:5}});
-$(".3digitdollaronly").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
-$("#CEXTN_tb_diffamtprocost").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
-$(".5digitdollaronly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-$("#CEXTN_tb_officeno").doValidation({rule:'numbersonly',prop:{realpart:8}});
-$("#CEXTN_tb_noticeperiod").doValidation({rule:'numbersonly',prop:{realpart:1}});
-$("#CEXTN_tb_mobileno").doValidation({rule:'numbersonly',prop:{realpart:8}});
-$("#CEXTN_tb_intmobileno").doValidation({rule:'numbersonly',prop:{realpart:20,leadzero:true}});
+    $('#CEXTN_tb_emailid').doValidation({rule:'general',prop:{uppercase:false,autosize:true}});
+    $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+    $("#CEXTN_tb_passno").doValidation({rule:'general',prop:{autosize:true}});
+    $("#CEXTN_tb_epno").doValidation({rule:'general',prop:{autosize:true}});
+    $("#CEXTN_tb_comppostcode").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
+    $(".numonly").doValidation({rule:'numbersonly',prop:{realpart:5}});
+    $(".3digitdollaronly").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
+    $("#CEXTN_tb_diffamtprocost").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+    $(".5digitdollaronly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+    $("#CEXTN_tb_officeno").doValidation({rule:'numbersonly',prop:{realpart:8}});
+    $("#CEXTN_tb_noticeperiod").doValidation({rule:'numbersonly',prop:{realpart:1}});
+    $("#CEXTN_tb_mobileno").doValidation({rule:'numbersonly',prop:{realpart:8}});
+    $("#CEXTN_tb_intmobileno").doValidation({rule:'numbersonly',prop:{realpart:20,leadzero:true}});
 //DATE PICKER FOR CHECK IN DATE ,DOB,PASSPORT DATE,NOTICE DATE,EP DATE
 ////SET CHECK OUT DATEPICKER
-$('#CEXTN_db_chkoutdate').datepicker({
-dateFormat: "dd-mm-yy",
-changeYear: true,
-changeMonth: true 
-});
+    $('#CEXTN_db_chkoutdate').datepicker({
+        dateFormat: "dd-mm-yy",
+        changeYear: true,
+        changeMonth: true
+    });
 //SET NOTICE PERIOD DATE DATEPICKER
-$('#CEXTN_db_noticeperioddate').datepicker({
-dateFormat: "dd-mm-yy" ,
-changeYear: true,
-changeMonth: true
-});
+    $('#CEXTN_db_noticeperioddate').datepicker({
+        dateFormat: "dd-mm-yy" ,
+        changeYear: true,
+        changeMonth: true
+    });
 //SET EP N PASSPORT MIN N MAX DATE
-var CEXTN_date = new Date(); 
-CEXTN_date.setDate( CEXTN_date.getDate() + 1 );  
-var CEXTN_newDate = CEXTN_date.toDateString(); 
-CEXTN_newDate = new Date( Date.parse(CEXTN_newDate ) );  
-$('#CEXTN_db_passdate').datepicker({
-dateFormat: "dd-mm-yy" ,
-changeYear: true,
-changeMonth: true
-});
-var passepnewCEXTN_d = new Date();
-var CEXTN_passyear = passepnewCEXTN_d.getFullYear()+10;
-var pass_changedmonth=new Date(passepnewCEXTN_d.setFullYear(CEXTN_passyear));
-$('#CEXTN_db_passdate').datepicker("option","minDate",CEXTN_newDate);
-$('#CEXTN_db_passdate').datepicker("option","maxDate",pass_changedmonth);
-var CEXTN_epyear = new Date().getFullYear()+3;
-var ep_changedmonth=new Date(passepnewCEXTN_d.setFullYear(CEXTN_epyear)); 
-$('#CEXTN_db_epdate').datepicker({
-dateFormat: "dd-mm-yy" ,
-changeYear: true,
-changeMonth: true
-});
-$('#CEXTN_db_epdate').datepicker("option","minDate",CEXTN_newDate);
-$('#CEXTN_db_epdate').datepicker("option","maxDate",ep_changedmonth);
+    var CEXTN_date = new Date();
+    CEXTN_date.setDate( CEXTN_date.getDate() + 1 );
+    var CEXTN_newDate = CEXTN_date.toDateString();
+    CEXTN_newDate = new Date( Date.parse(CEXTN_newDate ) );
+    $('#CEXTN_db_passdate').datepicker({
+        dateFormat: "dd-mm-yy" ,
+        changeYear: true,
+        changeMonth: true
+    });
+    var passepnewCEXTN_d = new Date();
+    var CEXTN_passyear = passepnewCEXTN_d.getFullYear()+10;
+    var pass_changedmonth=new Date(passepnewCEXTN_d.setFullYear(CEXTN_passyear));
+    $('#CEXTN_db_passdate').datepicker("option","minDate",CEXTN_newDate);
+    $('#CEXTN_db_passdate').datepicker("option","maxDate",pass_changedmonth);
+    var CEXTN_epyear = new Date().getFullYear()+3;
+    var ep_changedmonth=new Date(passepnewCEXTN_d.setFullYear(CEXTN_epyear));
+    $('#CEXTN_db_epdate').datepicker({
+        dateFormat: "dd-mm-yy" ,
+        changeYear: true,
+        changeMonth: true
+    });
+    $('#CEXTN_db_epdate').datepicker("option","minDate",CEXTN_newDate);
+    $('#CEXTN_db_epdate').datepicker("option","maxDate",ep_changedmonth);
 //FUNCTION TO UNIQUE ARRAY VALUES
-function unique(a) {
-var result = [];
-$.each(a, function(i, e) {
-if ($.inArray(e, result) == -1) result.push(e);
-});
-return result;
-}
+    function unique(a) {
+        var result = [];
+        $.each(a, function(i, e) {
+            if ($.inArray(e, result) == -1) result.push(e);
+        });
+        return result;
+    }
 //FUNCTION TO CALENDER END TIME
-function CEXTN_startendtimevalues(endtime)
-{
-var timearray=[];
-for(var i=0;i<calentime.length;i++)
-{
-if(endtime==calentime[i])
-{
-var endtime_status=i;
-break;
-}
-} 
-if(endtime=="23:30")
-{
-timearray.push("23:59");
-}
-else if(endtime=="23:00")
-{
-timearray.push("23:30");
-timearray.push("23:59");
-}
-else
-{
-var length=endtime_status+2;
-for(var j=endtime_status+1;j<=length;j++)
-{
-timearray.push(calentime[j]);
-}
-}
-return timearray;
-}
+    function CEXTN_startendtimevalues(endtime)
+    {
+        var timearray=[];
+        for(var i=0;i<calentime.length;i++)
+        {
+            if(endtime==calentime[i])
+            {
+                var endtime_status=i;
+                break;
+            }
+        }
+        if(endtime=="23:30")
+        {
+            timearray.push("23:59");
+        }
+        else if(endtime=="23:00")
+        {
+            timearray.push("23:30");
+            timearray.push("23:59");
+        }
+        else
+        {
+            var length=endtime_status+2;
+            for(var j=endtime_status+1;j<=length;j++)
+            {
+                timearray.push(calentime[j]);
+            }
+        }
+        return timearray;
+    }
 //CALL FUNCTION TO GET UNIT NOS,ERROR MSGS,PRORATED N WAIVED VALUE
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCommonvalues_result).CEXTN_getCommonvalues();
+    google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCommonvalues_result).CEXTN_getCommonvalues();
 //FUNCTION TO PLACE RESULT OF UNIT NOS,ERROR MSGS,PRORATED N WAIVED VALUE
-function CEXTN_getCommonvalues_result(CEXTN_result)
-{
-var emailid=[];
-var prowaived=[];
-var unitno=[];
-calentime=[];
-var CEXTN_allCustExtnUnitno=[];
-CEXTN_allCustExtnUnitno=CEXTN_result.allextndts;//get all extn details
-emailid=CEXTN_result.mail;
-prowaived=CEXTN_result.prowaiv;
-CEXTN_errmsgs=CEXTN_result.error;
-calentime=CEXTN_result.caltime;
-for(var k=0;k<CEXTN_allCustExtnUnitno.length;k++)
-{
-unitno.push(CEXTN_allCustExtnUnitno[k].unitnum)
-}
-unitno=unique(unitno);
-unitno.sort(function(a,b){return a-b});
-if(unitno.length==0||emailid.length==0)
-{
-$('#CEXTN_form').hide()
-if(unitno.length==0)
-{
-$('#CEXTN_div_allerrmsg').append('<p><label class="errormsg">'+CEXTN_errmsgs[6]+'</label></p>');
-}
-else
-{
-if(emailid.length==0)
-{
-$('#CEXTN_div_allerrmsg').append('<p><label class="errormsg"> '+CEXTN_errmsgs[9].replace('[PROFILE]',"CUSTOMER EXTENSION")+'</label></p>'); 
-}
-}
-}
-else
-{
-$('#CEXTN_div_allerrmsg').text("");
+    function CEXTN_getCommonvalues_result(CEXTN_result)
+    {
+        var emailid=[];
+        var prowaived=[];
+        var unitno=[];
+        calentime=[];
+        var CEXTN_allCustExtnUnitno=[];
+        CEXTN_allCustExtnUnitno=CEXTN_result.allextndts;//get all extn details
+        emailid=CEXTN_result.mail;
+        prowaived=CEXTN_result.prowaiv;
+        CEXTN_errmsgs=CEXTN_result.error;
+        calentime=CEXTN_result.caltime;
+        for(var k=0;k<CEXTN_allCustExtnUnitno.length;k++)
+        {
+            unitno.push(CEXTN_allCustExtnUnitno[k].unitnum)
+        }
+        unitno=unique(unitno);
+        unitno.sort(function(a,b){return a-b});
+        if(unitno.length==0||emailid.length==0)
+        {
+            $('#CEXTN_form').hide()
+            if(unitno.length==0)
+            {
+                $('#CEXTN_div_allerrmsg').append('<p><label class="errormsg">'+CEXTN_errmsgs[6]+'</label></p>');
+            }
+            else
+            {
+                if(emailid.length==0)
+                {
+                    $('#CEXTN_div_allerrmsg').append('<p><label class="errormsg"> '+CEXTN_errmsgs[9].replace('[PROFILE]',"CUSTOMER EXTENSION")+'</label></p>');
+                }
+            }
+        }
+        else
+        {
+            $('#CEXTN_div_allerrmsg').text("");
 //GET UNIT NOS
-var CEXTN_unitnosres='<option>SELECT</option>';
-for(var i=0;i<unitno.length;i++)
-{
-CEXTN_unitnosres += '<option value="' + unitno[i] + '">' + unitno[i] + '</option>';
-}
-$('#CEXTN_lb_unitno').html(CEXTN_unitnosres);
-$('#CEXTN_form').show();
+            var CEXTN_unitnosres='<option>SELECT</option>';
+            for(var i=0;i<unitno.length;i++)
+            {
+                CEXTN_unitnosres += '<option value="' + unitno[i] + '">' + unitno[i] + '</option>';
+            }
+            $('#CEXTN_lb_unitno').html(CEXTN_unitnosres);
+            $('#CEXTN_form').show();
 //PLACE PRORATED WAIVED VALUE
-$('#CEXTN_lbl_sameamtprorated').text(prowaived[0])
-$('#CEXTN_lbl_sameamtwaived').text(prowaived[1])
-$('#CEXTN_lbl_diffamtprorated').text(prowaived[0])
-$('#CEXTN_lbl_diffamtwaived').text(prowaived[1])
+            $('#CEXTN_lbl_sameamtprorated').text(prowaived[0])
+            $('#CEXTN_lbl_sameamtwaived').text(prowaived[1])
+            $('#CEXTN_lbl_diffamtprorated').text(prowaived[0])
+            $('#CEXTN_lbl_diffamtwaived').text(prowaived[1])
 //PLACE EMAIL ID IN THE LISTBOX
-var CEXTN_mailidres='<option>SELECT</option>';
-for(var i=0;i<emailid.length;i++)
-{
-CEXTN_mailidres += '<option value="' + emailid[i] + '">' + emailid[i] + '</option>';
-}
-$('#CEXTN_lb_emailid').html(CEXTN_mailidres);
+            var CEXTN_mailidres='<option>SELECT</option>';
+            for(var i=0;i<emailid.length;i++)
+            {
+                CEXTN_mailidres += '<option value="' + emailid[i] + '">' + emailid[i] + '</option>';
+            }
+            $('#CEXTN_lb_emailid').html(CEXTN_mailidres);
 //PLACE ERROR MESSAGES
-$('#CEXTN_div_diffunitnocarderrmsg').text(CEXTN_errmsgs[3])
-$('#CEXTN_div_custerrmsg').hide();
+            $('#CEXTN_div_diffunitnocarderrmsg').text(CEXTN_errmsgs[3])
+            $('#CEXTN_div_custerrmsg').hide();
 //PLACE CALENDAR TIME IN LISTBOX
-var CEXTN_calentimeres='<option>SELECT</option>';
-for(var i=0;i<calentime.length;i++)
-{
-CEXTN_calentimeres += '<option value="' + calentime[i] + '">' + calentime[i] + '</option>';
-}
-$('#CEXTN_lb_chkoutfromtime').html(CEXTN_calentimeres);
-$('#CEXTN_lb_chkinfromtime').html(CEXTN_calentimeres);
-}
+            var CEXTN_calentimeres='<option>SELECT</option>';
+            for(var i=0;i<calentime.length;i++)
+            {
+                CEXTN_calentimeres += '<option value="' + calentime[i] + '">' + calentime[i] + '</option>';
+            }
+            $('#CEXTN_lb_chkoutfromtime').html(CEXTN_calentimeres);
+            $('#CEXTN_lb_chkinfromtime').html(CEXTN_calentimeres);
+        }
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
+    }
 //GET CUSTOMER NAME FOR THE SELECTED UNIT
-$('#CEXTN_lb_unitno').change(function()
-{
-$('#CEXTN_div_nocusterr').text("");
-var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
-var CEXTN_div_custid=$('#CEXTN_div_custid').hide();
-var CEXTN_div_seconform=$('#CEXTN_div_seconform').hide();
-var CEXTN_lbl_custname=$('#CEXTN_lbl_custname').hide();
-var CEXTN_lb_custname=$('#CEXTN_lb_custname').hide();
-if(CEXTN_lb_unitno!='SELECT')
-{
-var  newPos= adjustPosition($(this).position(),100,150);
-resetPreloader(newPos);
-$(".preloader").show(); 
+    $('#CEXTN_lb_unitno').change(function()
+    {
+        $('#CEXTN_div_nocusterr').text("");
+        var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
+        var CEXTN_div_custid=$('#CEXTN_div_custid').hide();
+        var CEXTN_div_seconform=$('#CEXTN_div_seconform').hide();
+        var CEXTN_lbl_custname=$('#CEXTN_lbl_custname').hide();
+        var CEXTN_lb_custname=$('#CEXTN_lb_custname').hide();
+        if(CEXTN_lb_unitno!='SELECT')
+        {
+            var  newPos= adjustPosition($(this).position(),100,150);
+            resetPreloader(newPos);
+            $(".preloader").show();
 //CALL FUNCTION TO GET UNIT NOS,ERROR MSGS,PRORATED N WAIVED VALUE
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCustomerNameId_result).CEXTN_getCustomerNameId(CEXTN_lb_unitno);
-}
-else
-{
-$(".preloader").hide();
-}
-});
-function CEXTN_getCustomerNameId_result(NamenIdresult)
-{
-CEXTN_allCustExtndts=NamenIdresult;
-var CEXTN_namearray=[];
-for(var k=0;k<CEXTN_allCustExtndts.length;k++)
-{
-CEXTN_namearray.push(CEXTN_allCustExtndts[k].customername);
-}
-CEXTN_namearray=unique(CEXTN_namearray)
-CEXTN_namearray.sort();
-var CEXTN_nameres='<option>SELECT</option>';
-for(var i=0;i<CEXTN_namearray.length;i++)
-{
-var CEXTN_custname=CEXTN_namearray[i].split("_");
-CEXTN_nameres += '<option value="' + CEXTN_namearray[i] + '">' + CEXTN_custname[0]+" "+CEXTN_custname[1] + '</option>';
-}
-$('#CEXTN_lb_custname').html(CEXTN_nameres);
-var CEXTN_div_custid=$('#CEXTN_div_custid').hide();
-var CEXTN_div_seconform=$('#CEXTN_div_seconform').hide();
-var CEXTN_lbl_custname=$('#CEXTN_lbl_custname').show();
-var CEXTN_lb_custname=$('#CEXTN_lb_custname').show();
-$(".preloader").hide();
-}
+            google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCustomerNameId_result).CEXTN_getCustomerNameId(CEXTN_lb_unitno);
+        }
+        else
+        {
+            $(".preloader").hide();
+        }
+    });
+    function CEXTN_getCustomerNameId_result(NamenIdresult)
+    {
+        CEXTN_allCustExtndts=NamenIdresult;
+        var CEXTN_namearray=[];
+        for(var k=0;k<CEXTN_allCustExtndts.length;k++)
+        {
+            CEXTN_namearray.push(CEXTN_allCustExtndts[k].customername);
+        }
+        CEXTN_namearray=unique(CEXTN_namearray)
+        CEXTN_namearray.sort();
+        var CEXTN_nameres='<option>SELECT</option>';
+        for(var i=0;i<CEXTN_namearray.length;i++)
+        {
+            var CEXTN_custname=CEXTN_namearray[i].split("_");
+            CEXTN_nameres += '<option value="' + CEXTN_namearray[i] + '">' + CEXTN_custname[0]+" "+CEXTN_custname[1] + '</option>';
+        }
+        $('#CEXTN_lb_custname').html(CEXTN_nameres);
+        var CEXTN_div_custid=$('#CEXTN_div_custid').hide();
+        var CEXTN_div_seconform=$('#CEXTN_div_seconform').hide();
+        var CEXTN_lbl_custname=$('#CEXTN_lbl_custname').show();
+        var CEXTN_lb_custname=$('#CEXTN_lb_custname').show();
+        $(".preloader").hide();
+    }
 //GET CUSTOMER ID FOR THE SELECTED CUSTOMER NAME
-$('#CEXTN_lb_custname').change(function()
-{
-$('#CEXTN_div_nocusterr').text("");
-CEXTN_setselectIndex();
-$('#CEXTN_div_custid').hide();
-$('#CEXTN_div_seconform').hide();
-var CEXTN_lb_custname=$('#CEXTN_lb_custname').val();
-var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
-var CEXTN_custname=CEXTN_lb_custname.split("_");
-var CEXTN_name_id_array=[];
-for(var k=0;k<CEXTN_allCustExtndts.length;k++)
-{
-if(CEXTN_allCustExtndts[k].customername==CEXTN_lb_custname)
-{
-CEXTN_name_id_array.push(CEXTN_allCustExtndts[k].customerid);
-}
-}
-CEXTN_name_id_array=unique(CEXTN_name_id_array);
-CEXTN_name_id_array.sort(function(a,b){return a-b});
-if(CEXTN_lb_custname!='SELECT')
-{
-$(".preloader").show(); 
-if(CEXTN_name_id_array.length==0)
-{
-$('#CEXTN_div_nocusterr').text(CEXTN_errmsgs[8].replace('[CNAME]',$('#CEXTN_lb_custname').val().split("_")[0]+" "+$('#CEXTN_lb_custname').val().split("_")[1]));
-}
-else
-{
-if(CEXTN_name_id_array.length==1)
-{
-$('#CEXTN_hidden_custid').val(CEXTN_name_id_array[0]);
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCustomerdtls_result).CEXTN_getCustomerdtls(CEXTN_name_id_array[0],CEXTN_lb_unitno);
-$('#CEXTN_div_custid').hide();
-}
-else
-{
+    $('#CEXTN_lb_custname').change(function()
+    {
+        $('#CEXTN_div_nocusterr').text("");
+        CEXTN_setselectIndex();
+        $('#CEXTN_div_custid').hide();
+        $('#CEXTN_div_seconform').hide();
+        var CEXTN_lb_custname=$('#CEXTN_lb_custname').val();
+        var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
+        var CEXTN_custname=CEXTN_lb_custname.split("_");
+        var CEXTN_name_id_array=[];
+        for(var k=0;k<CEXTN_allCustExtndts.length;k++)
+        {
+            if(CEXTN_allCustExtndts[k].customername==CEXTN_lb_custname)
+            {
+                CEXTN_name_id_array.push(CEXTN_allCustExtndts[k].customerid);
+            }
+        }
+        CEXTN_name_id_array=unique(CEXTN_name_id_array);
+        CEXTN_name_id_array.sort(function(a,b){return a-b});
+        if(CEXTN_lb_custname!='SELECT')
+        {
+            $(".preloader").show();
+            if(CEXTN_name_id_array.length==0)
+            {
+                $('#CEXTN_div_nocusterr').text(CEXTN_errmsgs[8].replace('[CNAME]',$('#CEXTN_lb_custname').val().split("_")[0]+" "+$('#CEXTN_lb_custname').val().split("_")[1]));
+            }
+            else
+            {
+                if(CEXTN_name_id_array.length==1)
+                {
+                    $('#CEXTN_hidden_custid').val(CEXTN_name_id_array[0]);
+                    google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCustomerdtls_result).CEXTN_getCustomerdtls(CEXTN_name_id_array[0],CEXTN_lb_unitno);
+                    $('#CEXTN_div_custid').hide();
+                }
+                else
+                {
 //get table rows lengh
-var tablelen=$('#CEXTN_tble_custid tr').length;
-$('#CEXTN_tble_custid tr').remove();
-for(var i=0;i<CEXTN_name_id_array.length;i++)
-{
-var CEXTN_result='<tr id="custid"><td> <input type=radio name="CEXTN_radiocustid" id='+CEXTN_name_id_array[i]+' value='+CEXTN_name_id_array[i]+' class="CEXTN_class_custid"></td><td>'+CEXTN_custname[0]+" "+CEXTN_custname[1]+' '+CEXTN_name_id_array[i]+'</tr>';
-$('#CEXTN_tble_custid').append(CEXTN_result);
-}
-$('#CEXTN_div_custid').show();
-$(".preloader").hide();
-}
-}
-}
-});
+                    var tablelen=$('#CEXTN_tble_custid tr').length;
+                    $('#CEXTN_tble_custid tr').remove();
+                    for(var i=0;i<CEXTN_name_id_array.length;i++)
+                    {
+                        var CEXTN_result='<tr id="custid"><td> <input type=radio name="CEXTN_radiocustid" id='+CEXTN_name_id_array[i]+' value='+CEXTN_name_id_array[i]+' class="CEXTN_class_custid"></td><td>'+CEXTN_custname[0]+" "+CEXTN_custname[1]+' '+CEXTN_name_id_array[i]+'</tr>';
+                        $('#CEXTN_tble_custid').append(CEXTN_result);
+                    }
+                    $('#CEXTN_div_custid').show();
+                    $(".preloader").hide();
+                }
+            }
+        }
+    });
 //AMOUNT RADIO BUTTON VALIDATION
-$("input[name='CEXTN_radio_amt']").on("change", function () {
-if(this.value=="CEXTN_radio_sameamt")
-{
-$('#CEXTN_div_sameamt').show();
-$('#CEXTN_div_diffamt').hide();
-$("#CEXTN_tb_diffamtdep").val("");
-$("#CEXTN_tb_diffamtrent").val("");
-$("#CEXTN_tb_diffamtprocost").val("");
-}
-if(this.value=="CEXTN_radio_diffamt")
-{
-$('#CEXTN_div_diffamt').show();
-$('#CEXTN_tb_diffamtdep').val('')
-$('#CEXTN_tb_diffamtrent').val('')
-$('#CEXTN_tb_diffamtprocost').val('')
-$('#CEXTN_div_sameamt').hide();
-}
-});
+    $("input[name='CEXTN_radio_amt']").on("change", function () {
+        if(this.value=="CEXTN_radio_sameamt")
+        {
+            $('#CEXTN_div_sameamt').show();
+            $('#CEXTN_div_diffamt').hide();
+            $("#CEXTN_tb_diffamtdep").val("");
+            $("#CEXTN_tb_diffamtrent").val("");
+            $("#CEXTN_tb_diffamtprocost").val("");
+        }
+        if(this.value=="CEXTN_radio_diffamt")
+        {
+            $('#CEXTN_div_diffamt').show();
+            $('#CEXTN_tb_diffamtdep').val('')
+            $('#CEXTN_tb_diffamtrent').val('')
+            $('#CEXTN_tb_diffamtprocost').val('')
+            $('#CEXTN_div_sameamt').hide();
+        }
+    });
 //UNIT RADIO BUTTON VALIDATION
-$("input[name='CEXTN_radio_unit']").on("change", function () {
-var  newPos= adjustPosition($(this).position(),100,150);
-resetPreloader(newPos);
-$(".preloader").show(); 
-$('#CEXTN_div_custerrmsg').hide();
-var CEXTN_rmtype=$('#CEXTN_tb_sameunitsamermrmtype').val();
-var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
-var CEXTN_radio_unit =$("input[name='CEXTN_radio_unit']:checked").val()
-if(this.value=="CEXTN_radio_sameunit")
-{
-CEXTN_SetMinMaxCheckoutDate(CEXTN_initial_unitsdate,CEXTN_initial_unitedate,CEXTN_currentcheckoutdate)//set check out min n max date
-$('#CEXTN_div_nodiffuniterr').hide();
-$("#CEXTN_lbl_chkindate").text("CURRENT CHECK OUT DATE");
-$("#CEXTN_lb_chkinfromtime").val("SELECT").hide();
-$("#CEXTN_lb_chkintotime").hide();
-$("#CEXTN_lbl_chkinto").hide();
-$('#CEXTN_lb_diffunituno').val("SELECT");
-$("#CEXTN_lb_sameunitdiffrmrmtype").val("SELECT");
-$('#CEXTN_div_sameunitdiffrm').hide();
-$('#CEXTN_lb_diffunitrmtype').val("SELECT");
-$('#CEXTN_div_diffunit').hide();
-$('#CEXTN_div_sameunitsamerm').show();
-$('#CEXTN_div_sameunitdiffroomerr').text("");
-$(".preloader").hide(); 
-}
-if(this.value=="CEXTN_radio_diffunit")
-{
-CEXTN_cardcount=0;
-if(CEXTN_diffunitlen==0)
-{
-$('#CEXTN_div_diffunit').hide();
-$('#CEXTN_div_nodiffuniterr').text(CEXTN_errmsgs[20]).show();
-}
-else
-{
-$('#CEXTN_div_nodiffuniterr').hide();
-$('#CEXTN_div_diffunit').show();
-}
-$("#CEXTN_lbl_chkindate").text("CURRENT CHECK IN DATE");
-$("#CEXTN_lb_sameunitdiffrmrmtype").val("SELECT");
-$("#CEXTN_hidden_setrmtype").val(this.value);
-$('#CEXTN_lb_diffunituno').val("SELECT");
-$('#CEXTN_lbl_diffunitselectcard').hide();
-$('#CEXTN_radio_difunitcardno').hide();
-$('#CEXTN_lbl_diffunitcard').hide();
-$('#CEXTN_radio_difunitnullcard').hide();
-$('#CEXTN_lbl_diffunitnull').hide();
-$('#CEXTN_div_normtypeerr').text("");
-$('#CEXTN_lbl_diffunitrmtype').hide();
-$('#CEXTN_lb_diffunitrmtype').val("SELECT").hide();
-$('#CEXTN_div_normtypeerr').text("");
-$('#CEXTN_div_sameunitsamerm').hide();
-$('#CEXTN_div_sameunitdiffrm').hide();
-$('#CEXTN_div_diffunitcardlist').hide();
-$('#CEXTN_div_sameunitdiffroomerr').text("");
-$(".preloader").hide(); 
-}
-if(this.value=="CEXTN_radio_sameunitdiffroom")
-{
-$('#CEXTN_div_nodiffuniterr').hide();
-$('#CTERM_tbl_sameunitdiffrmcust_card').show();
-$("#CEXTN_lbl_chkindate").text("CURRENT CHECK IN DATE");
-$('#CEXTN_div_sameunitsamerm').hide();
-$('#CEXTN_div_sameunitdiffrm').hide();
-$('#CEXTN_div_diffunit').hide();
-$("#CEXTN_lb_sameunitdiffrmrmtype").val("SELECT");
-$('#CEXTN_lb_diffunituno').val("SELECT");
-$('#CEXTN_lb_diffunitrmtype').val("SELECT");
-$("#CEXTN_hidden_setrmtype").val(this.value);
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getRoomType_result).CEXTN_getRoomType(CEXTN_lb_unitno,CEXTN_rmtype);
-}
-if(CEXTN_radio_unit!="CEXTN_radio_sameunit")
-{
-$("#CEXTN_lb_chkinfromtime").show();
-}
-});
+    $("input[name='CEXTN_radio_unit']").on("change", function () {
+        var  newPos= adjustPosition($(this).position(),100,150);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        $('#CEXTN_div_custerrmsg').hide();
+        var CEXTN_rmtype=$('#CEXTN_tb_sameunitsamermrmtype').val();
+        var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
+        var CEXTN_radio_unit =$("input[name='CEXTN_radio_unit']:checked").val()
+        if(this.value=="CEXTN_radio_sameunit")
+        {
+            CEXTN_SetMinMaxCheckoutDate(CEXTN_initial_unitsdate,CEXTN_initial_unitedate,CEXTN_currentcheckoutdate)//set check out min n max date
+            $('#CEXTN_div_nodiffuniterr').hide();
+            $("#CEXTN_lbl_chkindate").text("CURRENT CHECK OUT DATE");
+            $("#CEXTN_lb_chkinfromtime").val("SELECT").hide();
+            $("#CEXTN_lb_chkintotime").hide();
+            $("#CEXTN_lbl_chkinto").hide();
+            $('#CEXTN_lb_diffunituno').val("SELECT");
+            $("#CEXTN_lb_sameunitdiffrmrmtype").val("SELECT");
+            $('#CEXTN_div_sameunitdiffrm').hide();
+            $('#CEXTN_lb_diffunitrmtype').val("SELECT");
+            $('#CEXTN_div_diffunit').hide();
+            $('#CEXTN_div_sameunitsamerm').show();
+            $('#CEXTN_div_sameunitdiffroomerr').text("");
+            $(".preloader").hide();
+        }
+        if(this.value=="CEXTN_radio_diffunit")
+        {
+            CEXTN_cardcount=0;
+            if(CEXTN_diffunitlen==0)
+            {
+                $('#CEXTN_div_diffunit').hide();
+                $('#CEXTN_div_nodiffuniterr').text(CEXTN_errmsgs[20]).show();
+            }
+            else
+            {
+                $('#CEXTN_div_nodiffuniterr').hide();
+                $('#CEXTN_div_diffunit').show();
+            }
+            $("#CEXTN_lbl_chkindate").text("CURRENT CHECK IN DATE");
+            $("#CEXTN_lb_sameunitdiffrmrmtype").val("SELECT");
+            $("#CEXTN_hidden_setrmtype").val(this.value);
+            $('#CEXTN_lb_diffunituno').val("SELECT");
+            $('#CEXTN_lbl_diffunitselectcard').hide();
+            $('#CEXTN_radio_difunitcardno').hide();
+            $('#CEXTN_lbl_diffunitcard').hide();
+            $('#CEXTN_radio_difunitnullcard').hide();
+            $('#CEXTN_lbl_diffunitnull').hide();
+            $('#CEXTN_div_normtypeerr').text("");
+            $('#CEXTN_lbl_diffunitrmtype').hide();
+            $('#CEXTN_lb_diffunitrmtype').val("SELECT").hide();
+            $('#CEXTN_div_normtypeerr').text("");
+            $('#CEXTN_div_sameunitsamerm').hide();
+            $('#CEXTN_div_sameunitdiffrm').hide();
+            $('#CEXTN_div_diffunitcardlist').hide();
+            $('#CEXTN_div_sameunitdiffroomerr').text("");
+            $(".preloader").hide();
+        }
+        if(this.value=="CEXTN_radio_sameunitdiffroom")
+        {
+            $('#CEXTN_div_nodiffuniterr').hide();
+            $('#CTERM_tbl_sameunitdiffrmcust_card').show();
+            $("#CEXTN_lbl_chkindate").text("CURRENT CHECK IN DATE");
+            $('#CEXTN_div_sameunitsamerm').hide();
+            $('#CEXTN_div_sameunitdiffrm').hide();
+            $('#CEXTN_div_diffunit').hide();
+            $("#CEXTN_lb_sameunitdiffrmrmtype").val("SELECT");
+            $('#CEXTN_lb_diffunituno').val("SELECT");
+            $('#CEXTN_lb_diffunitrmtype').val("SELECT");
+            $("#CEXTN_hidden_setrmtype").val(this.value);
+            google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getRoomType_result).CEXTN_getRoomType(CEXTN_lb_unitno,CEXTN_rmtype);
+        }
+        if(CEXTN_radio_unit!="CEXTN_radio_sameunit")
+        {
+            $("#CEXTN_lb_chkinfromtime").show();
+        }
+    });
 //FUNCTION TO GET ROOM TYPE RESULT FOR SAME UNIT
-function CEXTN_getRoomType_result(CEXTN_rmtype)
-{
-var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
-var CEXTN_lb_diffunituno=$("#CEXTN_lb_diffunituno").val();
-var CEXTN_normtypeerr=CEXTN_errmsgs[2];
-var CEXTN_roomtype=CEXTN_rmtype.roomtype;
-var CEXTNunitsdate=CEXTN_rmtype.unitsdate
-var CEXTNunitedate=CEXTN_rmtype.unitedate
-CEXTN_SetMinMaxCheckoutDate(CEXTNunitsdate,CEXTNunitedate,CEXTN_currentcheckoutdate)//set check out min n max date
-var CEXTN_unittype=$("#CEXTN_hidden_setrmtype").val();
-if(CEXTN_roomtype.length>0)
-{
-$('#CEXTN_div_sameunitdiffroomerr').text("");
-if(CEXTN_unittype=="CEXTN_radio_sameunitdiffroom")
-{
-var CEXTN_rmtyperes='<option>SELECT</option>';
-for(var i=0;i<CEXTN_roomtype.length;i++)
-{
-CEXTN_rmtyperes += '<option value="' + CEXTN_roomtype[i] + '">' + CEXTN_roomtype[i] + '</option>';
-}
-$('#CEXTN_lb_sameunitdiffrmrmtype').html(CEXTN_rmtyperes);
-$('#CEXTN_div_sameunitsamerm').hide();
-$('#CEXTN_div_diffunit').hide();
-$('#CEXTN_div_sameunitdiffrm').show();
-}
-else
-{
-var CEXTN_rmtyperes='<option>SELECT</option>';
-for(var i=0;i<CEXTN_roomtype.length;i++)
-{
-CEXTN_rmtyperes += '<option value="' + CEXTN_roomtype[i] + '">' + CEXTN_roomtype[i] + '</option>';
-}
-$('#CEXTN_lb_diffunitrmtype').html(CEXTN_rmtyperes).show();
-$('#CEXTN_lbl_diffunitrmtype').show();
-$('#CEXTN_lb_diffunitrmtype').show();
-$('#CEXTN_lbl_diffunitselectcard').hide();
-$('#CEXTN_radio_difunitcardno').show();
-$('#CEXTN_lbl_diffunitcard').show();
-$('#CEXTN_radio_difunitnullcard').show();
-$('#CEXTN_lbl_diffunitnull').show();
-$('#CEXTN_div_normtypeerr').text("");
-}
-}
-else
-{
-if(CEXTN_unittype=="CEXTN_radio_sameunitdiffroom")
-{
-var CEXTN_div_normtypeerr=CEXTN_normtypeerr.replace('[UNIT NO]',CEXTN_lb_unitno)
-$('#CEXTN_div_sameunitdiffroomerr').text(CEXTN_div_normtypeerr);
-}
-else
-{
-$('#CEXTN_lb_diffunitrmtype').hide();
-$('#CEXTN_lbl_diffunitrmtype').hide();
-$('#CEXTN_lb_diffunitrmtype').hide();
-$('#CEXTN_lbl_diffunitselectcard').hide();
-$('#CEXTN_radio_difunitcardno').hide();
-$('#CEXTN_lbl_diffunitcard').hide();
-$('#CEXTN_radio_difunitnullcard').hide();
-$('#CEXTN_lbl_diffunitnull').hide();
-var CEXTN_div_normtypeerr=CEXTN_normtypeerr.replace('[UNIT NO]',CEXTN_lb_diffunituno)
-$('#CEXTN_div_normtypeerr').text(CEXTN_div_normtypeerr).show();
-}
-}
-$(".preloader").hide(); 
-}
+    function CEXTN_getRoomType_result(CEXTN_rmtype)
+    {
+        var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
+        var CEXTN_lb_diffunituno=$("#CEXTN_lb_diffunituno").val();
+        var CEXTN_normtypeerr=CEXTN_errmsgs[2];
+        var CEXTN_roomtype=CEXTN_rmtype.roomtype;
+        var CEXTNunitsdate=CEXTN_rmtype.unitsdate
+        var CEXTNunitedate=CEXTN_rmtype.unitedate
+        CEXTN_SetMinMaxCheckoutDate(CEXTNunitsdate,CEXTNunitedate,CEXTN_currentcheckoutdate)//set check out min n max date
+        var CEXTN_unittype=$("#CEXTN_hidden_setrmtype").val();
+        if(CEXTN_roomtype.length>0)
+        {
+            $('#CEXTN_div_sameunitdiffroomerr').text("");
+            if(CEXTN_unittype=="CEXTN_radio_sameunitdiffroom")
+            {
+                var CEXTN_rmtyperes='<option>SELECT</option>';
+                for(var i=0;i<CEXTN_roomtype.length;i++)
+                {
+                    CEXTN_rmtyperes += '<option value="' + CEXTN_roomtype[i] + '">' + CEXTN_roomtype[i] + '</option>';
+                }
+                $('#CEXTN_lb_sameunitdiffrmrmtype').html(CEXTN_rmtyperes);
+                $('#CEXTN_div_sameunitsamerm').hide();
+                $('#CEXTN_div_diffunit').hide();
+                $('#CEXTN_div_sameunitdiffrm').show();
+            }
+            else
+            {
+                var CEXTN_rmtyperes='<option>SELECT</option>';
+                for(var i=0;i<CEXTN_roomtype.length;i++)
+                {
+                    CEXTN_rmtyperes += '<option value="' + CEXTN_roomtype[i] + '">' + CEXTN_roomtype[i] + '</option>';
+                }
+                $('#CEXTN_lb_diffunitrmtype').html(CEXTN_rmtyperes).show();
+                $('#CEXTN_lbl_diffunitrmtype').show();
+                $('#CEXTN_lb_diffunitrmtype').show();
+                $('#CEXTN_lbl_diffunitselectcard').hide();
+                $('#CEXTN_radio_difunitcardno').show();
+                $('#CEXTN_lbl_diffunitcard').show();
+                $('#CEXTN_radio_difunitnullcard').show();
+                $('#CEXTN_lbl_diffunitnull').show();
+                $('#CEXTN_div_normtypeerr').text("");
+            }
+        }
+        else
+        {
+            if(CEXTN_unittype=="CEXTN_radio_sameunitdiffroom")
+            {
+                var CEXTN_div_normtypeerr=CEXTN_normtypeerr.replace('[UNIT NO]',CEXTN_lb_unitno)
+                $('#CEXTN_div_sameunitdiffroomerr').text(CEXTN_div_normtypeerr);
+            }
+            else
+            {
+                $('#CEXTN_lb_diffunitrmtype').hide();
+                $('#CEXTN_lbl_diffunitrmtype').hide();
+                $('#CEXTN_lb_diffunitrmtype').hide();
+                $('#CEXTN_lbl_diffunitselectcard').hide();
+                $('#CEXTN_radio_difunitcardno').hide();
+                $('#CEXTN_lbl_diffunitcard').hide();
+                $('#CEXTN_radio_difunitnullcard').hide();
+                $('#CEXTN_lbl_diffunitnull').hide();
+                var CEXTN_div_normtypeerr=CEXTN_normtypeerr.replace('[UNIT NO]',CEXTN_lb_diffunituno)
+                $('#CEXTN_div_normtypeerr').text(CEXTN_div_normtypeerr).show();
+            }
+        }
+        $(".preloader").hide();
+    }
 //AIRCON AMT RADIO BUTTON VALIDATION
-$("input[name='CEXTN_radio_airconfee']").on("change", function () {
-if(this.value=="CEXTN_radio_quartairconfee")
-{
-$('#CEXTN_tb_airquarterfee').val("").show();
-$('#CEXTN_tb_fixedairfee').hide();
-}
-if(this.value=="CEXTN_radio_fixedairconfee")
-{
-$('#CEXTN_tb_airquarterfee').hide();
-$('#CEXTN_tb_fixedairfee').val("").show();
-}
-});
+    $("input[name='CEXTN_radio_airconfee']").on("change", function () {
+        if(this.value=="CEXTN_radio_quartairconfee")
+        {
+            $('#CEXTN_tb_airquarterfee').val("").show();
+            $('#CEXTN_tb_fixedairfee').hide();
+        }
+        if(this.value=="CEXTN_radio_fixedairconfee")
+        {
+            $('#CEXTN_tb_airquarterfee').hide();
+            $('#CEXTN_tb_fixedairfee').val("").show();
+        }
+    });
 //ADD ROOM TYPE FOR DIFF UNIT
-$('#CEXTN_lb_diffunituno').change(function()
-{
-$('#CEXTN_div_custerrmsg').hide();
-$('#CEXTN_div_diffunitnocarderrmsg').hide();
-$('#CEXTN_lb_diffunitrmtype').val("SELECT");
-$('#CEXTN_radio_difunitcardno').prop('checked',false);
-$('#CEXTN_radio_difunitnullcard').prop('checked',false);
-$('#CEXTN_div_diffunitcardlist').hide();
-$('#CEXTN_lbl_diffunitrmtype').hide();
-$('#CEXTN_lb_diffunitrmtype').hide();
-$('#CEXTN_lbl_diffunitselectcard').hide();
-$('#CEXTN_radio_difunitcardno').hide();
-$('#CEXTN_lbl_diffunitcard').hide();
-$('#CEXTN_radio_difunitnullcard').hide();
-$('#CEXTN_lbl_diffunitnull').hide();
-var CEXTN_lb_unitno=$('#CEXTN_lb_diffunituno').val();
-var CEXTN_rmtype="";
-if(CEXTN_lb_unitno!="SELECT")
-{
-var  newPos= adjustPosition($(this).position(),100,80);
-resetPreloader(newPos);
-$(".preloader").show(); 
+    $('#CEXTN_lb_diffunituno').change(function()
+    {
+        $('#CEXTN_div_custerrmsg').hide();
+        $('#CEXTN_div_diffunitnocarderrmsg').hide();
+        $('#CEXTN_lb_diffunitrmtype').val("SELECT");
+        $('#CEXTN_radio_difunitcardno').prop('checked',false);
+        $('#CEXTN_radio_difunitnullcard').prop('checked',false);
+        $('#CEXTN_div_diffunitcardlist').hide();
+        $('#CEXTN_lbl_diffunitrmtype').hide();
+        $('#CEXTN_lb_diffunitrmtype').hide();
+        $('#CEXTN_lbl_diffunitselectcard').hide();
+        $('#CEXTN_radio_difunitcardno').hide();
+        $('#CEXTN_lbl_diffunitcard').hide();
+        $('#CEXTN_radio_difunitnullcard').hide();
+        $('#CEXTN_lbl_diffunitnull').hide();
+        var CEXTN_lb_unitno=$('#CEXTN_lb_diffunituno').val();
+        var CEXTN_rmtype="";
+        if(CEXTN_lb_unitno!="SELECT")
+        {
+            var  newPos= adjustPosition($(this).position(),100,80);
+            resetPreloader(newPos);
+            $(".preloader").show();
 //ADD DIFF UNIT ROOM TYPE
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getRoomType_result).CEXTN_getRoomType(CEXTN_lb_unitno,CEXTN_rmtype);
-}
-});
-$("input[name='CEXTN_radio_difunitcard']").on("change", function () {
-var  newPos= adjustPosition($(this).position(),100,60);
-resetPreloader(newPos);
-$(".preloader").show(); 
-var CEXTN_tb_firstname=$('#CEXTN_tb_firstname').val();
-var CEXTN_tb_lastname=$('#CEXTN_tb_lastname').val();
-var CEXTN_lb_unitno=$('#CEXTN_lb_diffunituno').val();
-$('#CEXTN_div_custerrmsg').hide();
-$('#CEXTN_div_diffunitnocarderrmsg').hide();
-$('#CEXTN_div_diffunitcardlist').hide();
-if(this.value=="CEXTN_radio_difunitcardno")
-{
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getdiffunitCardNo_result).CEXTN_getdiffunitCardNo(CEXTN_lb_unitno,CEXTN_tb_firstname,CEXTN_tb_lastname);
-}
-else
-{
-$('#CEXTN_div_diffunitcardlist').hide();
-$(".preloader").hide(); 
-}
-});
+            google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getRoomType_result).CEXTN_getRoomType(CEXTN_lb_unitno,CEXTN_rmtype);
+        }
+    });
+    $("input[name='CEXTN_radio_difunitcard']").on("change", function () {
+        var  newPos= adjustPosition($(this).position(),100,60);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        var CEXTN_tb_firstname=$('#CEXTN_tb_firstname').val();
+        var CEXTN_tb_lastname=$('#CEXTN_tb_lastname').val();
+        var CEXTN_lb_unitno=$('#CEXTN_lb_diffunituno').val();
+        $('#CEXTN_div_custerrmsg').hide();
+        $('#CEXTN_div_diffunitnocarderrmsg').hide();
+        $('#CEXTN_div_diffunitcardlist').hide();
+        if(this.value=="CEXTN_radio_difunitcardno")
+        {
+            google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getdiffunitCardNo_result).CEXTN_getdiffunitCardNo(CEXTN_lb_unitno,CEXTN_tb_firstname,CEXTN_tb_lastname);
+        }
+        else
+        {
+            $('#CEXTN_div_diffunitcardlist').hide();
+            $(".preloader").hide();
+        }
+    });
 //ADD CARD NOS IN THE FORM
-function CEXTN_getdiffunitCardNo_result(CEXTN_diffunitcard)
-{
-CEXTN_finalCard=CEXTN_diffunitcard[1];
-$('#CEXTN_tble_diffunitcardlist tr').remove();
-$('#CEXTN_div_diffunitnocarderrmsg').hide();
-CEXTN_chkcardlen=CEXTN_diffunitcard[0].length;
-if(CEXTN_diffunitcard[0].length>0)
-{
-for(var i=0;i<CEXTN_diffunitcard[0].length;i++)
-{
-var CEXTN_cardnovalue=CEXTN_diffunitcard[0][i];
-var CEXTN_lb_diffunitcardid="CEXTN_lb_diffunitcard"+i;
-var CEXTN_cb_diffunitcardid="CEXTN_cb_diffunitcard"+i;
-var CEXTN_tb_diffunitcard="CEXTN_tb_diffunitcard"+i;
-var CEXTN_cardresult='<tr id="custid"><td> <input type=checkbox class="CEXTN_class_diffunitcard CEXTN_btn_validate_class" name="CEXTN_cb_diffunitcard" id='+i+' value='+CEXTN_cardnovalue+'>'+CEXTN_cardnovalue+'</td><td><select name="CEXTN_lb_diffunitcard" id='+CEXTN_lb_diffunitcardid+' class="CEXTN_class_diffunitcard CEXTN_btn_validate_class" hidden/></td><td><input type="text" name="CEXTN_tb_diffunitcard" id='+CEXTN_tb_diffunitcard+' hidden/></td></tr>';
-$('#CEXTN_tble_diffunitcardlist').append(CEXTN_cardresult);
-var CEXTN_cardnolbl='<option>SELECT</option>';
-for(var j=0;j<CEXTN_diffunitcard.length;j++)
-{
-var CEXTN_cardnolabel=CEXTN_diffunitcard[1][j];
-CEXTN_cardnolbl += '<option value="' + CEXTN_cardnolabel + '">' + CEXTN_cardnolabel + '</option>';
-}
-$('#CEXTN_lb_diffunitcard'+i).html(CEXTN_cardnolbl);
-}
-$('#CEXTN_div_diffunitcardlist').show();
-}
-else
-{
-$('#CEXTN_div_diffunitnocarderrmsg').show();
-$('#CEXTN_div_custerrmsg').hide();
-}
-$(".preloader").hide(); 
-}
+    function CEXTN_getdiffunitCardNo_result(CEXTN_diffunitcard)
+    {
+        CEXTN_finalCard=CEXTN_diffunitcard[1];
+        $('#CEXTN_tble_diffunitcardlist tr').remove();
+        $('#CEXTN_div_diffunitnocarderrmsg').hide();
+        CEXTN_chkcardlen=CEXTN_diffunitcard[0].length;
+        if(CEXTN_diffunitcard[0].length>0)
+        {
+            for(var i=0;i<CEXTN_diffunitcard[0].length;i++)
+            {
+                var CEXTN_cardnovalue=CEXTN_diffunitcard[0][i];
+                var CEXTN_lb_diffunitcardid="CEXTN_lb_diffunitcard"+i;
+                var CEXTN_cb_diffunitcardid="CEXTN_cb_diffunitcard"+i;
+                var CEXTN_tb_diffunitcard="CEXTN_tb_diffunitcard"+i;
+                var CEXTN_cardresult='<tr id="custid"><td> <input type=checkbox class="CEXTN_class_diffunitcard CEXTN_btn_validate_class" name="CEXTN_cb_diffunitcard" id='+i+' value='+CEXTN_cardnovalue+'>'+CEXTN_cardnovalue+'</td><td><select name="CEXTN_lb_diffunitcard" id='+CEXTN_lb_diffunitcardid+' class="CEXTN_class_diffunitcard CEXTN_btn_validate_class" hidden/></td><td><input type="text" name="CEXTN_tb_diffunitcard" id='+CEXTN_tb_diffunitcard+' hidden/></td></tr>';
+                $('#CEXTN_tble_diffunitcardlist').append(CEXTN_cardresult);
+                var CEXTN_cardnolbl='<option>SELECT</option>';
+                for(var j=0;j<CEXTN_diffunitcard.length;j++)
+                {
+                    var CEXTN_cardnolabel=CEXTN_diffunitcard[1][j];
+                    CEXTN_cardnolbl += '<option value="' + CEXTN_cardnolabel + '">' + CEXTN_cardnolabel + '</option>';
+                }
+                $('#CEXTN_lb_diffunitcard'+i).html(CEXTN_cardnolbl);
+            }
+            $('#CEXTN_div_diffunitcardlist').show();
+        }
+        else
+        {
+            $('#CEXTN_div_diffunitnocarderrmsg').show();
+            $('#CEXTN_div_custerrmsg').hide();
+        }
+        $(".preloader").hide();
+    }
 //FUNCTION TO COMPARE TWO ARRAYS
-function CEXTN_card_diffArray(a, b) {
-var seen = [], diff = [];
-for ( var i = 0; i < b.length; i++)
-seen[b[i]] = true;
-for ( var i = 0; i < a.length; i++)
-if (!seen[a[i]])
-diff.push(a[i]);
-return diff;
-}
+    function CEXTN_card_diffArray(a, b) {
+        var seen = [], diff = [];
+        for ( var i = 0; i < b.length; i++)
+            seen[b[i]] = true;
+        for ( var i = 0; i < a.length; i++)
+            if (!seen[a[i]])
+                diff.push(a[i]);
+        return diff;
+    }
 //FUNCTION TO CALL DATE PICKER FORMAT
-function FormTableDateFormat(inputdate){
-var string = inputdate.split("-");
-return string[2]+'-'+ string[1]+'-'+string[0];
-}
+    function FormTableDateFormat(inputdate){
+        var string = inputdate.split("-");
+        return string[2]+'-'+ string[1]+'-'+string[0];
+    }
 //FUNCTION TO CALL PRORATED CHKING FUNCTION AND VALIDATING WAIVED CHKBOX
-$(".CEXTN_class_prowaiv").change(function()
-{
+    $(".CEXTN_class_prowaiv").change(function()
+    {
 //VALIDATING WAIVED CHKBOX
-var CEXTN_tb_diffamtprocost=$("#CEXTN_tb_diffamtprocost").val();
-var CEXTN_tb_diffamtrent=$("#CEXTN_tb_diffamtrent").val();
-var CEXTN_radio_amt =$("input[name='CEXTN_radio_amt']:checked").val()
-if(CEXTN_tb_diffamtprocost!="")
-{
-$("#CEXTN_cb_diffamtwaived").removeAttr('disabled');
-}
-else
-{
-$("#CEXTN_cb_diffamtwaived").prop('checked',false).attr('disabled','disabled');
-}
+        var CEXTN_tb_diffamtprocost=$("#CEXTN_tb_diffamtprocost").val();
+        var CEXTN_tb_diffamtrent=$("#CEXTN_tb_diffamtrent").val();
+        var CEXTN_radio_amt =$("input[name='CEXTN_radio_amt']:checked").val()
+        if(CEXTN_tb_diffamtprocost!="")
+        {
+            $("#CEXTN_cb_diffamtwaived").removeAttr('disabled');
+        }
+        else
+        {
+            $("#CEXTN_cb_diffamtwaived").prop('checked',false).attr('disabled','disabled');
+        }
 //
 //PRORATED CHK
-var CEXTN_db_chkindate=$("#CEXTN_db_chkindate").val();
-var CEXTN_db_chkoutdate=$("#CEXTN_db_chkoutdate").val()
-if(CEXTN_radio_amt=="CEXTN_radio_sameamt")
-{
-if(CEXTN_db_chkoutdate!="")
-{
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_chkProrated_result).CEXTN_chkProrated(CEXTN_db_chkindate,CEXTN_db_chkoutdate);
-}
-}
-else
-{
-if(CEXTN_db_chkoutdate!=""&&CEXTN_tb_diffamtrent!="")
-{
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_chkProrated_result).CEXTN_chkProrated(CEXTN_db_chkindate,CEXTN_db_chkoutdate);
-}
-}
-if(CEXTN_tb_diffamtrent==""||CEXTN_radio_amt=="CEXTN_radio_sameamt")
-{
-$("#CEXTN_cb_diffamtprorated").attr("disabled","disabled").prop('checked',false);
-}
+        var CEXTN_db_chkindate=$("#CEXTN_db_chkindate").val();
+        var CEXTN_db_chkoutdate=$("#CEXTN_db_chkoutdate").val()
+        if(CEXTN_radio_amt=="CEXTN_radio_sameamt")
+        {
+            if(CEXTN_db_chkoutdate!="")
+            {
+                google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_chkProrated_result).CEXTN_chkProrated(CEXTN_db_chkindate,CEXTN_db_chkoutdate);
+            }
+        }
+        else
+        {
+            if(CEXTN_db_chkoutdate!=""&&CEXTN_tb_diffamtrent!="")
+            {
+                google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_chkProrated_result).CEXTN_chkProrated(CEXTN_db_chkindate,CEXTN_db_chkoutdate);
+            }
+        }
+        if(CEXTN_tb_diffamtrent==""||CEXTN_radio_amt=="CEXTN_radio_sameamt")
+        {
+            $("#CEXTN_cb_diffamtprorated").attr("disabled","disabled").prop('checked',false);
+        }
 //
-$('#CEXTN_db_noticeperioddate').removeAttr("disabled");
+        $('#CEXTN_db_noticeperioddate').removeAttr("disabled");
 //SET NOTICE PERIOD DATE
-$('#CEXTN_db_noticeperioddate').datepicker({
-dateFormat: "dd-mm-yy" ,
-changeYear: true,
-changeMonth: true
-});
-var CEXTN_db_noticeperioddate=$("#CEXTN_db_noticeperioddate").val()
-var CEXTN_date1 = $('#CEXTN_db_chkindate').val();
-var CEXTN_db_prevchkindate=$('#CEXTN_db_prevchkindate').val();
-if((CEXTN_db_chkoutdate!=""))
-{
-var CEXTN_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(CEXTN_db_chkindate)) ); 
-CEXTN_db_chkindate1.setDate( CEXTN_db_chkindate1.getDate() + 1 );  
-var CEXTN_db_chkindate1 = CEXTN_db_chkindate1.toDateString(); 
-CEXTN_db_chkindate1 = new Date( Date.parse( CEXTN_db_chkindate1 ) ); 
-if(new Date(CEXTN_db_chkindate1)<new Date())
-{
-var CEXTN_date = new Date(); 
-CEXTN_date.setDate( CEXTN_date.getDate() + 1 );  
-var CEXTN_newDate = CEXTN_date.toDateString(); 
-CEXTN_newDate = new Date( Date.parse(CEXTN_newDate ) ); 
-$('#CEXTN_db_noticeperioddate').datepicker("option","minDate",CEXTN_newDate);
-}
-else
-{
-$('#CEXTN_db_noticeperioddate').datepicker("option","minDate",CEXTN_db_chkindate1);
-}
-var CEXTN_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(CEXTN_db_chkoutdate)) ); 
-CEXTN_db_chkoutdate1.setDate( CEXTN_db_chkoutdate1.getDate()-1);  
-var CEXTN_db_chkoutdate1 = CEXTN_db_chkoutdate1.toDateString(); 
-CEXTN_db_chkoutdate1 = new Date( Date.parse( CEXTN_db_chkoutdate1 ) ); 
-var CEXTN_chkoutdate=CEXTN_db_chkoutdate1.getDate()
-var CEXTN_chkoutmonth=CEXTN_db_chkoutdate1.getMonth()+1
-var CEXTN_chkoutyear=CEXTN_db_chkoutdate1.getFullYear()
-var CEXTN_finnoticedate=CEXTN_chkoutyear+"-"+CEXTN_chkoutmonth+"-"+CEXTN_chkoutdate;
-CEXTN_finnoticedate = new Date( Date.parse( CEXTN_finnoticedate ) ); 
-$('#CEXTN_db_noticeperioddate').datepicker("option","maxDate",CEXTN_db_chkoutdate1);
-if(new Date(CEXTN_finnoticedate).setHours(0,0,0,0)<=new Date(FormTableDateFormat(CEXTN_db_chkindate)).setHours(0,0,0,0))
-{
-$('#CEXTN_db_noticeperioddate').val("");
-$('#CEXTN_db_noticeperioddate').attr("disabled","disabled");
-}
-if(new Date(CEXTN_finnoticedate).setHours(0,0,0,0)<=new Date().setHours(0,0,0,0))
-{
-$('#CEXTN_db_noticeperioddate').val("");
-$('#CEXTN_db_noticeperioddate').attr("disabled","disabled");
-}
-}
-var CEXTN_db_chkoutdate=$("#CEXTN_db_chkoutdate").val();
-});
+        $('#CEXTN_db_noticeperioddate').datepicker({
+            dateFormat: "dd-mm-yy" ,
+            changeYear: true,
+            changeMonth: true
+        });
+        var CEXTN_db_noticeperioddate=$("#CEXTN_db_noticeperioddate").val()
+        var CEXTN_date1 = $('#CEXTN_db_chkindate').val();
+        var CEXTN_db_prevchkindate=$('#CEXTN_db_prevchkindate').val();
+        if((CEXTN_db_chkoutdate!=""))
+        {
+            var CEXTN_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(CEXTN_db_chkindate)) );
+            CEXTN_db_chkindate1.setDate( CEXTN_db_chkindate1.getDate() + 1 );
+            var CEXTN_db_chkindate1 = CEXTN_db_chkindate1.toDateString();
+            CEXTN_db_chkindate1 = new Date( Date.parse( CEXTN_db_chkindate1 ) );
+            if(new Date(CEXTN_db_chkindate1)<new Date())
+            {
+                var CEXTN_date = new Date();
+                CEXTN_date.setDate( CEXTN_date.getDate() + 1 );
+                var CEXTN_newDate = CEXTN_date.toDateString();
+                CEXTN_newDate = new Date( Date.parse(CEXTN_newDate ) );
+                $('#CEXTN_db_noticeperioddate').datepicker("option","minDate",CEXTN_newDate);
+            }
+            else
+            {
+                $('#CEXTN_db_noticeperioddate').datepicker("option","minDate",CEXTN_db_chkindate1);
+            }
+            var CEXTN_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(CEXTN_db_chkoutdate)) );
+            CEXTN_db_chkoutdate1.setDate( CEXTN_db_chkoutdate1.getDate()-1);
+            var CEXTN_db_chkoutdate1 = CEXTN_db_chkoutdate1.toDateString();
+            CEXTN_db_chkoutdate1 = new Date( Date.parse( CEXTN_db_chkoutdate1 ) );
+            var CEXTN_chkoutdate=CEXTN_db_chkoutdate1.getDate()
+            var CEXTN_chkoutmonth=CEXTN_db_chkoutdate1.getMonth()+1
+            var CEXTN_chkoutyear=CEXTN_db_chkoutdate1.getFullYear()
+            var CEXTN_finnoticedate=CEXTN_chkoutyear+"-"+CEXTN_chkoutmonth+"-"+CEXTN_chkoutdate;
+            CEXTN_finnoticedate = new Date( Date.parse( CEXTN_finnoticedate ) );
+            $('#CEXTN_db_noticeperioddate').datepicker("option","maxDate",CEXTN_db_chkoutdate1);
+            if(new Date(CEXTN_finnoticedate).setHours(0,0,0,0)<=new Date(FormTableDateFormat(CEXTN_db_chkindate)).setHours(0,0,0,0))
+            {
+                $('#CEXTN_db_noticeperioddate').val("");
+                $('#CEXTN_db_noticeperioddate').attr("disabled","disabled");
+            }
+            if(new Date(CEXTN_finnoticedate).setHours(0,0,0,0)<=new Date().setHours(0,0,0,0))
+            {
+                $('#CEXTN_db_noticeperioddate').val("");
+                $('#CEXTN_db_noticeperioddate').attr("disabled","disabled");
+            }
+        }
+        var CEXTN_db_chkoutdate=$("#CEXTN_db_chkoutdate").val();
+    });
 //FUNCTION TO ENABLE PROCESSING COST CHECK BOX USING THE RETURN RESULT
-function CEXTN_chkProrated_result(CEXTN_chkproflag)
-{
-var CEXTN_radio_amt =$("input[name='CEXTN_radio_amt']:checked").val()
-if(CEXTN_chkproflag==true)
-{
-if(CEXTN_radio_amt!="CEXTN_radio_sameamt")
-{
-$("#CEXTN_cb_diffamtprorated").removeAttr("disabled").prop('checked',true);
-}
-$("#CEXTN_cb_sameamtprorated").removeAttr("disabled").prop('checked',true);
-}
-else
-{
-if(CEXTN_radio_amt!="CEXTN_radio_sameamt")
-{
-$("#CEXTN_cb_diffamtprorated").attr("disabled","disabled").prop('checked',true);
-}
-$("#CEXTN_cb_sameamtprorated").attr("disabled","disabled").prop('checked',true);
-}
-var chkedvalue="X";
-var sameproratedchk=$("#CEXTN_cb_sameamtprorated").prop("checked");
-var diffwaivedchk=$("#CEXTN_cb_diffamtwaived").prop("checked");
-var diffproratedchk=$("#CEXTN_cb_diffamtprorated").prop("checked");
-if (sameproratedchk==true)
-{
-$("#CEXTN_hidden_sameamtprorated").val(chkedvalue);
-}
-else
-{
-$("#CEXTN_hidden_sameamtprorated").val("");
-}
-if (diffproratedchk==true)
-{
-$("#CEXTN_hidden_diffamtprorated").val(chkedvalue);
-}
-else
-{
-$("#CEXTN_hidden_diffamtprorated").val("");
-}
-}
-function CEXTN_setproratedvalue()
-{
-var chkedvalue="X";
-var sameproratedchk=$("#CEXTN_cb_sameamtprorated").prop("checked");
-var diffwaivedchk=$("#CEXTN_cb_diffamtwaived").prop("checked");
-var diffproratedchk=$("#CEXTN_cb_diffamtprorated").prop("checked");
-if (sameproratedchk==true)
-{
-$("#CEXTN_hidden_sameamtprorated").val(chkedvalue);
-}
-else
-{
-$("#CEXTN_hidden_sameamtprorated").val("");
-}
-if (diffproratedchk==true)
-{
-$("#CEXTN_hidden_diffamtprorated").val(chkedvalue);
-}
-else
-{
-$("#CEXTN_hidden_diffamtprorated").val("");
-}
-}
+    function CEXTN_chkProrated_result(CEXTN_chkproflag)
+    {
+        var CEXTN_radio_amt =$("input[name='CEXTN_radio_amt']:checked").val()
+        if(CEXTN_chkproflag==true)
+        {
+            if(CEXTN_radio_amt!="CEXTN_radio_sameamt")
+            {
+                $("#CEXTN_cb_diffamtprorated").removeAttr("disabled").prop('checked',true);
+            }
+            $("#CEXTN_cb_sameamtprorated").removeAttr("disabled").prop('checked',true);
+        }
+        else
+        {
+            if(CEXTN_radio_amt!="CEXTN_radio_sameamt")
+            {
+                $("#CEXTN_cb_diffamtprorated").attr("disabled","disabled").prop('checked',true);
+            }
+            $("#CEXTN_cb_sameamtprorated").attr("disabled","disabled").prop('checked',true);
+        }
+        var chkedvalue="X";
+        var sameproratedchk=$("#CEXTN_cb_sameamtprorated").prop("checked");
+        var diffwaivedchk=$("#CEXTN_cb_diffamtwaived").prop("checked");
+        var diffproratedchk=$("#CEXTN_cb_diffamtprorated").prop("checked");
+        if (sameproratedchk==true)
+        {
+            $("#CEXTN_hidden_sameamtprorated").val(chkedvalue);
+        }
+        else
+        {
+            $("#CEXTN_hidden_sameamtprorated").val("");
+        }
+        if (diffproratedchk==true)
+        {
+            $("#CEXTN_hidden_diffamtprorated").val(chkedvalue);
+        }
+        else
+        {
+            $("#CEXTN_hidden_diffamtprorated").val("");
+        }
+    }
+    function CEXTN_setproratedvalue()
+    {
+        var chkedvalue="X";
+        var sameproratedchk=$("#CEXTN_cb_sameamtprorated").prop("checked");
+        var diffwaivedchk=$("#CEXTN_cb_diffamtwaived").prop("checked");
+        var diffproratedchk=$("#CEXTN_cb_diffamtprorated").prop("checked");
+        if (sameproratedchk==true)
+        {
+            $("#CEXTN_hidden_sameamtprorated").val(chkedvalue);
+        }
+        else
+        {
+            $("#CEXTN_hidden_sameamtprorated").val("");
+        }
+        if (diffproratedchk==true)
+        {
+            $("#CEXTN_hidden_diffamtprorated").val(chkedvalue);
+        }
+        else
+        {
+            $("#CEXTN_hidden_diffamtprorated").val("");
+        }
+    }
 //
 //FUNCTION TO GET TO TIME FOR CHECK IN DATE
-$("#CEXTN_lb_chkinfromtime").change(function()
-{
-$(".preloader").show(); 
-var CEXTN_lb_chkinfromtime=$("#CEXTN_lb_chkinfromtime").val();
-if(CEXTN_lb_chkinfromtime!="SELECT")
-{
-var CEXTN_totimelb=''
-var totime=CEXTN_startendtimevalues(CEXTN_lb_chkinfromtime)
-for(var j=0;j<totime.length;j++)
-{
-CEXTN_totimelb += '<option value="' + totime[j] + '">' + totime[j]+ '</option>';
-}
-$("#CEXTN_lbl_chkinto").show();
-$('#CEXTN_lb_chkintotime').html(CEXTN_totimelb).show();
-$(".preloader").hide(); 
-}
-else
-{
-$(".preloader").hide(); 
-$('#CEXTN_lb_chkintotime').hide();
-$("#CEXTN_lbl_chkinto").hide();
-}
-});
+    $("#CEXTN_lb_chkinfromtime").change(function()
+    {
+        $(".preloader").show();
+        var CEXTN_lb_chkinfromtime=$("#CEXTN_lb_chkinfromtime").val();
+        if(CEXTN_lb_chkinfromtime!="SELECT")
+        {
+            var CEXTN_totimelb=''
+            var totime=CEXTN_startendtimevalues(CEXTN_lb_chkinfromtime)
+            for(var j=0;j<totime.length;j++)
+            {
+                CEXTN_totimelb += '<option value="' + totime[j] + '">' + totime[j]+ '</option>';
+            }
+            $("#CEXTN_lbl_chkinto").show();
+            $('#CEXTN_lb_chkintotime').html(CEXTN_totimelb).show();
+            $(".preloader").hide();
+        }
+        else
+        {
+            $(".preloader").hide();
+            $('#CEXTN_lb_chkintotime').hide();
+            $("#CEXTN_lbl_chkinto").hide();
+        }
+    });
 //FUNCTION TO GET TO TIME FOR CHECK OUT DATE
-$("#CEXTN_lb_chkoutfromtime").change(function()
-{
-$(".preloader").show(); 
-var CEXTN_totimelb="";
-var CEXTN_lb_chkoutfromtime=$("#CEXTN_lb_chkoutfromtime").val();
-if(CEXTN_lb_chkoutfromtime!="SELECT")
-{
-var totime=CEXTN_startendtimevalues(CEXTN_lb_chkoutfromtime)
-for(var j=0;j<totime.length;j++)
-{
-CEXTN_totimelb += '<option value="' + totime[j] + '">' + totime[j]+ '</option>';
-}
-$('#CEXTN_lbl_chkoutto').show();
-$('#CEXTN_lb_chkouttotime').html(CEXTN_totimelb).show();
-$(".preloader").hide(); 
-}
-else
-{
-$(".preloader").hide(); 
-$('#CEXTN_lb_chkouttotime').hide();
-$('#CEXTN_lbl_chkoutto').hide();
-}
-});
+    $("#CEXTN_lb_chkoutfromtime").change(function()
+    {
+        $(".preloader").show();
+        var CEXTN_totimelb="";
+        var CEXTN_lb_chkoutfromtime=$("#CEXTN_lb_chkoutfromtime").val();
+        if(CEXTN_lb_chkoutfromtime!="SELECT")
+        {
+            var totime=CEXTN_startendtimevalues(CEXTN_lb_chkoutfromtime)
+            for(var j=0;j<totime.length;j++)
+            {
+                CEXTN_totimelb += '<option value="' + totime[j] + '">' + totime[j]+ '</option>';
+            }
+            $('#CEXTN_lbl_chkoutto').show();
+            $('#CEXTN_lb_chkouttotime').html(CEXTN_totimelb).show();
+            $(".preloader").hide();
+        }
+        else
+        {
+            $(".preloader").hide();
+            $('#CEXTN_lb_chkouttotime').hide();
+            $('#CEXTN_lbl_chkoutto').hide();
+        }
+    });
 //FUNCTION TO VALIDATE FORM
-$(document).on("change blur",'#CEXTN_form', function ()
-{
-var CEXTN_validinput=1;
-var CEXTN_validoutput=CEXTN_validateinputform(CEXTN_validinput);
-CEXTN_validatesubmitbtn(CEXTN_validoutput);
-});
+    $(document).on("change blur",'#CEXTN_form', function ()
+    {
+        var CEXTN_validinput=1;
+        var CEXTN_validoutput=CEXTN_validateinputform(CEXTN_validinput);
+        CEXTN_validatesubmitbtn(CEXTN_validoutput);
+    });
 //FUNCTION TO VALIDATE INPUT FIELDS
-function CEXTN_validateinputform(CEXTN_validinput)
-{
-var CEXTN_db_passdate=$('#CEXTN_db_passdate').val();
-var CEXTN_tb_passno=$('#CEXTN_tb_passno').val();
-var CEXTN_db_epdate=$('#CEXTN_db_epdate').val();
-var CEXTN_tb_epno=$('#CEXTN_tb_epno').val();
-var CEXTN_db_chkoutdate=$('#CEXTN_db_chkoutdate').val();
-var CEXTN_lb_diffunituno=$('#CEXTN_lb_diffunituno').val();
-var CEXTN_tb_emailid=$('#CEXTN_tb_emailid').val();
-var CEXTN_lb_sameunitdiffrmrmtype=$('#CEXTN_lb_sameunitdiffrmrmtype').val();
-var CEXTN_lb_chkoutfromtime=$("#CEXTN_lb_chkoutfromtime").val();
-var CEXTN_lb_chkouttotime=$('#CEXTN_lb_chkouttotime').val();
-var CEXTN_lb_chkinfromtime=$("#CEXTN_lb_chkinfromtime").val();
-var CEXTN_lb_chkintotime=$('#CEXTN_lb_chkintotime').val();
-var CEXTN_radio_amt =$("input[name='CEXTN_radio_amt']:checked").val()
-var CEXTN_radio_unit =$("input[name='CEXTN_radio_unit']:checked").val()
-var CEXTN_tb_diffamtrent=$("#CEXTN_tb_diffamtrent").val();
-var CEXTN_lb_diffunituno=$("#CEXTN_lb_diffunituno").val();
-var CEXTN_lb_diffunitrmtype=$("#CEXTN_lb_diffunitrmtype").val();
-var CEXTN_lb_emailid=$("#CEXTN_lb_emailid").val();
-var CEXTN_radio_difunitcard=$("input[name='CEXTN_radio_difunitcard']:checked").val();
-var CEXTN_chkdifunitcard=$("input:radio[name='CEXTN_radio_difunitcard']").is(":checked")
-var emailchk="";
-var atpos=CEXTN_tb_emailid.indexOf("@");
-var dotpos=CEXTN_tb_emailid.lastIndexOf(".");
-if(CEXTN_tb_emailid.length>0)
-{
-if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(CEXTN_tb_emailid) || "" == CEXTN_tb_emailid)
-&&(atpos-1!=CEXTN_tb_emailid.indexOf(".")))
-{
-$('#CEXTN_tb_emailid').removeClass("invalid");
-$("#CEXTN_lbl_emailerrmsg").text("");
-$('#CEXTN_tb_emailid').val($('#CEXTN_tb_emailid').val().toLowerCase());
-emailchk="valid";
-}
-else
-{
-emailchk="invalid";
-$("#CEXTN_lbl_emailerrmsg").text(CEXTN_errmsgs[5])
-$('#CEXTN_tb_emailid').addClass("invalid")
-}
-}
-else
-{
-$('#CEXTN_tb_emailid').removeClass("invalid");
-$("#CEXTN_lbl_emailerrmsg").text("");
-emailchk="invalid";
-}
+    function CEXTN_validateinputform(CEXTN_validinput)
+    {
+        var CEXTN_db_passdate=$('#CEXTN_db_passdate').val();
+        var CEXTN_tb_passno=$('#CEXTN_tb_passno').val();
+        var CEXTN_db_epdate=$('#CEXTN_db_epdate').val();
+        var CEXTN_tb_epno=$('#CEXTN_tb_epno').val();
+        var CEXTN_db_chkoutdate=$('#CEXTN_db_chkoutdate').val();
+        var CEXTN_lb_diffunituno=$('#CEXTN_lb_diffunituno').val();
+        var CEXTN_tb_emailid=$('#CEXTN_tb_emailid').val();
+        var CEXTN_lb_sameunitdiffrmrmtype=$('#CEXTN_lb_sameunitdiffrmrmtype').val();
+        var CEXTN_lb_chkoutfromtime=$("#CEXTN_lb_chkoutfromtime").val();
+        var CEXTN_lb_chkouttotime=$('#CEXTN_lb_chkouttotime').val();
+        var CEXTN_lb_chkinfromtime=$("#CEXTN_lb_chkinfromtime").val();
+        var CEXTN_lb_chkintotime=$('#CEXTN_lb_chkintotime').val();
+        var CEXTN_radio_amt =$("input[name='CEXTN_radio_amt']:checked").val()
+        var CEXTN_radio_unit =$("input[name='CEXTN_radio_unit']:checked").val()
+        var CEXTN_tb_diffamtrent=$("#CEXTN_tb_diffamtrent").val();
+        var CEXTN_lb_diffunituno=$("#CEXTN_lb_diffunituno").val();
+        var CEXTN_lb_diffunitrmtype=$("#CEXTN_lb_diffunitrmtype").val();
+        var CEXTN_lb_emailid=$("#CEXTN_lb_emailid").val();
+        var CEXTN_radio_difunitcard=$("input[name='CEXTN_radio_difunitcard']:checked").val();
+        var CEXTN_chkdifunitcard=$("input:radio[name='CEXTN_radio_difunitcard']").is(":checked")
+        var emailchk="";
+        var atpos=CEXTN_tb_emailid.indexOf("@");
+        var dotpos=CEXTN_tb_emailid.lastIndexOf(".");
+        if(CEXTN_tb_emailid.length>0)
+        {
+            if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(CEXTN_tb_emailid) || "" == CEXTN_tb_emailid)
+                    &&(atpos-1!=CEXTN_tb_emailid.indexOf(".")))
+            {
+                $('#CEXTN_tb_emailid').removeClass("invalid");
+                $("#CEXTN_lbl_emailerrmsg").text("");
+                $('#CEXTN_tb_emailid').val($('#CEXTN_tb_emailid').val().toLowerCase());
+                emailchk="valid";
+            }
+            else
+            {
+                emailchk="invalid";
+                $("#CEXTN_lbl_emailerrmsg").text(CEXTN_errmsgs[5])
+                $('#CEXTN_tb_emailid').addClass("invalid")
+            }
+        }
+        else
+        {
+            $('#CEXTN_tb_emailid').removeClass("invalid");
+            $("#CEXTN_lbl_emailerrmsg").text("");
+            emailchk="invalid";
+        }
 //SHOW OR HIDE TIME BOX
-if($("#CEXTN_db_chkoutdate").val()!="")
-{
-if($("#CEXTN_db_passdate").val()!=""&&new Date(FormTableDateFormat($("#CEXTN_db_passdate").val())).setHours(0,0,0,0)<=new Date(FormTableDateFormat($("#CEXTN_db_chkoutdate").val())).setHours(0,0,0,0))
-{
-$('#CEXTN_db_passdate').addClass("invalid")
-$("#CEXTN_passdate_err").text(CEXTN_errmsgs[28])
-CEXTN_validinput=0;
-}
-else
-{
-$('#CEXTN_db_passdate').removeClass("invalid");
-$("#CEXTN_passdate_err").text("");
-}
-if($("#CEXTN_db_epdate").val()!=""&&new Date(FormTableDateFormat($("#CEXTN_db_epdate").val())).setHours(0,0,0,0)<=new Date(FormTableDateFormat($("#CEXTN_db_chkoutdate").val())).setHours(0,0,0,0))
-{
-$('#CEXTN_db_epdate').addClass("invalid")
-$("#CEXTN_epdate_err").text(CEXTN_errmsgs[27])
-CEXTN_validinput=0;
-}
-else
-{
-$('#CEXTN_db_epdate').removeClass("invalid");
-$("#CEXTN_epdate_err").text("");
-}
-$("#CEXTN_lb_chkoutfromtime").show();
-}
-else
-{
-$("#CEXTN_lb_chkoutfromtime").val("SELECT").hide();
-$("#CEXTN_lb_chkouttotime").hide();
-$('#CEXTN_lbl_chkoutto').hide();
-}
-if(CEXTN_radio_unit=="CEXTN_radio_diffunit"&&CEXTN_radio_difunitcard=="CEXTN_radio_difunitcardno")
-{
-$("#CEXTN_btn_save").attr("disabled","disabled");
+        if($("#CEXTN_db_chkoutdate").val()!="")
+        {
+            if($("#CEXTN_db_passdate").val()!=""&&new Date(FormTableDateFormat($("#CEXTN_db_passdate").val())).setHours(0,0,0,0)<=new Date(FormTableDateFormat($("#CEXTN_db_chkoutdate").val())).setHours(0,0,0,0))
+            {
+                $('#CEXTN_db_passdate').addClass("invalid")
+                $("#CEXTN_passdate_err").text(CEXTN_errmsgs[28])
+                CEXTN_validinput=0;
+            }
+            else
+            {
+                $('#CEXTN_db_passdate').removeClass("invalid");
+                $("#CEXTN_passdate_err").text("");
+            }
+            if($("#CEXTN_db_epdate").val()!=""&&new Date(FormTableDateFormat($("#CEXTN_db_epdate").val())).setHours(0,0,0,0)<=new Date(FormTableDateFormat($("#CEXTN_db_chkoutdate").val())).setHours(0,0,0,0))
+            {
+                $('#CEXTN_db_epdate').addClass("invalid")
+                $("#CEXTN_epdate_err").text(CEXTN_errmsgs[27])
+                CEXTN_validinput=0;
+            }
+            else
+            {
+                $('#CEXTN_db_epdate').removeClass("invalid");
+                $("#CEXTN_epdate_err").text("");
+            }
+            $("#CEXTN_lb_chkoutfromtime").show();
+        }
+        else
+        {
+            $("#CEXTN_lb_chkoutfromtime").val("SELECT").hide();
+            $("#CEXTN_lb_chkouttotime").hide();
+            $('#CEXTN_lbl_chkoutto').hide();
+        }
+        if(CEXTN_radio_unit=="CEXTN_radio_diffunit"&&CEXTN_radio_difunitcard=="CEXTN_radio_difunitcardno")
+        {
+            $("#CEXTN_btn_save").attr("disabled","disabled");
 ////VALIDATION TO SHOW CARD FOR DIFFERENT UNIT OPTION N CODING  TO CHK CARD CHKBOX N LISTBOX
-var CEXTN_cardlist=[];
-var CEXTN_selectcardlist=[];
-for(var k=0;k<CEXTN_finalCard.length;k++)
-{
-var CEXTN_Cardnos=CEXTN_finalCard[k];
-CEXTN_cardlist.push(CEXTN_Cardnos)
-}
-var cardnos = [];
-var cardid=[];
-var cardlblll=[];
-$('input:checkbox[name=CEXTN_cb_diffunitcard]:checked').each(function() {
-if ($(this).val()) {
-cardnos.push($(this).val());
-var id=$(this).attr("id")
-var CEXTN_lb_diffunitcard= $('#CEXTN_lb_diffunitcard'+id).val();
-if(CEXTN_lb_diffunitcard!="SELECT")
-{
-cardlblll.push(CEXTN_lb_diffunitcard)
-}
-cardid.push(id);
-}
-});
-$('#CEXTN_slctcustlbl').val(cardlblll)
-var cardnos1 = [];
-var cardid1=[];
-$('input:checkbox[name=CEXTN_cb_diffunitcard]:not(:checked)').each(function() {
-cardnos1.push($(this).val());
-var id=$(this).attr("id")
-cardid1.push(id);
-if(cardid.length>0)
-{
-$('#'+id).attr("disabled","disabled");
-}
-});
-CEXTN_cardcount=0;
-var CEXTN_chkcustflag=0;
-var CEXTN_chkcard=0;
-for(var i=0;i<cardid.length;i++)
-{
-var id=cardid[i];
-var cardno=$("input[name='CEXTN_cb_diffunitcard']:checked").val();
-$('#CEXTN_lb_diffunitcard'+id)
-var CEXTN_tb_firstname=$('#CEXTN_tb_firstname').val();
-var CEXTN_tb_lastname=$('#CEXTN_tb_lastname').val();
-var CEXTN_lb_diffunitcard= $('#CEXTN_lb_diffunitcard'+id).show().val();
-CEXTN_chkcard=1;
-if(CEXTN_lb_diffunitcard!="SELECT")
-{
-$('#CEXTN_lb_diffunitcard'+id).attr("disabled","disabled");
-CEXTN_cardcount++;
-CEXTN_selectcardlist.push(CEXTN_lb_diffunitcard);
-if(CEXTN_lb_diffunitcard==CEXTN_tb_firstname+" "+CEXTN_tb_lastname)
-{
-CEXTN_chkcustflag=1;
-}
-var cardlabl=CEXTN_lb_diffunitcard.replace(/ /g,"_");
-$('#CEXTN_tb_diffunitcard'+id).val(cardlabl);
-}
-}
-if(CEXTN_cardcount>0)
-{
-if(CEXTN_chkcustflag==0)
-{
-CEXTN_validinput=0;
-$('#CEXTN_div_custerrmsg').text(CEXTN_errmsgs[4]).show();
-$('#CEXTN_div_diffunitnocarderrmsg').hide();
-}
-else
-{
-$('#CEXTN_div_custerrmsg').hide();
-}
-}
-var fincardlbl=CEXTN_card_diffArray(CEXTN_cardlist,CEXTN_selectcardlist);
-for(var i=0;i<cardid.length;i++)
-{
-var id=cardid[i];
-var CEXTN_lb_diffunitcard= $('#CEXTN_lb_diffunitcard'+id).show().val();
-if(CEXTN_lb_diffunitcard=="SELECT")
-{
-CEXTN_validinput=0;
-var CEXTN_cardnolbl='<option>SELECT</option>';
-for(var j=0;j<fincardlbl.length;j++)
-{
-var CEXTN_cardnolabel=fincardlbl[j];
-CEXTN_cardnolbl += '<option value="' + CEXTN_cardnolabel + '">' + CEXTN_cardnolabel+ '</option>';
-}
-$('#CEXTN_lb_diffunitcard'+id).html(CEXTN_cardnolbl);
-}
-}
-for(var i=0;i<cardid1.length;i++)
-{
-var id=cardid1[i];
-$('#CEXTN_tb_diffunitcard'+id).val("");
+            var CEXTN_cardlist=[];
+            var CEXTN_selectcardlist=[];
+            for(var k=0;k<CEXTN_finalCard.length;k++)
+            {
+                var CEXTN_Cardnos=CEXTN_finalCard[k];
+                CEXTN_cardlist.push(CEXTN_Cardnos)
+            }
+            var cardnos = [];
+            var cardid=[];
+            var cardlblll=[];
+            $('input:checkbox[name=CEXTN_cb_diffunitcard]:checked').each(function() {
+                if ($(this).val()) {
+                    cardnos.push($(this).val());
+                    var id=$(this).attr("id")
+                    var CEXTN_lb_diffunitcard= $('#CEXTN_lb_diffunitcard'+id).val();
+                    if(CEXTN_lb_diffunitcard!="SELECT")
+                    {
+                        cardlblll.push(CEXTN_lb_diffunitcard)
+                    }
+                    cardid.push(id);
+                }
+            });
+            $('#CEXTN_slctcustlbl').val(cardlblll)
+            var cardnos1 = [];
+            var cardid1=[];
+            $('input:checkbox[name=CEXTN_cb_diffunitcard]:not(:checked)').each(function() {
+                cardnos1.push($(this).val());
+                var id=$(this).attr("id")
+                cardid1.push(id);
+                if(cardid.length>0)
+                {
+                    $('#'+id).attr("disabled","disabled");
+                }
+            });
+            CEXTN_cardcount=0;
+            var CEXTN_chkcustflag=0;
+            var CEXTN_chkcard=0;
+            for(var i=0;i<cardid.length;i++)
+            {
+                var id=cardid[i];
+                var cardno=$("input[name='CEXTN_cb_diffunitcard']:checked").val();
+                $('#CEXTN_lb_diffunitcard'+id)
+                var CEXTN_tb_firstname=$('#CEXTN_tb_firstname').val();
+                var CEXTN_tb_lastname=$('#CEXTN_tb_lastname').val();
+                var CEXTN_lb_diffunitcard= $('#CEXTN_lb_diffunitcard'+id).show().val();
+                CEXTN_chkcard=1;
+                if(CEXTN_lb_diffunitcard!="SELECT")
+                {
+                    $('#CEXTN_lb_diffunitcard'+id).attr("disabled","disabled");
+                    CEXTN_cardcount++;
+                    CEXTN_selectcardlist.push(CEXTN_lb_diffunitcard);
+                    if(CEXTN_lb_diffunitcard==CEXTN_tb_firstname+" "+CEXTN_tb_lastname)
+                    {
+                        CEXTN_chkcustflag=1;
+                    }
+                    var cardlabl=CEXTN_lb_diffunitcard.replace(/ /g,"_");
+                    $('#CEXTN_tb_diffunitcard'+id).val(cardlabl);
+                }
+            }
+            if(CEXTN_cardcount>0)
+            {
+                if(CEXTN_chkcustflag==0)
+                {
+                    CEXTN_validinput=0;
+                    $('#CEXTN_div_custerrmsg').text(CEXTN_errmsgs[4]).show();
+                    $('#CEXTN_div_diffunitnocarderrmsg').hide();
+                }
+                else
+                {
+                    $('#CEXTN_div_custerrmsg').hide();
+                }
+            }
+            var fincardlbl=CEXTN_card_diffArray(CEXTN_cardlist,CEXTN_selectcardlist);
+            for(var i=0;i<cardid.length;i++)
+            {
+                var id=cardid[i];
+                var CEXTN_lb_diffunitcard= $('#CEXTN_lb_diffunitcard'+id).show().val();
+                if(CEXTN_lb_diffunitcard=="SELECT")
+                {
+                    CEXTN_validinput=0;
+                    var CEXTN_cardnolbl='<option>SELECT</option>';
+                    for(var j=0;j<fincardlbl.length;j++)
+                    {
+                        var CEXTN_cardnolabel=fincardlbl[j];
+                        CEXTN_cardnolbl += '<option value="' + CEXTN_cardnolabel + '">' + CEXTN_cardnolabel+ '</option>';
+                    }
+                    $('#CEXTN_lb_diffunitcard'+id).html(CEXTN_cardnolbl);
+                }
+            }
+            for(var i=0;i<cardid1.length;i++)
+            {
+                var id=cardid1[i];
+                $('#CEXTN_tb_diffunitcard'+id).val("");
 //SET CARD LABEL IN CARD LISTBOX
-var CEXTN_cardnolbl='<option>SELECT</option>';
-var CEXTN_chkselect=0;
-for(var j=0;j<fincardlbl.length;j++)
-{
-var CEXTN_cardnolabel=fincardlbl[j];
-CEXTN_cardnolbl += '<option value="' + CEXTN_cardnolabel + '">' + CEXTN_cardnolabel+ '</option>';
-}
-$('#CEXTN_lb_diffunitcard'+id).html(CEXTN_cardnolbl);
-$('#CEXTN_lb_diffunitcard'+id).removeAttr("disabled");
-$('#CEXTN_lb_diffunitcard'+id).val("SELECT")
-$('#CEXTN_lb_diffunitcard'+id).hide();
-for(var kk=0;kk<cardid.length;kk++)
-{
-var idd=cardid[kk];
-var CEXTN_lb_diffunitcard= $('#CEXTN_lb_diffunitcard'+idd).val();
-if(CEXTN_lb_diffunitcard=="SELECT")
-{
-CEXTN_chkselect=1;
-}
-}
-if(CEXTN_chkselect==0&&CEXTN_cardcount<=3)
-{
-$('#'+id).removeAttr("disabled");
-}
-}
-}
-CEXTN_setproratedvalue()
-var samewaivedchk=$("#CEXTN_cb_sameamtwaived").prop("checked");
-var chkedvalue="X";
-var diffwaivedchk=$("#CEXTN_cb_diffamtwaived").prop("checked");
-if (samewaivedchk==true)
-{
-$("#CEXTN_hidden_sameamtwaived").val(chkedvalue);
-}
-else
-{
-$("#CEXTN_hidden_sameamtwaived").val("");
-}
+                var CEXTN_cardnolbl='<option>SELECT</option>';
+                var CEXTN_chkselect=0;
+                for(var j=0;j<fincardlbl.length;j++)
+                {
+                    var CEXTN_cardnolabel=fincardlbl[j];
+                    CEXTN_cardnolbl += '<option value="' + CEXTN_cardnolabel + '">' + CEXTN_cardnolabel+ '</option>';
+                }
+                $('#CEXTN_lb_diffunitcard'+id).html(CEXTN_cardnolbl);
+                $('#CEXTN_lb_diffunitcard'+id).removeAttr("disabled");
+                $('#CEXTN_lb_diffunitcard'+id).val("SELECT")
+                $('#CEXTN_lb_diffunitcard'+id).hide();
+                for(var kk=0;kk<cardid.length;kk++)
+                {
+                    var idd=cardid[kk];
+                    var CEXTN_lb_diffunitcard= $('#CEXTN_lb_diffunitcard'+idd).val();
+                    if(CEXTN_lb_diffunitcard=="SELECT")
+                    {
+                        CEXTN_chkselect=1;
+                    }
+                }
+                if(CEXTN_chkselect==0&&CEXTN_cardcount<=3)
+                {
+                    $('#'+id).removeAttr("disabled");
+                }
+            }
+        }
+        CEXTN_setproratedvalue()
+        var samewaivedchk=$("#CEXTN_cb_sameamtwaived").prop("checked");
+        var chkedvalue="X";
+        var diffwaivedchk=$("#CEXTN_cb_diffamtwaived").prop("checked");
+        if (samewaivedchk==true)
+        {
+            $("#CEXTN_hidden_sameamtwaived").val(chkedvalue);
+        }
+        else
+        {
+            $("#CEXTN_hidden_sameamtwaived").val("");
+        }
 //
-if (diffwaivedchk==true)
-{
-$("#CEXTN_hidden_diffamtwaived").val(chkedvalue);
-}
-else
-{
-$("#CEXTN_hidden_diffamtwaived").val("");
-}
-if(emailchk=="invalid"||CEXTN_db_chkoutdate==""||CEXTN_lb_chkoutfromtime=="SELECT"||CEXTN_lb_emailid=="SELECT"||CEXTN_chkunitdateflag==1)
-{
-CEXTN_validinput=0;
-}
-if(CEXTN_radio_amt=='CEXTN_radio_diffamt'&&($("#CEXTN_tb_diffamtrent").val()==""||parseFloat($("#CEXTN_tb_diffamtrent").val())==0))
-{
-CEXTN_validinput=0;
-}
-var CEXTN_epnoflag=0,CEXTN_passnoflag=0;
+        if (diffwaivedchk==true)
+        {
+            $("#CEXTN_hidden_diffamtwaived").val(chkedvalue);
+        }
+        else
+        {
+            $("#CEXTN_hidden_diffamtwaived").val("");
+        }
+        if(emailchk=="invalid"||CEXTN_db_chkoutdate==""||CEXTN_lb_chkoutfromtime=="SELECT"||CEXTN_lb_emailid=="SELECT"||CEXTN_chkunitdateflag==1)
+        {
+            CEXTN_validinput=0;
+        }
+        if(CEXTN_radio_amt=='CEXTN_radio_diffamt'&&($("#CEXTN_tb_diffamtrent").val()==""||parseFloat($("#CEXTN_tb_diffamtrent").val())==0))
+        {
+            CEXTN_validinput=0;
+        }
+        var CEXTN_epnoflag=0,CEXTN_passnoflag=0;
 //VALIDATING PASSPORT EXPIRY DATE N NO,EP EXPIRY DATE N NO
-if(CEXTN_db_passdate!=""&&CEXTN_tb_passno=="")
-{
-CEXTN_validinput=0;
-CEXTN_passnoflag=1;
-$("#CEXTN_passno_err").text(CEXTN_errmsgs[22]);
-$("#CEXTN_tb_passno").addClass("invalid")
-}
-if(CEXTN_db_epdate!=""&&CEXTN_tb_epno=="")
-{
-CEXTN_epnoflag=1;
-CEXTN_validinput=0;
-$("#CEXTN_epno_err").text(CEXTN_errmsgs[23]);
-$("#CEXTN_tb_epno").addClass("invalid")
-}
+        if(CEXTN_db_passdate!=""&&CEXTN_tb_passno=="")
+        {
+            CEXTN_validinput=0;
+            CEXTN_passnoflag=1;
+            $("#CEXTN_passno_err").text(CEXTN_errmsgs[22]);
+            $("#CEXTN_tb_passno").addClass("invalid")
+        }
+        if(CEXTN_db_epdate!=""&&CEXTN_tb_epno=="")
+        {
+            CEXTN_epnoflag=1;
+            CEXTN_validinput=0;
+            $("#CEXTN_epno_err").text(CEXTN_errmsgs[23]);
+            $("#CEXTN_tb_epno").addClass("invalid")
+        }
 //MINIMUM DIGIT VALIDATION START
-if((parseInt($("#CEXTN_tb_electcapfee").val().split('.')[0])==0||$("#CEXTN_tb_electcapfee").val().split('.')[0]==""||parseInt($("#CEXTN_tb_electcapfee").val().split('.')[0]).toString().length<2)&&parseFloat($("#CEXTN_tb_electcapfee").val())!=0&&$("#CEXTN_tb_electcapfee").val()!="")
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_electcapfee").addClass("invalid")
-$("#CEXTN_electcap_err").text(CEXTN_errmsgs[19])
-}
-else
-{
-$("#CEXTN_tb_electcapfee").removeClass("invalid")
-$("#CEXTN_electcap_err").text("")
-}
-if((parseInt($("#CEXTN_tb_diffamtrent").val().split('.')[0])==0||$("#CEXTN_tb_diffamtrent").val().split('.')[0]==""||parseInt($("#CEXTN_tb_diffamtrent").val().split('.')[0]).toString().length<3)&&parseFloat($("#CEXTN_tb_diffamtrent").val())!=0&&$("#CEXTN_tb_diffamtrent").val()!="")
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_diffamtrent").addClass("invalid")
-$("#CEXTN_diffamtrent_err").text(CEXTN_errmsgs[16])
-}
-else
-{
-$("#CEXTN_tb_diffamtrent").removeClass("invalid")
-$("#CEXTN_diffamtrent_err").text("")
-}
-if((parseInt($("#CEXTN_tb_diffamtdep").val().split('.')[0])==0||$("#CEXTN_tb_diffamtdep").val().split('.')[0]==""||parseInt($("#CEXTN_tb_diffamtdep").val().split('.')[0]).toString().length<3)&&parseFloat($("#CEXTN_tb_diffamtdep").val())!=0&&$("#CEXTN_tb_diffamtdep").val()!="")
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_diffamtdep").addClass("invalid")
-$("#CEXTN_diffamtdeposit_err").text(CEXTN_errmsgs[17])
-}
-else
-{
-$("#CEXTN_tb_diffamtdep").removeClass("invalid")
-$("#CEXTN_diffamtdeposit_err").text("")
-}
-if((parseInt($("#CEXTN_tb_diffamtprocost").val().split('.')[0])==0||$("#CEXTN_tb_diffamtprocost").val().split('.')[0]==""||parseInt($("#CEXTN_tb_diffamtprocost").val().split('.')[0]).toString().length<3)&&parseFloat($("#CEXTN_tb_diffamtprocost").val())!=0&&$("#CEXTN_tb_diffamtprocost").val()!="")
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_diffamtprocost").addClass("invalid")
-$("#CEXTN_diffamtprofee_err").text(CEXTN_errmsgs[18])
-}
-else
-{
-$("#CEXTN_tb_diffamtprocost").removeClass("invalid")
-$("#CEXTN_diffamtprofee_err").text("")
-}
-if($("#CEXTN_tb_comppostcode").val()!=""&&($("#CEXTN_tb_comppostcode").val()).toString().length<5&&parseInt($("#CEXTN_tb_comppostcode").val())!=0)
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_comppostcode").addClass("invalid")
-$("#CEXTN_postcode_err").text(CEXTN_errmsgs[15])
-}
-else
-{
-$("#CEXTN_tb_comppostcode").removeClass("invalid")
-$("#CEXTN_postcode_err").text("")
-}
-if(($("#CEXTN_tb_passno").val().trim()!=""&&($("#CEXTN_tb_passno").val()).trim().toString().length<6))
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_passno").addClass("invalid")
-$("#CEXTN_passno_err").text(CEXTN_errmsgs[13])
-}
-else if(CEXTN_passnoflag==0)
-{
-$("#CEXTN_tb_passno").val($("#CEXTN_tb_passno").val().toUpperCase())
-$("#CEXTN_tb_passno").removeClass("invalid")
-$("#CEXTN_passno_err").text("")
-}
-if(($("#CEXTN_tb_epno").val().trim()!=""&&($("#CEXTN_tb_epno").val()).trim().toString().length<6))
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_epno").addClass("invalid")
-$("#CEXTN_epno_err").text(CEXTN_errmsgs[14])
-}
-else if(CEXTN_epnoflag==0)
-{
-$("#CEXTN_tb_epno").val($("#CEXTN_tb_epno").val().toUpperCase())
-$("#CEXTN_tb_epno").removeClass("invalid")
-$("#CEXTN_epno_err").text("")
-}
+        if((parseInt($("#CEXTN_tb_electcapfee").val().split('.')[0])==0||$("#CEXTN_tb_electcapfee").val().split('.')[0]==""||parseInt($("#CEXTN_tb_electcapfee").val().split('.')[0]).toString().length<2)&&parseFloat($("#CEXTN_tb_electcapfee").val())!=0&&$("#CEXTN_tb_electcapfee").val()!="")
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_electcapfee").addClass("invalid")
+            $("#CEXTN_electcap_err").text(CEXTN_errmsgs[19])
+        }
+        else
+        {
+            $("#CEXTN_tb_electcapfee").removeClass("invalid")
+            $("#CEXTN_electcap_err").text("")
+        }
+        if((parseInt($("#CEXTN_tb_diffamtrent").val().split('.')[0])==0||$("#CEXTN_tb_diffamtrent").val().split('.')[0]==""||parseInt($("#CEXTN_tb_diffamtrent").val().split('.')[0]).toString().length<3)&&parseFloat($("#CEXTN_tb_diffamtrent").val())!=0&&$("#CEXTN_tb_diffamtrent").val()!="")
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_diffamtrent").addClass("invalid")
+            $("#CEXTN_diffamtrent_err").text(CEXTN_errmsgs[16])
+        }
+        else
+        {
+            $("#CEXTN_tb_diffamtrent").removeClass("invalid")
+            $("#CEXTN_diffamtrent_err").text("")
+        }
+        if((parseInt($("#CEXTN_tb_diffamtdep").val().split('.')[0])==0||$("#CEXTN_tb_diffamtdep").val().split('.')[0]==""||parseInt($("#CEXTN_tb_diffamtdep").val().split('.')[0]).toString().length<3)&&parseFloat($("#CEXTN_tb_diffamtdep").val())!=0&&$("#CEXTN_tb_diffamtdep").val()!="")
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_diffamtdep").addClass("invalid")
+            $("#CEXTN_diffamtdeposit_err").text(CEXTN_errmsgs[17])
+        }
+        else
+        {
+            $("#CEXTN_tb_diffamtdep").removeClass("invalid")
+            $("#CEXTN_diffamtdeposit_err").text("")
+        }
+        if((parseInt($("#CEXTN_tb_diffamtprocost").val().split('.')[0])==0||$("#CEXTN_tb_diffamtprocost").val().split('.')[0]==""||parseInt($("#CEXTN_tb_diffamtprocost").val().split('.')[0]).toString().length<3)&&parseFloat($("#CEXTN_tb_diffamtprocost").val())!=0&&$("#CEXTN_tb_diffamtprocost").val()!="")
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_diffamtprocost").addClass("invalid")
+            $("#CEXTN_diffamtprofee_err").text(CEXTN_errmsgs[18])
+        }
+        else
+        {
+            $("#CEXTN_tb_diffamtprocost").removeClass("invalid")
+            $("#CEXTN_diffamtprofee_err").text("")
+        }
+        if($("#CEXTN_tb_comppostcode").val()!=""&&($("#CEXTN_tb_comppostcode").val()).toString().length<5&&parseInt($("#CEXTN_tb_comppostcode").val())!=0)
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_comppostcode").addClass("invalid")
+            $("#CEXTN_postcode_err").text(CEXTN_errmsgs[15])
+        }
+        else
+        {
+            $("#CEXTN_tb_comppostcode").removeClass("invalid")
+            $("#CEXTN_postcode_err").text("")
+        }
+        if(($("#CEXTN_tb_passno").val().trim()!=""&&($("#CEXTN_tb_passno").val()).trim().toString().length<6))
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_passno").addClass("invalid")
+            $("#CEXTN_passno_err").text(CEXTN_errmsgs[13])
+        }
+        else if(CEXTN_passnoflag==0)
+        {
+            $("#CEXTN_tb_passno").val($("#CEXTN_tb_passno").val().toUpperCase())
+            $("#CEXTN_tb_passno").removeClass("invalid")
+            $("#CEXTN_passno_err").text("")
+        }
+        if(($("#CEXTN_tb_epno").val().trim()!=""&&($("#CEXTN_tb_epno").val()).trim().toString().length<6))
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_epno").addClass("invalid")
+            $("#CEXTN_epno_err").text(CEXTN_errmsgs[14])
+        }
+        else if(CEXTN_epnoflag==0)
+        {
+            $("#CEXTN_tb_epno").val($("#CEXTN_tb_epno").val().toUpperCase())
+            $("#CEXTN_tb_epno").removeClass("invalid")
+            $("#CEXTN_epno_err").text("")
+        }
 //MINIMUM DIGIT VALIDATION END
 //CONTACT NO VALIDATION START
-if($("#CEXTN_tb_mobileno").val()!=""&&(parseInt($("#CEXTN_tb_mobileno").val()).toString().length)<6&&parseInt($("#CEXTN_tb_mobileno").val())!=0)
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_mobileno").addClass("invalid")
-$("#CEXTN_mobile_err").text(CEXTN_errmsgs[12])
-}
-else
-{
-$("#CEXTN_tb_mobileno").removeClass("invalid")
-$("#CEXTN_mobile_err").text("")
-}
-if($("#CEXTN_tb_intmobileno").val()!=""&&($("#CEXTN_tb_intmobileno").val().toString().length)<6&&parseInt($("#CEXTN_tb_intmobileno").val())!=0)
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_intmobileno").addClass("invalid")
-$("#CEXTN_intlmobile_err").text(CEXTN_errmsgs[12])
-}
-else
-{
-$("#CEXTN_tb_intmobileno").removeClass("invalid")
-$("#CEXTN_intlmobile_err").text("")
-}
-if($("#CEXTN_tb_officeno").val()!=""&&(parseInt($("#CEXTN_tb_officeno").val()).toString().length)<6&&parseInt($("#CEXTN_tb_officeno").val())!=0)
-{
-CEXTN_validinput=0;
-$("#CEXTN_tb_officeno").addClass("invalid")
-$("#CEXTN_officeno_err").text(CEXTN_errmsgs[12])
-}
-else
-{
-$("#CEXTN_tb_officeno").removeClass("invalid")
-$("#CEXTN_officeno_err").text("")
-}
+        if($("#CEXTN_tb_mobileno").val()!=""&&(parseInt($("#CEXTN_tb_mobileno").val()).toString().length)<6&&parseInt($("#CEXTN_tb_mobileno").val())!=0)
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_mobileno").addClass("invalid")
+            $("#CEXTN_mobile_err").text(CEXTN_errmsgs[12])
+        }
+        else
+        {
+            $("#CEXTN_tb_mobileno").removeClass("invalid")
+            $("#CEXTN_mobile_err").text("")
+        }
+        if($("#CEXTN_tb_intmobileno").val()!=""&&($("#CEXTN_tb_intmobileno").val().toString().length)<6&&parseInt($("#CEXTN_tb_intmobileno").val())!=0)
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_intmobileno").addClass("invalid")
+            $("#CEXTN_intlmobile_err").text(CEXTN_errmsgs[12])
+        }
+        else
+        {
+            $("#CEXTN_tb_intmobileno").removeClass("invalid")
+            $("#CEXTN_intlmobile_err").text("")
+        }
+        if($("#CEXTN_tb_officeno").val()!=""&&(parseInt($("#CEXTN_tb_officeno").val()).toString().length)<6&&parseInt($("#CEXTN_tb_officeno").val())!=0)
+        {
+            CEXTN_validinput=0;
+            $("#CEXTN_tb_officeno").addClass("invalid")
+            $("#CEXTN_officeno_err").text(CEXTN_errmsgs[12])
+        }
+        else
+        {
+            $("#CEXTN_tb_officeno").removeClass("invalid")
+            $("#CEXTN_officeno_err").text("")
+        }
 //CONTACT NO VALIDATION END
-if(CEXTN_radio_unit=="CEXTN_radio_sameunitdiffroom")
-{
-if((CEXTN_lb_sameunitdiffrmrmtype=="SELECT"||CEXTN_lb_sameunitdiffrmrmtype==null))
-{
-CEXTN_validinput=0;
-}
-if((CEXTN_lb_chkinfromtime=="SELECT"||CEXTN_lb_chkinfromtime==null))
-{
-CEXTN_validinput=0;
-}
-}
-if(CEXTN_radio_unit=="CEXTN_radio_diffunit")
-{
-if((CEXTN_lb_diffunituno=="SELECT"||CEXTN_lb_diffunituno==null))
-{
-CEXTN_validinput=0;
-}
-if(CEXTN_lb_diffunitrmtype=="SELECT"||CEXTN_lb_diffunitrmtype==null)
-{
-CEXTN_validinput=0;
-}
-if((CEXTN_lb_chkinfromtime=="SELECT"||CEXTN_lb_chkinfromtime==null))
-{
-CEXTN_validinput=0;
-}
-if(CEXTN_chkcard==0)
-{
-CEXTN_validinput=0;
-}
-if(CEXTN_chkfuturedate==0)
-{
-if(CEXTN_chkdifunitcard==false)
-{
-CEXTN_validinput=0;
-}
-if(CEXTN_radio_difunitcard=="CEXTN_radio_difunitcardno")
-{
-if(CEXTN_chkcardlen==0)
-{
-CEXTN_validinput=0;
-}
-}
-}
-}
-return CEXTN_validinput;
-}
+        if(CEXTN_radio_unit=="CEXTN_radio_sameunitdiffroom")
+        {
+            if((CEXTN_lb_sameunitdiffrmrmtype=="SELECT"||CEXTN_lb_sameunitdiffrmrmtype==null))
+            {
+                CEXTN_validinput=0;
+            }
+            if((CEXTN_lb_chkinfromtime=="SELECT"||CEXTN_lb_chkinfromtime==null))
+            {
+                CEXTN_validinput=0;
+            }
+        }
+        if(CEXTN_radio_unit=="CEXTN_radio_diffunit")
+        {
+            if((CEXTN_lb_diffunituno=="SELECT"||CEXTN_lb_diffunituno==null))
+            {
+                CEXTN_validinput=0;
+            }
+            if(CEXTN_lb_diffunitrmtype=="SELECT"||CEXTN_lb_diffunitrmtype==null)
+            {
+                CEXTN_validinput=0;
+            }
+            if((CEXTN_lb_chkinfromtime=="SELECT"||CEXTN_lb_chkinfromtime==null))
+            {
+                CEXTN_validinput=0;
+            }
+            if(CEXTN_chkcard==0)
+            {
+                CEXTN_validinput=0;
+            }
+            if(CEXTN_chkfuturedate==0)
+            {
+                if(CEXTN_chkdifunitcard==false)
+                {
+                    CEXTN_validinput=0;
+                }
+                if(CEXTN_radio_difunitcard=="CEXTN_radio_difunitcardno")
+                {
+                    if(CEXTN_chkcardlen==0)
+                    {
+                        CEXTN_validinput=0;
+                    }
+                }
+            }
+        }
+        return CEXTN_validinput;
+    }
 //FUNCTION TO VALIDATE SUBMIT BUTTON
-function CEXTN_validatesubmitbtn(CEXTN_validoutput)
-{
-if(CEXTN_validoutput==0)
-{
-$("#CEXTN_btn_save").attr("disabled","disabled");
-}
-else
-{
-$("#CEXTN_btn_save").removeAttr("disabled");
-}
-}
+    function CEXTN_validatesubmitbtn(CEXTN_validoutput)
+    {
+        if(CEXTN_validoutput==0)
+        {
+            $("#CEXTN_btn_save").attr("disabled","disabled");
+        }
+        else
+        {
+            $("#CEXTN_btn_save").removeAttr("disabled");
+        }
+    }
 //FUNCTION FOR ON CLICK OF CUST ID 
-$(document).on("change",'.CEXTN_class_custid', function ()
-{
-var  newPos= adjustPosition($(this).position(),100,150);
-resetPreloader(newPos);
-$(".preloader").show(); 
-CEXTN_Show_ExtensionForm()
-});
+    $(document).on("change",'.CEXTN_class_custid', function ()
+    {
+        var  newPos= adjustPosition($(this).position(),100,150);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        CEXTN_Show_ExtensionForm()
+    });
 //GET DETAILS OF SELECTED CUSTOMER ID
-function CEXTN_Show_ExtensionForm()
-{
-CEXTN_setselectIndex();
-$('#CEXTN_div_seconform').hide();
-var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
-var CEXTN_id=$("input[name=CEXTN_radiocustid]:checked").val();
-$('#CEXTN_hidden_custid').val(CEXTN_id);
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCustomerdtls_result).CEXTN_getCustomerdtls(CEXTN_id,CEXTN_lb_unitno);
-}
+    function CEXTN_Show_ExtensionForm()
+    {
+        CEXTN_setselectIndex();
+        $('#CEXTN_div_seconform').hide();
+        var CEXTN_lb_unitno=$('#CEXTN_lb_unitno').val();
+        var CEXTN_id=$("input[name=CEXTN_radiocustid]:checked").val();
+        $('#CEXTN_hidden_custid').val(CEXTN_id);
+        google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCustomerdtls_result).CEXTN_getCustomerdtls(CEXTN_id,CEXTN_lb_unitno);
+    }
 //SET VALUES OF THE CUST DETAILS RESULT
-function CEXTN_getCustomerdtls_result(CEXTN_custdtls1)
-{
-var CEXTN_custdtls=CEXTN_custdtls1.custdtls
-if(CEXTN_custdtls!=""&&CEXTN_custdtls!=undefined)
-{
-$('#CEXTN_div_nocusterr').text("");
-CEXTN_currentcheckoutdate=CEXTN_custdtls1.currentcheckoutdate;
-CEXTN_initial_unitsdate=CEXTN_custdtls1.unitsdate
-CEXTN_initial_unitedate=CEXTN_custdtls1.unitedate
-var CEXTNunitsdate=CEXTN_initial_unitsdate;
-var CEXTNunitedate=CEXTN_initial_unitedate;
-$('#CEXTN_db_chkoutdate').removeAttr('disabled');
-var CEXTN_unno=$('#CEXTN_lb_unitno').val();
-$("#CEXTN_lbl_chkindate").text("CURRENT CHECK OUT DATE");
-var unitnono=[];
-unitnono=CEXTN_custdtls1.unitno;
-var CEXTN_diffunit=CEXTN_custdtls1.unitno;
-CEXTN_diffunitlen=CEXTN_diffunit.length;
+    function CEXTN_getCustomerdtls_result(CEXTN_custdtls1)
+    {
+        var CEXTN_custdtls=CEXTN_custdtls1.custdtls
+        if(CEXTN_custdtls!=""&&CEXTN_custdtls!=undefined)
+        {
+            $('#CEXTN_div_nocusterr').text("");
+            CEXTN_currentcheckoutdate=CEXTN_custdtls1.currentcheckoutdate;
+            CEXTN_initial_unitsdate=CEXTN_custdtls1.unitsdate
+            CEXTN_initial_unitedate=CEXTN_custdtls1.unitedate
+            var CEXTNunitsdate=CEXTN_initial_unitsdate;
+            var CEXTNunitedate=CEXTN_initial_unitedate;
+            $('#CEXTN_db_chkoutdate').removeAttr('disabled');
+            var CEXTN_unno=$('#CEXTN_lb_unitno').val();
+            $("#CEXTN_lbl_chkindate").text("CURRENT CHECK OUT DATE");
+            var unitnono=[];
+            unitnono=CEXTN_custdtls1.unitno;
+            var CEXTN_diffunit=CEXTN_custdtls1.unitno;
+            CEXTN_diffunitlen=CEXTN_diffunit.length;
 //ADD DIFF UNIT UNIT NO
-var CEXTN_resdiffunitno='<option>SELECT</option>';
-for(var i=0;i<CEXTN_diffunit.length;i++)
-{
-CEXTN_resdiffunitno += '<option value="' + CEXTN_diffunit[i] + '">' + CEXTN_diffunit[i] + '</option>';
-}
-$('#CEXTN_lb_diffunituno').html(CEXTN_resdiffunitno);
-$('#CEXTN_tb_firstname').val(CEXTN_custdtls.cust_firstname).attr("size",(CEXTN_custdtls.cust_firstname).length+5);
-$('#CEXTN_tb_lastname').val(CEXTN_custdtls.cust_lastname).attr("size",(CEXTN_custdtls.cust_lastname).length+5);
-if(CEXTN_custdtls.cust_compname!="")
-{
-$('#CEXTN_tb_compname').val(CEXTN_custdtls.cust_compname).attr("size",parseInt(((CEXTN_custdtls.cust_compname).length)+6))
-}
-else
-{
-$('#CEXTN_tb_compname').val("").prop("size","20");
-}
-if(CEXTN_custdtls.cust_compaddr!="")
-{
-$('#CEXTN_tb_compaddr').val(CEXTN_custdtls.cust_compaddr).attr("size",parseInt(((CEXTN_custdtls.cust_compaddr).length)+6));
-}
-else
-{
-$('#CEXTN_tb_compaddr').val("").prop("size","20");
-}
-if(CEXTN_custdtls.cust_comppostcode!="")
-{
-$('#CEXTN_tb_comppostcode').val(CEXTN_custdtls.cust_comppostcode).prop("title",CEXTN_errmsgs[1]);
-}
-else
-{
-$('#CEXTN_tb_comppostcode').val("").prop("title",CEXTN_errmsgs[1]).prop("title",CEXTN_errmsgs[1])
-}
-$('#CEXTN_tb_emailid').val(CEXTN_custdtls.cust_email).attr("size",(CEXTN_custdtls.cust_email).length);
-if(CEXTN_custdtls.cust_mobile!="")
-{
-$('#CEXTN_tb_mobileno').val(CEXTN_custdtls.cust_mobile).prop("title",CEXTN_errmsgs[1]);
-}
-else
-{
-$('#CEXTN_tb_mobileno').val("").prop("size","20").prop("title",CEXTN_errmsgs[1])
-}
-if(CEXTN_custdtls.cust_intlmobile!="")
-{
-$('#CEXTN_tb_intmobileno').val(CEXTN_custdtls.cust_intlmobile).prop("title",CEXTN_errmsgs[1]);//.attr("size",(CEXTN_custdtls.cust_intlmobile).length);
-}
-else
-{
-$('#CEXTN_tb_intmobileno').val("").prop("size","20").prop("title",CEXTN_errmsgs[1])
-}
-if(CEXTN_custdtls.cust_officeno!="")
-{
-$('#CEXTN_tb_officeno').val(CEXTN_custdtls.cust_officeno).prop("title",CEXTN_errmsgs[1]);
-}
-else
-{
-$('#CEXTN_tb_officeno').val("").prop("size","20").prop("title",CEXTN_errmsgs[1])
-}
-if(CEXTN_custdtls.cust_dob=="")
-{
-$('#CEXTN_db_dob').val(CEXTN_custdtls.cust_dob).prop("readonly",false).removeClass("rdonly");
-var CEXTN_d = new Date();
-var CEXTN_year = CEXTN_d.getFullYear() - 18;
-CEXTN_d.setFullYear(CEXTN_year);
+            var CEXTN_resdiffunitno='<option>SELECT</option>';
+            for(var i=0;i<CEXTN_diffunit.length;i++)
+            {
+                CEXTN_resdiffunitno += '<option value="' + CEXTN_diffunit[i] + '">' + CEXTN_diffunit[i] + '</option>';
+            }
+            $('#CEXTN_lb_diffunituno').html(CEXTN_resdiffunitno);
+            $('#CEXTN_tb_firstname').val(CEXTN_custdtls.cust_firstname).attr("size",(CEXTN_custdtls.cust_firstname).length+5);
+            $('#CEXTN_tb_lastname').val(CEXTN_custdtls.cust_lastname).attr("size",(CEXTN_custdtls.cust_lastname).length+5);
+            if(CEXTN_custdtls.cust_compname!="")
+            {
+                $('#CEXTN_tb_compname').val(CEXTN_custdtls.cust_compname).attr("size",parseInt(((CEXTN_custdtls.cust_compname).length)+6))
+            }
+            else
+            {
+                $('#CEXTN_tb_compname').val("").prop("size","20");
+            }
+            if(CEXTN_custdtls.cust_compaddr!="")
+            {
+                $('#CEXTN_tb_compaddr').val(CEXTN_custdtls.cust_compaddr).attr("size",parseInt(((CEXTN_custdtls.cust_compaddr).length)+6));
+            }
+            else
+            {
+                $('#CEXTN_tb_compaddr').val("").prop("size","20");
+            }
+            if(CEXTN_custdtls.cust_comppostcode!="")
+            {
+                $('#CEXTN_tb_comppostcode').val(CEXTN_custdtls.cust_comppostcode).prop("title",CEXTN_errmsgs[1]);
+            }
+            else
+            {
+                $('#CEXTN_tb_comppostcode').val("").prop("title",CEXTN_errmsgs[1]).prop("title",CEXTN_errmsgs[1])
+            }
+            $('#CEXTN_tb_emailid').val(CEXTN_custdtls.cust_email).attr("size",(CEXTN_custdtls.cust_email).length);
+            if(CEXTN_custdtls.cust_mobile!="")
+            {
+                $('#CEXTN_tb_mobileno').val(CEXTN_custdtls.cust_mobile).prop("title",CEXTN_errmsgs[1]);
+            }
+            else
+            {
+                $('#CEXTN_tb_mobileno').val("").prop("size","20").prop("title",CEXTN_errmsgs[1])
+            }
+            if(CEXTN_custdtls.cust_intlmobile!="")
+            {
+                $('#CEXTN_tb_intmobileno').val(CEXTN_custdtls.cust_intlmobile).prop("title",CEXTN_errmsgs[1]);//.attr("size",(CEXTN_custdtls.cust_intlmobile).length);
+            }
+            else
+            {
+                $('#CEXTN_tb_intmobileno').val("").prop("size","20").prop("title",CEXTN_errmsgs[1])
+            }
+            if(CEXTN_custdtls.cust_officeno!="")
+            {
+                $('#CEXTN_tb_officeno').val(CEXTN_custdtls.cust_officeno).prop("title",CEXTN_errmsgs[1]);
+            }
+            else
+            {
+                $('#CEXTN_tb_officeno').val("").prop("size","20").prop("title",CEXTN_errmsgs[1])
+            }
+            if(CEXTN_custdtls.cust_dob=="")
+            {
+                $('#CEXTN_db_dob').val(CEXTN_custdtls.cust_dob).prop("readonly",false).removeClass("rdonly");
+                var CEXTN_d = new Date();
+                var CEXTN_year = CEXTN_d.getFullYear() - 18;
+                CEXTN_d.setFullYear(CEXTN_year);
 //SET DOB DATEPICKER
-$('#CEXTN_db_dob').datepicker({
-dateFormat: 'dd-mm-yy',
-changeYear: true,
-changeMonth: true,
-yearRange: '1920:' + CEXTN_year + '',
-defaultDate: CEXTN_d});
-}
-else
-{
-$('#CEXTN_db_dob').val(FormTableDateFormat(CEXTN_custdtls.cust_dob)).prop("readonly",true).addClass("rdonly");
-$('#CEXTN_db_dob').datepicker( "destroy" )
-}
-$('#CEXTN_tb_nation').val(CEXTN_custdtls.cust_nation).attr("size",parseInt(((CEXTN_custdtls.cust_nation).length)+6));
-if(CEXTN_custdtls.cust_passno!="")
-{
-$('#CEXTN_tb_passno').val(CEXTN_custdtls.cust_passno).attr("size",(CEXTN_custdtls.cust_passno).length+3);
-}
-else
-{
-$('#CEXTN_tb_passno').val("").prop("size","20")
-}
-if(CEXTN_custdtls.cust_passdate!="")
-{
-$('#CEXTN_db_passdate').val(FormTableDateFormat(CEXTN_custdtls.cust_passdate));
-}
-else
-{
-$('#CEXTN_db_passdate').val("");
-}
-if(CEXTN_custdtls.cust_epno!="")
-{
-$('#CEXTN_tb_epno').val(CEXTN_custdtls.cust_epno).attr("size",(CEXTN_custdtls.cust_epno).length+3);
-}
-else
-{
-$('#CEXTN_tb_epno').val("").prop("size","20")
-}
-if(CEXTN_custdtls.cust_epdate!="")
-{
-$('#CEXTN_db_epdate').val(FormTableDateFormat(CEXTN_custdtls.cust_epdate));
-}
-else
-{
-$('#CEXTN_db_epdate').val("");
-}
-$('#CEXTN_tb_sameunitsamermrmtype').val(CEXTN_custdtls.cust_rmtype).attr("size",(CEXTN_custdtls.cust_rmtype).length+3);
-$('#CEXTN_tb_sameunitsamermuno').val($('#CEXTN_lb_unitno').val());
-$('#CEXTN_lb_sameunitdiffrmrmtype').val(CEXTN_custdtls.cust_rmtype);
-$('#CEXTN_tb_sameunitdiffrmuno').val($('#CEXTN_lb_unitno').val());
-if(CEXTN_custdtls.cust_chkindate!="")
-{
-$('#CEXTN_db_prevchkindate').val(FormTableDateFormat(CEXTN_custdtls.cust_chkindate));
-}
-else
-{
-$('#CEXTN_db_prevchkindate').val("");
-}
-if(CEXTN_custdtls.cust_preterminatedate!="")
-{
-$('#CEXTN_db_chkindate').val(FormTableDateFormat(CEXTN_custdtls.cust_preterminatedate));
-}
-else
-{
-$('#CEXTN_db_chkindate').val(FormTableDateFormat(CEXTN_custdtls.cust_chkoutdate));
-}
+                $('#CEXTN_db_dob').datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    changeYear: true,
+                    changeMonth: true,
+                    yearRange: '1920:' + CEXTN_year + '',
+                    defaultDate: CEXTN_d});
+            }
+            else
+            {
+                $('#CEXTN_db_dob').val(FormTableDateFormat(CEXTN_custdtls.cust_dob)).prop("readonly",true).addClass("rdonly");
+                $('#CEXTN_db_dob').datepicker( "destroy" )
+            }
+            $('#CEXTN_tb_nation').val(CEXTN_custdtls.cust_nation).attr("size",parseInt(((CEXTN_custdtls.cust_nation).length)+6));
+            if(CEXTN_custdtls.cust_passno!="")
+            {
+                $('#CEXTN_tb_passno').val(CEXTN_custdtls.cust_passno).attr("size",(CEXTN_custdtls.cust_passno).length+3);
+            }
+            else
+            {
+                $('#CEXTN_tb_passno').val("").prop("size","20")
+            }
+            if(CEXTN_custdtls.cust_passdate!="")
+            {
+                $('#CEXTN_db_passdate').val(FormTableDateFormat(CEXTN_custdtls.cust_passdate));
+            }
+            else
+            {
+                $('#CEXTN_db_passdate').val("");
+            }
+            if(CEXTN_custdtls.cust_epno!="")
+            {
+                $('#CEXTN_tb_epno').val(CEXTN_custdtls.cust_epno).attr("size",(CEXTN_custdtls.cust_epno).length+3);
+            }
+            else
+            {
+                $('#CEXTN_tb_epno').val("").prop("size","20")
+            }
+            if(CEXTN_custdtls.cust_epdate!="")
+            {
+                $('#CEXTN_db_epdate').val(FormTableDateFormat(CEXTN_custdtls.cust_epdate));
+            }
+            else
+            {
+                $('#CEXTN_db_epdate').val("");
+            }
+            $('#CEXTN_tb_sameunitsamermrmtype').val(CEXTN_custdtls.cust_rmtype).attr("size",(CEXTN_custdtls.cust_rmtype).length+3);
+            $('#CEXTN_tb_sameunitsamermuno').val($('#CEXTN_lb_unitno').val());
+            $('#CEXTN_lb_sameunitdiffrmrmtype').val(CEXTN_custdtls.cust_rmtype);
+            $('#CEXTN_tb_sameunitdiffrmuno').val($('#CEXTN_lb_unitno').val());
+            if(CEXTN_custdtls.cust_chkindate!="")
+            {
+                $('#CEXTN_db_prevchkindate').val(FormTableDateFormat(CEXTN_custdtls.cust_chkindate));
+            }
+            else
+            {
+                $('#CEXTN_db_prevchkindate').val("");
+            }
+            if(CEXTN_custdtls.cust_preterminatedate!="")
+            {
+                $('#CEXTN_db_chkindate').val(FormTableDateFormat(CEXTN_custdtls.cust_preterminatedate));
+            }
+            else
+            {
+                $('#CEXTN_db_chkindate').val(FormTableDateFormat(CEXTN_custdtls.cust_chkoutdate));
+            }
 ////START PLACE CARD
-$('#CTERM_tbl_sameunitsamermcust_card tr').remove();
-$('#CTERM_tbl_sameunitdiffrmcust_card tr').remove();
-var CEXTN_card=[];
-CEXTN_card=CEXTN_custdtls1.cardarray;
-if(CEXTN_card.length>0&&CEXTN_card[0]!="")
-{
-for(var i=0;i<CEXTN_card.length;i++)
-{
-if(i==0)
-{
-var CEXTN_cardlabel='<label >CUSTOMER CARD</label>'
-var CEXTN_custlbl=$('#CEXTN_tb_firstname').val()+"_"+$('#CEXTN_tb_lastname').val()
-CEXTN_custlbl=CEXTN_custlbl.replace(/ /g,"_")
-}
-else
-{
-var CEXTN_cardlabel='<label >GUEST '+i+' CARD</label>'
-var CEXTN_custlbl='GUEST'+i;
-}
-var cardsize=CEXTN_card[i].length;
-var CEXTN_result='<tr><td>'+CEXTN_cardlabel+' <td><input type="text" name="CEXTN_tb_sameunitsamermcustcard" value='+CEXTN_card[i]+' size='+cardsize+' readonly><td><input type="text" name="CEXTN_hidden_sameunitsamermcustcard"  value='+CEXTN_custlbl+' hidden/></tr>';
-var CEXTN_result1='<tr><td>'+CEXTN_cardlabel+' <td><input type="text" name="CEXTN_tb_sameunitdiffrmcustcard" value='+CEXTN_card[i]+' size='+cardsize+' readonly><td><input type="text" name="CEXTN_hidden_sameunitdiffrmcustcard"  value='+CEXTN_custlbl+' hidden/></tr>';
-$('#CTERM_tbl_sameunitsamermcust_card').append(CEXTN_result);
-$('#CTERM_tbl_sameunitdiffrmcust_card').append(CEXTN_result1);
-}
-$('#CTERM_tbl_sameunitsamermcust_card').show();
-}
+            $('#CTERM_tbl_sameunitsamermcust_card tr').remove();
+            $('#CTERM_tbl_sameunitdiffrmcust_card tr').remove();
+            var CEXTN_card=[];
+            CEXTN_card=CEXTN_custdtls1.cardarray;
+            if(CEXTN_card.length>0&&CEXTN_card[0]!="")
+            {
+                for(var i=0;i<CEXTN_card.length;i++)
+                {
+                    if(i==0)
+                    {
+                        var CEXTN_cardlabel='<label >CUSTOMER CARD</label>'
+                        var CEXTN_custlbl=$('#CEXTN_tb_firstname').val()+"_"+$('#CEXTN_tb_lastname').val()
+                        CEXTN_custlbl=CEXTN_custlbl.replace(/ /g,"_")
+                    }
+                    else
+                    {
+                        var CEXTN_cardlabel='<label >GUEST '+i+' CARD</label>'
+                        var CEXTN_custlbl='GUEST'+i;
+                    }
+                    var cardsize=CEXTN_card[i].length;
+                    var CEXTN_result='<tr><td>'+CEXTN_cardlabel+' <td><input type="text" name="CEXTN_tb_sameunitsamermcustcard" value='+CEXTN_card[i]+' size='+cardsize+' readonly><td><input type="text" name="CEXTN_hidden_sameunitsamermcustcard"  value='+CEXTN_custlbl+' hidden/></tr>';
+                    var CEXTN_result1='<tr><td>'+CEXTN_cardlabel+' <td><input type="text" name="CEXTN_tb_sameunitdiffrmcustcard" value='+CEXTN_card[i]+' size='+cardsize+' readonly><td><input type="text" name="CEXTN_hidden_sameunitdiffrmcustcard"  value='+CEXTN_custlbl+' hidden/></tr>';
+                    $('#CTERM_tbl_sameunitsamermcust_card').append(CEXTN_result);
+                    $('#CTERM_tbl_sameunitdiffrmcust_card').append(CEXTN_result1);
+                }
+                $('#CTERM_tbl_sameunitsamermcust_card').show();
+            }
 //END PLACE CARD
 //START PLACE AMT
-$('#CEXTN_tb_airquarterfee').prop("title",CEXTN_errmsgs[1])
-$('#CEXTN_tb_fixedairfee').prop("title",CEXTN_errmsgs[1]);
-$('#CEXTN_tb_diffamtdep').prop("title",CEXTN_errmsgs[1]);
-$('#CEXTN_tb_diffamtrent').prop("title",CEXTN_errmsgs[1]);
-$('#CEXTN_tb_diffamtprocost').prop("title",CEXTN_errmsgs[1])
-if(CEXTN_custdtls.cust_airconquarterfee=="")
-{
-$('#CEXTN_tb_airquarterfee').val(CEXTN_custdtls.cust_airconquarterfee).hide();
-$('#CEXTN_radio_quartairconfee').prop('checked',false);
-}
-else
-{
-$('#CEXTN_radio_quartairconfee').prop('checked',true);
-$('#CEXTN_tb_airquarterfee').val(CEXTN_custdtls.cust_airconquarterfee).show();
-$('#CEXTN_tb_fixedairfee').val(CEXTN_custdtls.cust_airconfixedfee).hide();
-}
-if(CEXTN_custdtls.cust_airconfixedfee=="")
-{
-$('#CEXTN_tb_fixedairfee').val(CEXTN_custdtls.cust_airconfixedfee).hide();
-$('#CEXTN_radio_fixedairconfee').prop('checked',false);
-}
-else
-{
-$('#CEXTN_radio_fixedairconfee').prop('checked',true);
-$('#CEXTN_tb_fixedairfee').val(CEXTN_custdtls.cust_airconfixedfee).show();
-$('#CEXTN_tb_airquarterfee').val(CEXTN_custdtls.cust_airconquarterfee).hide();
-}
-$('#CEXTN_tb_sameamtdep').val(CEXTN_custdtls.cust_deposit);
-$('#CEXTN_tb_sameamtrent').val(CEXTN_custdtls.cust_rental);
-$('#CEXTN_tb_sameamtprocost').val(CEXTN_custdtls.cust_procfee);
-$('#CEXTN_tb_electcapfee').val(CEXTN_custdtls.cust_electcapfee).prop("title",CEXTN_errmsgs[1]);
-$('#CEXTN_tb_curtaindryfee').val(CEXTN_custdtls.cust_dryclean).prop("title",CEXTN_errmsgs[1]);
-$('#CEXTN_tb_chkoutcleanfee').val(CEXTN_custdtls.cust_chkoutfee).prop("title",CEXTN_errmsgs[1]);
+            $('#CEXTN_tb_airquarterfee').prop("title",CEXTN_errmsgs[1])
+            $('#CEXTN_tb_fixedairfee').prop("title",CEXTN_errmsgs[1]);
+            $('#CEXTN_tb_diffamtdep').prop("title",CEXTN_errmsgs[1]);
+            $('#CEXTN_tb_diffamtrent').prop("title",CEXTN_errmsgs[1]);
+            $('#CEXTN_tb_diffamtprocost').prop("title",CEXTN_errmsgs[1])
+            if(CEXTN_custdtls.cust_airconquarterfee=="")
+            {
+                $('#CEXTN_tb_airquarterfee').val(CEXTN_custdtls.cust_airconquarterfee).hide();
+                $('#CEXTN_radio_quartairconfee').prop('checked',false);
+            }
+            else
+            {
+                $('#CEXTN_radio_quartairconfee').prop('checked',true);
+                $('#CEXTN_tb_airquarterfee').val(CEXTN_custdtls.cust_airconquarterfee).show();
+                $('#CEXTN_tb_fixedairfee').val(CEXTN_custdtls.cust_airconfixedfee).hide();
+            }
+            if(CEXTN_custdtls.cust_airconfixedfee=="")
+            {
+                $('#CEXTN_tb_fixedairfee').val(CEXTN_custdtls.cust_airconfixedfee).hide();
+                $('#CEXTN_radio_fixedairconfee').prop('checked',false);
+            }
+            else
+            {
+                $('#CEXTN_radio_fixedairconfee').prop('checked',true);
+                $('#CEXTN_tb_fixedairfee').val(CEXTN_custdtls.cust_airconfixedfee).show();
+                $('#CEXTN_tb_airquarterfee').val(CEXTN_custdtls.cust_airconquarterfee).hide();
+            }
+            $('#CEXTN_tb_sameamtdep').val(CEXTN_custdtls.cust_deposit);
+            $('#CEXTN_tb_sameamtrent').val(CEXTN_custdtls.cust_rental);
+            $('#CEXTN_tb_sameamtprocost').val(CEXTN_custdtls.cust_procfee);
+            $('#CEXTN_tb_electcapfee').val(CEXTN_custdtls.cust_electcapfee).prop("title",CEXTN_errmsgs[1]);
+            $('#CEXTN_tb_curtaindryfee').val(CEXTN_custdtls.cust_dryclean).prop("title",CEXTN_errmsgs[1]);
+            $('#CEXTN_tb_chkoutcleanfee').val(CEXTN_custdtls.cust_chkoutfee).prop("title",CEXTN_errmsgs[1]);
 //END PLACE AMT
-CEXTN_SetMinMaxCheckoutDate(CEXTNunitsdate,CEXTNunitedate,CEXTN_currentcheckoutdate)//set check out min n max date
-$("#CEXTN_lb_chkoutfromtime").val("SELECT").hide();
-$("#CEXTN_lb_chkouttotime").hide();
-$('#CEXTN_lbl_chkoutto').hide();
-$('#CEXTN_db_chkoutdate').val("");
+            CEXTN_SetMinMaxCheckoutDate(CEXTNunitsdate,CEXTNunitedate,CEXTN_currentcheckoutdate)//set check out min n max date
+            $("#CEXTN_lb_chkoutfromtime").val("SELECT").hide();
+            $("#CEXTN_lb_chkouttotime").hide();
+            $('#CEXTN_lbl_chkoutto').hide();
+            $('#CEXTN_db_chkoutdate').val("");
 //SET PRORATED WAIVED CHECK BOX
-if(CEXTN_custdtls.cust_prorated!="")
-{
-$('#CEXTN_cb_sameamtprorated').prop('checked',true);
-$("#CEXTN_hidden_sameamtprorated").val("X");
-}
-else
-{
-$('#CEXTN_cb_sameamtprorated').prop('checked',false);
-$("#CEXTN_hidden_sameamtprorated").val("");
-}
-if(CEXTN_custdtls.cust_waived!="")
-{
-$('#CEXTN_cb_sameamtwaived').prop('checked',true);
-$("#CEXTN_hidden_sameamtwaived").val("X");
-}
-else
-{
-$('#CEXTN_cb_sameamtwaived').prop('checked',false);
-$("#CEXTN_hidden_sameamtwaived").val("");
-}
-$('#CEXTN_ta_comments').height(20);
-$("#CEXTN_ta_comments").val(CEXTN_custdtls.cust_comts);
+            if(CEXTN_custdtls.cust_prorated!="")
+            {
+                $('#CEXTN_cb_sameamtprorated').prop('checked',true);
+                $("#CEXTN_hidden_sameamtprorated").val("X");
+            }
+            else
+            {
+                $('#CEXTN_cb_sameamtprorated').prop('checked',false);
+                $("#CEXTN_hidden_sameamtprorated").val("");
+            }
+            if(CEXTN_custdtls.cust_waived!="")
+            {
+                $('#CEXTN_cb_sameamtwaived').prop('checked',true);
+                $("#CEXTN_hidden_sameamtwaived").val("X");
+            }
+            else
+            {
+                $('#CEXTN_cb_sameamtwaived').prop('checked',false);
+                $("#CEXTN_hidden_sameamtwaived").val("");
+            }
+            $('#CEXTN_ta_comments').height(20);
+            $("#CEXTN_ta_comments").val(CEXTN_custdtls.cust_comts);
 //SET NOTICE PERIOD DATE
-if(CEXTN_custdtls.cust_noticedate!="")
-{
-$("#CEXTN_db_noticeperioddate").val(FormTableDateFormat(CEXTN_custdtls.cust_noticedate));
-}
+            if(CEXTN_custdtls.cust_noticedate!="")
+            {
+                $("#CEXTN_db_noticeperioddate").val(FormTableDateFormat(CEXTN_custdtls.cust_noticedate));
+            }
 //
 //SET CHECK IN FROM TIME N TO TIME
-var prechkinfromtimee=CEXTN_custdtls.cust_stfrmtime.split(':');
-var prechkintotimee=CEXTN_custdtls.cust_sttotime.split(':');
-var chkinfromtimee=CEXTN_custdtls.cust_edfrmtime.split(':');
-var chkintotimee=CEXTN_custdtls.cust_edtotime.split(':');
-$('#CEXTN_hidden_prechkinfromtime').val(prechkinfromtimee[0]+":"+prechkinfromtimee[1])
-$('#CEXTN_hidden_prechkintotime').val(prechkintotimee[0]+":"+prechkintotimee[1])
-$('#CEXTN_hidden_chkinfromtime').val(chkinfromtimee[0]+":"+chkinfromtimee[1])
-$('#CEXTN_hidden_chkintotime').val(chkintotimee[0]+":"+chkintotimee[1])
-$('#CEXTN_tb_noticeperiod').val(CEXTN_custdtls.cust_noticeperiod).prop("title",CEXTN_errmsgs[1]);
-$('#CEXTN_div_seconform').show();
+            var prechkinfromtimee=CEXTN_custdtls.cust_stfrmtime.split(':');
+            var prechkintotimee=CEXTN_custdtls.cust_sttotime.split(':');
+            var chkinfromtimee=CEXTN_custdtls.cust_edfrmtime.split(':');
+            var chkintotimee=CEXTN_custdtls.cust_edtotime.split(':');
+            $('#CEXTN_hidden_prechkinfromtime').val(prechkinfromtimee[0]+":"+prechkinfromtimee[1])
+            $('#CEXTN_hidden_prechkintotime').val(prechkintotimee[0]+":"+prechkintotimee[1])
+            $('#CEXTN_hidden_chkinfromtime').val(chkinfromtimee[0]+":"+chkinfromtimee[1])
+            $('#CEXTN_hidden_chkintotime').val(chkintotimee[0]+":"+chkintotimee[1])
+            $('#CEXTN_tb_noticeperiod').val(CEXTN_custdtls.cust_noticeperiod).prop("title",CEXTN_errmsgs[1]);
+            $('#CEXTN_div_seconform').show();
 //SET RADIO BUTTON
-$('#CEXTN_div_sameunitsamerm').show();
-$('#CEXTN_radio_sameunit').prop('checked',true);
-$('#CEXTN_radio_sameunitdiffroom').prop('checked',false);
-$('#CEXTN_radio_diffunit').prop('checked',false);
-$('#CEXTN_div_sameunitdiffrm').hide();
-$('#CEXTN_div_diffunit').hide();
-$('#CEXTN_div_sameamt').show();
-$('#CEXTN_radio_sameamt').prop('checked',true);
-$('#CEXTN_div_diffamt').hide();
-$('#CEXTN_radio_diffamt').prop('checked',false);
-}
-else
-{
-$('#CEXTN_div_nocusterr').text(CEXTN_errmsgs[8].replace('[CNAME]',$('#CEXTN_lb_custname').val().split("_")[0]+" "+$('#CEXTN_lb_custname').val().split("_")[1]));
-}
-$(".preloader").hide();
-}
+            $('#CEXTN_div_sameunitsamerm').show();
+            $('#CEXTN_radio_sameunit').prop('checked',true);
+            $('#CEXTN_radio_sameunitdiffroom').prop('checked',false);
+            $('#CEXTN_radio_diffunit').prop('checked',false);
+            $('#CEXTN_div_sameunitdiffrm').hide();
+            $('#CEXTN_div_diffunit').hide();
+            $('#CEXTN_div_sameamt').show();
+            $('#CEXTN_radio_sameamt').prop('checked',true);
+            $('#CEXTN_div_diffamt').hide();
+            $('#CEXTN_radio_diffamt').prop('checked',false);
+        }
+        else
+        {
+            $('#CEXTN_div_nocusterr').text(CEXTN_errmsgs[8].replace('[CNAME]',$('#CEXTN_lb_custname').val().split("_")[0]+" "+$('#CEXTN_lb_custname').val().split("_")[1]));
+        }
+        $(".preloader").hide();
+    }
 //FUNCTION TO SET MIN N MAX DATE FOR CHECK OUT DATE
-function CEXTN_SetMinMaxCheckoutDate(CEXTNunitsdate,CEXTNunitedate,CEXTN_currentcheckoutdate)
-{
-$('#CEXTN_db_chkoutdate').removeAttr('disabled');
-$('#CEXTN_db_chkoutdate').val('');
-$("#CEXTN_lb_chkoutfromtime").val('SELECT').hide();
-$('#CEXTN_lb_chkouttotime').hide();
-$('#CEXTN_lbl_chkoutto').hide();
-$('#CEXTN_db_chkoutdate').datepicker({
-dateFormat: "dd-mm-yy",
-changeYear: true,
-changeMonth: true 
-});
+    function CEXTN_SetMinMaxCheckoutDate(CEXTNunitsdate,CEXTNunitedate,CEXTN_currentcheckoutdate)
+    {
+        $('#CEXTN_db_chkoutdate').removeAttr('disabled');
+        $('#CEXTN_db_chkoutdate').val('');
+        $("#CEXTN_lb_chkoutfromtime").val('SELECT').hide();
+        $('#CEXTN_lb_chkouttotime').hide();
+        $('#CEXTN_lbl_chkoutto').hide();
+        $('#CEXTN_db_chkoutdate').datepicker({
+            dateFormat: "dd-mm-yy",
+            changeYear: true,
+            changeMonth: true
+        });
 //get check in date
-var CEXTN_date1 = $('#CEXTN_db_chkindate').val();
-var CEXTN_chkoutmaxdate = new Date( Date.parse(CEXTNunitedate) ); 
-CEXTN_chkoutmaxdate.setDate( CEXTN_chkoutmaxdate.getDate()-1);  
-CEXTN_chkoutmaxdate = CEXTN_chkoutmaxdate.toDateString(); 
-CEXTN_chkoutmaxdate = new Date( Date.parse( CEXTN_chkoutmaxdate ) );
-if(new Date(FormTableDateFormat(CEXTN_date1)).setHours(0,0,0,0)>=new Date(CEXTN_chkoutmaxdate).setHours(0,0,0,0))
-{
-CEXTN_chkunitdateflag=1;
-$('#CEXTN_db_chkindate').addClass("invalid");
-$('#CEXTN_usdatexpiremsg').text(CEXTN_errmsgs[10]);
-$('#CEXTN_db_chkoutdate').datepicker( "destroy" )
-$('#CEXTN_db_chkoutdate').attr('disabled','disabled');
-$('#CEXTN_db_chkoutdate').val('');
-$('#CEXTN_uedatexpiremsg').text('');
-}
-else
-{
-CEXTN_chkunitdateflag=0;
-$('#CEXTN_db_chkindate').removeClass("invalid")
-$('#CEXTN_usdatexpiremsg').text("");
-}
-if(new Date(CEXTNunitsdate).setHours(0,0,0,0)<=new Date(FormTableDateFormat(CEXTN_date1)).setHours(0,0,0,0))
-{
-CEXTN_date1=CEXTN_date1;
-var CEXTN_date = new Date( Date.parse(FormTableDateFormat(CEXTN_date1) ) ); 
-}
-else
-{
-CEXTN_date1=FormTableDateFormat(CEXTNunitsdate);
-var CEXTN_date = new Date( Date.parse(FormTableDateFormat(CEXTN_date1)) ); 
-}
-CEXTN_date.setDate( CEXTN_date.getDate() + 1 );  
-var CEXTN_newDate = CEXTN_date.toDateString(); 
-CEXTN_newDate = new Date( Date.parse( CEXTN_newDate ) );
+        var CEXTN_date1 = $('#CEXTN_db_chkindate').val();
+        var CEXTN_chkoutmaxdate = new Date( Date.parse(CEXTNunitedate) );
+        CEXTN_chkoutmaxdate.setDate( CEXTN_chkoutmaxdate.getDate()-1);
+        CEXTN_chkoutmaxdate = CEXTN_chkoutmaxdate.toDateString();
+        CEXTN_chkoutmaxdate = new Date( Date.parse( CEXTN_chkoutmaxdate ) );
+        if(new Date(FormTableDateFormat(CEXTN_date1)).setHours(0,0,0,0)>=new Date(CEXTN_chkoutmaxdate).setHours(0,0,0,0))
+        {
+            CEXTN_chkunitdateflag=1;
+            $('#CEXTN_db_chkindate').addClass("invalid");
+            $('#CEXTN_usdatexpiremsg').text(CEXTN_errmsgs[10]);
+            $('#CEXTN_db_chkoutdate').datepicker( "destroy" )
+            $('#CEXTN_db_chkoutdate').attr('disabled','disabled');
+            $('#CEXTN_db_chkoutdate').val('');
+            $('#CEXTN_uedatexpiremsg').text('');
+        }
+        else
+        {
+            CEXTN_chkunitdateflag=0;
+            $('#CEXTN_db_chkindate').removeClass("invalid")
+            $('#CEXTN_usdatexpiremsg').text("");
+        }
+        if(new Date(CEXTNunitsdate).setHours(0,0,0,0)<=new Date(FormTableDateFormat(CEXTN_date1)).setHours(0,0,0,0))
+        {
+            CEXTN_date1=CEXTN_date1;
+            var CEXTN_date = new Date( Date.parse(FormTableDateFormat(CEXTN_date1) ) );
+        }
+        else
+        {
+            CEXTN_date1=FormTableDateFormat(CEXTNunitsdate);
+            var CEXTN_date = new Date( Date.parse(FormTableDateFormat(CEXTN_date1)) );
+        }
+        CEXTN_date.setDate( CEXTN_date.getDate() + 1 );
+        var CEXTN_newDate = CEXTN_date.toDateString();
+        CEXTN_newDate = new Date( Date.parse( CEXTN_newDate ) );
 //get today date
-var CEXTN_todaydate = new Date(); 
-CEXTN_todaydate.setDate( CEXTN_todaydate.getDate() + 1 );  
-var CEXTN_todaydate = CEXTN_todaydate.toDateString(); 
-CEXTN_todaydate = new Date( Date.parse(CEXTN_todaydate ) ); 
-if(new Date(FormTableDateFormat(CEXTN_date1)).setHours(0,0,0,0)>=new Date(CEXTN_currentcheckoutdate))
-{
-CEXTN_date1=FormTableDateFormat(CEXTN_currentcheckoutdate);
-}
-if(new Date(FormTableDateFormat(CEXTN_date1)).setHours(0,0,0,0)<=new Date().setHours(0,0,0,0))
-{
-$('#CEXTN_db_chkoutdate').datepicker("option","minDate",CEXTN_todaydate);
-}
-else
-{
-$('#CEXTN_db_chkoutdate').datepicker("option","minDate",CEXTN_newDate);
-}
-var CEXTN_chkoutmaxdate = new Date( Date.parse(CEXTNunitedate) ); 
-CEXTN_chkoutmaxdate.setDate( CEXTN_chkoutmaxdate.getDate()-1);  
-CEXTN_chkoutmaxdate = CEXTN_chkoutmaxdate.toDateString(); 
-CEXTN_chkoutmaxdate = new Date( Date.parse( CEXTN_chkoutmaxdate ) );
-var CEXTN_ptdchkflag=0;
-if(new Date(CEXTN_chkoutmaxdate).setHours(0,0,0,0)>=new Date(CEXTN_currentcheckoutdate))
-{
-CEXTN_ptdchkflag=1;
-CEXTNunitedate=CEXTN_currentcheckoutdate;
-}
-var CEXTN_chkoutmaxdate = new Date( Date.parse(CEXTNunitedate) );
-if(CEXTN_ptdchkflag==0)
-{
-CEXTN_chkoutmaxdate.setDate( CEXTN_chkoutmaxdate.getDate()-1); 
-}
-else
-{
-CEXTN_chkoutmaxdate.setDate( CEXTN_chkoutmaxdate.getDate()); 
-}
-CEXTN_chkoutmaxdate = CEXTN_chkoutmaxdate.toDateString(); 
-CEXTN_chkoutmaxdate = new Date( Date.parse( CEXTN_chkoutmaxdate ) );
-$("#CEXTN_db_chkoutdate").datepicker("option","maxDate",CEXTN_chkoutmaxdate);
-var mindate=new Date($( "#CEXTN_db_chkoutdate" ).datepicker( "option", "minDate"))
-var maxdate=new Date($( "#CEXTN_db_chkoutdate" ).datepicker( "option", "maxDate"))
-if(CEXTN_chkunitdateflag==0)
-{
-if(maxdate.setHours(0,0,0,0)<mindate.setHours(0,0,0,0))
-{
-$('#CEXTN_db_chkoutdate').addClass("invalid");
-$('#CEXTN_db_chkoutdate').datepicker( "destroy" )
-$('#CEXTN_db_chkoutdate').attr('disabled','disabled');
-$('#CEXTN_db_chkoutdate').val('');
-$('#CEXTN_uedatexpiremsg').text(CEXTN_errmsgs[24]);//.text(CEXTN_errmsgs[10])
-CEXTN_chkunitdateflag=1;
-}
-else
-{
-CEXTN_chkunitdateflag=0;
-if(new Date(CEXTN_chkoutmaxdate).setHours(0,0,0,0)<=new Date().setHours(0,0,0,0))
-{
-CEXTN_chkunitdateflag=1;
-$('#CEXTN_db_chkoutdate').val("");
-$('#CEXTN_db_chkoutdate').addClass("invalid")
-$('#CEXTN_uedatexpiremsg').text(CEXTN_errmsgs[10])
-$("#CEXTN_lb_chkoutfromtime").val("SELECT").hide();
-$("#CEXTN_lb_chkouttotime").hide();
-$('#CEXTN_lbl_chkoutto').hide();
-$('#CEXTN_db_chkoutdate').datepicker( "destroy" )
-$('#CEXTN_db_chkoutdate').attr('disabled','disabled');
-}
-else
-{
-$('#CEXTN_db_chkoutdate').removeClass("invalid")
-$('#CEXTN_uedatexpiremsg').text("");
-CEXTN_chkunitdateflag=0;
-}
-}
-}
-CEXTN_clearerrmsg();
-}
+        var CEXTN_todaydate = new Date();
+        CEXTN_todaydate.setDate( CEXTN_todaydate.getDate() + 1 );
+        var CEXTN_todaydate = CEXTN_todaydate.toDateString();
+        CEXTN_todaydate = new Date( Date.parse(CEXTN_todaydate ) );
+        if(new Date(FormTableDateFormat(CEXTN_date1)).setHours(0,0,0,0)>=new Date(CEXTN_currentcheckoutdate))
+        {
+            CEXTN_date1=FormTableDateFormat(CEXTN_currentcheckoutdate);
+        }
+        if(new Date(FormTableDateFormat(CEXTN_date1)).setHours(0,0,0,0)<=new Date().setHours(0,0,0,0))
+        {
+            $('#CEXTN_db_chkoutdate').datepicker("option","minDate",CEXTN_todaydate);
+        }
+        else
+        {
+            $('#CEXTN_db_chkoutdate').datepicker("option","minDate",CEXTN_newDate);
+        }
+        var CEXTN_chkoutmaxdate = new Date( Date.parse(CEXTNunitedate) );
+        CEXTN_chkoutmaxdate.setDate( CEXTN_chkoutmaxdate.getDate()-1);
+        CEXTN_chkoutmaxdate = CEXTN_chkoutmaxdate.toDateString();
+        CEXTN_chkoutmaxdate = new Date( Date.parse( CEXTN_chkoutmaxdate ) );
+        var CEXTN_ptdchkflag=0;
+        if(new Date(CEXTN_chkoutmaxdate).setHours(0,0,0,0)>=new Date(CEXTN_currentcheckoutdate))
+        {
+            CEXTN_ptdchkflag=1;
+            CEXTNunitedate=CEXTN_currentcheckoutdate;
+        }
+        var CEXTN_chkoutmaxdate = new Date( Date.parse(CEXTNunitedate) );
+        if(CEXTN_ptdchkflag==0)
+        {
+            CEXTN_chkoutmaxdate.setDate( CEXTN_chkoutmaxdate.getDate()-1);
+        }
+        else
+        {
+            CEXTN_chkoutmaxdate.setDate( CEXTN_chkoutmaxdate.getDate());
+        }
+        CEXTN_chkoutmaxdate = CEXTN_chkoutmaxdate.toDateString();
+        CEXTN_chkoutmaxdate = new Date( Date.parse( CEXTN_chkoutmaxdate ) );
+        $("#CEXTN_db_chkoutdate").datepicker("option","maxDate",CEXTN_chkoutmaxdate);
+        var mindate=new Date($( "#CEXTN_db_chkoutdate" ).datepicker( "option", "minDate"))
+        var maxdate=new Date($( "#CEXTN_db_chkoutdate" ).datepicker( "option", "maxDate"))
+        if(CEXTN_chkunitdateflag==0)
+        {
+            if(maxdate.setHours(0,0,0,0)<mindate.setHours(0,0,0,0))
+            {
+                $('#CEXTN_db_chkoutdate').addClass("invalid");
+                $('#CEXTN_db_chkoutdate').datepicker( "destroy" )
+                $('#CEXTN_db_chkoutdate').attr('disabled','disabled');
+                $('#CEXTN_db_chkoutdate').val('');
+                $('#CEXTN_uedatexpiremsg').text(CEXTN_errmsgs[24]);//.text(CEXTN_errmsgs[10])
+                CEXTN_chkunitdateflag=1;
+            }
+            else
+            {
+                CEXTN_chkunitdateflag=0;
+                if(new Date(CEXTN_chkoutmaxdate).setHours(0,0,0,0)<=new Date().setHours(0,0,0,0))
+                {
+                    CEXTN_chkunitdateflag=1;
+                    $('#CEXTN_db_chkoutdate').val("");
+                    $('#CEXTN_db_chkoutdate').addClass("invalid")
+                    $('#CEXTN_uedatexpiremsg').text(CEXTN_errmsgs[10])
+                    $("#CEXTN_lb_chkoutfromtime").val("SELECT").hide();
+                    $("#CEXTN_lb_chkouttotime").hide();
+                    $('#CEXTN_lbl_chkoutto').hide();
+                    $('#CEXTN_db_chkoutdate').datepicker( "destroy" )
+                    $('#CEXTN_db_chkoutdate').attr('disabled','disabled');
+                }
+                else
+                {
+                    $('#CEXTN_db_chkoutdate').removeClass("invalid")
+                    $('#CEXTN_uedatexpiremsg').text("");
+                    CEXTN_chkunitdateflag=0;
+                }
+            }
+        }
+        CEXTN_clearerrmsg();
+    }
 //FUNCTION TO SET SOME LISTBOX VALUE TO SELECT
-function CEXTN_setselectIndex()
-{
-CEXTN_clearerrmsg()
-$('#CEXTN_form').find('input:text').prop("size","20");
-$('#CEXTN_lb_chkinfromtime').val("SELECT").hide();
-$('#CEXTN_lb_chkintotime').hide();
-$("#CEXTN_lbl_chkinto").hide();
-$('#CEXTN_lb_chkoutfromtime').val("SELECT");
-$('#CEXTN_lb_chkouttotime').hide();
-$('#CEXTN_lbl_chkoutto').hide();
-$("#CEXTN_lb_emailid").val("SELECT");
-$("#CEXTN_btn_save").attr("disabled","disabled");
-}
+    function CEXTN_setselectIndex()
+    {
+        CEXTN_clearerrmsg()
+        $('#CEXTN_form').find('input:text').prop("size","20");
+        $('#CEXTN_lb_chkinfromtime').val("SELECT").hide();
+        $('#CEXTN_lb_chkintotime').hide();
+        $("#CEXTN_lbl_chkinto").hide();
+        $('#CEXTN_lb_chkoutfromtime').val("SELECT");
+        $('#CEXTN_lb_chkouttotime').hide();
+        $('#CEXTN_lbl_chkoutto').hide();
+        $("#CEXTN_lb_emailid").val("SELECT");
+        $("#CEXTN_btn_save").attr("disabled","disabled");
+    }
 //FUNCTION TO CALL SAVE FUNCTION
-$("#CEXTN_btn_save").click(function()
-{
-var  newPos= adjustPosition($("#CEXTN_div_save").position(),100,150);
-resetPreloader(newPos);
-$(".preloader").show(); 
-var CEXTN_validinput=1;
-var CEXTN_validoutput=CEXTN_validateinputform(CEXTN_validinput);
-CEXTN_validatesubmitbtn(CEXTN_validoutput);
-if(CEXTN_validoutput==1)
-{
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_SaveDetails_result).CEXTN_SaveDetails(document.getElementById("CEXTN_form"));
-}
-else
-{
-$(".preloader").hide(); 
-}
-});
+    $("#CEXTN_btn_save").click(function()
+    {
+        var  newPos= adjustPosition($("#CEXTN_div_save").position(),100,150);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        var CEXTN_validinput=1;
+        var CEXTN_validoutput=CEXTN_validateinputform(CEXTN_validinput);
+        CEXTN_validatesubmitbtn(CEXTN_validoutput);
+        if(CEXTN_validoutput==1)
+        {
+            google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_SaveDetails_result).CEXTN_SaveDetails(document.getElementById("CEXTN_form"));
+        }
+        else
+        {
+            $(".preloader").hide();
+        }
+    });
 //FUNCTION TO RETURN SAVE RESULT
-function CEXTN_SaveDetails_result(saveresult)
-{
-var CEXTN_tb_firstname=$("#CEXTN_tb_firstname").val();
-var CEXTN_tb_lastname=$("#CEXTN_tb_lastname").val();
-var CEXTN_successmsg=CEXTN_errmsgs[7];
-if(saveresult.match("SCRIPT EXCEPTION:"))
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:saveresult,position:$("#CEXTN_div_save").position()}}); 
-$(".preloader").hide(); 
-}
-else
-{
-var paymentchkmsg=saveresult.split("_")[1];
-var saveresult=saveresult.split("_")[0];
-if(saveresult==1)
-{
-CEXTN_clearForm();
-CEXTN_successmsg=CEXTN_successmsg.replace('[FIRST NAME]',CEXTN_tb_firstname)
-CEXTN_successmsg=CEXTN_successmsg.replace('[LAST NAME]',CEXTN_tb_lastname)
-if(paymentchkmsg!='null')
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_successmsg+"<br>"+paymentchkmsg,position:{top:150,left:500}}}); 
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_successmsg,position:{top:150,left:500}}}); 
-}
-}
-else
-{
-if(saveresult.toString()=='0')
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_errmsgs[21],position:$("#CEXTN_div_save").position()}}); 
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:saveresult,position:$("#CEXTN_div_save").position()}}); 
-}
-$(".preloader").hide(); 
-}
-}
-}
+    function CEXTN_SaveDetails_result(saveresult)
+    {
+        var CEXTN_tb_firstname=$("#CEXTN_tb_firstname").val();
+        var CEXTN_tb_lastname=$("#CEXTN_tb_lastname").val();
+        var CEXTN_successmsg=CEXTN_errmsgs[7];
+        if(saveresult.match("SCRIPT EXCEPTION:"))
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:saveresult,position:$("#CEXTN_div_save").position()}});
+            $(".preloader").hide();
+        }
+        else
+        {
+            var paymentchkmsg=saveresult.split("_")[1];
+            var saveresult=saveresult.split("_")[0];
+            if(saveresult==1)
+            {
+                CEXTN_clearForm();
+                CEXTN_successmsg=CEXTN_successmsg.replace('[FIRST NAME]',CEXTN_tb_firstname)
+                CEXTN_successmsg=CEXTN_successmsg.replace('[LAST NAME]',CEXTN_tb_lastname)
+                if(paymentchkmsg!='null')
+                {
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_successmsg+"<br>"+paymentchkmsg,position:{top:150,left:500}}});
+                }
+                else
+                {
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_successmsg,position:{top:150,left:500}}});
+                }
+            }
+            else
+            {
+                if(saveresult.toString()=='0')
+                {
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:CEXTN_errmsgs[21],position:$("#CEXTN_div_save").position()}});
+                }
+                else
+                {
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER EXTENSION",msgcontent:saveresult,position:$("#CEXTN_div_save").position()}});
+                }
+                $(".preloader").hide();
+            }
+        }
+    }
 //FUNCTION TO CLEAR LIST BOX FIELD
-function CEXTN_clearForm()
-{
-var  newPos= adjustPosition($('#CEXTN_lb_unitno').position(),100,150);
-resetPreloader(newPos);
-$(".preloader").show();
-CEXTN_clearerrmsg();
-$('#CEXTN_lbl_custname').hide();
-$('#CEXTN_lb_custname').hide();
-$('#CEXTN_div_custid').hide();
-$('#CEXTN_div_seconform').hide();
-$("#CEXTN_form").hide();
+    function CEXTN_clearForm()
+    {
+        var  newPos= adjustPosition($('#CEXTN_lb_unitno').position(),100,150);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        CEXTN_clearerrmsg();
+        $('#CEXTN_lbl_custname').hide();
+        $('#CEXTN_lb_custname').hide();
+        $('#CEXTN_div_custid').hide();
+        $('#CEXTN_div_seconform').hide();
+        $("#CEXTN_form").hide();
 //CALL FUNCTION TO GET UNIT NOS,ERROR MSGS,PRORATED N WAIVED VALUE
-google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCommonvalues_result).CEXTN_getCommonvalues();
-}
+        google.script.run.withFailureHandler(onFailure).withSuccessHandler(CEXTN_getCommonvalues_result).CEXTN_getCommonvalues();
+    }
 //RESET FORM FIELDS
-$("#CEXTN_btn_reset").click(function(){
-CEXTN_clearForm();
-$('#CEXTN_ta_comments').height(20);
-});
+    $("#CEXTN_btn_reset").click(function(){
+        CEXTN_clearForm();
+        $('#CEXTN_ta_comments').height(20);
+    });
 //FUNCTION TO CLEAR ERR MSG
-function CEXTN_clearerrmsg()
-{
-$('#CEXTN_div_custerrmsg').hide();
-$('#CEXTN_div_diffunitnocarderrmsg').hide();
-$('#CEXTN_div_nodiffuniterr').hide();
-$('#CEXTN_tb_emailid').removeClass("invalid");
-$("#CEXTN_lbl_emailerrmsg").text("");
-$("#CEXTN_tb_electcapfee").removeClass("invalid")
-$("#CEXTN_electcap_err").text("")
-$("#CEXTN_tb_diffamtrent").removeClass("invalid")
-$("#CEXTN_diffamtrent_err").text("")
-$("#CEXTN_tb_diffamtdep").removeClass("invalid")
-$("#CEXTN_diffamtdeposit_err").text("")
-$("#CEXTN_tb_diffamtprocost").removeClass("invalid")
-$("#CEXTN_diffamtprofee_err").text("")
-$("#CEXTN_tb_comppostcode").removeClass("invalid")
-$("#CEXTN_postcode_err").text("")
-$("#CEXTN_tb_passno").removeClass("invalid")
-$("#CEXTN_passno_err").text("")
-$("#CEXTN_tb_epno").removeClass("invalid")
-$("#CEXTN_epno_err").text("")
-$("#CEXTN_tb_mobileno").removeClass("invalid")
-$("#CEXTN_mobile_err").text("")
-$("#CEXTN_tb_intmobileno").removeClass("invalid")
-$("#CEXTN_intlmobile_err").text("")
-$("#CEXTN_tb_officeno").removeClass("invalid")
-$("#CEXTN_officeno_err").text("")
-$('#CEXTN_db_epdate').removeClass("invalid");
-$("#CEXTN_epdate_err").text("");
-$('#CEXTN_db_passdate').removeClass("invalid");
-$("#CEXTN_passdate_err").text("");
-}
+    function CEXTN_clearerrmsg()
+    {
+        $('#CEXTN_div_custerrmsg').hide();
+        $('#CEXTN_div_diffunitnocarderrmsg').hide();
+        $('#CEXTN_div_nodiffuniterr').hide();
+        $('#CEXTN_tb_emailid').removeClass("invalid");
+        $("#CEXTN_lbl_emailerrmsg").text("");
+        $("#CEXTN_tb_electcapfee").removeClass("invalid")
+        $("#CEXTN_electcap_err").text("")
+        $("#CEXTN_tb_diffamtrent").removeClass("invalid")
+        $("#CEXTN_diffamtrent_err").text("")
+        $("#CEXTN_tb_diffamtdep").removeClass("invalid")
+        $("#CEXTN_diffamtdeposit_err").text("")
+        $("#CEXTN_tb_diffamtprocost").removeClass("invalid")
+        $("#CEXTN_diffamtprofee_err").text("")
+        $("#CEXTN_tb_comppostcode").removeClass("invalid")
+        $("#CEXTN_postcode_err").text("")
+        $("#CEXTN_tb_passno").removeClass("invalid")
+        $("#CEXTN_passno_err").text("")
+        $("#CEXTN_tb_epno").removeClass("invalid")
+        $("#CEXTN_epno_err").text("")
+        $("#CEXTN_tb_mobileno").removeClass("invalid")
+        $("#CEXTN_mobile_err").text("")
+        $("#CEXTN_tb_intmobileno").removeClass("invalid")
+        $("#CEXTN_intlmobile_err").text("")
+        $("#CEXTN_tb_officeno").removeClass("invalid")
+        $("#CEXTN_officeno_err").text("")
+        $('#CEXTN_db_epdate').removeClass("invalid");
+        $("#CEXTN_epdate_err").text("");
+        $('#CEXTN_db_passdate').removeClass("invalid");
+        $("#CEXTN_passdate_err").text("");
+    }
 });
 </script>
 <!--SCRIPT TAG END-->
@@ -1815,279 +1815,279 @@ $("#CEXTN_passdate_err").text("");
 <form class="content" name="CEXTN_form" id="CEXTN_form" hidden>
 <div>
 <table id="CEXTN_tble_first" >
-<tr>
-<td style="width:225px;">
-<label name="CEXTN_lbl_unitno" id="CEXTN_lbl_unitno">UNIT NUMBER<em>*</em></label>
-<td >
-<select id="CEXTN_lb_unitno" name="CEXTN_lb_unitno" class="CEXTN_btn_validate_class"><option>SELECT</option>
-</select>
-</tr>
-<tr>
-<td style="width:225px;">
-<label name="CEXTN_lbl_custname" id="CEXTN_lbl_custname" hidden>CUSTOMER NAME<em>*</em></label>
-<td >
-<select id="CEXTN_lb_custname" name="CEXTN_lb_custname"  class="CEXTN_btn_validate_class" hidden>
-</select>
-</tr>
-<tr><td><td>
-<div id="CEXTN_div_custid">
-<table id="CEXTN_tble_custid">
-</table>
-</div>
-</tr>
-<tr>
-<td>
-</tr>
+    <tr>
+        <td style="width:225px;">
+            <label name="CEXTN_lbl_unitno" id="CEXTN_lbl_unitno">UNIT NUMBER<em>*</em></label>
+        <td >
+            <select id="CEXTN_lb_unitno" name="CEXTN_lb_unitno" class="CEXTN_btn_validate_class"><option>SELECT</option>
+            </select>
+    </tr>
+    <tr>
+        <td style="width:225px;">
+            <label name="CEXTN_lbl_custname" id="CEXTN_lbl_custname" hidden>CUSTOMER NAME<em>*</em></label>
+        <td >
+            <select id="CEXTN_lb_custname" name="CEXTN_lb_custname"  class="CEXTN_btn_validate_class" hidden>
+            </select>
+    </tr>
+    <tr><td><td>
+        <div id="CEXTN_div_custid">
+            <table id="CEXTN_tble_custid">
+            </table>
+        </div>
+    </tr>
+    <tr>
+        <td>
+    </tr>
 </table>
 <div id="CEXTN_div_nocusterr" class="errormsg"></div>
 <div id="CEXTN_div_seconform" hidden>
 <table id='CEXTN_tble_seconform'>
 <tr>
-<td><input type="hidden" name="CEXTN_hidden_custid" id="CEXTN_hidden_custid"><label>FIRST NAME</label></td><td><input type="text" name="CEXTN_tb_firstname" id="CEXTN_tb_firstname"  maxlength="30" class="rdonly" readonly/></td> <td><p class="field" ></p></td>
+    <td><input type="hidden" name="CEXTN_hidden_custid" id="CEXTN_hidden_custid"><label>FIRST NAME</label></td><td><input type="text" name="CEXTN_tb_firstname" id="CEXTN_tb_firstname"  maxlength="30" class="rdonly" readonly/></td> <td><p class="field" ></p></td>
 </tr>
 <tr>
-<td><label>LAST NAME</label></td><td><input type="text" name="CEXTN_tb_lastname" id="CEXTN_tb_lastname"  maxlength="30" class="rdonly" readonly/></td> <td><p class="field" ></p></td>
+    <td><label>LAST NAME</label></td><td><input type="text" name="CEXTN_tb_lastname" id="CEXTN_tb_lastname"  maxlength="30" class="rdonly" readonly/></td> <td><p class="field" ></p></td>
 </tr>
 <tr>
-<td><label>COMPANY NAME</label></td><td> <input type="text" name="CEXTN_tb_compname" id="CEXTN_tb_compname"  maxlength="50"  class="autosize"/></td> <td><p class="field" ></p></td>
+    <td><label>COMPANY NAME</label></td><td> <input type="text" name="CEXTN_tb_compname" id="CEXTN_tb_compname"  maxlength="50"  class="autosize"/></td> <td><p class="field" ></p></td>
 </tr>
 <tr>
-<td><label>COMPANY ADDRESS</label></td><td> <input type="text" name="CEXTN_tb_compaddr" id="CEXTN_tb_compaddr"  maxlength="50"  class="autosize"/></td> <td><p class="field" ></p></td>
+    <td><label>COMPANY ADDRESS</label></td><td> <input type="text" name="CEXTN_tb_compaddr" id="CEXTN_tb_compaddr"  maxlength="50"  class="autosize"/></td> <td><p class="field" ></p></td>
 </tr>
 <tr>
-<td><label>COMPANY POSTAL CODE</label></td><td> <input type="text" name="CEXTN_tb_comppostcode" id="CEXTN_tb_comppostcode"  style="width:55px;" maxlength="6" class="autosize CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_postcode_err" class="errormsg" ></p></td>
+    <td><label>COMPANY POSTAL CODE</label></td><td> <input type="text" name="CEXTN_tb_comppostcode" id="CEXTN_tb_comppostcode"  style="width:55px;" maxlength="6" class="autosize CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_postcode_err" class="errormsg" ></p></td>
 </tr>
 <tr>
-<td><label>E-MAIL ID<em>*</em></label></td><td> <input type="text" name="CEXTN_tb_emailid" id="CEXTN_tb_emailid"  maxlength="40" class="CEXTN_btn_validate_class"/><label  id="CEXTN_lbl_emailerrmsg" class="errormsg"></label></td>
+    <td><label>E-MAIL ID<em>*</em></label></td><td> <input type="text" name="CEXTN_tb_emailid" id="CEXTN_tb_emailid"  maxlength="40" class="CEXTN_btn_validate_class"/><label  id="CEXTN_lbl_emailerrmsg" class="errormsg"></label></td>
 </tr>
 <tr>
-<td><label>MOBILE</label></td><td> <input type="text" name="CEXTN_tb_mobileno" id="CEXTN_tb_mobileno" style="width:70px;" class="numonlynozero CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_mobile_err" class="errormsg"></p></td>
+    <td><label>MOBILE</label></td><td> <input type="text" name="CEXTN_tb_mobileno" id="CEXTN_tb_mobileno" style="width:70px;" class="numonlynozero CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_mobile_err" class="errormsg"></p></td>
 </tr>
 <tr>
-<td><label>INT'L MOBILE</label></td><td> <input type="text" name="CEXTN_tb_intmobileno" id="CEXTN_tb_intmobileno"  class="CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_intlmobile_err" class="errormsg"></p></td>
+    <td><label>INT'L MOBILE</label></td><td> <input type="text" name="CEXTN_tb_intmobileno" id="CEXTN_tb_intmobileno"  class="CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_intlmobile_err" class="errormsg"></p></td>
 </tr>
 <tr>
-<td><label>OFFICE NO</label></td><td> <input type="text" name="CEXTN_tb_officeno" id="CEXTN_tb_officeno"  style="width:70px;" maxlength="8"  class="numonlynozero CEXTN_btn_validate_class" /></td> <td><p id="CEXTN_officeno_err" class="errormsg"></p></td>
+    <td><label>OFFICE NO</label></td><td> <input type="text" name="CEXTN_tb_officeno" id="CEXTN_tb_officeno"  style="width:70px;" maxlength="8"  class="numonlynozero CEXTN_btn_validate_class" /></td> <td><p id="CEXTN_officeno_err" class="errormsg"></p></td>
 </tr>
 <tr>
-<td><label>DATE OF BIRTH</label></td><td> <input type="text" name="CEXTN_db_dob" id="CEXTN_db_dob"  maxlength="10" style="width:75px;" class="datenonmandtry"/></td> <td><p class="field" ></p></td>
+    <td><label>DATE OF BIRTH</label></td><td> <input type="text" name="CEXTN_db_dob" id="CEXTN_db_dob"  maxlength="10" style="width:75px;" class="datenonmandtry"/></td> <td><p class="field" ></p></td>
 </tr>
 <tr>
-<td><label>NATIONALITY</label></td><td> <input type="text" name="CEXTN_tb_nation" id="CEXTN_tb_nation"  maxlength="50" class="rdonly" readonly/></td> <td><p class="field" ></p></td>
+    <td><label>NATIONALITY</label></td><td> <input type="text" name="CEXTN_tb_nation" id="CEXTN_tb_nation"  maxlength="50" class="rdonly" readonly/></td> <td><p class="field" ></p></td>
 </tr>
 <tr>
-<td><label>PASSPORT NUMBER</label></td><td> <input type="text" name="CEXTN_tb_passno" id="CEXTN_tb_passno"  maxlength="15" class="alnumonlyzero CEXTN_btn_validate_class" /></td> <td><p id="CEXTN_passno_err" class="errormsg"></p></td>
+    <td><label>PASSPORT NUMBER</label></td><td> <input type="text" name="CEXTN_tb_passno" id="CEXTN_tb_passno"  maxlength="15" class="alnumonlyzero CEXTN_btn_validate_class" /></td> <td><p id="CEXTN_passno_err" class="errormsg"></p></td>
 </tr>
 <tr>
-<td><label>PASSPORT EXPIRY DATE</label></td><td> <input type="text" name="CEXTN_db_passdate" id="CEXTN_db_passdate"  maxlength="10" style="width:75px;" class="datenonmandtry CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_passdate_err" class="errormsg" ></p></td>
+    <td><label>PASSPORT EXPIRY DATE</label></td><td> <input type="text" name="CEXTN_db_passdate" id="CEXTN_db_passdate"  maxlength="10" style="width:75px;" class="datenonmandtry CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_passdate_err" class="errormsg" ></p></td>
 </tr>
 <tr>
-<td><label>EP NUMBER</label></td><td> <input type="text" name="CEXTN_tb_epno" id="CEXTN_tb_epno"  maxlength="15" class="alnumonlynozero CEXTN_btn_validate_class" /></td> <td><p id="CEXTN_epno_err" class="errormsg"></td>
+    <td><label>EP NUMBER</label></td><td> <input type="text" name="CEXTN_tb_epno" id="CEXTN_tb_epno"  maxlength="15" class="alnumonlynozero CEXTN_btn_validate_class" /></td> <td><p id="CEXTN_epno_err" class="errormsg"></td>
 </tr>
 <tr>
-<td><label>EP EXPIRY DATE</label></td><td> <input type="text" name="CEXTN_db_epdate" id="CEXTN_db_epdate"  maxlength="10" style="width:75px;" class="datenonmandtry CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_epdate_err" class="errormsg" ></p></td>
+    <td><label>EP EXPIRY DATE</label></td><td> <input type="text" name="CEXTN_db_epdate" id="CEXTN_db_epdate"  maxlength="10" style="width:75px;" class="datenonmandtry CEXTN_btn_validate_class"/></td> <td><p id="CEXTN_epdate_err" class="errormsg" ></p></td>
 </tr>
 <tr>
-<td><label>SAME/DIFFERENT UNIT<em>*</em></label></td>
-<td><input type="radio" name="CEXTN_radio_unit" id="CEXTN_radio_sameunit" value="CEXTN_radio_sameunit" checked="checked" class="CEXTN_btn_validate_class"/>
-<label>SAME UNIT & SAME ROOM </label><input type="hidden" id="CEXTN_hidden_setrmtype"/></td>
+    <td><label>SAME/DIFFERENT UNIT<em>*</em></label></td>
+    <td><input type="radio" name="CEXTN_radio_unit" id="CEXTN_radio_sameunit" value="CEXTN_radio_sameunit" checked="checked" class="CEXTN_btn_validate_class"/>
+        <label>SAME UNIT & SAME ROOM </label><input type="hidden" id="CEXTN_hidden_setrmtype"/></td>
 </tr>
 <tr>
-<td><td><div id="CEXTN_div_sameunitsamerm">
-<table id="CEXTN_tble_sameunitsamerm">
-<tr>
-<td style="width:130px;"><label>UNIT NUMBER</label></td>
-<td style="width:130px;">
-<input type="text" name="CEXTN_tb_sameunitsamermuno" id="CEXTN_tb_sameunitsamermuno" style="width:35px;" class="rdonly" readonly />
-</td>
-</tr>
-<tr>
-<td><label>ROOM TYPE</label></td>
-<td>
-<input type="text" name="CEXTN_tb_sameunitsamermrmtype" id="CEXTN_tb_sameunitsamermrmtype" class="rdonly" readonly />
-</td>
-</tr>
-<tr>
-</tr>
-</table>
-<table id="CTERM_tbl_sameunitsamermcust_card" hidden>
-</table>
+    <td><td><div id="CEXTN_div_sameunitsamerm">
+    <table id="CEXTN_tble_sameunitsamerm">
+        <tr>
+            <td style="width:130px;"><label>UNIT NUMBER</label></td>
+            <td style="width:130px;">
+                <input type="text" name="CEXTN_tb_sameunitsamermuno" id="CEXTN_tb_sameunitsamermuno" style="width:35px;" class="rdonly" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td><label>ROOM TYPE</label></td>
+            <td>
+                <input type="text" name="CEXTN_tb_sameunitsamermrmtype" id="CEXTN_tb_sameunitsamermrmtype" class="rdonly" readonly />
+            </td>
+        </tr>
+        <tr>
+        </tr>
+    </table>
+    <table id="CTERM_tbl_sameunitsamermcust_card" hidden>
+    </table>
 </div>
 </tr>
 <tr>
-<td><td>
-<input type="radio" name="CEXTN_radio_unit" id="CEXTN_radio_sameunitdiffroom"  value="CEXTN_radio_sameunitdiffroom" class="CEXTN_btn_validate_class" />
-<label>SAME UNIT & DIFFERENT ROOM</label><div id="CEXTN_div_sameunitdiffroomerr" class="errormsg"></div>
+    <td><td>
+    <input type="radio" name="CEXTN_radio_unit" id="CEXTN_radio_sameunitdiffroom"  value="CEXTN_radio_sameunitdiffroom" class="CEXTN_btn_validate_class" />
+    <label>SAME UNIT & DIFFERENT ROOM</label><div id="CEXTN_div_sameunitdiffroomerr" class="errormsg"></div>
 </td>
 </tr>
 <tr>
-<td><td><div id="CEXTN_div_sameunitdiffrm" hidden> 
-<table id="CEXTN_tble_sameunitdiffrm" >
-<tr>
-<td style="width:130px;"><label id="CEXTN_lbl_sameunitdiffrmuno">UNIT NUMBER</label></td>
-<td style="width:130px;">
-<input type="text" name="CEXTN_tb_sameunitdiffrmuno" id="CEXTN_tb_sameunitdiffrmuno" style="width:35px;" class="rdonly" readonly />
-</td>
-</tr>
-<tr>
-<td><label id="CEXTN_lbl_sameunitdiffrmrmtype">ROOM TYPE<em>*</em></label></td>
-<td>
-<select name="CEXTN_lb_sameunitdiffrmrmtype" id="CEXTN_lb_sameunitdiffrmrmtype" ></select>
-</td>
-</tr>
-<tr>
-</tr>
-</table>
-<table id="CTERM_tbl_sameunitdiffrmcust_card" hidden>
-</table>
+    <td><td><div id="CEXTN_div_sameunitdiffrm" hidden>
+    <table id="CEXTN_tble_sameunitdiffrm" >
+        <tr>
+            <td style="width:130px;"><label id="CEXTN_lbl_sameunitdiffrmuno">UNIT NUMBER</label></td>
+            <td style="width:130px;">
+                <input type="text" name="CEXTN_tb_sameunitdiffrmuno" id="CEXTN_tb_sameunitdiffrmuno" style="width:35px;" class="rdonly" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td><label id="CEXTN_lbl_sameunitdiffrmrmtype">ROOM TYPE<em>*</em></label></td>
+            <td>
+                <select name="CEXTN_lb_sameunitdiffrmrmtype" id="CEXTN_lb_sameunitdiffrmrmtype" ></select>
+            </td>
+        </tr>
+        <tr>
+        </tr>
+    </table>
+    <table id="CTERM_tbl_sameunitdiffrmcust_card" hidden>
+    </table>
 </div>
 </tr>
 <tr>
-<td><td><input type="radio" name="CEXTN_radio_unit" id="CEXTN_radio_diffunit" value="CEXTN_radio_diffunit" class="CEXTN_btn_validate_class" /><label>DIFFERENT UNIT</label><div id="CEXTN_div_nodiffuniterr" class="errormsg"></div></td>
+    <td><td><input type="radio" name="CEXTN_radio_unit" id="CEXTN_radio_diffunit" value="CEXTN_radio_diffunit" class="CEXTN_btn_validate_class" /><label>DIFFERENT UNIT</label><div id="CEXTN_div_nodiffuniterr" class="errormsg"></div></td>
 </tr>
 <tr>
-<td><td>
-<div id="CEXTN_div_diffunit" hidden> 
-<table id="CEXTN_tble_diffunit">
-<tr>
-<td><label id="CEXTN_lbl_diffunituno">UNIT NUMBER<em>*</em></label></td>
-<td>
-<select id="CEXTN_lb_diffunituno" name="CEXTN_lb_diffunituno" class="CEXTN_btn_validate_class">
-</select>
-<div id="CEXTN_div_normtypeerr" class="errormsg"></div>
-</td>
-</tr>
-<tr>
-<td>
-<label id="CEXTN_lbl_diffunitrmtype" hidden>ROOM TYPE<em>*</em></label></td>
-<td>
-<select id="CEXTN_lb_diffunitrmtype" name="CEXTN_lb_diffunitrmtype" class="CEXTN_btn_validate_class" hidden>
-</select>
-</td>
-</tr>
-<tr>
-<td>
-<label id="CEXTN_lbl_diffunitselectcard" hidden>SELECT THE CARD<em>*</em></label>
-<td >
-<input type="radio" name="CEXTN_radio_difunitcard" id="CEXTN_radio_difunitcardno"  value="CEXTN_radio_difunitcardno" class="CEXTN_btn_validate_class" hidden />
-<label id="CEXTN_lbl_diffunitcard" hidden>CARD NUMBER</label><label id="CEXTN_div_custerrmsg" class="errormsg" hidden></label>
-</td>
-</tr>
-<tr><td><td>
-<div id="CEXTN_div_diffunitcardlist" hidden><table id="CEXTN_tble_diffunitcardlist" class="CEXTN_btn_validate_class"></table></div>
-<div id="CEXTN_div_diffunitnocarderrmsg" class="errormsg" hidden></div>
-</tr>
-<tr>
-<td>
-<td>
-<input type="radio" name="CEXTN_radio_difunitcard" id="CEXTN_radio_difunitnullcard"  value="CEXTN_radio_difunitnullcard" class="CEXTN_btn_validate_class" hidden/><label id="CEXTN_lbl_diffunitnull" hidden>NULL</label>
-</td>
-</tr>
-</table>
-</div>
+    <td><td>
+    <div id="CEXTN_div_diffunit" hidden>
+        <table id="CEXTN_tble_diffunit">
+            <tr>
+                <td><label id="CEXTN_lbl_diffunituno">UNIT NUMBER<em>*</em></label></td>
+                <td>
+                    <select id="CEXTN_lb_diffunituno" name="CEXTN_lb_diffunituno" class="CEXTN_btn_validate_class">
+                    </select>
+                    <div id="CEXTN_div_normtypeerr" class="errormsg"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label id="CEXTN_lbl_diffunitrmtype" hidden>ROOM TYPE<em>*</em></label></td>
+                <td>
+                    <select id="CEXTN_lb_diffunitrmtype" name="CEXTN_lb_diffunitrmtype" class="CEXTN_btn_validate_class" hidden>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label id="CEXTN_lbl_diffunitselectcard" hidden>SELECT THE CARD<em>*</em></label>
+                <td >
+                    <input type="radio" name="CEXTN_radio_difunitcard" id="CEXTN_radio_difunitcardno"  value="CEXTN_radio_difunitcardno" class="CEXTN_btn_validate_class" hidden />
+                    <label id="CEXTN_lbl_diffunitcard" hidden>CARD NUMBER</label><label id="CEXTN_div_custerrmsg" class="errormsg" hidden></label>
+                </td>
+            </tr>
+            <tr><td><td>
+                <div id="CEXTN_div_diffunitcardlist" hidden><table id="CEXTN_tble_diffunitcardlist" class="CEXTN_btn_validate_class"></table></div>
+                <div id="CEXTN_div_diffunitnocarderrmsg" class="errormsg" hidden></div>
+            </tr>
+            <tr>
+                <td>
+                <td>
+                    <input type="radio" name="CEXTN_radio_difunitcard" id="CEXTN_radio_difunitnullcard"  value="CEXTN_radio_difunitnullcard" class="CEXTN_btn_validate_class" hidden/><label id="CEXTN_lbl_diffunitnull" hidden>NULL</label>
+                </td>
+            </tr>
+        </table>
+    </div>
 </tr>
 <tr><td><label>INITIAL CHECK IN DATE </label></td><td> <input type="text" name="CEXTN_db_prevchkindate" id="CEXTN_db_prevchkindate" style="width:75px;" class="rdonly" readonly />
-<input type="hidden" name="CEXTN_hidden_prechkinfromtime" id="CEXTN_hidden_prechkinfromtime"><input type="hidden" name="CEXTN_hidden_prechkintotime" id="CEXTN_hidden_prechkintotime">
+    <input type="hidden" name="CEXTN_hidden_prechkinfromtime" id="CEXTN_hidden_prechkinfromtime"><input type="hidden" name="CEXTN_hidden_prechkintotime" id="CEXTN_hidden_prechkintotime">
 </tr>
 <tr><td><label id="CEXTN_lbl_chkindate">CURRENT CHECK OUT DATE </label></td><td> <input type="text" name="CEXTN_db_chkindate" id="CEXTN_db_chkindate" style="width:75px;" class="rdonly" readonly />
-<select id="CEXTN_lb_chkinfromtime" name="CEXTN_lb_chkinfromtime"  style="width:75px;" class="CEXTN_btn_validate_class" hidden><option>SELECT</option>
-</select>
-<label  id="CEXTN_lbl_chkinto" style="width:25px;" hidden>TO</label>
-<select id="CEXTN_lb_chkintotime" name="CEXTN_lb_chkintotime"  style="width:75px;" class="CEXTN_btn_validate_class" hidden><option>SELECT</option></select>
-<input type="hidden" name="CEXTN_hidden_chkinfromtime" id="CEXTN_hidden_chkinfromtime"><input type="hidden" name="CEXTN_hidden_chkintotime" id="CEXTN_hidden_chkintotime">
-<td><div class="errormsg" id="CEXTN_usdatexpiremsg"></div>
+    <select id="CEXTN_lb_chkinfromtime" name="CEXTN_lb_chkinfromtime"  style="width:75px;" class="CEXTN_btn_validate_class" hidden><option>SELECT</option>
+    </select>
+    <label  id="CEXTN_lbl_chkinto" style="width:25px;" hidden>TO</label>
+    <select id="CEXTN_lb_chkintotime" name="CEXTN_lb_chkintotime"  style="width:75px;" class="CEXTN_btn_validate_class" hidden><option>SELECT</option></select>
+    <input type="hidden" name="CEXTN_hidden_chkinfromtime" id="CEXTN_hidden_chkinfromtime"><input type="hidden" name="CEXTN_hidden_chkintotime" id="CEXTN_hidden_chkintotime">
+    <td><div class="errormsg" id="CEXTN_usdatexpiremsg"></div>
 </tr>
 <tr><td><label>NEW CHECK OUT DATE<em>*</em></label></td><td> <input type="text" name="CEXTN_db_chkoutdate" id="CEXTN_db_chkoutdate" maxlength="10" class="CEXTN_class_prowaiv datemandtry CEXTN_btn_validate_class" style="width:75px;" />
-<select id="CEXTN_lb_chkoutfromtime" name="CEXTN_lb_chkoutfromtime" style="width:75px;" class="CEXTN_btn_validate_class" hidden><option>SELECT</option>
-</select>
-<label  id="CEXTN_lbl_chkoutto" style="width:25px;" hidden>TO</label>
-<select id="CEXTN_lb_chkouttotime" name="CEXTN_lb_chkouttotime"  style="width:75px;" class="CEXTN_btn_validate_class" hidden><option>SELECT</option></select>
-<td><div class="errormsg" id="CEXTN_uedatexpiremsg"></div>
+    <select id="CEXTN_lb_chkoutfromtime" name="CEXTN_lb_chkoutfromtime" style="width:75px;" class="CEXTN_btn_validate_class" hidden><option>SELECT</option>
+    </select>
+    <label  id="CEXTN_lbl_chkoutto" style="width:25px;" hidden>TO</label>
+    <select id="CEXTN_lb_chkouttotime" name="CEXTN_lb_chkouttotime"  style="width:75px;" class="CEXTN_btn_validate_class" hidden><option>SELECT</option></select>
+    <td><div class="errormsg" id="CEXTN_uedatexpiremsg"></div>
 </tr>
 <tr><td><label>NOTICE PERIOD</label></td><td> <input type="text" name="CEXTN_tb_noticeperiod" id="CEXTN_tb_noticeperiod" style="width:15px;"/>
 </tr>
 <tr><td><label>NOTICE PERIOD DATE</label></td><td> <input type="text" name="CEXTN_db_noticeperioddate" id="CEXTN_db_noticeperioddate" class="CEXTN_class_prowaiv CEXTN_btn_validate_class datenonmandtry" maxlength="10" style="width:75px;" />
 </tr>
 <tr><td><label>SELECT AIRCON FEE</label></td><td><input type="radio" name="CEXTN_radio_airconfee" id="CEXTN_radio_quartairconfee" value="CEXTN_radio_quartairconfee" class="CEXTN_btn_validate_class"/>
-<label>QUARTERLY SERVICE FEE</label>&nbsp;
-<input type="text" name="CEXTN_tb_airquarterfee" id="CEXTN_tb_airquarterfee" style="width:55px;" maxlength="7" class="3digitdollaronly CEXTN_btn_validate_class" hidden /></td>
+    <label>QUARTERLY SERVICE FEE</label>&nbsp;
+    <input type="text" name="CEXTN_tb_airquarterfee" id="CEXTN_tb_airquarterfee" style="width:55px;" maxlength="7" class="3digitdollaronly CEXTN_btn_validate_class" hidden /></td>
 </tr>
 <tr><td><td><input type="radio" name="CEXTN_radio_airconfee" id="CEXTN_radio_fixedairconfee" value="CEXTN_radio_fixedairconfee" class="CEXTN_btn_validate_class"/>
-<label>FIXED AIRCON FEE</label>&nbsp;
-<input type="text" name="CEXTN_tb_fixedairfee" id="CEXTN_tb_fixedairfee" style="width:55px;" maxlength="7" class="3digitdollaronly CEXTN_btn_validate_class" hidden /></td>
+    <label>FIXED AIRCON FEE</label>&nbsp;
+    <input type="text" name="CEXTN_tb_fixedairfee" id="CEXTN_tb_fixedairfee" style="width:55px;" maxlength="7" class="3digitdollaronly CEXTN_btn_validate_class" hidden /></td>
 </tr>
 <tr>
-<td><label>SAME/DIFFERENT AMOUNT<em>*</em></label></td>
-<td> <input type="radio" name="CEXTN_radio_amt" id="CEXTN_radio_sameamt" value="CEXTN_radio_sameamt" checked="checked" class="CEXTN_class_prowaiv CEXTN_btn_validate_class" /><label>SAME AMOUNT </label></td> 
+    <td><label>SAME/DIFFERENT AMOUNT<em>*</em></label></td>
+    <td> <input type="radio" name="CEXTN_radio_amt" id="CEXTN_radio_sameamt" value="CEXTN_radio_sameamt" checked="checked" class="CEXTN_class_prowaiv CEXTN_btn_validate_class" /><label>SAME AMOUNT </label></td>
 </tr>
 <tr>
-<td><td><div id="CEXTN_div_sameamt"> 
-<table id="CEXTN_tble_sameamt">
-<tr>
-<td><label id="CEXTN_lbl_sameamtdep">DEPOSIT</label></td>
-<td>
-<input type="text" name="CEXTN_tb_sameamtdep" id="CEXTN_tb_sameamtdep" style="width:55px;" class="rdonly" readonly />
-</td>
-</tr>
-<tr>
-<td><label id="CEXTN_lbl_sameamtrent">RENT</label></td>
-<td>
-<input type="text" name="CEXTN_tb_sameamtrent" id="CEXTN_tb_sameamtrent" style="width:55px;" class="rdonly" readonly />
-<input type="checkbox" name="CEXTN_cb_sameamtprorated" id="CEXTN_cb_sameamtprorated" disabled /><label id="CEXTN_lbl_sameamtprorated"></label><input type="hidden" name="CEXTN_hidden_sameamtprorated" id="CEXTN_hidden_sameamtprorated" />
-</td>
-</tr>
-<tr>
-<td><label id="CEXTN_lbl_sameamtprocost">PROCESSING COST</label></td>
-<td>
-<input type="text" name="CEXTN_tb_sameamtprocost" id="CEXTN_tb_sameamtprocost" style="width:55px;" class="rdonly" readonly />
-<input type="checkbox" name="CEXTN_cb_sameamtwaived" id="CEXTN_cb_sameamtwaived" class="CEXTN_btn_validate_class" disabled /><label id="CEXTN_lbl_sameamtwaived"></label><input type="hidden" id="CEXTN_hidden_sameamtwaived" name="CEXTN_hidden_sameamtwaived"/>
-</td>
-</tr>
-</table>
+    <td><td><div id="CEXTN_div_sameamt">
+    <table id="CEXTN_tble_sameamt">
+        <tr>
+            <td><label id="CEXTN_lbl_sameamtdep">DEPOSIT</label></td>
+            <td>
+                <input type="text" name="CEXTN_tb_sameamtdep" id="CEXTN_tb_sameamtdep" style="width:55px;" class="rdonly" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td><label id="CEXTN_lbl_sameamtrent">RENT</label></td>
+            <td>
+                <input type="text" name="CEXTN_tb_sameamtrent" id="CEXTN_tb_sameamtrent" style="width:55px;" class="rdonly" readonly />
+                <input type="checkbox" name="CEXTN_cb_sameamtprorated" id="CEXTN_cb_sameamtprorated" disabled /><label id="CEXTN_lbl_sameamtprorated"></label><input type="hidden" name="CEXTN_hidden_sameamtprorated" id="CEXTN_hidden_sameamtprorated" />
+            </td>
+        </tr>
+        <tr>
+            <td><label id="CEXTN_lbl_sameamtprocost">PROCESSING COST</label></td>
+            <td>
+                <input type="text" name="CEXTN_tb_sameamtprocost" id="CEXTN_tb_sameamtprocost" style="width:55px;" class="rdonly" readonly />
+                <input type="checkbox" name="CEXTN_cb_sameamtwaived" id="CEXTN_cb_sameamtwaived" class="CEXTN_btn_validate_class" disabled /><label id="CEXTN_lbl_sameamtwaived"></label><input type="hidden" id="CEXTN_hidden_sameamtwaived" name="CEXTN_hidden_sameamtwaived"/>
+            </td>
+        </tr>
+    </table>
 </div>
 </tr>
 <tr>
-<td><td><input type="radio" name="CEXTN_radio_amt" id="CEXTN_radio_diffamt"  value="CEXTN_radio_diffamt" class="CEXTN_class_prowaiv CEXTN_btn_validate_class" /><label>DIFFERENT AMOUNT</label> </td>
+    <td><td><input type="radio" name="CEXTN_radio_amt" id="CEXTN_radio_diffamt"  value="CEXTN_radio_diffamt" class="CEXTN_class_prowaiv CEXTN_btn_validate_class" /><label>DIFFERENT AMOUNT</label> </td>
 </tr>
 <tr>
-<td><td>
-<div id="CEXTN_div_diffamt" hidden>
-<table id="CEXTN_tble_diffamt">
-<tr>
-<td><label id="CEXTN_lbl_diffamtdep">DEPOSIT</label></td>
-<td>
-<input type="text" name="CEXTN_tb_diffamtdep" id="CEXTN_tb_diffamtdep" style="width:55px;" class="5digitdollaronly CEXTN_btn_validate_class"/>
-</td>
-<td><p id="CEXTN_diffamtdeposit_err" class="errormsg"></p></td>
-</tr>
-<tr>
-<td><label id="CEXTN_lbl_diffamtrent">RENT<em style="color:red">*</em></label></td>
-<td>
-<input type="text" name="CEXTN_tb_diffamtrent" id="CEXTN_tb_diffamtrent" style="width:55px;" class="CEXTN_class_prowaiv 5digitdollaronly CEXTN_btn_validate_class"/>
-<input type="checkbox" name="CEXTN_cb_diffamtprorated" id="CEXTN_cb_diffamtprorated"  class="CEXTN_btn_validate_class" disabled/><label id="CEXTN_lbl_diffamtprorated"></label><input type="hidden" name="CEXTN_hidden_diffamtprorated" id="CEXTN_hidden_diffamtprorated" />
-</td>
-<td><p id="CEXTN_diffamtrent_err" class="errormsg"></p></td>
-</tr>
-<tr>
-<td><label id="CEXTN_lbl_diffamtprocost">PROCESSING COST</label></td>
-<td>
-<input type="text" name="CEXTN_tb_diffamtprocost" id="CEXTN_tb_diffamtprocost" style="width:55px;" maxlength="7" class="CEXTN_class_prowaiv CEXTN_btn_validate_class"/>
-<input type="checkbox" name="CEXTN_cb_diffamtwaived" id="CEXTN_cb_diffamtwaived" class="CEXTN_class_prowaiv CEXTN_btn_validate_class" disabled /><label id="CEXTN_lbl_diffamtwaived"></label><input type="hidden" id="CEXTN_hidden_diffamtwaived" name="CEXTN_hidden_diffamtwaived"/>
-</td>
-<td><p id="CEXTN_diffamtprofee_err" class="errormsg"></p></td>
-</tr>
-</table>
-</div>
+    <td><td>
+    <div id="CEXTN_div_diffamt" hidden>
+        <table id="CEXTN_tble_diffamt">
+            <tr>
+                <td><label id="CEXTN_lbl_diffamtdep">DEPOSIT</label></td>
+                <td>
+                    <input type="text" name="CEXTN_tb_diffamtdep" id="CEXTN_tb_diffamtdep" style="width:55px;" class="5digitdollaronly CEXTN_btn_validate_class"/>
+                </td>
+                <td><p id="CEXTN_diffamtdeposit_err" class="errormsg"></p></td>
+            </tr>
+            <tr>
+                <td><label id="CEXTN_lbl_diffamtrent">RENT<em style="color:red">*</em></label></td>
+                <td>
+                    <input type="text" name="CEXTN_tb_diffamtrent" id="CEXTN_tb_diffamtrent" style="width:55px;" class="CEXTN_class_prowaiv 5digitdollaronly CEXTN_btn_validate_class"/>
+                    <input type="checkbox" name="CEXTN_cb_diffamtprorated" id="CEXTN_cb_diffamtprorated"  class="CEXTN_btn_validate_class" disabled/><label id="CEXTN_lbl_diffamtprorated"></label><input type="hidden" name="CEXTN_hidden_diffamtprorated" id="CEXTN_hidden_diffamtprorated" />
+                </td>
+                <td><p id="CEXTN_diffamtrent_err" class="errormsg"></p></td>
+            </tr>
+            <tr>
+                <td><label id="CEXTN_lbl_diffamtprocost">PROCESSING COST</label></td>
+                <td>
+                    <input type="text" name="CEXTN_tb_diffamtprocost" id="CEXTN_tb_diffamtprocost" style="width:55px;" maxlength="7" class="CEXTN_class_prowaiv CEXTN_btn_validate_class"/>
+                    <input type="checkbox" name="CEXTN_cb_diffamtwaived" id="CEXTN_cb_diffamtwaived" class="CEXTN_class_prowaiv CEXTN_btn_validate_class" disabled /><label id="CEXTN_lbl_diffamtwaived"></label><input type="hidden" id="CEXTN_hidden_diffamtwaived" name="CEXTN_hidden_diffamtwaived"/>
+                </td>
+                <td><p id="CEXTN_diffamtprofee_err" class="errormsg"></p></td>
+            </tr>
+        </table>
+    </div>
 </tr>
 <tr><td><label>ELECTRICITY CAPPED</label></td><td> <input type="text" name="CEXTN_tb_electcapfee" id="CEXTN_tb_electcapfee" style="width:55px;" maxlength="7" class="3digitdollaronly CEXTN_btn_validate_class"/>
-<td><p id="CEXTN_electcap_err" class="errormsg"></p></td>
+    <td><p id="CEXTN_electcap_err" class="errormsg"></p></td>
 </tr>
 <tr><td><label>CURTAIN DRY CLEANING FEE</label></td><td> <input type="text" name="CEXTN_tb_curtaindryfee" id="CEXTN_tb_curtaindryfee" style="width:55px;" maxlength="7" class="3digitdollaronly CEXTN_btn_validate_class"/>
 </tr>
 <tr><td><label>CHECKOUT CLEANING FEE</label></td><td> <input type="text" name="CEXTN_tb_chkoutcleanfee" id="CEXTN_tb_chkoutcleanfee" style="width:55px;" maxlength="7" class="3digitdollaronly CEXTN_btn_validate_class"/>
 </tr>
 <tr><td>
-<label>E-MAIL ID<em>*</em></label></td><td> <select id="CEXTN_lb_emailid" name="CEXTN_lb_emailid" class="CEXTN_btn_validate_class"><option>SELECT</option>
+    <label>E-MAIL ID<em>*</em></label></td><td> <select id="CEXTN_lb_emailid" name="CEXTN_lb_emailid" class="CEXTN_btn_validate_class"><option>SELECT</option>
 </select>
 </tr>
 <tr><td><label>COMMENTS</label>
@@ -2097,11 +2097,11 @@ $("#CEXTN_passdate_err").text("");
 <table style="width:675px;">
 </table>
 <div style="position:relative;left:105px;" id="CEXTN_div_save">
-<table>
-<tr>
-<td> <input  type="button" value="EXTEND" id="CEXTN_btn_save" class="btn" disabled /></td><td><input type="button" value="RESET"  id="CEXTN_btn_reset" class="btn"/></td> 
-</tr>
-</table>
+    <table>
+        <tr>
+            <td> <input  type="button" value="EXTEND" id="CEXTN_btn_save" class="btn" disabled /></td><td><input type="button" value="RESET"  id="CEXTN_btn_reset" class="btn"/></td>
+        </tr>
+    </table>
 </div>
 </div>
 </div>

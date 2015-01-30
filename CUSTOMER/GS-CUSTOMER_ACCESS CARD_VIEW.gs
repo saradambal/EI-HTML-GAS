@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************VIEW ALL CARD***********************************************//
 //DONE BY:PUNI
+//VER 1.4-SD:22/12/2014 ED:22/12/2014;TRACKER NO:780;added droptemp table function from eilib
 //VER 1.3-SD:14/11/2014 ED:14/11/2014;TRACKER NO:780:Corrected script to show err msg throwing from sp if any duplicard card issue occurs
 //VER 1.2-SD:09/10/2014 ED:09/10/2014;TRACKER NO:780:1.added script to hide preloader after menu n form loads,2.Changed preloader n msgbox position
 ////DONE BY:SARADAMBAL.M
@@ -98,11 +99,8 @@ try{
       }
       CACS_VIEW_carddetails_rs.close() 
       CACS_VIEW_carddetails_stmt.close()
-      CACS_VIEW_finalcarddetails_array=[CACS_VIEW_carddetails_array,CACS_VIEW_CHECKFLAG]
-      var CCARD_drop_stmt=CACS_VIEW_conn.createStatement();
-      var CCARD_drop_query=("DROP TABLE IF EXISTS "+CACS_VIEW_temptblname+"")
-      CCARD_drop_stmt.execute(CCARD_drop_query)
-      CCARD_drop_stmt.close()
+      CACS_VIEW_finalcarddetails_array=[CACS_VIEW_carddetails_array,CACS_VIEW_CHECKFLAG];
+      eilib.DropTempTable(CACS_VIEW_conn,CACS_VIEW_temptblname); 
       CACS_VIEW_conn.close();
       return CACS_VIEW_finalcarddetails_array;      
     }
@@ -159,11 +157,8 @@ try{
       CACS_VIEW_unit_carddetails_stmt.close();
       var CACS_VIEW_final_array=[];
       CACS_VIEW_final_array.push(CACS_VIEW_finalarray)
-      CACS_VIEW_final_array.push(CACS_VIEW_CHECKFLAG); 
-      var CCARD_drop_stmt=CACS_VIEW_conn.createStatement();
-      var CCARD_drop_query=("DROP TABLE IF EXISTS "+CACS_VIEW_temptblname+"")
-      CCARD_drop_stmt.execute(CCARD_drop_query)
-      CCARD_drop_stmt.close();
+      CACS_VIEW_final_array.push(CACS_VIEW_CHECKFLAG);
+      eilib.DropTempTable(CACS_VIEW_conn,CACS_VIEW_temptblname); 
       CACS_VIEW_conn.close();
       return CACS_VIEW_final_array    
     }
@@ -207,10 +202,8 @@ try{
       CACS_VIEW_unit_carddetails_rs.close();
       CACS_VIEW_final_array.push(CACS_VIEW_finalarray)
       CACS_VIEW_final_array.push(CACS_VIEW_CHECKFLAG); 
+      eilib.DropTempTable(CACS_VIEW_conn,CACS_VIEW_temptblname); 
       var CCARD_drop_stmt=CACS_VIEW_conn.createStatement();
-      var CCARD_drop_query=("DROP TABLE IF EXISTS "+CACS_VIEW_temptblname+"")
-      CCARD_drop_stmt.execute(CCARD_drop_query)
-      CCARD_drop_stmt.close();
       CACS_VIEW_conn.close(); 
       return CACS_VIEW_final_array       
     }
@@ -272,10 +265,7 @@ try{
     }
     CACS_VIEW_cust_card_rs.close();
     CACS_VIEW_custcard_details_stmt.close();
-    var CCARD_drop_stmt=CACS_VIEW_conn.createStatement();
-    var CCARD_drop_query=("DROP TABLE IF EXISTS "+CACS_VIEW_temptblname+"")
-    CCARD_drop_stmt.execute(CCARD_drop_query)
-    CACS_VIEW_conn.close();
+    eilib.DropTempTable(CACS_VIEW_conn,CACS_VIEW_temptblname); 
     CACS_VIEW_finalreturn_array.push(CACS_VIEW_return_array)
     CACS_VIEW_finalreturn_array.push(CACS_VIEW_CHECKFLAG)    
     return CACS_VIEW_finalreturn_array;    

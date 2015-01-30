@@ -1,5 +1,7 @@
 //*******************************************FILE DESCRTION*********************************************//
 //*****************************************STAFF EXPENSE DAILY ENTRY*********************************************//
+//DONE BY:SARADAMBAL M
+//VER 2.0 SD:27/12/2014 ED:27/12/2014, TRACKER NO:840//sorted staff name in ddl
 //DONE BY:PUNI
 //VER 1.9 SD:09/10/2014 ED:09/10/2014, TRACKER NO:701//1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //VER 1.8 SD:27/09/2014 ED:27/09/2014, TRACKER NO:701//COMMENT:31,1.implemented staff salary new sp for duplicate month record,2.removed preloader n msgbox position,3.corrected submit button validatn when clicking same emp radio btn

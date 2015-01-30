@@ -12,1638 +12,1638 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!--TO SUPPORT DATE PICKER CSS-->
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <script>
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function() {
-$('#UAT_CCRE_ta_comments').autogrow({onInitialize: true});
-$('#customercreation_form').hide();
-$(".preloader").show();
-$("#creationheader").hide()
-var errormsg=[];
-var unit_startenddate=[];
-var UAT_CCRE_cardArray= [];
-var UAT_CCRE_cardslbl_array=[];
-var accesscard_array=[];
-var CustomerSD;
-$('#UAT_CCRE_lbl_checkouterrormsg').hide();
+    $('#UAT_CCRE_ta_comments').autogrow({onInitialize: true});
+    $('#customercreation_form').hide();
+    $(".preloader").show();
+    $("#creationheader").hide()
+    var errormsg=[];
+    var unit_startenddate=[];
+    var UAT_CCRE_cardArray= [];
+    var UAT_CCRE_cardslbl_array=[];
+    var accesscard_array=[];
+    var CustomerSD;
+    $('#UAT_CCRE_lbl_checkouterrormsg').hide();
 
 /////////FORM VALIDATION CLASSES//////////////
-$(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
-$('#UAT_CCRE_tb_custmailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
-$(".compautosize").doValidation({rule:'general',prop:{autosize:true}});
-$(".UAT_CCRE_numonlyvalidation").doValidation({rule:'numbersonly'});
-$(".UAT_CCRE_amtonlyvalidation").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
-$(".UAT_CCRE_amtonlyvalidationmaxdigit").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-$(".UAT_CCRE_processamtonlyvalidationmaxdigit").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
-$(".alphanumonly").doValidation({rule:'alphanumeric'});
-$("#UAT_CCRE_tb_intmobile").doValidation({rule:'numbersonly',prop:{realpart:15,leadzero:true}});
-$("#UAT_CCRE_tb_companypostalcode").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
-google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_getCommonvalues_result).UAT_CCRE_customercreation_commonvalues();
-/***************************INITIAL TABLE LOAD FUNCTION***********************************/
-var time=[];
-function UAT_CCRE_getCommonvalues_result(CCRM_result)
-{
-CustomerSD=CCRM_result.CustomerSD;
-var unit=[];
-unit=CCRM_result.unit;
-var nation=[]
-nation=CCRM_result.nation;
-var prorated=[]
-prorated=CCRM_result.prorated;
-time=CCRM_result.time;
-var email=[]
-email=CCRM_result.email;
-var ccoption=[]
-ccoption=CCRM_result.ccoption;
-errormsg=CCRM_result.error;
-var prorated=[];
-prorated=CCRM_result.prorated;
-var UAT_CCRE_unitvalue='<option>SELECT</option>';
-for(var i=0;i<unit.length;i++)
-{
-UAT_CCRE_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
-}
-$('#UAT_CCRE_lb_unitselect').html(UAT_CCRE_unitvalue);
-var UAT_CCRE_nationvalue='<option>SELECT</option>';
-for(var i=0;i<nation.length;i++)
-{
-UAT_CCRE_nationvalue += '<option value="' + nation[i] + '">' + nation[i] + '</option>';
-}
-$('#UAT_CCRE_lb_nationselect').html(UAT_CCRE_nationvalue);
-var UAT_CCRE_timevalue='<option>SELECT</option>';
-for(var i=0;i<time.length;i++)
-{
-UAT_CCRE_timevalue += '<option value="' + time[i] + '">' + time[i] + '</option>';
-}
-$('#UAT_CCRE_lb_startselect').html(UAT_CCRE_timevalue);
-$('#UAT_CCRE_lb_endselect').html(UAT_CCRE_timevalue);
-var UAT_CCRE_emailvalue='<option>SELECT</option>';
-for(var i=0;i<email.length;i++)
-{
-UAT_CCRE_emailvalue += '<option value="' + email[i] + '">' + email[i] + '</option>';
-}
-$('#UAT_CCRE_lb_mailselect').html(UAT_CCRE_emailvalue);
-var UAT_CCRE_ccoptionvalue='<option>SELECT</option>';
-for(var i=0;i<ccoption.length;i++)
-{
-UAT_CCRE_ccoptionvalue += '<option value="' + ccoption[i].optionid + '">' + ccoption[i].optionname + '</option>';
-}
-$('#UAT_CCRE_lb_ccoptionselect').html(UAT_CCRE_ccoptionvalue);
-$('#UAT_CCRE_tb_firstname').prop('title',errormsg[0])
-$('#UAT_CCRE_tb_lastname').prop('title',errormsg[0])
-$('#UAT_CCRE_tb_companypostalcode').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_intmobile').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_mobile').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_office').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_noticeno').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_quarterlyfee').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_aicon_fixed').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_electricity').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_drycleaning').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_cleaning').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_deposit').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_process').prop('title',errormsg[1]);
-$('#UAT_CCRE_tb_rent').prop('title',errormsg[1]);
-$('#UAT_CCRE_lbl_emailiderrormsg').text(errormsg[6]);
-$('#UAT_CCRE_lbl_mobileerrormsg').text(errormsg[10])
-$('#UAT_CCRE_lbl_intlmobileerrormsg').text(errormsg[10])
-$('#UAT_CCRE_lbl_officeerrormsg').text(errormsg[10])
-$('#UAT_CCRE_lbl_passporterrormsg').text(errormsg[11])
-$('#UAT_CCRE_lbl_epnoerrormsg').text(errormsg[12])
-$('#UAT_CCRE_lbl_postalerrormsg').text(errormsg[13])
-$('#UAT_CCRE_lbl_renterrormsg').text(errormsg[14])
-$('#UAT_CCRE_lbl_depositerrormsg').text(errormsg[15])
-$('#UAT_CCRE_lbl_processerrormsg').text(errormsg[16])
-$('#UAT_CCRE_lbl_electcaperrormsg').text(errormsg[17])
-$('#UAT_CCRE_lbl_prorated').text(prorated[0]);
-$('#UAT_CCRE_lbl_waived').text(prorated[1]);
-$('#UAT_CCRE_lbl_passportdateerrormsg').text(errormsg[19]);
-$('#UAT_CCRE_lbl_epnodateerrormsg').text(errormsg[20]);
-$('#UAT_CCRE_lbl_pportdateerrormsg').text(errormsg[24]);
-$('#UAT_CCRE_lbl_ep_dateerrormsg').text(errormsg[23])
-if((unit.length!=0)&&(email.length!=0))
-{
-$('#UAT_CCRE_errormessagetable tr').remove().hide();
-$('#customercreation_form').show();
-}
-else
-{
-if(unit.length==0)
-{
-$('#customercreation_form').hide();
-var uniterrormsg='<p><label class="errormsg">'+errormsg[9]+'</label></p>';
-$('#UAT_CCRE_errormessagetable').append(uniterrormsg);
-}
-if(email.length==0)
-{
-$('#customercreation_form').hide();
-var emailerrormsg='<p><label class="errormsg">'+errormsg[2]+'</label></p>';
-$('#UAT_CCRE_errormessagetable').append(emailerrormsg);
-}
-}
-$("#creationheader").show()
- //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
-}
+    $(".autosize").doValidation({rule:'alphabets',prop:{whitespace:true,autosize:true}});
+    $('#UAT_CCRE_tb_custmailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
+    $(".compautosize").doValidation({rule:'general',prop:{autosize:true}});
+    $(".UAT_CCRE_numonlyvalidation").doValidation({rule:'numbersonly'});
+    $(".UAT_CCRE_amtonlyvalidation").doValidation({rule:'numbersonly',prop:{realpart:3,imaginary:2}});
+    $(".UAT_CCRE_amtonlyvalidationmaxdigit").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+    $(".UAT_CCRE_processamtonlyvalidationmaxdigit").doValidation({rule:'numbersonly',prop:{realpart:4,imaginary:2}});
+    $(".alphanumonly").doValidation({rule:'alphanumeric'});
+    $("#UAT_CCRE_tb_intmobile").doValidation({rule:'numbersonly',prop:{realpart:15,leadzero:true}});
+    $("#UAT_CCRE_tb_companypostalcode").doValidation({rule:'numbersonly',prop:{realpart:6,leadzero:true}});
+    google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_getCommonvalues_result).UAT_CCRE_customercreation_commonvalues();
+    /***************************INITIAL TABLE LOAD FUNCTION***********************************/
+    var time=[];
+    function UAT_CCRE_getCommonvalues_result(CCRM_result)
+    {
+        CustomerSD=CCRM_result.CustomerSD;
+        var unit=[];
+        unit=CCRM_result.unit;
+        var nation=[]
+        nation=CCRM_result.nation;
+        var prorated=[]
+        prorated=CCRM_result.prorated;
+        time=CCRM_result.time;
+        var email=[]
+        email=CCRM_result.email;
+        var ccoption=[]
+        ccoption=CCRM_result.ccoption;
+        errormsg=CCRM_result.error;
+        var prorated=[];
+        prorated=CCRM_result.prorated;
+        var UAT_CCRE_unitvalue='<option>SELECT</option>';
+        for(var i=0;i<unit.length;i++)
+        {
+            UAT_CCRE_unitvalue += '<option value="' + unit[i] + '">' + unit[i] + '</option>';
+        }
+        $('#UAT_CCRE_lb_unitselect').html(UAT_CCRE_unitvalue);
+        var UAT_CCRE_nationvalue='<option>SELECT</option>';
+        for(var i=0;i<nation.length;i++)
+        {
+            UAT_CCRE_nationvalue += '<option value="' + nation[i] + '">' + nation[i] + '</option>';
+        }
+        $('#UAT_CCRE_lb_nationselect').html(UAT_CCRE_nationvalue);
+        var UAT_CCRE_timevalue='<option>SELECT</option>';
+        for(var i=0;i<time.length;i++)
+        {
+            UAT_CCRE_timevalue += '<option value="' + time[i] + '">' + time[i] + '</option>';
+        }
+        $('#UAT_CCRE_lb_startselect').html(UAT_CCRE_timevalue);
+        $('#UAT_CCRE_lb_endselect').html(UAT_CCRE_timevalue);
+        var UAT_CCRE_emailvalue='<option>SELECT</option>';
+        for(var i=0;i<email.length;i++)
+        {
+            UAT_CCRE_emailvalue += '<option value="' + email[i] + '">' + email[i] + '</option>';
+        }
+        $('#UAT_CCRE_lb_mailselect').html(UAT_CCRE_emailvalue);
+        var UAT_CCRE_ccoptionvalue='<option>SELECT</option>';
+        for(var i=0;i<ccoption.length;i++)
+        {
+            UAT_CCRE_ccoptionvalue += '<option value="' + ccoption[i].optionid + '">' + ccoption[i].optionname + '</option>';
+        }
+        $('#UAT_CCRE_lb_ccoptionselect').html(UAT_CCRE_ccoptionvalue);
+        $('#UAT_CCRE_tb_firstname').prop('title',errormsg[0])
+        $('#UAT_CCRE_tb_lastname').prop('title',errormsg[0])
+        $('#UAT_CCRE_tb_companypostalcode').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_intmobile').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_mobile').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_office').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_noticeno').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_quarterlyfee').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_aicon_fixed').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_electricity').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_drycleaning').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_cleaning').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_deposit').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_process').prop('title',errormsg[1]);
+        $('#UAT_CCRE_tb_rent').prop('title',errormsg[1]);
+        $('#UAT_CCRE_lbl_emailiderrormsg').text(errormsg[6]);
+        $('#UAT_CCRE_lbl_mobileerrormsg').text(errormsg[10])
+        $('#UAT_CCRE_lbl_intlmobileerrormsg').text(errormsg[10])
+        $('#UAT_CCRE_lbl_officeerrormsg').text(errormsg[10])
+        $('#UAT_CCRE_lbl_passporterrormsg').text(errormsg[11])
+        $('#UAT_CCRE_lbl_epnoerrormsg').text(errormsg[12])
+        $('#UAT_CCRE_lbl_postalerrormsg').text(errormsg[13])
+        $('#UAT_CCRE_lbl_renterrormsg').text(errormsg[14])
+        $('#UAT_CCRE_lbl_depositerrormsg').text(errormsg[15])
+        $('#UAT_CCRE_lbl_processerrormsg').text(errormsg[16])
+        $('#UAT_CCRE_lbl_electcaperrormsg').text(errormsg[17])
+        $('#UAT_CCRE_lbl_prorated').text(prorated[0]);
+        $('#UAT_CCRE_lbl_waived').text(prorated[1]);
+        $('#UAT_CCRE_lbl_passportdateerrormsg').text(errormsg[19]);
+        $('#UAT_CCRE_lbl_epnodateerrormsg').text(errormsg[20]);
+        $('#UAT_CCRE_lbl_pportdateerrormsg').text(errormsg[24]);
+        $('#UAT_CCRE_lbl_ep_dateerrormsg').text(errormsg[23])
+        if((unit.length!=0)&&(email.length!=0))
+        {
+            $('#UAT_CCRE_errormessagetable tr').remove().hide();
+            $('#customercreation_form').show();
+        }
+        else
+        {
+            if(unit.length==0)
+            {
+                $('#customercreation_form').hide();
+                var uniterrormsg='<p><label class="errormsg">'+errormsg[9]+'</label></p>';
+                $('#UAT_CCRE_errormessagetable').append(uniterrormsg);
+            }
+            if(email.length==0)
+            {
+                $('#customercreation_form').hide();
+                var emailerrormsg='<p><label class="errormsg">'+errormsg[2]+'</label></p>';
+                $('#UAT_CCRE_errormessagetable').append(emailerrormsg);
+            }
+        }
+        $("#creationheader").show()
+        //TO HIDE PRELOADER START
+        SubPage=0;
+        CheckPageStatus();
+    }
 
-/***************************CUSTOMER FORM SUBMIT BUTTON VALIDATION*******************************/
-$(document).on('change blur','#customercreation_form',function(){
-/******POSATAL CODE************/
-var postalcode=$('#UAT_CCRE_tb_companypostalcode').val();
-if(postalcode!=""){if(postalcode.length>=5){var postalflag=1;$('#UAT_CCRE_lbl_postalerrormsg').hide();$('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');}else{postalflag=0;$('#UAT_CCRE_lbl_postalerrormsg').show();$('#UAT_CCRE_tb_companypostalcode').addClass('invalid');}}else{$('#UAT_CCRE_lbl_postalerrormsg').hide();postalflag=1;$('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');}
-/******MOBILE NO************/
-var mobileno=$('#UAT_CCRE_tb_mobile').val();
-if(mobileno!=""){if(mobileno.length>=6){var mobileflag=1;$('#UAT_CCRE_lbl_mobileerrormsg').hide();$('#UAT_CCRE_tb_mobile').removeClass('invalid');}else{mobileflag=0;$('#UAT_CCRE_lbl_mobileerrormsg').show();$('#UAT_CCRE_tb_mobile').addClass('invalid');}}else{$('#UAT_CCRE_lbl_mobileerrormsg').hide();mobileflag=1;$('#UAT_CCRE_tb_mobile').removeClass('invalid');}
-/******INTL MOBILE NO************/
-var intlmobileno=$('#UAT_CCRE_tb_intmobile').val();
-if(intlmobileno!=""){if(intlmobileno.length>=6){var intlmobileflag=1;$('#UAT_CCRE_lbl_intlmobileerrormsg').hide();$('#UAT_CCRE_tb_intmobile').removeClass('invalid');}else{intlmobileflag=0;$('#UAT_CCRE_lbl_intlmobileerrormsg').show();$('#UAT_CCRE_tb_intmobile').addClass('invalid');}}else{$('#UAT_CCRE_lbl_intlmobileerrormsg').hide();intlmobileflag=1;$('#UAT_CCRE_tb_intmobile').removeClass('invalid');};
-/******OFFICE NO************/
-var officeno=$('#UAT_CCRE_tb_office').val();
-if(officeno!=""){if(officeno.length>=6){var officenoflag=1;$('#UAT_CCRE_lbl_officeerrormsg').hide();$('#UAT_CCRE_tb_office').removeClass('invalid');}else{officenoflag=0;$('#UAT_CCRE_lbl_officeerrormsg').show();$('#UAT_CCRE_tb_office').addClass('invalid');}}else{$('#UAT_CCRE_lbl_officeerrormsg').hide();officenoflag=1;$('#UAT_CCRE_tb_office').removeClass('invalid');}
-/******PASSPORT NO************/
-var passportno=$('#UAT_CCRE_tb_passportno').val();
-if(passportno!=""){if(passportno.length>=6){var passportnoflag=1;$('#UAT_CCRE_lbl_passporterrormsg').hide();$('#UAT_CCRE_tb_passportno').removeClass('invalid');$('#UAT_CCRE_tb_passportno').val($("#UAT_CCRE_tb_passportno").val().toUpperCase());}else{passportnoflag=0;$('#UAT_CCRE_lbl_passporterrormsg').show();$('#UAT_CCRE_tb_passportno').addClass('invalid');}}else{$('#UAT_CCRE_lbl_passporterrormsg').hide();passportnoflag=1;$('#UAT_CCRE_tb_passportno').removeClass('invalid');}
-/******EP NO************/
-var epno=$('#UAT_CCRE_tb_epno').val();
-if(epno!=""){if(epno.length>=6){var epnoflag=1;$('#UAT_CCRE_lbl_epnoerrormsg').hide();$('#UAT_CCRE_tb_epno').removeClass('invalid');$('#UAT_CCRE_tb_epno').val($("#UAT_CCRE_tb_epno").val().toUpperCase())}else{epnoflag=0;$('#UAT_CCRE_lbl_epnoerrormsg').show();$('#UAT_CCRE_tb_epno').addClass('invalid');}}else{$('#UAT_CCRE_lbl_epnoerrormsg').hide();$('#UAT_CCRE_tb_epno').removeClass('invalid');epnoflag=1;}
-/******DEPOSIT ************/
-var deposit=$('#UAT_CCRE_tb_deposit').val();
-if(deposit!=""){var depositamount=deposit.split('.');if(depositamount[0].length>=3){var depositflag=1;$('#UAT_CCRE_lbl_depositerrormsg').hide();$('#UAT_CCRE_tb_deposit').removeClass('invalid');}else{depositflag=0;$('#UAT_CCRE_lbl_depositerrormsg').show();$('#UAT_CCRE_tb_deposit').addClass('invalid');}}else{$('#UAT_CCRE_lbl_depositerrormsg').hide();depositflag=1;$('#UAT_CCRE_tb_deposit').removeClass('invalid');}
-/******PROCESS************/
-var process=$('#UAT_CCRE_tb_process').val();
-if(process!=""){var processamount=process.split('.');if(processamount[0].length>=3){var processflag=1;$('#UAT_CCRE_lbl_processerrormsg').hide();$('#UAT_CCRE_tb_process').removeClass('invalid');}else{processflag=0;$('#UAT_CCRE_lbl_processerrormsg').show();$('#UAT_CCRE_tb_process').addClass('invalid');}}else{$('#UAT_CCRE_lbl_processerrormsg').hide();$('#UAT_CCRE_tb_process').removeClass('invalid');processflag=1;}
-/******RENT************/
-var rent=$('#UAT_CCRE_tb_rent').val();
-if(rent!=""){var rentamount=rent.split('.');if(rentamount[0].length>=3){var rentflag=1;$('#UAT_CCRE_lbl_renterrormsg').hide();$('#UAT_CCRE_tb_rent').removeClass('invalid');}else{rentflag=0;$('#UAT_CCRE_lbl_renterrormsg').show();$('#UAT_CCRE_tb_rent').addClass('invalid');}}else{$('#UAT_CCRE_lbl_renterrormsg').hide();$('#UAT_CCRE_tb_rent').removeClass('invalid');rentflag=1;}
-/******ELECTRICITY CAP************/
-var electricity=$('#UAT_CCRE_tb_electricity').val();
-if(electricity!=""){var electamount=electricity.split('.');if(electamount[0].length>=2){var electflag=1;$('#UAT_CCRE_lbl_electcaperrormsg').hide();$('#UAT_CCRE_tb_electricity').removeClass('invalid');}else{electflag=0;$('#UAT_CCRE_lbl_electcaperrormsg').show();$('#UAT_CCRE_tb_electricity').addClass('invalid');}}else{$('#UAT_CCRE_lbl_electcaperrormsg').hide();$('#UAT_CCRE_tb_electricity').removeClass('invalid');electflag=1}
-if($('#UAT_CCRE_db_passportdate').val()=="" && $('#UAT_CCRE_tb_passportno').val()=="") { var passportflag=1;$('#UAT_CCRE_lbl_passportdateerrormsg').hide();$('#UAT_CCRE_tb_passportno').removeClass('invalid'); } else { if($('#UAT_CCRE_db_passportdate').val()!="" && $('#UAT_CCRE_tb_passportno').val()==""){passportflag=0;$('#UAT_CCRE_lbl_passportdateerrormsg').show();$('#UAT_CCRE_tb_passportno').addClass('invalid');} else {passportflag=1;$('#UAT_CCRE_lbl_passportdateerrormsg').hide();$('#UAT_CCRE_tb_passportno').removeClass('invalid');} }
-if($('#UAT_CCRE_db_epdate').val()=="" && $('#UAT_CCRE_tb_epno').val()=="") { var epflag=1;$('#UAT_CCRE_lbl_epnodateerrormsg').hide();$('#UAT_CCRE_tb_epno').removeClass('invalid') } else { if($('#UAT_CCRE_db_epdate').val()!="" && $('#UAT_CCRE_tb_epno').val()==""){epflag=0;$('#UAT_CCRE_lbl_epnodateerrormsg').show();$('#UAT_CCRE_tb_epno').addClass('invalid');} else {epflag=1;$('#UAT_CCRE_lbl_epnodateerrormsg').hide();$('#UAT_CCRE_tb_epno').removeClass('invalid')} }
-var UAT_CCRE_emailid=$("#UAT_CCRE_tb_custmailid").val();
-var UAT_CCRE_atpos=UAT_CCRE_emailid.indexOf("@");
-var UAT_CCRE_dotpos=UAT_CCRE_emailid.lastIndexOf(".");
-if(UAT_CCRE_emailid.length>0)
-{
-if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(UAT_CCRE_emailid) || "" == UAT_CCRE_emailid)&&(UAT_CCRE_atpos-1!=UAT_CCRE_emailid.indexOf(".")))
-{
-$('#UAT_CCRE_lbl_emailiderrormsg').hide();
-var UAT_CCRE_emailchk="valid";
-$('#UAT_CCRE_tb_custmailid').removeClass('invalid');
-$('#UAT_CCRE_tb_custmailid').val(UAT_CCRE_emailid.toLowerCase());
-}
-else
-{
-$('#UAT_CCRE_lbl_emailiderrormsg').show();
-UAT_CCRE_emailchk="invalid"
-$('#UAT_CCRE_tb_custmailid').addClass('invalid');
-}
-}
-else
-{
-UAT_CCRE_emailchk="invalid"
-$('#UAT_CCRE_tb_custmailid').removeClass('invalid');
-$('#UAT_CCRE_lbl_emailiderrormsg').hide();
-}
-var pp_date=$('#UAT_CCRE_db_passportdate').val();
-var end_date=$("#UAT_CCRE_db_enddate").val();
-var ep_date=$('#UAT_CCRE_db_epdate').val();
-if(pp_date!="" && end_date!="")
-{
-var newpp_date=FormnewDateFormat(pp_date);
-var newend_date=FormnewDateFormat(end_date);
-if(newpp_date>newend_date)
-{var ppdateflag=1;}
-else
-{ppdateflag=0;}
-}
-else{ppdateflag=1;}
-if(ep_date!="" && end_date!="")
-{
-var newep_date=FormnewDateFormat(ep_date);
-var newend_date=FormnewDateFormat(end_date);
-if(newep_date>newend_date)
-{var epdateflag=1;}
-else
-{epdateflag=0;}
-}
-else
-{epdateflag=1}
-if($("#UAT_CCRE_tb_firstname").val()!=""&& $("#UAT_CCRE_tb_lastname").val()!=""&&$("#UAT_CCRE_tb_custmailid").val()!=""&&$("#UAT_CCRE_lb_nationselect").val()!="SELECT"&&$("#UAT_CCRE_lb_startselect").val()!="SELECT"&&
-$("#UAT_CCRE_lb_unitselect").val()!="SELECT"&& $("#UAT_CCRE_lb_roomselect").val()!="SELECT"&&$("#UAT_CCRE_lb_endselect").val()!="SELECT"&& $("#UAT_CCRE_lb_ccoptionselect").val()!="SELECT"&& $("#UAT_CCRE_lb_mailselect").val()!="SELECT" 
-&& $("#UAT_CCRE_tb_rent").val()!=""&& $("#UAT_CCRE_db_startdate").val()!=""&& $("#UAT_CCRE_db_enddate").val()!="" &&(UAT_CCRE_emailchk=="valid")  && mobileflag==1 && intlmobileflag==1 && officenoflag==1&& passportnoflag==1 && epnoflag==1 && processflag==1&& depositflag==1 && rentflag==1 && postalflag==1 &&electflag==1 && passportflag==1 && epflag==1 && ppdateflag==1 && epdateflag==1)
-{
-if(($("input[name='radio']:checked").val()=='null')||(($("input[name='radio']:checked").val()=='cardnum')&&($("input[name='checkbox']:checked").val()!="")&&($("input[name='checkbox']:checked").val()!=undefined)))
-{
-if($("input[name='radio']:checked").val()=='cardnum')
-{
-var UAT_CCRE_cardflag=0;
-for(var card=0;card<UAT_CCRE_cardArray.length;card++)
-{
-if($('#UAT_CCRE_cb_cardlistselect'+card).val()==$("#UAT_CCRE_tb_firstname").val()+" "+$("#UAT_CCRE_tb_lastname").val())
-{
-UAT_CCRE_cardflag=1;
-}
-else
-{
-$("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
-}
-}
-if(UAT_CCRE_cardflag==1)
-{
-$("#UAT_CCRE_btn_savebutton").removeAttr("disabled");
-}
-}
-else
-{
-$("#UAT_CCRE_btn_savebutton").removeAttr("disabled");
-}
-}
-else
-{
-$("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
-}
-}
-else
-{
-$("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
-}
-});
+    /***************************CUSTOMER FORM SUBMIT BUTTON VALIDATION*******************************/
+    $(document).on('change blur','#customercreation_form',function(){
+        /******POSATAL CODE************/
+        var postalcode=$('#UAT_CCRE_tb_companypostalcode').val();
+        if(postalcode!=""){if(postalcode.length>=5){var postalflag=1;$('#UAT_CCRE_lbl_postalerrormsg').hide();$('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');}else{postalflag=0;$('#UAT_CCRE_lbl_postalerrormsg').show();$('#UAT_CCRE_tb_companypostalcode').addClass('invalid');}}else{$('#UAT_CCRE_lbl_postalerrormsg').hide();postalflag=1;$('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');}
+        /******MOBILE NO************/
+        var mobileno=$('#UAT_CCRE_tb_mobile').val();
+        if(mobileno!=""){if(mobileno.length>=6){var mobileflag=1;$('#UAT_CCRE_lbl_mobileerrormsg').hide();$('#UAT_CCRE_tb_mobile').removeClass('invalid');}else{mobileflag=0;$('#UAT_CCRE_lbl_mobileerrormsg').show();$('#UAT_CCRE_tb_mobile').addClass('invalid');}}else{$('#UAT_CCRE_lbl_mobileerrormsg').hide();mobileflag=1;$('#UAT_CCRE_tb_mobile').removeClass('invalid');}
+        /******INTL MOBILE NO************/
+        var intlmobileno=$('#UAT_CCRE_tb_intmobile').val();
+        if(intlmobileno!=""){if(intlmobileno.length>=6){var intlmobileflag=1;$('#UAT_CCRE_lbl_intlmobileerrormsg').hide();$('#UAT_CCRE_tb_intmobile').removeClass('invalid');}else{intlmobileflag=0;$('#UAT_CCRE_lbl_intlmobileerrormsg').show();$('#UAT_CCRE_tb_intmobile').addClass('invalid');}}else{$('#UAT_CCRE_lbl_intlmobileerrormsg').hide();intlmobileflag=1;$('#UAT_CCRE_tb_intmobile').removeClass('invalid');};
+        /******OFFICE NO************/
+        var officeno=$('#UAT_CCRE_tb_office').val();
+        if(officeno!=""){if(officeno.length>=6){var officenoflag=1;$('#UAT_CCRE_lbl_officeerrormsg').hide();$('#UAT_CCRE_tb_office').removeClass('invalid');}else{officenoflag=0;$('#UAT_CCRE_lbl_officeerrormsg').show();$('#UAT_CCRE_tb_office').addClass('invalid');}}else{$('#UAT_CCRE_lbl_officeerrormsg').hide();officenoflag=1;$('#UAT_CCRE_tb_office').removeClass('invalid');}
+        /******PASSPORT NO************/
+        var passportno=$('#UAT_CCRE_tb_passportno').val();
+        if(passportno!=""){if(passportno.length>=6){var passportnoflag=1;$('#UAT_CCRE_lbl_passporterrormsg').hide();$('#UAT_CCRE_tb_passportno').removeClass('invalid');$('#UAT_CCRE_tb_passportno').val($("#UAT_CCRE_tb_passportno").val().toUpperCase());}else{passportnoflag=0;$('#UAT_CCRE_lbl_passporterrormsg').show();$('#UAT_CCRE_tb_passportno').addClass('invalid');}}else{$('#UAT_CCRE_lbl_passporterrormsg').hide();passportnoflag=1;$('#UAT_CCRE_tb_passportno').removeClass('invalid');}
+        /******EP NO************/
+        var epno=$('#UAT_CCRE_tb_epno').val();
+        if(epno!=""){if(epno.length>=6){var epnoflag=1;$('#UAT_CCRE_lbl_epnoerrormsg').hide();$('#UAT_CCRE_tb_epno').removeClass('invalid');$('#UAT_CCRE_tb_epno').val($("#UAT_CCRE_tb_epno").val().toUpperCase())}else{epnoflag=0;$('#UAT_CCRE_lbl_epnoerrormsg').show();$('#UAT_CCRE_tb_epno').addClass('invalid');}}else{$('#UAT_CCRE_lbl_epnoerrormsg').hide();$('#UAT_CCRE_tb_epno').removeClass('invalid');epnoflag=1;}
+        /******DEPOSIT ************/
+        var deposit=$('#UAT_CCRE_tb_deposit').val();
+        if(deposit!=""){var depositamount=deposit.split('.');if(depositamount[0].length>=3){var depositflag=1;$('#UAT_CCRE_lbl_depositerrormsg').hide();$('#UAT_CCRE_tb_deposit').removeClass('invalid');}else{depositflag=0;$('#UAT_CCRE_lbl_depositerrormsg').show();$('#UAT_CCRE_tb_deposit').addClass('invalid');}}else{$('#UAT_CCRE_lbl_depositerrormsg').hide();depositflag=1;$('#UAT_CCRE_tb_deposit').removeClass('invalid');}
+        /******PROCESS************/
+        var process=$('#UAT_CCRE_tb_process').val();
+        if(process!=""){var processamount=process.split('.');if(processamount[0].length>=3){var processflag=1;$('#UAT_CCRE_lbl_processerrormsg').hide();$('#UAT_CCRE_tb_process').removeClass('invalid');}else{processflag=0;$('#UAT_CCRE_lbl_processerrormsg').show();$('#UAT_CCRE_tb_process').addClass('invalid');}}else{$('#UAT_CCRE_lbl_processerrormsg').hide();$('#UAT_CCRE_tb_process').removeClass('invalid');processflag=1;}
+        /******RENT************/
+        var rent=$('#UAT_CCRE_tb_rent').val();
+        if(rent!=""){var rentamount=rent.split('.');if(rentamount[0].length>=3){var rentflag=1;$('#UAT_CCRE_lbl_renterrormsg').hide();$('#UAT_CCRE_tb_rent').removeClass('invalid');}else{rentflag=0;$('#UAT_CCRE_lbl_renterrormsg').show();$('#UAT_CCRE_tb_rent').addClass('invalid');}}else{$('#UAT_CCRE_lbl_renterrormsg').hide();$('#UAT_CCRE_tb_rent').removeClass('invalid');rentflag=1;}
+        /******ELECTRICITY CAP************/
+        var electricity=$('#UAT_CCRE_tb_electricity').val();
+        if(electricity!=""){var electamount=electricity.split('.');if(electamount[0].length>=2){var electflag=1;$('#UAT_CCRE_lbl_electcaperrormsg').hide();$('#UAT_CCRE_tb_electricity').removeClass('invalid');}else{electflag=0;$('#UAT_CCRE_lbl_electcaperrormsg').show();$('#UAT_CCRE_tb_electricity').addClass('invalid');}}else{$('#UAT_CCRE_lbl_electcaperrormsg').hide();$('#UAT_CCRE_tb_electricity').removeClass('invalid');electflag=1}
+        if($('#UAT_CCRE_db_passportdate').val()=="" && $('#UAT_CCRE_tb_passportno').val()=="") { var passportflag=1;$('#UAT_CCRE_lbl_passportdateerrormsg').hide();$('#UAT_CCRE_tb_passportno').removeClass('invalid'); } else { if($('#UAT_CCRE_db_passportdate').val()!="" && $('#UAT_CCRE_tb_passportno').val()==""){passportflag=0;$('#UAT_CCRE_lbl_passportdateerrormsg').show();$('#UAT_CCRE_tb_passportno').addClass('invalid');} else {passportflag=1;$('#UAT_CCRE_lbl_passportdateerrormsg').hide();$('#UAT_CCRE_tb_passportno').removeClass('invalid');} }
+        if($('#UAT_CCRE_db_epdate').val()=="" && $('#UAT_CCRE_tb_epno').val()=="") { var epflag=1;$('#UAT_CCRE_lbl_epnodateerrormsg').hide();$('#UAT_CCRE_tb_epno').removeClass('invalid') } else { if($('#UAT_CCRE_db_epdate').val()!="" && $('#UAT_CCRE_tb_epno').val()==""){epflag=0;$('#UAT_CCRE_lbl_epnodateerrormsg').show();$('#UAT_CCRE_tb_epno').addClass('invalid');} else {epflag=1;$('#UAT_CCRE_lbl_epnodateerrormsg').hide();$('#UAT_CCRE_tb_epno').removeClass('invalid')} }
+        var UAT_CCRE_emailid=$("#UAT_CCRE_tb_custmailid").val();
+        var UAT_CCRE_atpos=UAT_CCRE_emailid.indexOf("@");
+        var UAT_CCRE_dotpos=UAT_CCRE_emailid.lastIndexOf(".");
+        if(UAT_CCRE_emailid.length>0)
+        {
+            if ((/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(UAT_CCRE_emailid) || "" == UAT_CCRE_emailid)&&(UAT_CCRE_atpos-1!=UAT_CCRE_emailid.indexOf(".")))
+            {
+                $('#UAT_CCRE_lbl_emailiderrormsg').hide();
+                var UAT_CCRE_emailchk="valid";
+                $('#UAT_CCRE_tb_custmailid').removeClass('invalid');
+                $('#UAT_CCRE_tb_custmailid').val(UAT_CCRE_emailid.toLowerCase());
+            }
+            else
+            {
+                $('#UAT_CCRE_lbl_emailiderrormsg').show();
+                UAT_CCRE_emailchk="invalid"
+                $('#UAT_CCRE_tb_custmailid').addClass('invalid');
+            }
+        }
+        else
+        {
+            UAT_CCRE_emailchk="invalid"
+            $('#UAT_CCRE_tb_custmailid').removeClass('invalid');
+            $('#UAT_CCRE_lbl_emailiderrormsg').hide();
+        }
+        var pp_date=$('#UAT_CCRE_db_passportdate').val();
+        var end_date=$("#UAT_CCRE_db_enddate").val();
+        var ep_date=$('#UAT_CCRE_db_epdate').val();
+        if(pp_date!="" && end_date!="")
+        {
+            var newpp_date=FormnewDateFormat(pp_date);
+            var newend_date=FormnewDateFormat(end_date);
+            if(newpp_date>newend_date)
+            {var ppdateflag=1;}
+            else
+            {ppdateflag=0;}
+        }
+        else{ppdateflag=1;}
+        if(ep_date!="" && end_date!="")
+        {
+            var newep_date=FormnewDateFormat(ep_date);
+            var newend_date=FormnewDateFormat(end_date);
+            if(newep_date>newend_date)
+            {var epdateflag=1;}
+            else
+            {epdateflag=0;}
+        }
+        else
+        {epdateflag=1}
+        if($("#UAT_CCRE_tb_firstname").val()!=""&& $("#UAT_CCRE_tb_lastname").val()!=""&&$("#UAT_CCRE_tb_custmailid").val()!=""&&$("#UAT_CCRE_lb_nationselect").val()!="SELECT"&&$("#UAT_CCRE_lb_startselect").val()!="SELECT"&&
+                $("#UAT_CCRE_lb_unitselect").val()!="SELECT"&& $("#UAT_CCRE_lb_roomselect").val()!="SELECT"&&$("#UAT_CCRE_lb_endselect").val()!="SELECT"&& $("#UAT_CCRE_lb_ccoptionselect").val()!="SELECT"&& $("#UAT_CCRE_lb_mailselect").val()!="SELECT"
+                && $("#UAT_CCRE_tb_rent").val()!=""&& $("#UAT_CCRE_db_startdate").val()!=""&& $("#UAT_CCRE_db_enddate").val()!="" &&(UAT_CCRE_emailchk=="valid")  && mobileflag==1 && intlmobileflag==1 && officenoflag==1&& passportnoflag==1 && epnoflag==1 && processflag==1&& depositflag==1 && rentflag==1 && postalflag==1 &&electflag==1 && passportflag==1 && epflag==1 && ppdateflag==1 && epdateflag==1)
+        {
+            if(($("input[name='radio']:checked").val()=='null')||(($("input[name='radio']:checked").val()=='cardnum')&&($("input[name='checkbox']:checked").val()!="")&&($("input[name='checkbox']:checked").val()!=undefined)))
+            {
+                if($("input[name='radio']:checked").val()=='cardnum')
+                {
+                    var UAT_CCRE_cardflag=0;
+                    for(var card=0;card<UAT_CCRE_cardArray.length;card++)
+                    {
+                        if($('#UAT_CCRE_cb_cardlistselect'+card).val()==$("#UAT_CCRE_tb_firstname").val()+" "+$("#UAT_CCRE_tb_lastname").val())
+                        {
+                            UAT_CCRE_cardflag=1;
+                        }
+                        else
+                        {
+                            $("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
+                        }
+                    }
+                    if(UAT_CCRE_cardflag==1)
+                    {
+                        $("#UAT_CCRE_btn_savebutton").removeAttr("disabled");
+                    }
+                }
+                else
+                {
+                    $("#UAT_CCRE_btn_savebutton").removeAttr("disabled");
+                }
+            }
+            else
+            {
+                $("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
+            }
+        }
+        else
+        {
+            $("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
+        }
+    });
 
-$('#UAT_CCRE_lb_roomselect').hide();
-$('#UAT_CCRE_tble_cardtable').hide();
-$('#UAT_CCRE_tble_nullradiotable').hide();
-$('#UAT_CCRE_lbl_roomtype').hide();
-$('#UAT_CCRE_tble_cardlisttable').hide();
-$('#UAT_CCRE_tb_quarterlyfee').hide();
-$('#UAT_CCRE_tb_aircon_fixed').hide();
-$('#UAT_CCRE_lb_startselect1').hide();
-$('#UAT_CCRE_lbl_startto').hide();
-$('#UAT_CCRE_lb_endselect1').hide();
-$('#UAT_CCRE_lbl_endto').hide();
-$('#UAT_CCRE_lbl_noticeerroemsg').hide();
-$('#UAT_CCRE_lbl_emailiderrormsg').hide();
+    $('#UAT_CCRE_lb_roomselect').hide();
+    $('#UAT_CCRE_tble_cardtable').hide();
+    $('#UAT_CCRE_tble_nullradiotable').hide();
+    $('#UAT_CCRE_lbl_roomtype').hide();
+    $('#UAT_CCRE_tble_cardlisttable').hide();
+    $('#UAT_CCRE_tb_quarterlyfee').hide();
+    $('#UAT_CCRE_tb_aircon_fixed').hide();
+    $('#UAT_CCRE_lb_startselect1').hide();
+    $('#UAT_CCRE_lbl_startto').hide();
+    $('#UAT_CCRE_lb_endselect1').hide();
+    $('#UAT_CCRE_lbl_endto').hide();
+    $('#UAT_CCRE_lbl_noticeerroemsg').hide();
+    $('#UAT_CCRE_lbl_emailiderrormsg').hide();
 
-/***************************PASSPORT DATE VALIDATION***********************************************/
-$(document).on('change','.passportdatevalidation',function(){
-var pp_date=$('#UAT_CCRE_db_passportdate').val();
-var end_date=$("#UAT_CCRE_db_enddate").val();
-if(pp_date!="" && end_date!="")
-{
-var newpp_date=FormnewDateFormat(pp_date);
-var newend_date=FormnewDateFormat(end_date);
-if(newpp_date>newend_date)
-{
-$('#UAT_CCRE_lbl_pportdateerrormsg').hide();
-$('#UAT_CCRE_db_passportdate').removeClass('invalid');
-}
-else
-{
-$('#UAT_CCRE_lbl_pportdateerrormsg').show();
-$('#UAT_CCRE_db_passportdate').addClass('invalid');
-}
-}
-});
-/***************************EPDATE VALIDATION***********************************************/
-$(document).on('change','.epdatevalidation',function(){
-var ep_date=$('#UAT_CCRE_db_epdate').val();
-var end_date=$("#UAT_CCRE_db_enddate").val();
-if(ep_date!="" && end_date!="")
-{
-var newpp_date=FormnewDateFormat(ep_date);
-var newend_date=FormnewDateFormat(end_date);
-if(newpp_date>newend_date)
-{
-$('#UAT_CCRE_lbl_ep_dateerrormsg').hide();
-$('#UAT_CCRE_db_epdate').removeClass('invalid');
-}
-else
-{
-$('#UAT_CCRE_lbl_ep_dateerrormsg').show();
-$('#UAT_CCRE_db_epdate').addClass('invalid');
-}
-}
-});
-function FormnewDateFormat(inputdate)
-{
-var string = inputdate.split("-");
-var newdate=new Date(string[2],string[1]-1,string[0])
-return newdate;
-}
-/*****************************CALL STARTDATE ENDTIME FUNCTION****************************************/
-$('#UAT_CCRE_db_startdate').change(function()
-{
-if($('#UAT_CCRE_db_startdate').val()!="")
-{
-$('#UAT_CCRE_lb_startselect').show();
-$('#UAT_CCRE_checkoutlabel').show();
-$('#UAT_CCRE_db_enddate').show();
-}
-else
-{
-$('#UAT_CCRE_lbl_startto').hide();
-$('#UAT_CCRE_lb_startselect').hide();
-$('#UAT_CCRE_lb_startselect1').hide();
-$("#UAT_CCRE_lb_startselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_startselect1")[0].selectedIndex = 0
-$('#UAT_CCRE_checkoutlabel').hide();
-$('#UAT_CCRE_db_enddate').hide().val('');
-$('#UAT_CCRE_lbl_endto').hide();
-$('#UAT_CCRE_lb_endselect').hide();
-$('#UAT_CCRE_lb_endselect1').hide();
-$("#UAT_CCRE_lb_endselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_endselect1")[0].selectedIndex = 0;
-}
-});
-/***************************FIND NEXT 2 ENDTIMES FOR SELECTED START TIME***************************/
-function UAT_CCRE_startendtimevalues(endtime)
-{
-var timearray=[];
-for(var i=0;i<time.length;i++)
-{
-if(endtime==time[i])
-{
-var endtime_status=i;
-break;
-}
-} 
-if(endtime=="23:30")
-{
-timearray.push("23:59");
-}
-else if(endtime=="23:00")
-{
-timearray.push("23:30");
-timearray.push("23:59");
-}
-else
-{
-var length=endtime_status+2;
-for(var j=endtime_status+1;j<=length;j++)
-{
-timearray.push(time[j]);
-}
-}
-return timearray;
-}
-/***********************SETTING ENDTIME FOR CHECKIN DATE****************************/
-$('#UAT_CCRE_lb_startselect').change(function()
-{ 
-var UAT_CCRE_start = $(this).val();
-if(UAT_CCRE_start!="SELECT")
-{
-var endtimearray=UAT_CCRE_startendtimevalues(UAT_CCRE_start);
-var UAT_CCRE_options ='';
-for (var i = 0; i < endtimearray.length; i++) 
-{
-UAT_CCRE_options += '<option value="' + endtimearray[i] + '">' + endtimearray[i] + '</option>';
-}
-$('#UAT_CCRE_lb_startselect1').html(UAT_CCRE_options);
-$('#UAT_CCRE_lbl_startto').show();
-$('#UAT_CCRE_lb_startselect1').show();
-}
-else
-{
-$('#UAT_CCRE_lbl_startto').hide();
-$('#UAT_CCRE_lb_startselect1').hide();
-}
-});
-/***************************************CALL ENDDATE ENDTIME FUNCTION*****************************/
-$('#UAT_CCRE_db_enddate').change(function()
-{
-if($('#UAT_CCRE_db_enddate').val()!="")
-{
-$('#UAT_CCRE_lb_endselect').show();
-}
-else
-{
-$('#UAT_CCRE_lbl_endto').hide();
-$('#UAT_CCRE_lb_endselect').hide();
-$('#UAT_CCRE_lb_endselect1').hide();
-$("#UAT_CCRE_lb_endselect")[0].selectedIndex = 0;
-}
-});
-$('#UAT_CCRE_lb_endselect').change(function()
-{ 
-var UAT_CCRE_end = $(this).val();
-if(UAT_CCRE_end!="SELECT")
-{
-var endtimearray=UAT_CCRE_startendtimevalues(UAT_CCRE_end);
-var UAT_CCRE_options ='';
-for (var i = 0; i < endtimearray.length; i++) 
-{
-UAT_CCRE_options += '<option value="' + endtimearray[i] + '">' + endtimearray[i] + '</option>';
-}
-$('#UAT_CCRE_lb_endselect1').html(UAT_CCRE_options);
-$('#UAT_CCRE_lbl_endto').show();
-$('#UAT_CCRE_lb_endselect1').show();
-}
-else
-{
-$('#UAT_CCRE_lbl_endto').hide();
-$('#UAT_CCRE_lb_endselect1').hide();
-}
-});
-/*********************************CALL ROOM TYPE FUNCTION FOR SELECTED UNIT*****************************/
-$('.UAT_CCRE_class_customernamechange').blur(function(){
-$("#UAT_CCRE_db_noticedate").removeAttr("disabled");
-var UAT_CCRE_unit = $('#UAT_CCRE_lb_unitselect').val();
-$('#checkindatelabel').hide();
-$('#UAT_CCRE_db_startdate').hide().val('');
-$('#UAT_CCRE_checkoutlabel').hide();
-$('#UAT_CCRE_db_enddate').hide().val('');
-$("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
-$('#UAT_CCRE_lbl_startto').hide();
-$('#UAT_CCRE_lb_startselect').hide();
-$('#UAT_CCRE_lb_startselect1').hide();
-$("#UAT_CCRE_lb_startselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_startselect1")[0].selectedIndex = 0;
-$('#UAT_CCRE_lbl_endto').hide();
-$('#UAT_CCRE_lb_endselect').hide();
-$('#UAT_CCRE_lb_endselect1').hide();
-$("#UAT_CCRE_lb_endselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_endselect1")[0].selectedIndex = 0;
-var UAT_CCRE_nullpara="";
-if(UAT_CCRE_unit!="SELECT")
-{
-$(".preloader").show();
-var  newPos= adjustPosition($('#UAT_CCRE_lb_unitselect').position(),100,120);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_handleMessageResponse).UAT_CCRE_Roomtype(UAT_CCRE_unit,UAT_CCRE_nullpara);
-}
-else
-{
-$('#UAT_CCRE_lb_roomselect').hide();
-$('#UAT_CCRE_tble_cardtable').hide();
-$('#UAT_CCRE_tble_nullradiotable').hide();
-$('#UAT_CCRE_lbl_roomtype').hide();
-$('#UAT_CCRE_tble_cardlisttable').hide();
-$('#checkindatelabel').hide();
-$('#UAT_CCRE_db_startdate').hide();
-$('#UAT_CCRE_checkoutlabel').hide();
-$('#UAT_CCRE_db_enddate').hide();
-$('#UAT_CCRE_lbl_endto').hide();
-$('#UAT_CCRE_lb_endselect').hide();
-$('#UAT_CCRE_lb_endselect1').hide();
-$("#UAT_CCRE_lb_endselect").hide();
-$('#UAT_CCRE_lbl_startto').hide();
-$('#UAT_CCRE_lb_startselect').hide();
-$('#UAT_CCRE_lb_startselect1').hide();
-$("#UAT_CCRE_lb_startselect").hide();
-}
-});
-$('#UAT_CCRE_db_enddate').datepicker(
-{
-dateFormat: 'dd-mm-yy',
-changeYear: true,
-changeMonth: true 
-});
+    /***************************PASSPORT DATE VALIDATION***********************************************/
+    $(document).on('change','.passportdatevalidation',function(){
+        var pp_date=$('#UAT_CCRE_db_passportdate').val();
+        var end_date=$("#UAT_CCRE_db_enddate").val();
+        if(pp_date!="" && end_date!="")
+        {
+            var newpp_date=FormnewDateFormat(pp_date);
+            var newend_date=FormnewDateFormat(end_date);
+            if(newpp_date>newend_date)
+            {
+                $('#UAT_CCRE_lbl_pportdateerrormsg').hide();
+                $('#UAT_CCRE_db_passportdate').removeClass('invalid');
+            }
+            else
+            {
+                $('#UAT_CCRE_lbl_pportdateerrormsg').show();
+                $('#UAT_CCRE_db_passportdate').addClass('invalid');
+            }
+        }
+    });
+    /***************************EPDATE VALIDATION***********************************************/
+    $(document).on('change','.epdatevalidation',function(){
+        var ep_date=$('#UAT_CCRE_db_epdate').val();
+        var end_date=$("#UAT_CCRE_db_enddate").val();
+        if(ep_date!="" && end_date!="")
+        {
+            var newpp_date=FormnewDateFormat(ep_date);
+            var newend_date=FormnewDateFormat(end_date);
+            if(newpp_date>newend_date)
+            {
+                $('#UAT_CCRE_lbl_ep_dateerrormsg').hide();
+                $('#UAT_CCRE_db_epdate').removeClass('invalid');
+            }
+            else
+            {
+                $('#UAT_CCRE_lbl_ep_dateerrormsg').show();
+                $('#UAT_CCRE_db_epdate').addClass('invalid');
+            }
+        }
+    });
+    function FormnewDateFormat(inputdate)
+    {
+        var string = inputdate.split("-");
+        var newdate=new Date(string[2],string[1]-1,string[0])
+        return newdate;
+    }
+    /*****************************CALL STARTDATE ENDTIME FUNCTION****************************************/
+    $('#UAT_CCRE_db_startdate').change(function()
+    {
+        if($('#UAT_CCRE_db_startdate').val()!="")
+        {
+            $('#UAT_CCRE_lb_startselect').show();
+            $('#UAT_CCRE_checkoutlabel').show();
+            $('#UAT_CCRE_db_enddate').show();
+        }
+        else
+        {
+            $('#UAT_CCRE_lbl_startto').hide();
+            $('#UAT_CCRE_lb_startselect').hide();
+            $('#UAT_CCRE_lb_startselect1').hide();
+            $("#UAT_CCRE_lb_startselect")[0].selectedIndex = 0;
+            $("#UAT_CCRE_lb_startselect1")[0].selectedIndex = 0
+            $('#UAT_CCRE_checkoutlabel').hide();
+            $('#UAT_CCRE_db_enddate').hide().val('');
+            $('#UAT_CCRE_lbl_endto').hide();
+            $('#UAT_CCRE_lb_endselect').hide();
+            $('#UAT_CCRE_lb_endselect1').hide();
+            $("#UAT_CCRE_lb_endselect")[0].selectedIndex = 0;
+            $("#UAT_CCRE_lb_endselect1")[0].selectedIndex = 0;
+        }
+    });
+    /***************************FIND NEXT 2 ENDTIMES FOR SELECTED START TIME***************************/
+    function UAT_CCRE_startendtimevalues(endtime)
+    {
+        var timearray=[];
+        for(var i=0;i<time.length;i++)
+        {
+            if(endtime==time[i])
+            {
+                var endtime_status=i;
+                break;
+            }
+        }
+        if(endtime=="23:30")
+        {
+            timearray.push("23:59");
+        }
+        else if(endtime=="23:00")
+        {
+            timearray.push("23:30");
+            timearray.push("23:59");
+        }
+        else
+        {
+            var length=endtime_status+2;
+            for(var j=endtime_status+1;j<=length;j++)
+            {
+                timearray.push(time[j]);
+            }
+        }
+        return timearray;
+    }
+    /***********************SETTING ENDTIME FOR CHECKIN DATE****************************/
+    $('#UAT_CCRE_lb_startselect').change(function()
+    {
+        var UAT_CCRE_start = $(this).val();
+        if(UAT_CCRE_start!="SELECT")
+        {
+            var endtimearray=UAT_CCRE_startendtimevalues(UAT_CCRE_start);
+            var UAT_CCRE_options ='';
+            for (var i = 0; i < endtimearray.length; i++)
+            {
+                UAT_CCRE_options += '<option value="' + endtimearray[i] + '">' + endtimearray[i] + '</option>';
+            }
+            $('#UAT_CCRE_lb_startselect1').html(UAT_CCRE_options);
+            $('#UAT_CCRE_lbl_startto').show();
+            $('#UAT_CCRE_lb_startselect1').show();
+        }
+        else
+        {
+            $('#UAT_CCRE_lbl_startto').hide();
+            $('#UAT_CCRE_lb_startselect1').hide();
+        }
+    });
+    /***************************************CALL ENDDATE ENDTIME FUNCTION*****************************/
+    $('#UAT_CCRE_db_enddate').change(function()
+    {
+        if($('#UAT_CCRE_db_enddate').val()!="")
+        {
+            $('#UAT_CCRE_lb_endselect').show();
+        }
+        else
+        {
+            $('#UAT_CCRE_lbl_endto').hide();
+            $('#UAT_CCRE_lb_endselect').hide();
+            $('#UAT_CCRE_lb_endselect1').hide();
+            $("#UAT_CCRE_lb_endselect")[0].selectedIndex = 0;
+        }
+    });
+    $('#UAT_CCRE_lb_endselect').change(function()
+    {
+        var UAT_CCRE_end = $(this).val();
+        if(UAT_CCRE_end!="SELECT")
+        {
+            var endtimearray=UAT_CCRE_startendtimevalues(UAT_CCRE_end);
+            var UAT_CCRE_options ='';
+            for (var i = 0; i < endtimearray.length; i++)
+            {
+                UAT_CCRE_options += '<option value="' + endtimearray[i] + '">' + endtimearray[i] + '</option>';
+            }
+            $('#UAT_CCRE_lb_endselect1').html(UAT_CCRE_options);
+            $('#UAT_CCRE_lbl_endto').show();
+            $('#UAT_CCRE_lb_endselect1').show();
+        }
+        else
+        {
+            $('#UAT_CCRE_lbl_endto').hide();
+            $('#UAT_CCRE_lb_endselect1').hide();
+        }
+    });
+    /*********************************CALL ROOM TYPE FUNCTION FOR SELECTED UNIT*****************************/
+    $('.UAT_CCRE_class_customernamechange').blur(function(){
+        $("#UAT_CCRE_db_noticedate").removeAttr("disabled");
+        var UAT_CCRE_unit = $('#UAT_CCRE_lb_unitselect').val();
+        $('#checkindatelabel').hide();
+        $('#UAT_CCRE_db_startdate').hide().val('');
+        $('#UAT_CCRE_checkoutlabel').hide();
+        $('#UAT_CCRE_db_enddate').hide().val('');
+        $("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
+        $('#UAT_CCRE_lbl_startto').hide();
+        $('#UAT_CCRE_lb_startselect').hide();
+        $('#UAT_CCRE_lb_startselect1').hide();
+        $("#UAT_CCRE_lb_startselect")[0].selectedIndex = 0;
+        $("#UAT_CCRE_lb_startselect1")[0].selectedIndex = 0;
+        $('#UAT_CCRE_lbl_endto').hide();
+        $('#UAT_CCRE_lb_endselect').hide();
+        $('#UAT_CCRE_lb_endselect1').hide();
+        $("#UAT_CCRE_lb_endselect")[0].selectedIndex = 0;
+        $("#UAT_CCRE_lb_endselect1")[0].selectedIndex = 0;
+        var UAT_CCRE_nullpara="";
+        if(UAT_CCRE_unit!="SELECT")
+        {
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#UAT_CCRE_lb_unitselect').position(),100,120);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_handleMessageResponse).UAT_CCRE_Roomtype(UAT_CCRE_unit,UAT_CCRE_nullpara);
+        }
+        else
+        {
+            $('#UAT_CCRE_lb_roomselect').hide();
+            $('#UAT_CCRE_tble_cardtable').hide();
+            $('#UAT_CCRE_tble_nullradiotable').hide();
+            $('#UAT_CCRE_lbl_roomtype').hide();
+            $('#UAT_CCRE_tble_cardlisttable').hide();
+            $('#checkindatelabel').hide();
+            $('#UAT_CCRE_db_startdate').hide();
+            $('#UAT_CCRE_checkoutlabel').hide();
+            $('#UAT_CCRE_db_enddate').hide();
+            $('#UAT_CCRE_lbl_endto').hide();
+            $('#UAT_CCRE_lb_endselect').hide();
+            $('#UAT_CCRE_lb_endselect1').hide();
+            $("#UAT_CCRE_lb_endselect").hide();
+            $('#UAT_CCRE_lbl_startto').hide();
+            $('#UAT_CCRE_lb_startselect').hide();
+            $('#UAT_CCRE_lb_startselect1').hide();
+            $("#UAT_CCRE_lb_startselect").hide();
+        }
+    });
+    $('#UAT_CCRE_db_enddate').datepicker(
+            {
+                dateFormat: 'dd-mm-yy',
+                changeYear: true,
+                changeMonth: true
+            });
 
-/**********************ENDDATE VALIDATION***********************************/
-$(".startdatevalidate").change(function(){
-$("#UAT_CCRE_db_noticedate").removeAttr("disabled");
-var startdate=$('#UAT_CCRE_db_startdate').val()
-var currentdate=new Date( Date.parse( FormTableDateFormat(startdate)) )
-if(new Date()<=currentdate){
-var date1 = $('#UAT_CCRE_db_startdate').datepicker('getDate');           
-var date = new Date( Date.parse( date1 ) ); 
-date.setDate(date.getDate() + 1);        
-var newDate = date.toDateString(); 
-newDate = new Date( Date.parse( newDate ));                      
-$('#UAT_CCRE_db_enddate').datepicker("option","minDate",newDate);
-var enddateunit=unit_startenddate[1].split('-');
-var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
-$('#UAT_CCRE_db_enddate').datepicker("option","maxDate",unitenddate);
-}
-else
-{
-var UAT_CCRE_date1 = new Date();
-var UAT_CCRE_day=UAT_CCRE_date1.getDate();
-UAT_CCRE_date1.setDate( UAT_CCRE_day + 1 );        
-var newDate = UAT_CCRE_date1.toDateString(); 
-newDate = new Date( Date.parse( newDate )); 
-$('#UAT_CCRE_db_enddate').datepicker("option","minDate",newDate);
-var enddateunit=unit_startenddate[1].split('-');
-var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
-$('#UAT_CCRE_db_enddate').datepicker("option","maxDate",unitenddate);
-}
-});
+    /**********************ENDDATE VALIDATION***********************************/
+    $(".startdatevalidate").change(function(){
+        $("#UAT_CCRE_db_noticedate").removeAttr("disabled");
+        var startdate=$('#UAT_CCRE_db_startdate').val()
+        var currentdate=new Date( Date.parse( FormTableDateFormat(startdate)) )
+        if(new Date()<=currentdate){
+            var date1 = $('#UAT_CCRE_db_startdate').datepicker('getDate');
+            var date = new Date( Date.parse( date1 ) );
+            date.setDate(date.getDate() + 1);
+            var newDate = date.toDateString();
+            newDate = new Date( Date.parse( newDate ));
+            $('#UAT_CCRE_db_enddate').datepicker("option","minDate",newDate);
+            var enddateunit=unit_startenddate[1].split('-');
+            var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
+            $('#UAT_CCRE_db_enddate').datepicker("option","maxDate",unitenddate);
+        }
+        else
+        {
+            var UAT_CCRE_date1 = new Date();
+            var UAT_CCRE_day=UAT_CCRE_date1.getDate();
+            UAT_CCRE_date1.setDate( UAT_CCRE_day + 1 );
+            var newDate = UAT_CCRE_date1.toDateString();
+            newDate = new Date( Date.parse( newDate ));
+            $('#UAT_CCRE_db_enddate').datepicker("option","minDate",newDate);
+            var enddateunit=unit_startenddate[1].split('-');
+            var unitenddate=new Date(enddateunit[2],enddateunit[1]-1,enddateunit[0]-1);
+            $('#UAT_CCRE_db_enddate').datepicker("option","maxDate",unitenddate);
+        }
+    });
 
 ///*********************SET CHECKIN DATE AND CHECKOUT DATE*****************************************/
-$("#UAT_CCRE_db_startdate").datepicker(
-{
-dateFormat: 'dd-mm-yy',
-changeYear: true,
-changeMonth: true
-});
+    $("#UAT_CCRE_db_startdate").datepicker(
+            {
+                dateFormat: 'dd-mm-yy',
+                changeYear: true,
+                changeMonth: true
+            });
 ///**************************************SET DOB DATEPICKER**************************************/
-var UAT_CCRE_d = new Date();
-var UAT_CCRE_year = UAT_CCRE_d.getFullYear() - 18;
-UAT_CCRE_d.setFullYear(UAT_CCRE_year);
-$('#UAT_CCRE_db_BirthDate').datepicker({dateFormat: 'dd-mm-yy',
-changeYear: true,
-changeMonth: true,
-yearRange: '1920:' + UAT_CCRE_year + '',
-defaultDate: UAT_CCRE_d
-});
-$('#UAT_CCRE_db_BirthDate').blur(function()
-{
-});
-/******************************SET PASSPORTDATE,EPDATE,NOTICEDATE DATEPICKER********************************/
-$( "#datepicker" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
-$( "#UAT_CCRE_db_passportdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
-$( "#UAT_CCRE_db_epdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
-$( "#UAT_CCRE_db_noticedate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
-var UAT_CCRE_date1 = new Date();
-var UAT_CCRE_day=UAT_CCRE_date1.getDate();
-UAT_CCRE_date1.setDate( UAT_CCRE_day + 1 );        
-var newDate = UAT_CCRE_date1.toDateString(); 
-newDate = new Date( Date.parse( newDate )); 
-$('#UAT_CCRE_db_passportdate').datepicker("option","minDate",newDate);
-var passUAT_CCRE_d = new Date();
-var UAT_CCRE_passyear = passUAT_CCRE_d.getFullYear()+10;
-var pass_changedmonth=new Date(passUAT_CCRE_d.setFullYear(UAT_CCRE_passyear));
-$('#UAT_CCRE_db_passportdate').datepicker("option","maxDate",pass_changedmonth);
-$('#UAT_CCRE_db_epdate').datepicker("option","minDate",newDate); 
-var epUAT_CCRE_d = new Date();
-var UAT_CCRE_epyear = epUAT_CCRE_d.getFullYear()+3;
-var ep_changedmonth=new Date(epUAT_CCRE_d.setFullYear(UAT_CCRE_epyear));
-$('#UAT_CCRE_db_epdate').datepicker("option","maxDate",ep_changedmonth); 
-$('#UAT_CCRE_db_enddate').datepicker(
-{ 
-dateFormat: 'dd-mm-yy',
-changeYear: true,
-changeMonth: true  
-});
-/*********************************CHECK PROCESS AMOUNT WAIVED R NOT****************************************/
-$(document).on("change",'.waived', function ()
-{
-var UAT_CCRE_process = $('#UAT_CCRE_tb_process').val();
-if(UAT_CCRE_process!="")
-{
-$('input:checkbox[name=UAT_CCRE_waivedchkbox]').removeAttr("disabled");
-}
-else
-{
-$('input:checkbox[name=UAT_CCRE_waivedchkbox]').attr('checked',false);
-$('input:checkbox[name=UAT_CCRE_waivedchkbox]').attr("disabled",'disabled');
-$('input:checkbox[name=tempcheckbox1]').attr("disabled",'disabled');
-}
-});
-/****************************CHECK RENT AMOUNT PRORATED BASED ON  STARTDATE AND ENDDATE****************************/
-function FormTableDateFormat(inputdate)
-{
-var string = inputdate.split("-");
-return string[2]+'-'+ string[1]+'-'+string[0];
-}
-$('.noticedate').change(function()
-{ 
-var UAT_CCRE_date1 = $('#UAT_CCRE_db_startdate').val();
-var UAT_CCRE_date2 = $('#UAT_CCRE_db_enddate').val();
-if(UAT_CCRE_date2!="")
-{
-var UAT_CCRE_db_chkindate1 = new Date();
-UAT_CCRE_db_chkindate1.setDate( UAT_CCRE_db_chkindate1.getDate() + 1);  
-var UAT_CCRE_db_chkindate1 = UAT_CCRE_db_chkindate1.toDateString(); 
-UAT_CCRE_db_chkindate1 = new Date( Date.parse( UAT_CCRE_db_chkindate1 ));
-var UAT_CCRE_db_chkindate = new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1))); 
-var new_UAT_CCRE_db_chkindate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1)));
-UAT_CCRE_db_chkindate.setDate( UAT_CCRE_db_chkindate.getDate() + 1);  
-if(new Date()>UAT_CCRE_db_chkindate)
-{
-$('#UAT_CCRE_db_noticedate').datepicker("option","minDate",UAT_CCRE_db_chkindate1);
-}
-else
-{
-$('#UAT_CCRE_db_noticedate').datepicker("option","minDate",UAT_CCRE_db_chkindate);
-}
-var UAT_CCRE_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date2)) ); 
-UAT_CCRE_db_chkoutdate1.setDate( UAT_CCRE_db_chkoutdate1.getDate()-1);  
-var UAT_CCRE_db_chkoutdate1 = UAT_CCRE_db_chkoutdate1.toDateString(); 
-UAT_CCRE_db_chkoutdate1 = new Date( Date.parse( UAT_CCRE_db_chkoutdate1 )); 
-var UAT_CCRE_chkoutdate=UAT_CCRE_db_chkoutdate1.getDate()
-var UAT_CCRE_chkoutmonth=UAT_CCRE_db_chkoutdate1.getMonth()+1
-var UAT_CCRE_chkoutyear=UAT_CCRE_db_chkoutdate1.getFullYear()
-var UAT_CCRE_finnoticedate=UAT_CCRE_chkoutyear+"-"+UAT_CCRE_chkoutmonth+"-"+UAT_CCRE_chkoutdate;
-UAT_CCRE_finnoticedate = new Date( Date.parse( UAT_CCRE_finnoticedate ) ); 
-$('#UAT_CCRE_db_noticedate').datepicker("option","maxDate",UAT_CCRE_db_chkoutdate1);
-if(new Date(UAT_CCRE_finnoticedate)<=new Date(FormTableDateFormat(UAT_CCRE_date1)))
-{
-$('#UAT_CCRE_db_noticedate').val("");
-}
-if(new Date()< UAT_CCRE_db_chkindate)
-{
-var noticestartdate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1))); 
-}
-else
-{
-noticestartdate=new Date();
-}
-noticestartdate.setDate( noticestartdate.getDate()+1);
-var noticeenddate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date2)));
-var noticestart_date=noticestartdate.getFullYear()+'-'+noticestartdate.getMonth()+'-'+noticestartdate.getDate();
-var noticeend_date=noticeenddate.getFullYear()+'-'+noticeenddate.getMonth()+'-'+noticeenddate.getDate();
-if(noticestart_date==noticeend_date)
-{
-$('#UAT_CCRE_db_noticedate').attr("disabled",'disabled');
-}
-else
-{
-$("#UAT_CCRE_db_noticedate").removeAttr("disabled");
-}
-}
-});
-/*****************************PRORATED*****************************************************/
-$(document).on("change",'.prorated', function ()
-{
-var UAT_CCRE_date1 = $('#UAT_CCRE_db_startdate').val();
-var UAT_CCRE_date2 = $('#UAT_CCRE_db_enddate').val();
-var rent=$('#UAT_CCRE_tb_rent').val();
-if(UAT_CCRE_date1!="" && UAT_CCRE_date2!="" && rent!="")
-{
-google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_proratedResponse).UAT_CCRE_prorated(UAT_CCRE_date1,UAT_CCRE_date2);
-}
-else
-{
-$('#proratedvalue').prop('checked',false);
-$('#tempproratedvalue').prop('checked',false);
-$('#proratedvalue').prop("disabled",'disabled');
-}
-});
+    var UAT_CCRE_d = new Date();
+    var UAT_CCRE_year = UAT_CCRE_d.getFullYear() - 18;
+    UAT_CCRE_d.setFullYear(UAT_CCRE_year);
+    $('#UAT_CCRE_db_BirthDate').datepicker({dateFormat: 'dd-mm-yy',
+        changeYear: true,
+        changeMonth: true,
+        yearRange: '1920:' + UAT_CCRE_year + '',
+        defaultDate: UAT_CCRE_d
+    });
+    $('#UAT_CCRE_db_BirthDate').blur(function()
+    {
+    });
+    /******************************SET PASSPORTDATE,EPDATE,NOTICEDATE DATEPICKER********************************/
+    $( "#datepicker" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+    $( "#UAT_CCRE_db_passportdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+    $( "#UAT_CCRE_db_epdate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+    $( "#UAT_CCRE_db_noticedate" ).datepicker({dateFormat: 'dd-mm-yy',changeYear: true,changeMonth: true});
+    var UAT_CCRE_date1 = new Date();
+    var UAT_CCRE_day=UAT_CCRE_date1.getDate();
+    UAT_CCRE_date1.setDate( UAT_CCRE_day + 1 );
+    var newDate = UAT_CCRE_date1.toDateString();
+    newDate = new Date( Date.parse( newDate ));
+    $('#UAT_CCRE_db_passportdate').datepicker("option","minDate",newDate);
+    var passUAT_CCRE_d = new Date();
+    var UAT_CCRE_passyear = passUAT_CCRE_d.getFullYear()+10;
+    var pass_changedmonth=new Date(passUAT_CCRE_d.setFullYear(UAT_CCRE_passyear));
+    $('#UAT_CCRE_db_passportdate').datepicker("option","maxDate",pass_changedmonth);
+    $('#UAT_CCRE_db_epdate').datepicker("option","minDate",newDate);
+    var epUAT_CCRE_d = new Date();
+    var UAT_CCRE_epyear = epUAT_CCRE_d.getFullYear()+3;
+    var ep_changedmonth=new Date(epUAT_CCRE_d.setFullYear(UAT_CCRE_epyear));
+    $('#UAT_CCRE_db_epdate').datepicker("option","maxDate",ep_changedmonth);
+    $('#UAT_CCRE_db_enddate').datepicker(
+            {
+                dateFormat: 'dd-mm-yy',
+                changeYear: true,
+                changeMonth: true
+            });
+    /*********************************CHECK PROCESS AMOUNT WAIVED R NOT****************************************/
+    $(document).on("change",'.waived', function ()
+    {
+        var UAT_CCRE_process = $('#UAT_CCRE_tb_process').val();
+        if(UAT_CCRE_process!="")
+        {
+            $('input:checkbox[name=UAT_CCRE_waivedchkbox]').removeAttr("disabled");
+        }
+        else
+        {
+            $('input:checkbox[name=UAT_CCRE_waivedchkbox]').attr('checked',false);
+            $('input:checkbox[name=UAT_CCRE_waivedchkbox]').attr("disabled",'disabled');
+            $('input:checkbox[name=tempcheckbox1]').attr("disabled",'disabled');
+        }
+    });
+    /****************************CHECK RENT AMOUNT PRORATED BASED ON  STARTDATE AND ENDDATE****************************/
+    function FormTableDateFormat(inputdate)
+    {
+        var string = inputdate.split("-");
+        return string[2]+'-'+ string[1]+'-'+string[0];
+    }
+    $('.noticedate').change(function()
+    {
+        var UAT_CCRE_date1 = $('#UAT_CCRE_db_startdate').val();
+        var UAT_CCRE_date2 = $('#UAT_CCRE_db_enddate').val();
+        if(UAT_CCRE_date2!="")
+        {
+            var UAT_CCRE_db_chkindate1 = new Date();
+            UAT_CCRE_db_chkindate1.setDate( UAT_CCRE_db_chkindate1.getDate() + 1);
+            var UAT_CCRE_db_chkindate1 = UAT_CCRE_db_chkindate1.toDateString();
+            UAT_CCRE_db_chkindate1 = new Date( Date.parse( UAT_CCRE_db_chkindate1 ));
+            var UAT_CCRE_db_chkindate = new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1)));
+            var new_UAT_CCRE_db_chkindate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1)));
+            UAT_CCRE_db_chkindate.setDate( UAT_CCRE_db_chkindate.getDate() + 1);
+            if(new Date()>UAT_CCRE_db_chkindate)
+            {
+                $('#UAT_CCRE_db_noticedate').datepicker("option","minDate",UAT_CCRE_db_chkindate1);
+            }
+            else
+            {
+                $('#UAT_CCRE_db_noticedate').datepicker("option","minDate",UAT_CCRE_db_chkindate);
+            }
+            var UAT_CCRE_db_chkoutdate1 = new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date2)) );
+            UAT_CCRE_db_chkoutdate1.setDate( UAT_CCRE_db_chkoutdate1.getDate()-1);
+            var UAT_CCRE_db_chkoutdate1 = UAT_CCRE_db_chkoutdate1.toDateString();
+            UAT_CCRE_db_chkoutdate1 = new Date( Date.parse( UAT_CCRE_db_chkoutdate1 ));
+            var UAT_CCRE_chkoutdate=UAT_CCRE_db_chkoutdate1.getDate()
+            var UAT_CCRE_chkoutmonth=UAT_CCRE_db_chkoutdate1.getMonth()+1
+            var UAT_CCRE_chkoutyear=UAT_CCRE_db_chkoutdate1.getFullYear()
+            var UAT_CCRE_finnoticedate=UAT_CCRE_chkoutyear+"-"+UAT_CCRE_chkoutmonth+"-"+UAT_CCRE_chkoutdate;
+            UAT_CCRE_finnoticedate = new Date( Date.parse( UAT_CCRE_finnoticedate ) );
+            $('#UAT_CCRE_db_noticedate').datepicker("option","maxDate",UAT_CCRE_db_chkoutdate1);
+            if(new Date(UAT_CCRE_finnoticedate)<=new Date(FormTableDateFormat(UAT_CCRE_date1)))
+            {
+                $('#UAT_CCRE_db_noticedate').val("");
+            }
+            if(new Date()< UAT_CCRE_db_chkindate)
+            {
+                var noticestartdate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date1)));
+            }
+            else
+            {
+                noticestartdate=new Date();
+            }
+            noticestartdate.setDate( noticestartdate.getDate()+1);
+            var noticeenddate=new Date( Date.parse(FormTableDateFormat(UAT_CCRE_date2)));
+            var noticestart_date=noticestartdate.getFullYear()+'-'+noticestartdate.getMonth()+'-'+noticestartdate.getDate();
+            var noticeend_date=noticeenddate.getFullYear()+'-'+noticeenddate.getMonth()+'-'+noticeenddate.getDate();
+            if(noticestart_date==noticeend_date)
+            {
+                $('#UAT_CCRE_db_noticedate').attr("disabled",'disabled');
+            }
+            else
+            {
+                $("#UAT_CCRE_db_noticedate").removeAttr("disabled");
+            }
+        }
+    });
+    /*****************************PRORATED*****************************************************/
+    $(document).on("change",'.prorated', function ()
+    {
+        var UAT_CCRE_date1 = $('#UAT_CCRE_db_startdate').val();
+        var UAT_CCRE_date2 = $('#UAT_CCRE_db_enddate').val();
+        var rent=$('#UAT_CCRE_tb_rent').val();
+        if(UAT_CCRE_date1!="" && UAT_CCRE_date2!="" && rent!="")
+        {
+            google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_proratedResponse).UAT_CCRE_prorated(UAT_CCRE_date1,UAT_CCRE_date2);
+        }
+        else
+        {
+            $('#proratedvalue').prop('checked',false);
+            $('#tempproratedvalue').prop('checked',false);
+            $('#proratedvalue').prop("disabled",'disabled');
+        }
+    });
 
-/************************************************CALL CARD NUMBER FUNCTION***********************************************************/
-$(function ()
-{
-$("#radio").buttonset();
-$("input[name='radio']").on("change", function () {
-var UAT_CCRE_radio_name = $("input[name='radio']:checked").val();
-if(UAT_CCRE_radio_name=='cardnum')
-{
-$(".preloader").show();
-var  newPos= adjustPosition($('#UAT_CCRE_lb_unitselect').position(),100,120);
-resetPreloader(newPos);
-var UAT_CCRE_unit = $('#UAT_CCRE_lb_unitselect').val();
-var UAT_CCRE_firstname=$('#UAT_CCRE_tb_firstname').val();
-var UAT_CCRE_lastname=$('#UAT_CCRE_tb_lastname').val();
-if((UAT_CCRE_firstname!="")&&(UAT_CCRE_lastname!=""))
-{
-$("#UAT_CCRE_btn_savebutton").removeAttr("disabled");
-google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_cardhandleMessageResponse).UAT_CCRE_CardNumber(UAT_CCRE_unit,UAT_CCRE_firstname,UAT_CCRE_lastname);
-}
-else
-{
-var UAT_CCRE_value='<tr><td><label></label></td><td><label></label></td><td><label></label></td><td><label class="errormsg">ENTER CUSTOMER NAME</label></td></tr>';
-$('#UAT_CCRE_tble_cardlisttable').append(UAT_CCRE_value);
-$('#UAT_CCRE_tble_cardlisttable').show();
-$(".preloader").hide(); 
-}
-}
-else
-{
-$("#UAT_CCRE_tble_cardlisttable tr").remove();
-$('#UAT_CCRE_tble_cardlisttable').hide();
-$('#UAT_CCRE_lbl_error').hide();
-}
-});
-});
-/*************************************************AIRCON RADIO BUTTON VALIDATION*******************************************************/
-$(function () 
-{
-$("#radio").buttonset();
-$("input[name='aircon']").on("change", function () {
-var UAT_CCRE_radio_name = $("input[name='aircon']:checked").val();
-if(UAT_CCRE_radio_name=='quarterlyfee')
-{
-$("#UAT_CCRE_tb_quarterlyfee").show().val('');
-$("#UAT_CCRE_tb_aircon_fixed").hide().val('');
-}
-if(UAT_CCRE_radio_name=='fixedairconfee')
-{
-$("#UAT_CCRE_tb_quarterlyfee").hide().val('');
-$("#UAT_CCRE_tb_aircon_fixed").show().val('');
-}
-});
-});
-/**********************************************RETURN VALUE OF ROOMTYPE FUNCTION*************************************************/
-function UAT_CCRE_handleMessageResponse(response)
-{
-$('#ccroometypeerror').hide();
-var UAT_CCRE_myArray= [];
-UAT_CCRE_myArray=response[0];
-unit_startenddate=response[1];
-var startdateunit=unit_startenddate[1].split('-');
-var unitstartdate=new Date(startdateunit[2],startdateunit[1]-1,startdateunit[0]);
-$('#UAT_CCRE_db_startdate').datepicker("option","maxDate",unitstartdate);
-var UAT_CCRE_options='';
-if(UAT_CCRE_myArray.length==0)
-{
-$('#UAT_CCRE_lb_roomselect').hide();
-$('#UAT_CCRE_lbl_roomtype').hide();
-$('#UAT_CCRE_tble_cardtable').hide();
-$('#UAT_CCRE_tble_nullradiotable').hide();
-$('#UAT_CCRE_tble_cardlisttable').hide();
-var UAT_CCRE_unit=$('#UAT_CCRE_lb_unitselect').val();
-var UAT_CCRE_message=errormsg[3].replace("[UNIT NO]",UAT_CCRE_unit);
-var UAT_CCRE_errormessage='<tr><td ><label id="ccroometypeerror" class="errormsg">'+UAT_CCRE_message+'</label></td></tr>'
-$('#UAT_CCRE_lb_roomselect').after('<p>'+UAT_CCRE_errormessage+'<p>');
-$("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
-$('#checkindatelabel').hide();
-$('#UAT_CCRE_db_startdate').hide();
-}
-else
-{
-UAT_CCRE_options ='<option >SELECT</option>';
-for (var i = 0; i < UAT_CCRE_myArray.length; i++) 
-{
-UAT_CCRE_options += '<option value="' + UAT_CCRE_myArray[i] + '">' + UAT_CCRE_myArray[i] + '</option>';
-}
-$('#UAT_CCRE_lb_roomselect').html(UAT_CCRE_options);
-$('#UAT_CCRE_tble_cardtable').show();
-$('#UAT_CCRE_tble_nullradiotable').show();
-$('#ccroometypeerror').hide();
-$('#UAT_CCRE_lb_roomselect').show();
-$('#UAT_CCRE_lbl_roomtype').show();
-$('#UAT_CCRE_tble_cardlisttable').show();
-$('#UAT_CCRE_tble_cardlisttable tr').remove();
-$('input:radio[name=radio]').attr('checked',false);
-$('#ccroometypeerror').hide();
-$('#checkindatelabel').show();
-$('#UAT_CCRE_db_startdate').show();
-}
-var UAT_CCRE_db_chkoutdate1 = new Date(); 
-var UAT_CCRE_chkoutdate=UAT_CCRE_db_chkoutdate1.getDate()
-var UAT_CCRE_chkoutmonth=UAT_CCRE_db_chkoutdate1.getMonth()-CustomerSD;
-var UAT_CCRE_chkoutyear=UAT_CCRE_db_chkoutdate1.getFullYear();
-var UAT_CCRE_finnoticedate = new Date(UAT_CCRE_chkoutyear,UAT_CCRE_chkoutmonth,UAT_CCRE_chkoutdate);
-var UAT_CCRE_date1=unit_startenddate[0];
-var UAT_CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(UAT_CCRE_date1)) ); 
-var UAT_CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(UAT_CCRE_date1)) ); 
-UAT_CCRE_db_chkindate1.setDate( UAT_CCRE_db_chkindate1.getDate());  
-var UAT_CCRE_db_chkindate1 = UAT_CCRE_db_chkindate1.toDateString(); 
-UAT_CCRE_db_chkindate1 = new Date( Date.parse( UAT_CCRE_db_chkindate1));
-if(UAT_CCRE_finnoticedate<new Date() && UAT_CCRE_finnoticedate>=UAT_CCRE_db_chkindate1)
-{
-$('#UAT_CCRE_db_startdate').datepicker("option","minDate",UAT_CCRE_finnoticedate);
-}
-else
-{
-$('#UAT_CCRE_db_startdate').datepicker("option","minDate",UAT_CCRE_db_chkindate1);
-}
-$(".preloader").hide(); 
-}
-/**************************************RETURN VALUES OF CARD NUMBER FUNCTION**********************************************************/
-function UAT_CCRE_cardhandleMessageResponse(card)
-{
-accesscard_array=card;
-UAT_CCRE_cardArray=card[0];
-UAT_CCRE_cardslbl_array=card[1];
-if(UAT_CCRE_cardArray.length!=0)
-{
-$("#UAT_CCRE_tble_cardlisttable tr").remove();
-for (var i=0;i<UAT_CCRE_cardArray.length;i++) 
-{
-var UAT_CCRE_value ='<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" value='+UAT_CCRE_cardArray[i]+' id="UAT_CCRE_cb_cardnumberarray'+i+'" name="checkbox" class="UAT_CCRE_showlist" />' + UAT_CCRE_cardArray[i] + '</td><td><select id="UAT_CCRE_cb_cardlistselect'+i+'" name="UAT_CCRE_cb_cardlistselect" visibility: hidden; class="UAT_CCRE_showlist" style="height:25px" ><option>Select</option></select></td><td><input type="text" id="UAT_CCRE_lb_cardlisttext'+i+'" name="temptex" hidden/></td></tr>';
-$('#UAT_CCRE_tble_cardlisttable').append(UAT_CCRE_value);
-$('#UAT_CCRE_tble_cardlisttable').show();
-}
-for(var i=0;i<UAT_CCRE_cardArray.length;i++){
-var UAT_CCRE_options ='<option >SELECT</option>'
-for(var j=0;j<UAT_CCRE_cardslbl_array.length;j++)
-{
-UAT_CCRE_options += '<option value="' + UAT_CCRE_cardslbl_array[j] + '">' + UAT_CCRE_cardslbl_array[j] + '</option>';
-}
-$('#UAT_CCRE_cb_cardlistselect'+i).html(UAT_CCRE_options);
-}
-}
-else
-{
-$("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
-var errormessage=errormsg[4];
-UAT_CCRE_value='<tr><td><label></label></td><td><label></label></td><td><label></label></td><td><label  class="errormsg" ">'+errormessage+'</label></td></tr>';
-$('#UAT_CCRE_tble_cardlisttable').append(UAT_CCRE_value);
-$('#UAT_CCRE_tble_cardlisttable').show();
-}
-$(".preloader").hide(); 
-}
-/************************************************prorated checkbox******************************************/
-$(document).on('change','.proratedcheck',function(){
-var UAT_CCRE_radio_name =$('#proratedvalue').is(":checked");
-if(UAT_CCRE_radio_name==false)
-{
-$('#tempproratedvalue').prop('checked',false);
-}
-else
-{
-$('#tempproratedvalue').prop('checked',true);
-}
-});
+    /************************************************CALL CARD NUMBER FUNCTION***********************************************************/
+    $(function ()
+    {
+        $("#radio").buttonset();
+        $("input[name='radio']").on("change", function () {
+            var UAT_CCRE_radio_name = $("input[name='radio']:checked").val();
+            if(UAT_CCRE_radio_name=='cardnum')
+            {
+                $(".preloader").show();
+                var  newPos= adjustPosition($('#UAT_CCRE_lb_unitselect').position(),100,120);
+                resetPreloader(newPos);
+                var UAT_CCRE_unit = $('#UAT_CCRE_lb_unitselect').val();
+                var UAT_CCRE_firstname=$('#UAT_CCRE_tb_firstname').val();
+                var UAT_CCRE_lastname=$('#UAT_CCRE_tb_lastname').val();
+                if((UAT_CCRE_firstname!="")&&(UAT_CCRE_lastname!=""))
+                {
+                    $("#UAT_CCRE_btn_savebutton").removeAttr("disabled");
+                    google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_cardhandleMessageResponse).UAT_CCRE_CardNumber(UAT_CCRE_unit,UAT_CCRE_firstname,UAT_CCRE_lastname);
+                }
+                else
+                {
+                    var UAT_CCRE_value='<tr><td><label></label></td><td><label></label></td><td><label></label></td><td><label class="errormsg">ENTER CUSTOMER NAME</label></td></tr>';
+                    $('#UAT_CCRE_tble_cardlisttable').append(UAT_CCRE_value);
+                    $('#UAT_CCRE_tble_cardlisttable').show();
+                    $(".preloader").hide();
+                }
+            }
+            else
+            {
+                $("#UAT_CCRE_tble_cardlisttable tr").remove();
+                $('#UAT_CCRE_tble_cardlisttable').hide();
+                $('#UAT_CCRE_lbl_error').hide();
+            }
+        });
+    });
+    /*************************************************AIRCON RADIO BUTTON VALIDATION*******************************************************/
+    $(function ()
+    {
+        $("#radio").buttonset();
+        $("input[name='aircon']").on("change", function () {
+            var UAT_CCRE_radio_name = $("input[name='aircon']:checked").val();
+            if(UAT_CCRE_radio_name=='quarterlyfee')
+            {
+                $("#UAT_CCRE_tb_quarterlyfee").show().val('');
+                $("#UAT_CCRE_tb_aircon_fixed").hide().val('');
+            }
+            if(UAT_CCRE_radio_name=='fixedairconfee')
+            {
+                $("#UAT_CCRE_tb_quarterlyfee").hide().val('');
+                $("#UAT_CCRE_tb_aircon_fixed").show().val('');
+            }
+        });
+    });
+    /**********************************************RETURN VALUE OF ROOMTYPE FUNCTION*************************************************/
+    function UAT_CCRE_handleMessageResponse(response)
+    {
+        $('#ccroometypeerror').hide();
+        var UAT_CCRE_myArray= [];
+        UAT_CCRE_myArray=response[0];
+        unit_startenddate=response[1];
+        var startdateunit=unit_startenddate[1].split('-');
+        var unitstartdate=new Date(startdateunit[2],startdateunit[1]-1,startdateunit[0]);
+        $('#UAT_CCRE_db_startdate').datepicker("option","maxDate",unitstartdate);
+        var UAT_CCRE_options='';
+        if(UAT_CCRE_myArray.length==0)
+        {
+            $('#UAT_CCRE_lb_roomselect').hide();
+            $('#UAT_CCRE_lbl_roomtype').hide();
+            $('#UAT_CCRE_tble_cardtable').hide();
+            $('#UAT_CCRE_tble_nullradiotable').hide();
+            $('#UAT_CCRE_tble_cardlisttable').hide();
+            var UAT_CCRE_unit=$('#UAT_CCRE_lb_unitselect').val();
+            var UAT_CCRE_message=errormsg[3].replace("[UNIT NO]",UAT_CCRE_unit);
+            var UAT_CCRE_errormessage='<tr><td ><label id="ccroometypeerror" class="errormsg">'+UAT_CCRE_message+'</label></td></tr>'
+            $('#UAT_CCRE_lb_roomselect').after('<p>'+UAT_CCRE_errormessage+'<p>');
+            $("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
+            $('#checkindatelabel').hide();
+            $('#UAT_CCRE_db_startdate').hide();
+        }
+        else
+        {
+            UAT_CCRE_options ='<option >SELECT</option>';
+            for (var i = 0; i < UAT_CCRE_myArray.length; i++)
+            {
+                UAT_CCRE_options += '<option value="' + UAT_CCRE_myArray[i] + '">' + UAT_CCRE_myArray[i] + '</option>';
+            }
+            $('#UAT_CCRE_lb_roomselect').html(UAT_CCRE_options);
+            $('#UAT_CCRE_tble_cardtable').show();
+            $('#UAT_CCRE_tble_nullradiotable').show();
+            $('#ccroometypeerror').hide();
+            $('#UAT_CCRE_lb_roomselect').show();
+            $('#UAT_CCRE_lbl_roomtype').show();
+            $('#UAT_CCRE_tble_cardlisttable').show();
+            $('#UAT_CCRE_tble_cardlisttable tr').remove();
+            $('input:radio[name=radio]').attr('checked',false);
+            $('#ccroometypeerror').hide();
+            $('#checkindatelabel').show();
+            $('#UAT_CCRE_db_startdate').show();
+        }
+        var UAT_CCRE_db_chkoutdate1 = new Date();
+        var UAT_CCRE_chkoutdate=UAT_CCRE_db_chkoutdate1.getDate()
+        var UAT_CCRE_chkoutmonth=UAT_CCRE_db_chkoutdate1.getMonth()-CustomerSD;
+        var UAT_CCRE_chkoutyear=UAT_CCRE_db_chkoutdate1.getFullYear();
+        var UAT_CCRE_finnoticedate = new Date(UAT_CCRE_chkoutyear,UAT_CCRE_chkoutmonth,UAT_CCRE_chkoutdate);
+        var UAT_CCRE_date1=unit_startenddate[0];
+        var UAT_CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(UAT_CCRE_date1)) );
+        var UAT_CCRE_db_chkindate1 = new Date( Date.parse( FormTableDateFormat(UAT_CCRE_date1)) );
+        UAT_CCRE_db_chkindate1.setDate( UAT_CCRE_db_chkindate1.getDate());
+        var UAT_CCRE_db_chkindate1 = UAT_CCRE_db_chkindate1.toDateString();
+        UAT_CCRE_db_chkindate1 = new Date( Date.parse( UAT_CCRE_db_chkindate1));
+        if(UAT_CCRE_finnoticedate<new Date() && UAT_CCRE_finnoticedate>=UAT_CCRE_db_chkindate1)
+        {
+            $('#UAT_CCRE_db_startdate').datepicker("option","minDate",UAT_CCRE_finnoticedate);
+        }
+        else
+        {
+            $('#UAT_CCRE_db_startdate').datepicker("option","minDate",UAT_CCRE_db_chkindate1);
+        }
+        $(".preloader").hide();
+    }
+    /**************************************RETURN VALUES OF CARD NUMBER FUNCTION**********************************************************/
+    function UAT_CCRE_cardhandleMessageResponse(card)
+    {
+        accesscard_array=card;
+        UAT_CCRE_cardArray=card[0];
+        UAT_CCRE_cardslbl_array=card[1];
+        if(UAT_CCRE_cardArray.length!=0)
+        {
+            $("#UAT_CCRE_tble_cardlisttable tr").remove();
+            for (var i=0;i<UAT_CCRE_cardArray.length;i++)
+            {
+                var UAT_CCRE_value ='<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" value='+UAT_CCRE_cardArray[i]+' id="UAT_CCRE_cb_cardnumberarray'+i+'" name="checkbox" class="UAT_CCRE_showlist" />' + UAT_CCRE_cardArray[i] + '</td><td><select id="UAT_CCRE_cb_cardlistselect'+i+'" name="UAT_CCRE_cb_cardlistselect" visibility: hidden; class="UAT_CCRE_showlist" style="height:25px" ><option>Select</option></select></td><td><input type="text" id="UAT_CCRE_lb_cardlisttext'+i+'" name="temptex" hidden/></td></tr>';
+                $('#UAT_CCRE_tble_cardlisttable').append(UAT_CCRE_value);
+                $('#UAT_CCRE_tble_cardlisttable').show();
+            }
+            for(var i=0;i<UAT_CCRE_cardArray.length;i++){
+                var UAT_CCRE_options ='<option >SELECT</option>'
+                for(var j=0;j<UAT_CCRE_cardslbl_array.length;j++)
+                {
+                    UAT_CCRE_options += '<option value="' + UAT_CCRE_cardslbl_array[j] + '">' + UAT_CCRE_cardslbl_array[j] + '</option>';
+                }
+                $('#UAT_CCRE_cb_cardlistselect'+i).html(UAT_CCRE_options);
+            }
+        }
+        else
+        {
+            $("#UAT_CCRE_btn_savebutton").attr("disabled", "disabled");
+            var errormessage=errormsg[4];
+            UAT_CCRE_value='<tr><td><label></label></td><td><label></label></td><td><label></label></td><td><label  class="errormsg" ">'+errormessage+'</label></td></tr>';
+            $('#UAT_CCRE_tble_cardlisttable').append(UAT_CCRE_value);
+            $('#UAT_CCRE_tble_cardlisttable').show();
+        }
+        $(".preloader").hide();
+    }
+    /************************************************prorated checkbox******************************************/
+    $(document).on('change','.proratedcheck',function(){
+        var UAT_CCRE_radio_name =$('#proratedvalue').is(":checked");
+        if(UAT_CCRE_radio_name==false)
+        {
+            $('#tempproratedvalue').prop('checked',false);
+        }
+        else
+        {
+            $('#tempproratedvalue').prop('checked',true);
+        }
+    });
 
-/************************************************PRORATED FUNCTION RETURN VALUES***********************************/
-function UAT_CCRE_proratedResponse(response)
-{
-if(response!=true)
-{
-$('#proratedvalue').prop('checked',false);
-$('#tempproratedvalue').prop('checked',false);
-$('#proratedvalue').prop("disabled",'disabled');
-}
-else
-{
-$('#proratedvalue').prop('checked',true);
-$('#tempproratedvalue').prop('checked',true);
-$('#proratedvalue').removeAttr("disabled");
-}
-}
+    /************************************************PRORATED FUNCTION RETURN VALUES***********************************/
+    function UAT_CCRE_proratedResponse(response)
+    {
+        if(response!=true)
+        {
+            $('#proratedvalue').prop('checked',false);
+            $('#tempproratedvalue').prop('checked',false);
+            $('#proratedvalue').prop("disabled",'disabled');
+        }
+        else
+        {
+            $('#proratedvalue').prop('checked',true);
+            $('#tempproratedvalue').prop('checked',true);
+            $('#proratedvalue').removeAttr("disabled");
+        }
+    }
 
-/***************************************FUNCTION FOR CARD SELECTIONS***********************************************/
-$(document).on('change','.UAT_CCRE_showlist',function(){
-$(".preloader").show();
-$('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
-var UAT_CCRE_cardlist=[];
-var f=0;var count=0;var ll=0;
-var UAT_CCRE_cc_cardarray_length=UAT_CCRE_cardArray.length;
-for(var i=0;i<UAT_CCRE_cc_cardarray_length;i++)
-{
-var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+i).is(":checked");
-if(UAT_CCRE_cc_check==true)
-{
-$('#UAT_CCRE_cb_cardlistselect'+i).removeAttr('disabled');
-var UAT_CCRE_selectcardno=$('#UAT_CCRE_cb_cardnumberarray'+i).val();
-var UAT_CCRE_card_cardlist_box=$('#UAT_CCRE_cb_cardlistselect'+i).val();
-if(UAT_CCRE_card_cardlist_box!="SELECT"){
-$('#UAT_CCRE_cb_cardlistselect'+i).attr("disabled","disabled");
-$('#UAT_CCRE_lb_cardlisttext'+i).val(UAT_CCRE_selectcardno+'/'+UAT_CCRE_card_cardlist_box);
-UAT_CCRE_cardlist.push(UAT_CCRE_card_cardlist_box);
-}
-else
-{
-ll++;
-}
-count++;
-}
-}
-var n1=[];
+    /***************************************FUNCTION FOR CARD SELECTIONS***********************************************/
+    $(document).on('change','.UAT_CCRE_showlist',function(){
+        $(".preloader").show();
+        $('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
+        var UAT_CCRE_cardlist=[];
+        var f=0;var count=0;var ll=0;
+        var UAT_CCRE_cc_cardarray_length=UAT_CCRE_cardArray.length;
+        for(var i=0;i<UAT_CCRE_cc_cardarray_length;i++)
+        {
+            var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+i).is(":checked");
+            if(UAT_CCRE_cc_check==true)
+            {
+                $('#UAT_CCRE_cb_cardlistselect'+i).removeAttr('disabled');
+                var UAT_CCRE_selectcardno=$('#UAT_CCRE_cb_cardnumberarray'+i).val();
+                var UAT_CCRE_card_cardlist_box=$('#UAT_CCRE_cb_cardlistselect'+i).val();
+                if(UAT_CCRE_card_cardlist_box!="SELECT"){
+                    $('#UAT_CCRE_cb_cardlistselect'+i).attr("disabled","disabled");
+                    $('#UAT_CCRE_lb_cardlisttext'+i).val(UAT_CCRE_selectcardno+'/'+UAT_CCRE_card_cardlist_box);
+                    UAT_CCRE_cardlist.push(UAT_CCRE_card_cardlist_box);
+                }
+                else
+                {
+                    ll++;
+                }
+                count++;
+            }
+        }
+        var n1=[];
 //difference between two arrays
-var n1=UAT_CCRE_card_diffArray(UAT_CCRE_cardslbl_array,UAT_CCRE_cardlist);
-for(var j=0;j<UAT_CCRE_cc_cardarray_length;j++)
-{
-var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+j).is(":checked");
-var UAT_CCRE_card_cardlist_box=$('#UAT_CCRE_cb_cardlistselect'+j).val();
-if(UAT_CCRE_card_cardlist_box=="SELECT")
-{
-$('#UAT_CCRE_cb_cardlistselect'+j).empty();
-var UAT_CCRE_options ='<option >SELECT</option>'
-for(var l=0;l<n1.length;l++)
-{
-UAT_CCRE_options += '<option value="' + n1[l] + '">' + n1[l] + '</option>';        
-}
-$('#UAT_CCRE_cb_cardlistselect'+j).html(UAT_CCRE_options);
+        var n1=UAT_CCRE_card_diffArray(UAT_CCRE_cardslbl_array,UAT_CCRE_cardlist);
+        for(var j=0;j<UAT_CCRE_cc_cardarray_length;j++)
+        {
+            var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+j).is(":checked");
+            var UAT_CCRE_card_cardlist_box=$('#UAT_CCRE_cb_cardlistselect'+j).val();
+            if(UAT_CCRE_card_cardlist_box=="SELECT")
+            {
+                $('#UAT_CCRE_cb_cardlistselect'+j).empty();
+                var UAT_CCRE_options ='<option >SELECT</option>'
+                for(var l=0;l<n1.length;l++)
+                {
+                    UAT_CCRE_options += '<option value="' + n1[l] + '">' + n1[l] + '</option>';
+                }
+                $('#UAT_CCRE_cb_cardlistselect'+j).html(UAT_CCRE_options);
 
-$('#UAT_CCRE_cb_cardlistselect'+j).attr("enabled","enabled")
-}
-if(UAT_CCRE_cc_check==true)
-{
-$('#UAT_CCRE_cb_cardlistselect'+j).show();
-$('#UAT_CCRE_cb_cardlistselect'+j).attr("enabled","enabled")
-}
-else
-{
-$('#UAT_CCRE_cb_cardlistselect'+j)[0].selectedIndex = 0;
-$('#UAT_CCRE_lb_cardlisttext'+j).val('');
-$('#UAT_CCRE_cb_cardlistselect'+j).hide();}
-}
-if(count==4)
-{
-for(var i=0;i<UAT_CCRE_cc_cardarray_length;i++)
-{
-var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+i).is(":checked");
-if(UAT_CCRE_cc_check==false)
-{
-$('#UAT_CCRE_cb_cardnumberarray'+i).attr("disabled","disabled");
-}
-}
-}
-else
-{
-if(ll==0)
-{
-for(var i=0;i<UAT_CCRE_cc_cardarray_length;i++)
-{
-var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+i).is(":checked");
-if(UAT_CCRE_cc_check==false)
-{
-$('#UAT_CCRE_cb_cardnumberarray'+i).removeAttr("disabled","disabled");
-}
-}
-}
-else
-{
-for(var y=0;y<UAT_CCRE_cc_cardarray_length;y++)
-{
-var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+y).is(":checked");
-if(UAT_CCRE_cc_check==false)
-{
-$('#UAT_CCRE_cb_cardnumberarray'+y).attr("disabled","disabled");
-}
-}
-}
-}
-UAT_CCRE_submit_validate(accesscard_array)
-$(".preloader").hide(); 
-});
-/******************************************SUBMIT BUTTON VALIDATION FOR ACCESSCARD*****************************************************/
-function UAT_CCRE_submit_validate(card)
-{
-var UAT_CCRE_fname=$('#UAT_CCRE_tb_firstname').val();
-var UAT_CCRE_lname=$('#UAT_CCRE_tb_lastname').val();
-var UAT_CCRE_cardArray=[];
-var UAT_CCRE_g_array=[];
-UAT_CCRE_cardArray=card[0];
-UAT_CCRE_g_array=card[1]
-var UAT_CCRE_cararray_length=UAT_CCRE_cardArray.length;
-var UAT_CCRE_gcardlen=UAT_CCRE_g_array.length;
-var UAT_CCRE_printarray=[];
-var UAT_CCRE_false_flag=0;
-var UAT_CCRE_true_flag=0;
-var UAT_CCRE_flag=0;var UAT_CCRE_flag1=0;var UAT_CCRE_flag2=0;var UAT_CCRE_flag3=0;
-for(var k=0;k<UAT_CCRE_cararray_length;k++)
-{
-var UAT_CCRE_access_card= $('#UAT_CCRE_cb_cardnumberarray'+k).is(":checked");
-if(UAT_CCRE_access_card==true)
-{
-UAT_CCRE_true_flag++;
-}
-else
-{
-UAT_CCRE_false_flag++;
-}
-}
-if(UAT_CCRE_true_flag==0||UAT_CCRE_lname=="")
-{
-$('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
-$('#UAT_CCRE_lbl_error').hide();
-}
-else
-{
-$('#UAT_CCRE_lbl_error').hide();
-if($("#UAT_CCRE_tb_rent").val()!="" &&$("#UAT_CCRE_db_startdate").val()!=""  && $("#UAT_CCRE_db_enddate").val()!="" && $("#UAT_CCRE_lb_nationselect").val()!="SELECT" &&$("#UAT_CCRE_lb_startselect").val()!="SELECT"&& $("#UAT_CCRE_lb_ccoptionselect").val()!="SELECT"&& $("#UAT_CCRE_lb_mailselect").val()!="SELECT")
-{
-$('#UAT_CCRE_btn_savebutton').removeAttr('disabled');
-}
-var UAT_CCRE_custname="";
-if(UAT_CCRE_fname!=""&&UAT_CCRE_lname!="")
-{
-UAT_CCRE_custname=(UAT_CCRE_fname+" "+UAT_CCRE_lname).toUpperCase();
-}
-if(UAT_CCRE_cararray_length>0)
-{
-for(var i=0;i<UAT_CCRE_cararray_length;i++)
-{
-var UAT_CCRE_card_cardlist_box=$('#UAT_CCRE_cb_cardlistselect'+i).val();
-if(UAT_CCRE_card_cardlist_box=="SELECT"){UAT_CCRE_flag3=1;}
-var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+i).is(":checked");
-if(UAT_CCRE_cc_check==true)
-{
-UAT_CCRE_flag1=1;
-if(UAT_CCRE_custname!="")
-{
-if(UAT_CCRE_card_cardlist_box.match(UAT_CCRE_custname))
-{
-UAT_CCRE_flag=1;
-}
-}
-if(UAT_CCRE_card_cardlist_box=="SELECT")
-{
-UAT_CCRE_flag2=1;
-}
-}
-}
-if(UAT_CCRE_flag1==1)
-{
-if(UAT_CCRE_flag==0)
-{
-$('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
-$('#UAT_CCRE_lbl_error').text(errormsg[5])
-$('#UAT_CCRE_lbl_error').show();
-}
-else
-{
-$('#UAT_CCRE_lbl_error').text("");
-}
-if(UAT_CCRE_flag2==1){
-$('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
-}
-}
-else
-{
-$('#UAT_CCRE_lbl_error').text("");
-}
-if(UAT_CCRE_flag1!=1)
-{
-$('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
-}
-}
-}
-}
-function UAT_CCRE_card_diffArray(a, b) {
-var seen = [], diff = [];
-for ( var i = 0; i < b.length; i++)
-seen[b[i]] = true;
-for ( var i = 0; i < a.length; i++)
-if (!seen[a[i]])
-diff.push(a[i]);
-return diff;
-}
-/********************SUBMIT FORM CONFORMATION ***************************/ 
-function UAT_CCRE_Conformation(Conformation) {
-$(".preloader").hide(); 
-if(Conformation==1)
-{
-reset();
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[7],position:$('#UAT_CCRE_btn_savebutton').position()}});
-}
-else if(Conformation==0)
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[18],position:$('#UAT_CCRE_btn_savebutton').position()}});
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:Conformation,position:$('#UAT_CCRE_btn_savebutton').position()}});
-}
-$(".preloader").hide(); 
-}
-$('#UAT_CCRE_btn_savebutton').click(function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#UAT_CCRE_btn_savebutton').position(),100,200);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_Conformation).UAT_CCRE_processFormSubmit(document.getElementById('customercreation_form'))
-});
-$('#UAT_CCRE_btn_reset').click(function(){
-reset()
-});
-/****************************FORM RESET*******************************/
-function reset()
-{
-$('#customercreation_form').find('input:text').prop("size","20");
-$('#customercreation_form').find('input[type=text]').val('');
-$("#UAT_CCRE_lb_nationselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_unitselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_roomselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_startselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_endselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_ccoptionselect")[0].selectedIndex = 0;
-$("#UAT_CCRE_lb_mailselect")[0].selectedIndex = 0;
-$('#UAT_CCRE_ta_comments').val('');
-$("#UAT_CCRE_tble_cardlisttable tr").remove();
-$("#UAT_CCRE_lb_startselect").hide();
-$("#UAT_CCRE_lb_endselect").hide();
-$("#UAT_CCRE_lb_startselect1").hide();
-$("#UAT_CCRE_lb_endselect1").hide();
-$('#UAT_CCRE_lb_roomselect').hide();
-$('#UAT_CCRE_tble_cardtable').hide();
-$('#UAT_CCRE_tble_nullradiotable').hide();
-$('#UAT_CCRE_lbl_roomtype').hide();
-$('#UAT_CCRE_tble_cardlisttable').hide();
-$('#UAT_CCRE_tb_quarterlyfee').hide();
-$('#UAT_CCRE_tb_aircon_fixed').hide();
-$('#UAT_CCRE_lb_startselect1').hide();
-$('#UAT_CCRE_lbl_startto').hide();
-$('#UAT_CCRE_lb_endselect1').hide();
-$('#UAT_CCRE_lbl_endto').hide();
-$('#UAT_CCRE_lbl_noticeerroemsg').hide();
-$('#UAT_CCRE_checkoutlabel').hide();
-$('#UAT_CCRE_db_enddate').hide();
-$('#checkindatelabel').hide();
-$('#UAT_CCRE_db_startdate').hide();
-$('#proratedvalue').attr('disabled');
-$('input:checkbox[name=UAT_CCRE_proratedcheckbox]').attr('checked',false);
-$('input:checkbox[name=tempcheckbox2]').attr('checked',false);
-$('input:checkbox[name=UAT_CCRE_proratedcheckbox]').attr("disabled",'disabled');
-$('#waivedvalue').attr('disabled');
-$('input:checkbox[name=UAT_CCRE_waivedchkbox]').attr("checked",false);
-$('input:checkbox[name=UAT_CCRE_waivedchkbox]').attr("disabled",'disabled');
-$('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
-$('#UAT_CCRE_lbl_emailiderrormsg').hide();
-$("#UAT_CCRE_fixed_aircon").attr('checked',false);
-$("#UAT_CCRE_quarter").attr('checked', false);
-$('#UAT_CCRE_lbl_postalerrormsg').hide();
-$('#UAT_CCRE_lbl_mobileerrormsg').hide();
-$('#UAT_CCRE_lbl_intlmobileerrormsg').hide();
-$('#UAT_CCRE_lbl_officeerrormsg').hide();
-$('#UAT_CCRE_lbl_renterrormsg').hide();
-$('#UAT_CCRE_lbl_depositerrormsg').hide();
-$('#UAT_CCRE_lbl_processerrormsg').hide();
-$('#UAT_CCRE_lbl_electcaperrormsg').hide();
-$('#UAT_CCRE_lbl_passporterrormsg').hide();
-$('#UAT_CCRE_lbl_epnoerrormsg').hide();
-$('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');
-$('#UAT_CCRE_tb_mobile').removeClass('invalid');
-$('#UAT_CCRE_tb_intmobile').removeClass('invalid');
-$('#UAT_CCRE_tb_office').removeClass('invalid');
-$('#UAT_CCRE_tb_rent').removeClass('invalid');
-$('#UAT_CCRE_tb_rent').removeClass('invalid');
-$('#UAT_CCRE_tb_process').removeClass('invalid');
-$('#UAT_CCRE_tb_deposit').removeClass('invalid');
-$('#UAT_CCRE_tb_passportno').removeClass('invalid');
-$('#UAT_CCRE_tb_epno').removeClass('invalid');
-$('#UAT_CCRE_tb_electricity').removeClass('invalid');
-$('#UAT_CCRE_tb_custmailid').removeClass('invalid');
-}
-/*******************FROM TRY CATCH ERROR MESSAGE*****************************/
-function UAT_CCRE_error_message(UAT_CCRE_err)
-{
-if(UAT_CCRE_err=='TypeError: Cannot call method "createEvent" of undefined.')
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[21],position:$('#UAT_CCRE_btn_savebutton').position()}});
-}
-else if(UAT_CCRE_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[22],position:$('#UAT_CCRE_btn_savebutton').position()}});
-}
-else if(UAT_CCRE_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-UAT_CCRE_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#customercreation_form').replaceWith('<center><label class="dberrormsg">'+UAT_CCRE_err+'</label></center>');
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:UAT_CCRE_err,position:$('#UAT_CCRE_btn_savebutton').position()}});
-}
-$(".preloader").hide();
-}
+                $('#UAT_CCRE_cb_cardlistselect'+j).attr("enabled","enabled")
+            }
+            if(UAT_CCRE_cc_check==true)
+            {
+                $('#UAT_CCRE_cb_cardlistselect'+j).show();
+                $('#UAT_CCRE_cb_cardlistselect'+j).attr("enabled","enabled")
+            }
+            else
+            {
+                $('#UAT_CCRE_cb_cardlistselect'+j)[0].selectedIndex = 0;
+                $('#UAT_CCRE_lb_cardlisttext'+j).val('');
+                $('#UAT_CCRE_cb_cardlistselect'+j).hide();}
+        }
+        if(count==4)
+        {
+            for(var i=0;i<UAT_CCRE_cc_cardarray_length;i++)
+            {
+                var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+i).is(":checked");
+                if(UAT_CCRE_cc_check==false)
+                {
+                    $('#UAT_CCRE_cb_cardnumberarray'+i).attr("disabled","disabled");
+                }
+            }
+        }
+        else
+        {
+            if(ll==0)
+            {
+                for(var i=0;i<UAT_CCRE_cc_cardarray_length;i++)
+                {
+                    var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+i).is(":checked");
+                    if(UAT_CCRE_cc_check==false)
+                    {
+                        $('#UAT_CCRE_cb_cardnumberarray'+i).removeAttr("disabled","disabled");
+                    }
+                }
+            }
+            else
+            {
+                for(var y=0;y<UAT_CCRE_cc_cardarray_length;y++)
+                {
+                    var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+y).is(":checked");
+                    if(UAT_CCRE_cc_check==false)
+                    {
+                        $('#UAT_CCRE_cb_cardnumberarray'+y).attr("disabled","disabled");
+                    }
+                }
+            }
+        }
+        UAT_CCRE_submit_validate(accesscard_array)
+        $(".preloader").hide();
+    });
+    /******************************************SUBMIT BUTTON VALIDATION FOR ACCESSCARD*****************************************************/
+    function UAT_CCRE_submit_validate(card)
+    {
+        var UAT_CCRE_fname=$('#UAT_CCRE_tb_firstname').val();
+        var UAT_CCRE_lname=$('#UAT_CCRE_tb_lastname').val();
+        var UAT_CCRE_cardArray=[];
+        var UAT_CCRE_g_array=[];
+        UAT_CCRE_cardArray=card[0];
+        UAT_CCRE_g_array=card[1]
+        var UAT_CCRE_cararray_length=UAT_CCRE_cardArray.length;
+        var UAT_CCRE_gcardlen=UAT_CCRE_g_array.length;
+        var UAT_CCRE_printarray=[];
+        var UAT_CCRE_false_flag=0;
+        var UAT_CCRE_true_flag=0;
+        var UAT_CCRE_flag=0;var UAT_CCRE_flag1=0;var UAT_CCRE_flag2=0;var UAT_CCRE_flag3=0;
+        for(var k=0;k<UAT_CCRE_cararray_length;k++)
+        {
+            var UAT_CCRE_access_card= $('#UAT_CCRE_cb_cardnumberarray'+k).is(":checked");
+            if(UAT_CCRE_access_card==true)
+            {
+                UAT_CCRE_true_flag++;
+            }
+            else
+            {
+                UAT_CCRE_false_flag++;
+            }
+        }
+        if(UAT_CCRE_true_flag==0||UAT_CCRE_lname=="")
+        {
+            $('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
+            $('#UAT_CCRE_lbl_error').hide();
+        }
+        else
+        {
+            $('#UAT_CCRE_lbl_error').hide();
+            if($("#UAT_CCRE_tb_rent").val()!="" &&$("#UAT_CCRE_db_startdate").val()!=""  && $("#UAT_CCRE_db_enddate").val()!="" && $("#UAT_CCRE_lb_nationselect").val()!="SELECT" &&$("#UAT_CCRE_lb_startselect").val()!="SELECT"&& $("#UAT_CCRE_lb_ccoptionselect").val()!="SELECT"&& $("#UAT_CCRE_lb_mailselect").val()!="SELECT")
+            {
+                $('#UAT_CCRE_btn_savebutton').removeAttr('disabled');
+            }
+            var UAT_CCRE_custname="";
+            if(UAT_CCRE_fname!=""&&UAT_CCRE_lname!="")
+            {
+                UAT_CCRE_custname=(UAT_CCRE_fname+" "+UAT_CCRE_lname).toUpperCase();
+            }
+            if(UAT_CCRE_cararray_length>0)
+            {
+                for(var i=0;i<UAT_CCRE_cararray_length;i++)
+                {
+                    var UAT_CCRE_card_cardlist_box=$('#UAT_CCRE_cb_cardlistselect'+i).val();
+                    if(UAT_CCRE_card_cardlist_box=="SELECT"){UAT_CCRE_flag3=1;}
+                    var UAT_CCRE_cc_check=$('#UAT_CCRE_cb_cardnumberarray'+i).is(":checked");
+                    if(UAT_CCRE_cc_check==true)
+                    {
+                        UAT_CCRE_flag1=1;
+                        if(UAT_CCRE_custname!="")
+                        {
+                            if(UAT_CCRE_card_cardlist_box.match(UAT_CCRE_custname))
+                            {
+                                UAT_CCRE_flag=1;
+                            }
+                        }
+                        if(UAT_CCRE_card_cardlist_box=="SELECT")
+                        {
+                            UAT_CCRE_flag2=1;
+                        }
+                    }
+                }
+                if(UAT_CCRE_flag1==1)
+                {
+                    if(UAT_CCRE_flag==0)
+                    {
+                        $('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
+                        $('#UAT_CCRE_lbl_error').text(errormsg[5])
+                        $('#UAT_CCRE_lbl_error').show();
+                    }
+                    else
+                    {
+                        $('#UAT_CCRE_lbl_error').text("");
+                    }
+                    if(UAT_CCRE_flag2==1){
+                        $('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
+                    }
+                }
+                else
+                {
+                    $('#UAT_CCRE_lbl_error').text("");
+                }
+                if(UAT_CCRE_flag1!=1)
+                {
+                    $('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
+                }
+            }
+        }
+    }
+    function UAT_CCRE_card_diffArray(a, b) {
+        var seen = [], diff = [];
+        for ( var i = 0; i < b.length; i++)
+            seen[b[i]] = true;
+        for ( var i = 0; i < a.length; i++)
+            if (!seen[a[i]])
+                diff.push(a[i]);
+        return diff;
+    }
+    /********************SUBMIT FORM CONFORMATION ***************************/
+    function UAT_CCRE_Conformation(Conformation) {
+        $(".preloader").hide();
+        if(Conformation==1)
+        {
+            reset();
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[7],position:$('#UAT_CCRE_btn_savebutton').position()}});
+        }
+        else if(Conformation==0)
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[18],position:$('#UAT_CCRE_btn_savebutton').position()}});
+        }
+        else
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:Conformation,position:$('#UAT_CCRE_btn_savebutton').position()}});
+        }
+        $(".preloader").hide();
+    }
+    $('#UAT_CCRE_btn_savebutton').click(function(){
+        $(".preloader").show();
+        var  newPos= adjustPosition($('#UAT_CCRE_btn_savebutton').position(),100,200);
+        resetPreloader(newPos);
+        google.script.run.withFailureHandler(UAT_CCRE_error_message).withSuccessHandler(UAT_CCRE_Conformation).UAT_CCRE_processFormSubmit(document.getElementById('customercreation_form'))
+    });
+    $('#UAT_CCRE_btn_reset').click(function(){
+        reset()
+    });
+    /****************************FORM RESET*******************************/
+    function reset()
+    {
+        $('#customercreation_form').find('input:text').prop("size","20");
+        $('#customercreation_form').find('input[type=text]').val('');
+        $("#UAT_CCRE_lb_nationselect")[0].selectedIndex = 0;
+        $("#UAT_CCRE_lb_unitselect")[0].selectedIndex = 0;
+        $("#UAT_CCRE_lb_roomselect")[0].selectedIndex = 0;
+        $("#UAT_CCRE_lb_startselect")[0].selectedIndex = 0;
+        $("#UAT_CCRE_lb_endselect")[0].selectedIndex = 0;
+        $("#UAT_CCRE_lb_ccoptionselect")[0].selectedIndex = 0;
+        $("#UAT_CCRE_lb_mailselect")[0].selectedIndex = 0;
+        $('#UAT_CCRE_ta_comments').val('');
+        $("#UAT_CCRE_tble_cardlisttable tr").remove();
+        $("#UAT_CCRE_lb_startselect").hide();
+        $("#UAT_CCRE_lb_endselect").hide();
+        $("#UAT_CCRE_lb_startselect1").hide();
+        $("#UAT_CCRE_lb_endselect1").hide();
+        $('#UAT_CCRE_lb_roomselect').hide();
+        $('#UAT_CCRE_tble_cardtable').hide();
+        $('#UAT_CCRE_tble_nullradiotable').hide();
+        $('#UAT_CCRE_lbl_roomtype').hide();
+        $('#UAT_CCRE_tble_cardlisttable').hide();
+        $('#UAT_CCRE_tb_quarterlyfee').hide();
+        $('#UAT_CCRE_tb_aircon_fixed').hide();
+        $('#UAT_CCRE_lb_startselect1').hide();
+        $('#UAT_CCRE_lbl_startto').hide();
+        $('#UAT_CCRE_lb_endselect1').hide();
+        $('#UAT_CCRE_lbl_endto').hide();
+        $('#UAT_CCRE_lbl_noticeerroemsg').hide();
+        $('#UAT_CCRE_checkoutlabel').hide();
+        $('#UAT_CCRE_db_enddate').hide();
+        $('#checkindatelabel').hide();
+        $('#UAT_CCRE_db_startdate').hide();
+        $('#proratedvalue').attr('disabled');
+        $('input:checkbox[name=UAT_CCRE_proratedcheckbox]').attr('checked',false);
+        $('input:checkbox[name=tempcheckbox2]').attr('checked',false);
+        $('input:checkbox[name=UAT_CCRE_proratedcheckbox]').attr("disabled",'disabled');
+        $('#waivedvalue').attr('disabled');
+        $('input:checkbox[name=UAT_CCRE_waivedchkbox]').attr("checked",false);
+        $('input:checkbox[name=UAT_CCRE_waivedchkbox]').attr("disabled",'disabled');
+        $('#UAT_CCRE_btn_savebutton').attr("disabled","disabled");
+        $('#UAT_CCRE_lbl_emailiderrormsg').hide();
+        $("#UAT_CCRE_fixed_aircon").attr('checked',false);
+        $("#UAT_CCRE_quarter").attr('checked', false);
+        $('#UAT_CCRE_lbl_postalerrormsg').hide();
+        $('#UAT_CCRE_lbl_mobileerrormsg').hide();
+        $('#UAT_CCRE_lbl_intlmobileerrormsg').hide();
+        $('#UAT_CCRE_lbl_officeerrormsg').hide();
+        $('#UAT_CCRE_lbl_renterrormsg').hide();
+        $('#UAT_CCRE_lbl_depositerrormsg').hide();
+        $('#UAT_CCRE_lbl_processerrormsg').hide();
+        $('#UAT_CCRE_lbl_electcaperrormsg').hide();
+        $('#UAT_CCRE_lbl_passporterrormsg').hide();
+        $('#UAT_CCRE_lbl_epnoerrormsg').hide();
+        $('#UAT_CCRE_tb_companypostalcode').removeClass('invalid');
+        $('#UAT_CCRE_tb_mobile').removeClass('invalid');
+        $('#UAT_CCRE_tb_intmobile').removeClass('invalid');
+        $('#UAT_CCRE_tb_office').removeClass('invalid');
+        $('#UAT_CCRE_tb_rent').removeClass('invalid');
+        $('#UAT_CCRE_tb_rent').removeClass('invalid');
+        $('#UAT_CCRE_tb_process').removeClass('invalid');
+        $('#UAT_CCRE_tb_deposit').removeClass('invalid');
+        $('#UAT_CCRE_tb_passportno').removeClass('invalid');
+        $('#UAT_CCRE_tb_epno').removeClass('invalid');
+        $('#UAT_CCRE_tb_electricity').removeClass('invalid');
+        $('#UAT_CCRE_tb_custmailid').removeClass('invalid');
+    }
+    /*******************FROM TRY CATCH ERROR MESSAGE*****************************/
+    function UAT_CCRE_error_message(UAT_CCRE_err)
+    {
+        if(UAT_CCRE_err=='TypeError: Cannot call method "createEvent" of undefined.')
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[21],position:$('#UAT_CCRE_btn_savebutton').position()}});
+        }
+        else if(UAT_CCRE_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:errormsg[22],position:$('#UAT_CCRE_btn_savebutton').position()}});
+        }
+        else if(UAT_CCRE_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+        {
+            UAT_CCRE_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+            $('#customercreation_form').replaceWith('<center><label class="dberrormsg">'+UAT_CCRE_err+'</label></center>');
+        }
+        else
+        {
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"CUSTOMER CREATION UAT",msgcontent:UAT_CCRE_err,position:$('#UAT_CCRE_btn_savebutton').position()}});
+        }
+        $(".preloader").hide();
+    }
 });
 function getairconFocus() {
-$("#UAT_CCRE_tb_aircon_fixed").focus();
+    $("#UAT_CCRE_tb_aircon_fixed").focus();
 }
 function getquaterFocus() {
-$("#UAT_CCRE_tb_quarterlyfee").focus();
+    $("#UAT_CCRE_tb_quarterlyfee").focus();
 }
 </script>
 <body bgcolor="#E6E6FA">
 <div class="wrapper">
 <div class="preloader MaskPanel">
-<div class="preloader statusarea">
-<div style="padding-top:90px; text-align:center">
-<img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
-</div>
-</div>
+    <div class="preloader statusarea">
+        <div style="padding-top:90px; text-align:center">
+            <img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/>
+        </div>
+    </div>
 </div>
 <div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>CUSTOMER CREATION UAT</h3><p></div></div>
 <form id='UAT_CCRE_errormessageform'>
-<table id='UAT_CCRE_errormessagetable'>
-</table>
+    <table id='UAT_CCRE_errormessagetable'>
+    </table>
 </form>
 <form class='content' action="" id="customercreation_form" name="customercreation_form" hidden>
 <table id="UAT_CCRE_tble_maintable">
 <table cellspacing="5px" id="UAT_CCRE_tble_persionaltable">
-<tr>
-<td>
-<label>FIRST NAME<em>*</em></label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_firstname" id="UAT_CCRE_tb_firstname" maxlength="30" class="autosize UAT_CCRE_class_customernamechange"/>
-</td>
-</tr>
-<tr>
-<td>
-<label>LAST NAME<em>*</em></label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_lastname" id="UAT_CCRE_tb_lastname" maxlength="30" class="autosize UAT_CCRE_class_customernamechange"/>
-</td>
-</tr>
-<tr>
-<td>
-<label>COMPANY NAME</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_companyname" id="UAT_CCRE_tb_companyname" maxlength="50" class="compautosize"/>
-</td>
-</tr>
-<tr>
-<td>
-<label>COMPANY ADDRESS</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_companyaddress" id="UAT_CCRE_tb_companyaddress" maxlength="50" class="compautosize"/>
-</td>
-</tr>
-<tr>
-<td width='250px'>
-<label>COMPANY POSTAL CODE</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_companypostalcode" id="UAT_CCRE_tb_companypostalcode" style="width:60px;" maxlength="6"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_postalerrormsg" class="errormsg" hidden>Should have atleast 5 digits</label>
-</td>
-</tr>
-<tr>
-<td>
-<label>E-MAIL ID<em>*</em></label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_custmailid" id="UAT_CCRE_tb_custmailid" maxlength="40"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_emailiderrormsg" class="errormsg"></label>
-</td>
-</tr>
-<tr>
-<td>
-<label>MOBILE</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_mobile" id="UAT_CCRE_tb_mobile" style="width:70px;" maxlength="8" class="numonlynozero mobilevalidation"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_mobileerrormsg" class="errormsg" hidden></label>
-</td>
-</tr>
-<tr>
-<td>
-<label>INT'L MOBILE</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_intmobile" id="UAT_CCRE_tb_intmobile" style="width:110px;" maxlength="15"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_intlmobileerrormsg" class="errormsg" hidden></label>
-</td>
-</tr>
-<tr>
-<td>
-<label>OFFICE NO</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_office" id="UAT_CCRE_tb_office" style="width:70px;" maxlength="8" class="numonlynozero officevalidation"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_officeerrormsg" class="errormsg" hidden></label>
-</td>
-</tr>
-<tr>
-<td>
-<label> DATE OF BIRTH</label>
-</td>
-<td>
-<input type="text" class="datepicker datenonmandtry" style="width:75px;" name="UAT_CCRE_db_BirthDate" id="UAT_CCRE_db_BirthDate"/>
-</td>
-</tr>
-<tr>
-<td>
-<label>NATIONALITY<em>*</em></label>
-</td>
-<td>
-<select id='UAT_CCRE_lb_nationselect' name="UAT_CCRE_lb_nationselect">
-<option>SELECT</option>
-</select>
-</tr>
-<tr>
-<td>
-<label>PASSPORT NUMBER</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_passportno" id="UAT_CCRE_tb_passportno" class="alnumonlyzero" maxlength="15"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_passporterrormsg" class="errormsg" hidden></label>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_passportdateerrormsg" class="errormsg" hidden></label>
-</td>
-</tr>
-<tr>
-<td>
-<label>PASSPORT EXPIRY DATE</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_db_passportdate" id="UAT_CCRE_db_passportdate" class="passportdatevalidation datenonmandtry" style="width:75px"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_pportdateerrormsg" class="errormsg" hidden></label>
-</td>
-</tr>
-<tr>
-<td>
-<label>EP NUMBER</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_tb_epno" id="UAT_CCRE_tb_epno" class="alnumonlynozero" maxlength="15"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_epnoerrormsg" class="errormsg"  hidden></label>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_epnodateerrormsg" class="errormsg"  hidden></label>
-</td>
-</tr>
-<tr>
-<td>
-<label>EP EXPIRY DATE</label>
-</td>
-<td>
-<input type="text" name="UAT_CCRE_db_epdate" id="UAT_CCRE_db_epdate" class="epdatevalidation datenonmandtry"  style="width:75px"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_ep_dateerrormsg" class="errormsg" hidden></label>
-</td>
-</tr>
-<tr>
-<td>
-<label>UNIT NUMBER<em>*</em></label>
-</td>
-<td>
-<select id="UAT_CCRE_lb_unitselect" name="UAT_CCRE_lb_unitselect" class="UAT_CCRE_class_customernamechange">
-<option>SELECT</option>
-</select>
-</tr>
-<tr>
-<td>
-<label id="UAT_CCRE_lbl_roomtype">ROOM TYPE<em>*</em></label>
-</td>
-<td>
-<select id='UAT_CCRE_lb_roomselect' name="UAT_CCRE_lb_roomselect" class='required'>
-</select>
-</tr>
-<tr>
-<td>
-</td>
-<td>
-<table cellspacing="5px" id="UAT_CCRE_tble_cardtable">
-<tr>
-<td>
-<input type="radio" name="radio" id="UAT_CCRE_radio_cardnumbers" value="cardnum" onblur="radiobutton">CARD NUMBER
-</td>
-<td>
-<label></label><label align='bottom' name='error' id='UAT_CCRE_lbl_error' visible="false" class="errormsg"></label>
-</td>
-</tr>
-</table>
-</tr>
-<td>
-</td>
-<td>
-<table cellspacing="5px" id="UAT_CCRE_tble_cardlisttable">
-</table>
-</td>
+    <tr>
+        <td>
+            <label>FIRST NAME<em>*</em></label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_firstname" id="UAT_CCRE_tb_firstname" maxlength="30" class="autosize UAT_CCRE_class_customernamechange"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>LAST NAME<em>*</em></label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_lastname" id="UAT_CCRE_tb_lastname" maxlength="30" class="autosize UAT_CCRE_class_customernamechange"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>COMPANY NAME</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_companyname" id="UAT_CCRE_tb_companyname" maxlength="50" class="compautosize"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>COMPANY ADDRESS</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_companyaddress" id="UAT_CCRE_tb_companyaddress" maxlength="50" class="compautosize"/>
+        </td>
+    </tr>
+    <tr>
+        <td width='250px'>
+            <label>COMPANY POSTAL CODE</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_companypostalcode" id="UAT_CCRE_tb_companypostalcode" style="width:60px;" maxlength="6"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_postalerrormsg" class="errormsg" hidden>Should have atleast 5 digits</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>E-MAIL ID<em>*</em></label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_custmailid" id="UAT_CCRE_tb_custmailid" maxlength="40"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_emailiderrormsg" class="errormsg"></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>MOBILE</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_mobile" id="UAT_CCRE_tb_mobile" style="width:70px;" maxlength="8" class="numonlynozero mobilevalidation"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_mobileerrormsg" class="errormsg" hidden></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>INT'L MOBILE</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_intmobile" id="UAT_CCRE_tb_intmobile" style="width:110px;" maxlength="15"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_intlmobileerrormsg" class="errormsg" hidden></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>OFFICE NO</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_office" id="UAT_CCRE_tb_office" style="width:70px;" maxlength="8" class="numonlynozero officevalidation"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_officeerrormsg" class="errormsg" hidden></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label> DATE OF BIRTH</label>
+        </td>
+        <td>
+            <input type="text" class="datepicker datenonmandtry" style="width:75px;" name="UAT_CCRE_db_BirthDate" id="UAT_CCRE_db_BirthDate"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>NATIONALITY<em>*</em></label>
+        </td>
+        <td>
+            <select id='UAT_CCRE_lb_nationselect' name="UAT_CCRE_lb_nationselect">
+                <option>SELECT</option>
+            </select>
+    </tr>
+    <tr>
+        <td>
+            <label>PASSPORT NUMBER</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_passportno" id="UAT_CCRE_tb_passportno" class="alnumonlyzero" maxlength="15"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_passporterrormsg" class="errormsg" hidden></label>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_passportdateerrormsg" class="errormsg" hidden></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>PASSPORT EXPIRY DATE</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_db_passportdate" id="UAT_CCRE_db_passportdate" class="passportdatevalidation datenonmandtry" style="width:75px"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_pportdateerrormsg" class="errormsg" hidden></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>EP NUMBER</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_tb_epno" id="UAT_CCRE_tb_epno" class="alnumonlynozero" maxlength="15"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_epnoerrormsg" class="errormsg"  hidden></label>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_epnodateerrormsg" class="errormsg"  hidden></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>EP EXPIRY DATE</label>
+        </td>
+        <td>
+            <input type="text" name="UAT_CCRE_db_epdate" id="UAT_CCRE_db_epdate" class="epdatevalidation datenonmandtry"  style="width:75px"/>
+        </td>
+        <td>
+            <label id="UAT_CCRE_lbl_ep_dateerrormsg" class="errormsg" hidden></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>UNIT NUMBER<em>*</em></label>
+        </td>
+        <td>
+            <select id="UAT_CCRE_lb_unitselect" name="UAT_CCRE_lb_unitselect" class="UAT_CCRE_class_customernamechange">
+                <option>SELECT</option>
+            </select>
+    </tr>
+    <tr>
+        <td>
+            <label id="UAT_CCRE_lbl_roomtype">ROOM TYPE<em>*</em></label>
+        </td>
+        <td>
+            <select id='UAT_CCRE_lb_roomselect' name="UAT_CCRE_lb_roomselect" class='required'>
+            </select>
+    </tr>
+    <tr>
+        <td>
+        </td>
+        <td>
+            <table cellspacing="5px" id="UAT_CCRE_tble_cardtable">
+                <tr>
+                    <td>
+                        <input type="radio" name="radio" id="UAT_CCRE_radio_cardnumbers" value="cardnum" onblur="radiobutton">CARD NUMBER
+                    </td>
+                    <td>
+                        <label></label><label align='bottom' name='error' id='UAT_CCRE_lbl_error' visible="false" class="errormsg"></label>
+                    </td>
+                </tr>
+            </table>
+    </tr>
+    <td>
+    </td>
+    <td>
+        <table cellspacing="5px" id="UAT_CCRE_tble_cardlisttable">
+        </table>
+    </td>
 </table>
 <table>
 <tr>
-<td>
-</td>
-<td>
-<table cellspacing="5px" id="UAT_CCRE_tble_nullradiotable">
-<tr>
-<td>&nbsp;<input type="radio" name="radio" value="null" id="UAT_CCRE_radio_null" onblur="radiobutton">NULL
-</td>
-</tr>
-</table>
-</tr>
-<tr>
-<td>
-<label id='checkindatelabel'hidden>CHECK IN DATE<em>*</em></label>
-</td>
-<td>
-<table>
-<td>
-<input type="text" name="UAT_CCRE_db_startdate" id="UAT_CCRE_db_startdate" class="prorated startdatevalidate datemandtry noticedate" style="width:75px;height:20px" hidden/>
-</td>
-<td>
-<select id='UAT_CCRE_lb_startselect' name="UAT_CCRE_lb_startselect" style="width:75px;height:20px" hidden>
-<option>SELECT</option>
-</select>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_startto" style="width:25px;">To</label>
-</td>
-<td>
-<select id='UAT_CCRE_lb_startselect1' name="UAT_CCRE_lb_startselect1" style="width:75px;height:20px">
-<option>SELECT</option>
-</select>
-</td>
-</table>
-</td>
+    <td>
+    </td>
+    <td>
+        <table cellspacing="5px" id="UAT_CCRE_tble_nullradiotable">
+            <tr>
+                <td>&nbsp;<input type="radio" name="radio" value="null" id="UAT_CCRE_radio_null" onblur="radiobutton">NULL
+                </td>
+            </tr>
+        </table>
 </tr>
 <tr>
-<td>
-<label id="UAT_CCRE_checkoutlabel" hidden>CHECK OUT DATE<em>*</em></label>
-</td>
-<td>
-<table>
+    <td>
+        <label id='checkindatelabel'hidden>CHECK IN DATE<em>*</em></label>
+    </td>
+    <td>
+        <table>
+            <td>
+                <input type="text" name="UAT_CCRE_db_startdate" id="UAT_CCRE_db_startdate" class="prorated startdatevalidate datemandtry noticedate" style="width:75px;height:20px" hidden/>
+            </td>
+            <td>
+                <select id='UAT_CCRE_lb_startselect' name="UAT_CCRE_lb_startselect" style="width:75px;height:20px" hidden>
+                    <option>SELECT</option>
+                </select>
+            </td>
+            <td>
+                <label id="UAT_CCRE_lbl_startto" style="width:25px;">To</label>
+            </td>
+            <td>
+                <select id='UAT_CCRE_lb_startselect1' name="UAT_CCRE_lb_startselect1" style="width:75px;height:20px">
+                    <option>SELECT</option>
+                </select>
+            </td>
+        </table>
+    </td>
+</tr>
 <tr>
-<td>
-<input type="text" name="UAT_CCRE_db_enddate" id="UAT_CCRE_db_enddate" class="passportdatevalidation epdatevalidation prorated datemandtry noticedate" style="width:75px;height:20px" hidden/>
-</td>
-<td>
-<select id='UAT_CCRE_lb_endselect' name="UAT_CCRE_lb_endselect" style="width:75px;height:20px" hidden>
-<option>SELECT</option>
-</select>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_endto" style="width:25px;">To</label>
-</td>
-<td>
-<select id='UAT_CCRE_lb_endselect1' name="UAT_CCRE_lb_endselect1" style="width:75px;height:20px">
-</select>
-</td>
+    <td>
+        <label id="UAT_CCRE_checkoutlabel" hidden>CHECK OUT DATE<em>*</em></label>
+    </td>
+    <td>
+        <table>
+            <tr>
+                <td>
+                    <input type="text" name="UAT_CCRE_db_enddate" id="UAT_CCRE_db_enddate" class="passportdatevalidation epdatevalidation prorated datemandtry noticedate" style="width:75px;height:20px" hidden/>
+                </td>
+                <td>
+                    <select id='UAT_CCRE_lb_endselect' name="UAT_CCRE_lb_endselect" style="width:75px;height:20px" hidden>
+                        <option>SELECT</option>
+                    </select>
+                </td>
+                <td>
+                    <label id="UAT_CCRE_lbl_endto" style="width:25px;">To</label>
+                </td>
+                <td>
+                    <select id='UAT_CCRE_lb_endselect1' name="UAT_CCRE_lb_endselect1" style="width:75px;height:20px">
+                    </select>
+                </td>
 
-</tr>
-</table>
-</td>
-</tr>
-<tr>
-<td>
-<label>NOTICE PERIOD</label>
-</td>
-<td>
-&nbsp;<input type="text" name="UAT_CCRE_tb_noticeno" id="UAT_CCRE_tb_noticeno" maxlength="1" style="width:25px;" class="UAT_CCRE_numonlyvalidation"/>
-</td>
+            </tr>
+        </table>
+    </td>
 </tr>
 <tr>
-<td>
-<label>NOTICE PERIOD DATE</label>
-</td>
-<td>
-&nbsp;<input type="text" name="UAT_CCRE_db_noticedate" id="UAT_CCRE_db_noticedate" class="datenonmandtry" style="width:75px;height:20px"/>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_noticeerroemsg" class="errormsg">NOTICE PERIODDATE IS EXPIRED</label>
-</td>
+    <td>
+        <label>NOTICE PERIOD</label>
+    </td>
+    <td>
+        &nbsp;<input type="text" name="UAT_CCRE_tb_noticeno" id="UAT_CCRE_tb_noticeno" maxlength="1" style="width:25px;" class="UAT_CCRE_numonlyvalidation"/>
+    </td>
 </tr>
 <tr>
-<td>
-<label>SELECT AIRCON FEE</label>
-</td>
-<td>
-&nbsp;<input type="radio" id="UAT_CCRE_quarter" name="aircon" onclick="getquaterFocus()" value="quarterlyfee">QUARTERLY SERVICE FEE <input type="text" name="UAT_CCRE_tb_quarterlyfee" id="UAT_CCRE_tb_quarterlyfee" maxlength="6" style="width:60px;" class="UAT_CCRE_amtonlyvalidation" />
-</td>
+    <td>
+        <label>NOTICE PERIOD DATE</label>
+    </td>
+    <td>
+        &nbsp;<input type="text" name="UAT_CCRE_db_noticedate" id="UAT_CCRE_db_noticedate" class="datenonmandtry" style="width:75px;height:20px"/>
+    </td>
+    <td>
+        <label id="UAT_CCRE_lbl_noticeerroemsg" class="errormsg">NOTICE PERIODDATE IS EXPIRED</label>
+    </td>
 </tr>
 <tr>
-<td>
-</td>
-<td>
-&nbsp;<input type="radio" name="aircon" id="UAT_CCRE_fixed_aircon" onclick="getairconFocus()" value="fixedairconfee">FIXED AIRCON FEE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="UAT_CCRE_tb_aircon_fixed" id="UAT_CCRE_tb_aircon_fixed" style="width:60px;" maxlength="6" class="UAT_CCRE_amtonlyvalidation"/>
-</td>
+    <td>
+        <label>SELECT AIRCON FEE</label>
+    </td>
+    <td>
+        &nbsp;<input type="radio" id="UAT_CCRE_quarter" name="aircon" onclick="getquaterFocus()" value="quarterlyfee">QUARTERLY SERVICE FEE <input type="text" name="UAT_CCRE_tb_quarterlyfee" id="UAT_CCRE_tb_quarterlyfee" maxlength="6" style="width:60px;" class="UAT_CCRE_amtonlyvalidation" />
+    </td>
 </tr>
 <tr>
-<td>
-<label>ELECTRICITY CAPPED</label>
-</td>
-<td>
-<table>
-<td>
-<input type="text" name="UAT_CCRE_tb_electricity" id="UAT_CCRE_tb_electricity" style="width:60px;" maxlength="6" class="UAT_CCRE_amtonlyvalidation"/>
-</td>
-<td>
-<p class="errormsg">
-</p>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_electcaperrormsg" class="errormsg" hidden></label>
-</td>
-</table>
+    <td>
+    </td>
+    <td>
+        &nbsp;<input type="radio" name="aircon" id="UAT_CCRE_fixed_aircon" onclick="getairconFocus()" value="fixedairconfee">FIXED AIRCON FEE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="UAT_CCRE_tb_aircon_fixed" id="UAT_CCRE_tb_aircon_fixed" style="width:60px;" maxlength="6" class="UAT_CCRE_amtonlyvalidation"/>
+    </td>
 </tr>
 <tr>
-<td width='250px'>
-<label>CURTAIN DRY CLEANING FEE</label>
-</td>
-<td>
-&nbsp;<input type="text" name="UAT_CCRE_tb_drycleaning" style="width:60px;" id="UAT_CCRE_tb_drycleaning" maxlength="6" class="UAT_CCRE_amtonlyvalidation"/>
-</td>
-<td>
-<p class="errormsg">
-</p>
-</td>
+    <td>
+        <label>ELECTRICITY CAPPED</label>
+    </td>
+    <td>
+        <table>
+            <td>
+                <input type="text" name="UAT_CCRE_tb_electricity" id="UAT_CCRE_tb_electricity" style="width:60px;" maxlength="6" class="UAT_CCRE_amtonlyvalidation"/>
+            </td>
+            <td>
+                <p class="errormsg">
+                </p>
+            </td>
+            <td>
+                <label id="UAT_CCRE_lbl_electcaperrormsg" class="errormsg" hidden></label>
+            </td>
+        </table>
 </tr>
 <tr>
-<td>
-<label>CHECKOUT CLEANING FEE</label>
-</td>
-<td>
-&nbsp;<input type="text" name="UAT_CCRE_tb_cleaning" id="UAT_CCRE_tb_cleaning" style="width:60px;" maxlength="6" class="UAT_CCRE_amtonlyvalidation"/>
-</td>
-<td>
-<p class="errormsg">
-</p>
-</td>
+    <td width='250px'>
+        <label>CURTAIN DRY CLEANING FEE</label>
+    </td>
+    <td>
+        &nbsp;<input type="text" name="UAT_CCRE_tb_drycleaning" style="width:60px;" id="UAT_CCRE_tb_drycleaning" maxlength="6" class="UAT_CCRE_amtonlyvalidation"/>
+    </td>
+    <td>
+        <p class="errormsg">
+        </p>
+    </td>
 </tr>
 <tr>
-<td>
-<label>DEPOSIT</label>
-</td>
-<td>
-<table >
-<td>
-<input type="text" name="UAT_CCRE_tb_deposit" id="UAT_CCRE_tb_deposit" style="width:60px;" maxlength="7" class="UAT_CCRE_amtonlyvalidationmaxdigit"/>
-</td>
-<td>
-<p class="errormsg">
-</p>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_depositerrormsg" class="errormsg" hidden></label>
-</td>
-</table>
+    <td>
+        <label>CHECKOUT CLEANING FEE</label>
+    </td>
+    <td>
+        &nbsp;<input type="text" name="UAT_CCRE_tb_cleaning" id="UAT_CCRE_tb_cleaning" style="width:60px;" maxlength="6" class="UAT_CCRE_amtonlyvalidation"/>
+    </td>
+    <td>
+        <p class="errormsg">
+        </p>
+    </td>
 </tr>
 <tr>
-<td>
-<label>RENT<em>*</em></label>
-</td>
-<td>
-<table>
-<td>
-<input type="text" name="UAT_CCRE_tb_rent" id="UAT_CCRE_tb_rent" style="width:60px;" maxlength="7" class="UAT_CCRE_amtonlyvalidationmaxdigit prorated"/>
-</td>
-<td>
-<input type="checkbox" name="UAT_CCRE_proratedcheckbox" id="proratedvalue" class="proratedcheck" value="prorated" disabled/>
-</td>
-<td>
-<input type="checkbox" name="tempcheckbox2" id="tempproratedvalue" value="tempprorated" hidden/><label id="UAT_CCRE_lbl_prorated"></label>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_renterrormsg" class="errormsg" hidden></label>
-</td>
-</table>
+    <td>
+        <label>DEPOSIT</label>
+    </td>
+    <td>
+        <table >
+            <td>
+                <input type="text" name="UAT_CCRE_tb_deposit" id="UAT_CCRE_tb_deposit" style="width:60px;" maxlength="7" class="UAT_CCRE_amtonlyvalidationmaxdigit"/>
+            </td>
+            <td>
+                <p class="errormsg">
+                </p>
+            </td>
+            <td>
+                <label id="UAT_CCRE_lbl_depositerrormsg" class="errormsg" hidden></label>
+            </td>
+        </table>
 </tr>
 <tr>
-<td>
-<label>PROCESSING COST</label>
-</td>
-<td>
-<table>
-<td>
-<input type="text" name="UAT_CCRE_tb_process" id="UAT_CCRE_tb_process" style="width:60px;" maxlength="7" class="UAT_CCRE_processamtonlyvalidationmaxdigit waived"/>
-</td>
-<td>
-<input type="checkbox" name="UAT_CCRE_waivedchkbox" id="waivedvalue" value="waived" disabled/><label id="UAT_CCRE_lbl_waived"></label>
-</td>
-<td>
-<label id="UAT_CCRE_lbl_processerrormsg" class="errormsg" hidden></label>
-</td>
-</table>
+    <td>
+        <label>RENT<em>*</em></label>
+    </td>
+    <td>
+        <table>
+            <td>
+                <input type="text" name="UAT_CCRE_tb_rent" id="UAT_CCRE_tb_rent" style="width:60px;" maxlength="7" class="UAT_CCRE_amtonlyvalidationmaxdigit prorated"/>
+            </td>
+            <td>
+                <input type="checkbox" name="UAT_CCRE_proratedcheckbox" id="proratedvalue" class="proratedcheck" value="prorated" disabled/>
+            </td>
+            <td>
+                <input type="checkbox" name="tempcheckbox2" id="tempproratedvalue" value="tempprorated" hidden/><label id="UAT_CCRE_lbl_prorated"></label>
+            </td>
+            <td>
+                <label id="UAT_CCRE_lbl_renterrormsg" class="errormsg" hidden></label>
+            </td>
+        </table>
 </tr>
 <tr>
-<td>
-<label>SELECT THE OPTION<em>*</em></label>
-</td>
-<td>
-<select id='UAT_CCRE_lb_ccoptionselect' name="UAT_CCRE_lb_ccoptionselect">
-<option>SELECT</option>
-</select>
+    <td>
+        <label>PROCESSING COST</label>
+    </td>
+    <td>
+        <table>
+            <td>
+                <input type="text" name="UAT_CCRE_tb_process" id="UAT_CCRE_tb_process" style="width:60px;" maxlength="7" class="UAT_CCRE_processamtonlyvalidationmaxdigit waived"/>
+            </td>
+            <td>
+                <input type="checkbox" name="UAT_CCRE_waivedchkbox" id="waivedvalue" value="waived" disabled/><label id="UAT_CCRE_lbl_waived"></label>
+            </td>
+            <td>
+                <label id="UAT_CCRE_lbl_processerrormsg" class="errormsg" hidden></label>
+            </td>
+        </table>
 </tr>
 <tr>
-<td>
-<label>E-MAIL ID<em>*</em></label>
-</td>
-<td>
-<select id='UAT_CCRE_lb_mailselect' name="UAT_CCRE_lb_mailselect">
-</select>
+    <td>
+        <label>SELECT THE OPTION<em>*</em></label>
+    </td>
+    <td>
+        <select id='UAT_CCRE_lb_ccoptionselect' name="UAT_CCRE_lb_ccoptionselect">
+            <option>SELECT</option>
+        </select>
 </tr>
 <tr>
-<td>
-<label>COMMENTS</label>
-<td>
-<textarea name="UAT_CCRE_ta_comments" id="UAT_CCRE_ta_comments"></textarea>
-</td>
+    <td>
+        <label>E-MAIL ID<em>*</em></label>
+    </td>
+    <td>
+        <select id='UAT_CCRE_lb_mailselect' name="UAT_CCRE_lb_mailselect">
+        </select>
+</tr>
+<tr>
+    <td>
+        <label>COMMENTS</label>
+    <td>
+        <textarea name="UAT_CCRE_ta_comments" id="UAT_CCRE_ta_comments"></textarea>
+    </td>
 </tr>
 <table cellspacing="5px">
-<tr>
-<td width="170px">
-</td>
-<td>
-<input type="button" class="btn" value="CREATE" id="UAT_CCRE_btn_savebutton" disabled/>
-</td>
-<td>
-<input type="button" class="btn" name="reset" id="UAT_CCRE_btn_reset"  value="RESET"/>
-</td>
-</tr>
+    <tr>
+        <td width="170px">
+        </td>
+        <td>
+            <input type="button" class="btn" value="CREATE" id="UAT_CCRE_btn_savebutton" disabled/>
+        </td>
+        <td>
+            <input type="button" class="btn" name="reset" id="UAT_CCRE_btn_reset"  value="RESET"/>
+        </td>
+    </tr>
 </table>
 </table>
 </form>

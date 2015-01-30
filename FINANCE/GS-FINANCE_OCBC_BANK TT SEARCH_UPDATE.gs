@@ -26,19 +26,19 @@ try
   var BANKTT_SRCconn;
   function BANKTT_SRC_Customer(unit)
   {
-    var BANKTT_SRCcustomername_array=[];
-    var BANKTT_SRC_conn=eilib.db_GetConnection();
-    var BANKTT_SRCstmt = BANKTT_SRC_conn.createStatement();
-    var BANKTT_SRCactivecustomerquery="SELECT DISTINCT CONCAT(C.CUSTOMER_FIRST_NAME,'_',C.CUSTOMER_LAST_NAME)AS CUSTOMERNAME FROM CUSTOMER C,BANK_TRANSFER_DETAIL BTD WHERE BTD.CUSTOMER_ID=C.CUSTOMER_ID AND BTD.UNIT_ID=(SELECT UNIT_ID FROM UNIT WHERE UNIT_NO="+unit+") ORDER BY C.CUSTOMER_FIRST_NAME ASC "
-    var BANKTT_SRC_customerresult = BANKTT_SRCstmt.executeQuery(BANKTT_SRCactivecustomerquery);//3.CUSTOMER
-    while(BANKTT_SRC_customerresult.next())
-    {
-      BANKTT_SRCcustomername_array.push(BANKTT_SRC_customerresult.getString("CUSTOMERNAME"));
-    }
-    return BANKTT_SRCcustomername_array;
-    BANKTT_SRC_customerresult.close();
-    BANKTT_SRCstmt.close();
-    BANKTT_SRC_conn.close();
+      var BANKTT_SRCcustomername_array=[];
+      var BANKTT_SRC_conn=eilib.db_GetConnection();
+      var BANKTT_SRCstmt = BANKTT_SRC_conn.createStatement();
+      var BANKTT_SRCactivecustomerquery="SELECT DISTINCT CONCAT(C.CUSTOMER_FIRST_NAME,'_',C.CUSTOMER_LAST_NAME)AS CUSTOMERNAME FROM CUSTOMER C,BANK_TRANSFER_DETAIL BTD WHERE BTD.CUSTOMER_ID=C.CUSTOMER_ID AND BTD.UNIT_ID=(SELECT UNIT_ID FROM UNIT WHERE UNIT_NO="+unit+") ORDER BY C.CUSTOMER_FIRST_NAME ASC "
+      var BANKTT_SRC_customerresult = BANKTT_SRCstmt.executeQuery(BANKTT_SRCactivecustomerquery);//3.CUSTOMER
+      while(BANKTT_SRC_customerresult.next())
+      {
+        BANKTT_SRCcustomername_array.push(BANKTT_SRC_customerresult.getString("CUSTOMERNAME"));
+      }
+      return BANKTT_SRCcustomername_array;
+      BANKTT_SRC_customerresult.close();
+      BANKTT_SRCstmt.close();
+      BANKTT_SRC_conn.close();
   }
   function BANKTT_SRC_accountnamesearch()
   {
@@ -94,23 +94,23 @@ try
     {
       if(BANKTT_SRC_configtype_result.getString("CGN_ID")==56)
       {
-        var BANKTT_searchoptiondata= BANKTT_SRC_configtype_result.getString("BCN_DATA"); 
-        var BANKTT_searchoptionid= BANKTT_SRC_configtype_result.getString("BCN_ID"); 
-        BANKTT_searchoption_array.push({BANKTToptionid:BANKTT_searchoptionid,BANKTToptiondata:BANKTT_searchoptiondata})
+       var BANKTT_searchoptiondata= BANKTT_SRC_configtype_result.getString("BCN_DATA"); 
+      var BANKTT_searchoptionid= BANKTT_SRC_configtype_result.getString("BCN_ID"); 
+      BANKTT_searchoption_array.push({BANKTToptionid:BANKTT_searchoptionid,BANKTToptiondata:BANKTT_searchoptiondata})
       }
       if(BANKTT_SRC_configtype_result.getString("CGN_ID")==70)
       {
         var bcn_id=BANKTT_SRC_configtype_result.getString("BCN_ID")
         if(bcn_id!=13 && bcn_id!=14)
         {
-          BANKTT_SRC_status_array.push(BANKTT_SRC_configtype_result.getString("BCN_DATA"));
+        BANKTT_SRC_status_array.push(BANKTT_SRC_configtype_result.getString("BCN_DATA"));
         }
       }
       if(BANKTT_SRC_configtype_result.getString("CGN_ID")==71)
       {
         BANKTT_SRC_charge_array.push(BANKTT_SRC_configtype_result.getString("BCN_DATA"));
       }
-      if(BANKTT_SRC_configtype_result.getString("CGN_ID")==72)
+       if(BANKTT_SRC_configtype_result.getString("CGN_ID")==72)
       {
         BANKTT_SRC_createdby_array.push(BANKTT_SRC_configtype_result.getString("BCN_DATA"));
       }
@@ -146,19 +146,19 @@ try
     if(option==2)
     {
       optionflag=1;
-      BANKTT_SRC_QUERY="SELECT BT.BT_ID,TBST.BANK_TRANSFER_TYPE,TBST.TRANSACTION_STATUS,TBST.BANK_TRANSFER_CHARGES_TO,TBST.BANK_TRANSFER_CREATED_BY,U.UNIT_NO,CONCAT(C.CUSTOMER_FIRST_NAME,' ',CUSTOMER_LAST_NAME)AS CUSTOMERNAME,BT.BT_DATE,BT.BT_AMOUNT,BT.BT_ACC_NAME,BT.BT_ACC_NO,BT.BT_BANK_CODE,BT.BT_BRANCH_CODE,BT.BT_BANK_ADDRESS,BT.BT_SWIFT_CODE,BT.BT_CUST_REF,BT.BT_INV_DETAILS,BT.BT_DEBITED_ON,BT.BT_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(BT.BT_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS BT_TIME_STAMP FROM BANK_TRANSFER BT,BANK_TRANSFER_DETAIL BTD,UNIT U,CUSTOMER C,TEMP_BANKTTSEARCHTABLE TBST,USER_LOGIN_DETAILS ULD WHERE BT.BT_ID=BTD.BT_ID AND U.UNIT_ID=BTD.UNIT_ID AND C.CUSTOMER_ID=BTD.CUSTOMER_ID AND TBST.BT_ID=BTD.BT_ID AND ULD.ULD_ID=BT.ULD_ID"
+    BANKTT_SRC_QUERY="SELECT BT.BT_ID,TBST.BANK_TRANSFER_TYPE,TBST.TRANSACTION_STATUS,TBST.BANK_TRANSFER_CHARGES_TO,TBST.BANK_TRANSFER_CREATED_BY,U.UNIT_NO,CONCAT(C.CUSTOMER_FIRST_NAME,' ',CUSTOMER_LAST_NAME)AS CUSTOMERNAME,BT.BT_DATE,BT.BT_AMOUNT,BT.BT_ACC_NAME,BT.BT_ACC_NO,BT.BT_BANK_CODE,BT.BT_BRANCH_CODE,BT.BT_BANK_ADDRESS,BT.BT_SWIFT_CODE,BT.BT_CUST_REF,BT.BT_INV_DETAILS,BT.BT_DEBITED_ON,BT.BT_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(BT.BT_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS BT_TIME_STAMP FROM BANK_TRANSFER BT,BANK_TRANSFER_DETAIL BTD,UNIT U,CUSTOMER C,TEMP_BANKTTSEARCHTABLE TBST,USER_LOGIN_DETAILS ULD WHERE BT.BT_ID=BTD.BT_ID AND U.UNIT_ID=BTD.UNIT_ID AND C.CUSTOMER_ID=BTD.CUSTOMER_ID AND TBST.BT_ID=BTD.BT_ID AND ULD.ULD_ID=BT.ULD_ID"
     }
     if(option==4)
     {
-      optionflag=1;
-      BANKTT_SRC_QUERY="SELECT BT.BT_ID,TBST.BANK_TRANSFER_TYPE,TBST.TRANSACTION_STATUS,TBST.BANK_TRANSFER_CHARGES_TO,TBST.BANK_TRANSFER_CREATED_BY,U.UNIT_NO,CONCAT(C.CUSTOMER_FIRST_NAME,' ',CUSTOMER_LAST_NAME)AS CUSTOMERNAME,BT.BT_DATE,BT.BT_AMOUNT,BT.BT_ACC_NAME,BT.BT_ACC_NO,BT.BT_BANK_CODE,BT.BT_BRANCH_CODE,BT.BT_BANK_ADDRESS,BT.BT_SWIFT_CODE,BT.BT_CUST_REF,BT.BT_INV_DETAILS,BT.BT_DEBITED_ON,BT.BT_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(BT.BT_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS BT_TIME_STAMP FROM BANK_TRANSFER BT,BANK_TRANSFER_DETAIL BTD,UNIT U,CUSTOMER C,TEMP_BANKTTSEARCHTABLE TBST,USER_LOGIN_DETAILS ULD WHERE BT.BT_ID=BTD.BT_ID AND U.UNIT_ID=BTD.UNIT_ID AND C.CUSTOMER_ID=BTD.CUSTOMER_ID AND TBST.BT_ID=BTD.BT_ID AND ULD.ULD_ID=BT.ULD_ID"
+     optionflag=1;
+     BANKTT_SRC_QUERY="SELECT BT.BT_ID,TBST.BANK_TRANSFER_TYPE,TBST.TRANSACTION_STATUS,TBST.BANK_TRANSFER_CHARGES_TO,TBST.BANK_TRANSFER_CREATED_BY,U.UNIT_NO,CONCAT(C.CUSTOMER_FIRST_NAME,' ',CUSTOMER_LAST_NAME)AS CUSTOMERNAME,BT.BT_DATE,BT.BT_AMOUNT,BT.BT_ACC_NAME,BT.BT_ACC_NO,BT.BT_BANK_CODE,BT.BT_BRANCH_CODE,BT.BT_BANK_ADDRESS,BT.BT_SWIFT_CODE,BT.BT_CUST_REF,BT.BT_INV_DETAILS,BT.BT_DEBITED_ON,BT.BT_COMMENTS,ULD.ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(BT.BT_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS BT_TIME_STAMP FROM BANK_TRANSFER BT,BANK_TRANSFER_DETAIL BTD,UNIT U,CUSTOMER C,TEMP_BANKTTSEARCHTABLE TBST,USER_LOGIN_DETAILS ULD WHERE BT.BT_ID=BTD.BT_ID AND U.UNIT_ID=BTD.UNIT_ID AND C.CUSTOMER_ID=BTD.CUSTOMER_ID AND TBST.BT_ID=BTD.BT_ID AND ULD.ULD_ID=BT.ULD_ID"
     }
     if(option==3)
     {
       optionflag=1;
       BANKTT_SRC_input1 =eilib.SqlDateFormat(BANKTT_SRC_input1);
       BANKTT_SRC_input2=eilib.SqlDateFormat(BANKTT_SRC_input2)
-      BANKTT_SRC_QUERY="SELECT BT_ID,BANK_TRANSFER_TYPE,BT_DATE,UNIT_NO,CUSTOMERNAME,BT_ACC_NO,BT_ACC_NAME,BT_AMOUNT,TRANSACTION_STATUS,BT_DEBITED_ON,BT_BANK_CODE,BT_BRANCH_CODE,BT_BANK_ADDRESS,BT_SWIFT_CODE,BANK_TRANSFER_CHARGES_TO,BT_CUST_REF,BT_INV_DETAILS,BANK_TRANSFER_CREATED_BY,BT_COMMENTS,ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(BT_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS BT_TIME_STAMP FROM BANKTT_SEARCH_TABLE ORDER BY BT_DATE ASC";
+     BANKTT_SRC_QUERY="SELECT BT_ID,BANK_TRANSFER_TYPE,BT_DATE,UNIT_NO,CUSTOMERNAME,BT_ACC_NO,BT_ACC_NAME,BT_AMOUNT,TRANSACTION_STATUS,BT_DEBITED_ON,BT_BANK_CODE,BT_BRANCH_CODE,BT_BANK_ADDRESS,BT_SWIFT_CODE,BANK_TRANSFER_CHARGES_TO,BT_CUST_REF,BT_INV_DETAILS,BANK_TRANSFER_CREATED_BY,BT_COMMENTS,ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(BT_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS BT_TIME_STAMP FROM BANKTT_SEARCH_TABLE ORDER BY BT_DATE ASC";
     }
     if(option==5)
     {
@@ -168,22 +168,22 @@ try
     if(option==6)
     {
       optionflag=1;
-      BANKTT_SRC_QUERY="SELECT BT_ID,BANK_TRANSFER_TYPE,BT_DATE,UNIT_NO,CUSTOMERNAME,BT_ACC_NO,BT_ACC_NAME,BT_AMOUNT,TRANSACTION_STATUS,BT_DEBITED_ON,BT_BANK_CODE,BT_BRANCH_CODE,BT_BANK_ADDRESS,BT_SWIFT_CODE,BANK_TRANSFER_CHARGES_TO,BT_CUST_REF,BT_INV_DETAILS,BANK_TRANSFER_CREATED_BY,BT_COMMENTS,ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(BT_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS BT_TIME_STAMP FROM BANKTT_SEARCH_TABLE ORDER BY BT_DATE ASC";
+     BANKTT_SRC_QUERY="SELECT BT_ID,BANK_TRANSFER_TYPE,BT_DATE,UNIT_NO,CUSTOMERNAME,BT_ACC_NO,BT_ACC_NAME,BT_AMOUNT,TRANSACTION_STATUS,BT_DEBITED_ON,BT_BANK_CODE,BT_BRANCH_CODE,BT_BANK_ADDRESS,BT_SWIFT_CODE,BANK_TRANSFER_CHARGES_TO,BT_CUST_REF,BT_INV_DETAILS,BANK_TRANSFER_CREATED_BY,BT_COMMENTS,ULD_LOGINID,DATE_FORMAT(CONVERT_TZ(BT_TIMESTAMP,"+timeZoneFormat+"),'%d-%m-%Y %T') AS BT_TIME_STAMP FROM BANKTT_SEARCH_TABLE ORDER BY BT_DATE ASC";
     }
     var BANKTT_TEMPTABLEQUERY="CALL SP_TEMP_TABLE_BANKTT('"+BANKTT_SRC_input1+"','"+BANKTT_SRC_input2+"',"+option+",'"+UserStamp+"',@BANKTT_SEARCH_TEMPTBLNAME,@BANKTT_TEMP_TABLE_NAME)"
     var BANKTT_ENTRYstmt=BANKTT_SRC_conn.createStatement();
-    BANKTT_ENTRYstmt.execute(BANKTT_TEMPTABLEQUERY);
-    var banktttemptableresult=BANKTT_ENTRYstmt.executeQuery("SELECT @BANKTT_SEARCH_TEMPTBLNAME,@BANKTT_TEMP_TABLE_NAME");
-    while(banktttemptableresult.next())
+      BANKTT_ENTRYstmt.execute(BANKTT_TEMPTABLEQUERY);
+      var banktttemptableresult=BANKTT_ENTRYstmt.executeQuery("SELECT @BANKTT_SEARCH_TEMPTBLNAME,@BANKTT_TEMP_TABLE_NAME");
+      while(banktttemptableresult.next())
+      {
+        var banktttmptablename1=banktttemptableresult.getString(1);
+        var banktttmptablename2=banktttemptableresult.getString(2);
+      }
+      banktttemptableresult.close();
+      BANKTT_ENTRYstmt.close();
+     if(option==3 || option==5 || option==6)
     {
-      var banktttmptablename1=banktttemptableresult.getString(1);
-      var banktttmptablename2=banktttemptableresult.getString(2);
-    }
-    banktttemptableresult.close();
-    BANKTT_ENTRYstmt.close();
-    if(option==3 || option==5 || option==6)
-    {
-      BANKTT_SRC_QUERY=BANKTT_SRC_QUERY.replace("BANKTT_SEARCH_TABLE",banktttmptablename2);
+       BANKTT_SRC_QUERY=BANKTT_SRC_QUERY.replace("BANKTT_SEARCH_TABLE",banktttmptablename2);
     }
     else
     {
@@ -240,18 +240,14 @@ try
     }
     BANKTT_SRC_searchresult.close();
     BANKTT_SRC_searchstmt.close();
-    var BANKTT_temptabledeletestmt=BANKTT_SRC_conn.createStatement();
-    var BANKTT_tempdeletequery1="DROP TABLE "+banktttmptablename1+"";
-    var BANKTT_tempdeletequery2="DROP TABLE "+banktttmptablename2+"";
     if(banktttmptablename1!=null)
     {
-      BANKTT_temptabledeletestmt.execute(BANKTT_tempdeletequery1);
+        eilib.DropTempTable(BANKTT_SRC_conn,banktttmptablename1);
     }
     if(banktttmptablename2!=null)
     {
-      BANKTT_temptabledeletestmt.execute(BANKTT_tempdeletequery2);
+          eilib.DropTempTable(BANKTT_SRC_conn,banktttmptablename2);
     }
-    BANKTT_temptabledeletestmt.close();
     return BANKTT_SRC_SEARCHRESULTS_ARRAY;
     BANKTT_SRC_conn.close();
   }
@@ -261,10 +257,10 @@ catch(err)
 {
 }
 /****************BANK TT UPDATION*********************/
-function BANKTT_SRC_processFormUpdate(updationrecords)
-{
-  try
+ function BANKTT_SRC_processFormUpdate(updationrecords)
   {
+    try
+    {
     var id=updationrecords.BANKTT_SRC_tb_id;
     var unit=updationrecords.BANKTT_SRC_tb_tempunit;
     if(unit=="" || unit==undefined)
@@ -360,46 +356,46 @@ function BANKTT_SRC_processFormUpdate(updationrecords)
     BANKTT_SRC_updatestmt.close();
     if(returnflag==1)
     {
-      var bankttmailid=eilib.getProfileEmailId(BANKTT_SRC_conn,"BANKTT")
-      var banktttomailid=bankttmailid[0].toString();
-      var username=banktttomailid.split('@');
-      var mailusername=username[0].toUpperCase();
-      var headerarray=['DATE','TRANSACTION TYPE','MODEL NAME','ACC NAME','ACC NO','AMOUNT','UNIT','CUSTOMER','STATUS','DEBITED/REJECTED DATE','BANK CODE','BRANCH CODE','BANK ADDRESS','SWIFT CODE','CHARGES TO','CUST REF','INV DETAILS','DONE BY','COMMENTS'];
-      var dataarray=[date1,tttype,model,accname,accno,amount,unit,customer,status,debited,bank,branch,mailbankaddress,swift,charge,custref,mailinvdetails,create,mailcomments];
-      var subject="HELLO "+" <font color='gray'>"+"</font>"+"<font color='#498af3'><b>"+mailusername+"</b> </font>"+"<br>"+" PLEASE FIND ATTACHED NEW TRANSACTION DETAILS FROM BANK TT: "+"<br>";
-      var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'</body>';
-      for(var i=0;i<dataarray.length;i++)
+    var bankttmailid=eilib.getProfileEmailId(BANKTT_SRC_conn,"BANKTT")
+    var banktttomailid=bankttmailid[0].toString();
+    var username=banktttomailid.split('@');
+    var mailusername=username[0].toUpperCase();
+    var headerarray=['DATE','TRANSACTION TYPE','MODEL NAME','ACC NAME','ACC NO','AMOUNT','UNIT','CUSTOMER','STATUS','DEBITED/REJECTED DATE','BANK CODE','BRANCH CODE','BANK ADDRESS','SWIFT CODE','CHARGES TO','CUST REF','INV DETAILS','DONE BY','COMMENTS'];
+    var dataarray=[date1,tttype,model,accname,accno,amount,unit,customer,status,debited,bank,branch,mailbankaddress,swift,charge,custref,mailinvdetails,create,mailcomments];
+    var subject="HELLO "+" <font color='gray'>"+"</font>"+"<font color='#498af3'><b>"+mailusername+"</b> </font>"+"<br>"+" PLEASE FIND ATTACHED NEW TRANSACTION DETAILS FROM BANK TT: "+"<br>";
+    var message = '<body>'+'<br>'+'<h> '+subject+'</h>'+'<br>'+'</body>';
+    for(var i=0;i<dataarray.length;i++)
+    {
+      var value=dataarray[i];
+      if(customer!=null){customer=customer.replace('_',' ')}
+      if(value=="" || value=="SELECT" || value==null)continue;
+      if(value!='REJECTED')
       {
-        var value=dataarray[i];
-        if(customer!=null){customer=customer.replace('_',' ')}
-        if(value=="" || value=="SELECT" || value==null)continue;
-        if(value!='REJECTED')
-        {
-          message += '<body>'+'<table border="1"width="600" >'+'<tr align="left" >'+'<td width=40%>'+headerarray[i]+'</td>'+'<td width=60%>'+value+'</td>'+'</tr>'+'</table>'+'</body>';
-        }
-        else
-        {
-          message += '<body>'+'<table border="1"width="600" >'+'<tr align="left" >'+'<td width=40%>'+headerarray[i]+'</td>'+'<td width=60%><span style="background-color:#FF0000">'+value+'</span></td>'+'</tr>'+'</table>'+'</body>';
-        }
-      }
-      if(status!='REJECTED')
-      {
-        var emailsubject="BANK TRANSFER";
+      message += '<body>'+'<table border="1"width="600" >'+'<tr align="left" >'+'<td width=40%>'+headerarray[i]+'</td>'+'<td width=60%>'+value+'</td>'+'</tr>'+'</table>'+'</body>';
       }
       else
       {
-        emailsubject="BANK TRANSFER-REJECTED";
+      message += '<body>'+'<table border="1"width="600" >'+'<tr align="left" >'+'<td width=40%>'+headerarray[i]+'</td>'+'<td width=60%><span style="background-color:#FF0000">'+value+'</span></td>'+'</tr>'+'</table>'+'</body>';
       }
-      var displayname ='BANK TT' ;
-      var advancedArgs={cc:bankttmailid[1],name:displayname,htmlBody:message};
-      MailApp.sendEmail(banktttomailid,emailsubject,message ,advancedArgs);
+      }
+    if(status!='REJECTED')
+    {
+    var emailsubject="BANK TRANSFER";
+    }
+    else
+    {
+      emailsubject="BANK TRANSFER-REJECTED";
+    }
+    var displayname ='BANK TT' ;
+    var advancedArgs={cc:bankttmailid[1],name:displayname,htmlBody:message};
+    MailApp.sendEmail(banktttomailid,emailsubject,message ,advancedArgs);
     }
     BANKTT_SRC_conn.commit();
     BANKTT_SRC_conn.close();
     return returnflag;
+    }
+    catch(err)
+    {
+     BANKTT_SRCconn.rollback(); 
+    }
   }
-  catch(err)
-  {
-    BANKTT_SRCconn.rollback(); 
-  }
-}

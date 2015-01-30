@@ -2,7 +2,8 @@
 function DropTempTable(conn,tablename)  
 {
   var temp_stmt= conn.createStatement();
-  var temp_query = "DROP TABLE IF EXISTS "+tablename+""; 
+//  var temp_query = "DROP TABLE IF EXISTS "+tablename+""; 
+  var temp_query = "CALL SP_DROP_DYNAMIC_TEMP_TABLE('"+tablename+"')"; 
   temp_stmt.execute(temp_query);
   temp_stmt.close();
 }
@@ -26,8 +27,8 @@ function Deposit_Deduction_fileSharing(newsheetid,templatefolderid) {
       break;
     }
   }
-  //  var Drivefileeditors=DriveApp.getFileById(SSfileid).getEditors();
-  var Drivefileeditors=DocsList.getFileById(SSfileid).getEditors();
+  var Drivefileeditors=DriveApp.getFileById(SSfileid).getEditors();
+//  var Drivefileeditors=DocsList.getFileById(SSfileid).getEditors();
   for(var j=0;j<Drivefileeditors.length;j++)
   {
     if(Drivefileeditors[j].getEmail()=="")continue;

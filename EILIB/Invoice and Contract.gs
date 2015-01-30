@@ -3,8 +3,8 @@
 var invoiceflag;
 function SetDocOwner(docid,docowner,semailid)
 {
-  var editorfile= DocsList.getFileById(docid).getEditors();
-  //  var editorfile= DriveApp.getFileById(docid).getEditors();
+//  var editorfile= DocsList.getFileById(docid).getEditors();
+  var editorfile= DriveApp.getFileById(docid).getEditors();
   for(var j=0;j<editorfile.length;j++)
   {
     if(editorfile[j].getEmail()=="")continue;
@@ -24,8 +24,8 @@ function SetDocOwner(docid,docowner,semailid)
 //********************CUSTOMER DOMAIN DOC OWNER**********************/
 function CUST_SetDocOwner(docid,docowner,semailid)
 {
-  var editorfile= DocsList.getFileById(docid).getEditors();
-  //  var editorfile= DriveApp.getFileById(docid).getEditors();
+//  var editorfile= DocsList.getFileById(docid).getEditors();
+  var editorfile= DriveApp.getFileById(docid).getEditors();
   for(var j=0;j<editorfile.length;j++)
   {
     if(editorfile[j].getEmail()=="")continue;
@@ -54,7 +54,8 @@ function RemoveEditors(docid,email_fetch,docowner)
 //***********UNSHARE FILE**********************/
 function CUST_UNSHARE_FILE(fileid)
 {
-  var editorfile= DocsList.getFileById(fileid).getEditors();
+//  var editorfile= DocsList.getFileById(fileid).getEditors();
+    var editorfile= DriveApp.getFileById(fileid).getEditors();
   for(var j=0;j<editorfile.length;j++)
   {
     if(editorfile[j].getEmail()=="")continue;
@@ -816,7 +817,7 @@ function CUST_invoicemail(conn,unit,customername,companyname,invoiceid,invoicesn
   var subject1 =emailsub.replace('[UNIT NO- CUSTOMER_NAME - INVOICE_NO]',subcontent1);
   var body1 =emailmessage.replace('[UNIT NO - CUSTOMER_NAME]',bodycontent1); 
   body1=body1.replace('[MAILID_USERNAME]',mail_username[0].toUpperCase());
-  RemoveSEditors(invoiceidcopy,email_fetch,docowner);
+  RemoveEditors(invoiceidcopy,email_fetch,docowner);
   MailApp.sendEmail(email_fetch, subject1, body1, {name:Get_MailDisplayName("INVOICE"),htmlBody: body1+'<br><br>INVOICE : '+url});  
 }
 //FUNCTION TO RETURN GENERATED INVOICE ID

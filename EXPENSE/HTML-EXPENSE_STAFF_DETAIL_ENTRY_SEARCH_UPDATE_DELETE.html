@@ -45,22 +45,22 @@
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function STDTL_SEARCH_onFailure(STDTL_SEARCH_error) {
-$(".preloader").hide();
-if(STDTL_SEARCH_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-STDTL_SEARCH_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#STDTL_SEARCH_form_employeelist').replaceWith('<center><label class="dberrormsg">'+STDTL_SEARCH_error+'</label></center>');
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_error.message,position:{top:150,left:500}}});
-}
+    $(".preloader").hide();
+    if(STDTL_SEARCH_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+    {
+        STDTL_SEARCH_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+        $('#STDTL_SEARCH_form_employeelist').replaceWith('<center><label class="dberrormsg">'+STDTL_SEARCH_error+'</label></center>');
+    }
+    else
+    {
+        $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_error.message,position:{top:150,left:500}}});
+    }
 }
 //FAILURE FUNCTION END
 //DECLARATION OF GLOBAL VARIABLES
@@ -72,925 +72,925 @@ var STDTL_SEARCH_commnts='';
 var STDTL_SEARCH_sucsval=0;
 //DOCUMENT READY FUNCTION START
 $(document).ready(function(){
-var STDTL_SEARCH_oldvalue=[];
-$('textarea').autogrow({onInitialize: true});
+    var STDTL_SEARCH_oldvalue=[];
+    $('textarea').autogrow({onInitialize: true});
 //ADD HIGHLIGHT COLOR FOR SELECTED ROW IN SEARCH TABLE
-$(document).on('click','#STDTL_SEARCH_tble_htmltable tr td input[type="radio"]',function(){
-$('#STDTL_SEARCH_tble_htmltable tr').removeClass('higlightrow');
-$(this).closest('tr').addClass('higlightrow');
-});
-$(".preloader").show();
-google.script.run.withSuccessHandler(STDTL_SEARCH_searchoptresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
-google.script.run.withSuccessHandler(STDTL_SEARCH_comments_autocompleteresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_comments_autocomplete();
-var STDTL_SEARCH_expensearr_employeename=[];
-var STDTL_SEARCH_searchoption=[];
-var STDTL_SEARCH_searchoptions_id_arr=[];
-var STDTL_SEARCH_errorMsg_array=[];
-var STDTL_SEARCH_expensearr_cpfnumber=[];
-var STDTL_SEARCH_searchoption_errorMsg=[];
+    $(document).on('click','#STDTL_SEARCH_tble_htmltable tr td input[type="radio"]',function(){
+        $('#STDTL_SEARCH_tble_htmltable tr').removeClass('higlightrow');
+        $(this).closest('tr').addClass('higlightrow');
+    });
+    $(".preloader").show();
+    google.script.run.withSuccessHandler(STDTL_SEARCH_searchoptresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
+    google.script.run.withSuccessHandler(STDTL_SEARCH_comments_autocompleteresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_comments_autocomplete();
+    var STDTL_SEARCH_expensearr_employeename=[];
+    var STDTL_SEARCH_searchoption=[];
+    var STDTL_SEARCH_searchoptions_id_arr=[];
+    var STDTL_SEARCH_errorMsg_array=[];
+    var STDTL_SEARCH_expensearr_cpfnumber=[];
+    var STDTL_SEARCH_searchoption_errorMsg=[];
 //SUCCESS FUNCTION FOR SEARCH OPTION
-function STDTL_SEARCH_searchoptresult(STDTL_SEARCH_searchoptresult_response)
-{
-STDTL_SEARCH_searchoption=STDTL_SEARCH_searchoptresult_response.STDTL_SEARCH_searchoptionn;
-STDTL_SEARCH_errorMsg_array=STDTL_SEARCH_searchoptresult_response.STDTL_SEARCH_errormsg;
-if(STDTL_SEARCH_searchoption.length==0)
-$('#STDTL_SEARCH_form_employeelist').replaceWith('<p><label class="errormsg">'+STDTL_SEARCH_errorMsg_array[4]+'</label></p>')
-else
-{
+    function STDTL_SEARCH_searchoptresult(STDTL_SEARCH_searchoptresult_response)
+    {
+        STDTL_SEARCH_searchoption=STDTL_SEARCH_searchoptresult_response.STDTL_SEARCH_searchoptionn;
+        STDTL_SEARCH_errorMsg_array=STDTL_SEARCH_searchoptresult_response.STDTL_SEARCH_errormsg;
+        if(STDTL_SEARCH_searchoption.length==0)
+            $('#STDTL_SEARCH_form_employeelist').replaceWith('<p><label class="errormsg">'+STDTL_SEARCH_errorMsg_array[4]+'</label></p>')
+        else
+        {
 //GET STAFF SEARCH OPTION
-var STDTL_SEARCH_searchoptions='<option>SELECT</option>';
-for (var i = 0;i < STDTL_SEARCH_searchoption.length; i++)
-{
-STDTL_SEARCH_searchoptions+='<option value="'+STDTL_SEARCH_searchoption[i].STDTL_SEARCH_searchoption_id+'">'+STDTL_SEARCH_searchoption[i].STDTL_SEARCH_searchoption_data+'</option>';
-} 
-$('#STDTL_SEARCH_lb_searchoption').html(STDTL_SEARCH_searchoptions).show();
-$('#STDTL_SEARCH_form_employeelist').show();
-}
+            var STDTL_SEARCH_searchoptions='<option>SELECT</option>';
+            for (var i = 0;i < STDTL_SEARCH_searchoption.length; i++)
+            {
+                STDTL_SEARCH_searchoptions+='<option value="'+STDTL_SEARCH_searchoption[i].STDTL_SEARCH_searchoption_id+'">'+STDTL_SEARCH_searchoption[i].STDTL_SEARCH_searchoption_data+'</option>';
+            }
+            $('#STDTL_SEARCH_lb_searchoption').html(STDTL_SEARCH_searchoptions).show();
+            $('#STDTL_SEARCH_form_employeelist').show();
+        }
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
+    }
 //SUCCESS FUNCTION FOR SEARCH OPTION
-function STDTL_SEARCH_empcpfresult(STDTL_SEARCH_empcpfresult_response)
-{
-$('#STDTL_SEARCH_form_employeelist').show();
-STDTL_SEARCH_expensearr_employeename=STDTL_SEARCH_empcpfresult_response.STDTL_SEARCH_employeename;
-STDTL_SEARCH_expensearr_cpfnumber=STDTL_SEARCH_empcpfresult_response.STDTL_SEARCH_cpfnumber;
-if(STDTL_SEARCH_expensearr_cpfnumber.length==0)
-{
-$(".preloader").hide(); 
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_errorMsg_array[17];
-$('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
-}
-else
-{
-$(".preloader").hide(); 
-$('#STDTL_SEARCH_div_headernodata').hide();
-STDTL_SEARCH_errorMsg_array=STDTL_SEARCH_empcpfresult_response.STDTL_SEARCH_errormsg;
+    function STDTL_SEARCH_empcpfresult(STDTL_SEARCH_empcpfresult_response)
+    {
+        $('#STDTL_SEARCH_form_employeelist').show();
+        STDTL_SEARCH_expensearr_employeename=STDTL_SEARCH_empcpfresult_response.STDTL_SEARCH_employeename;
+        STDTL_SEARCH_expensearr_cpfnumber=STDTL_SEARCH_empcpfresult_response.STDTL_SEARCH_cpfnumber;
+        if(STDTL_SEARCH_expensearr_cpfnumber.length==0)
+        {
+            $(".preloader").hide();
+            var STDTL_SEARCH_errormsg=STDTL_SEARCH_errorMsg_array[17];
+            $('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
+        }
+        else
+        {
+            $(".preloader").hide();
+            $('#STDTL_SEARCH_div_headernodata').hide();
+            STDTL_SEARCH_errorMsg_array=STDTL_SEARCH_empcpfresult_response.STDTL_SEARCH_errormsg;
 //GET STAFF EMPLOYEE NAME
-var STDTL_SEARCH_expensearray_employeename='<option>SELECT</option>';
-for (var i = 0;i< STDTL_SEARCH_expensearr_employeename.length; i++) 
-{
-var STDTL_SEARCH_employeenameconcat=STDTL_SEARCH_expensearr_employeename[i].split("_");
-STDTL_SEARCH_expensearray_employeename+='<option value="'+STDTL_SEARCH_expensearr_employeename[i]+'">'+STDTL_SEARCH_employeenameconcat[0]+" "+STDTL_SEARCH_employeenameconcat[1]+'</option>';
-}
-$('#STDTL_SEARCH_lb_employeename_listbox').html(STDTL_SEARCH_expensearray_employeename).show();
+            var STDTL_SEARCH_expensearray_employeename='<option>SELECT</option>';
+            for (var i = 0;i< STDTL_SEARCH_expensearr_employeename.length; i++)
+            {
+                var STDTL_SEARCH_employeenameconcat=STDTL_SEARCH_expensearr_employeename[i].split("_");
+                STDTL_SEARCH_expensearray_employeename+='<option value="'+STDTL_SEARCH_expensearr_employeename[i]+'">'+STDTL_SEARCH_employeenameconcat[0]+" "+STDTL_SEARCH_employeenameconcat[1]+'</option>';
+            }
+            $('#STDTL_SEARCH_lb_employeename_listbox').html(STDTL_SEARCH_expensearray_employeename).show();
 //GET STAFF CPF NUMBER
-var STDTL_SEARCH_expensearrcpfnumber1='<option>SELECT</option>';
-for (var i = 0;i < STDTL_SEARCH_expensearr_cpfnumber.length;i++) 
-{
-STDTL_SEARCH_expensearrcpfnumber1+='<option value="'+STDTL_SEARCH_expensearr_cpfnumber[i]+'">'+STDTL_SEARCH_expensearr_cpfnumber[i]+'</option>';
-}
-$('#STDTL_SEARCH_lb_cpfnumber_listbox').html(STDTL_SEARCH_expensearrcpfnumber1).show();
-}
-if(STDTL_SEARCH_sucsval==2)
-{
-$(".preloader").hide();
+            var STDTL_SEARCH_expensearrcpfnumber1='<option>SELECT</option>';
+            for (var i = 0;i < STDTL_SEARCH_expensearr_cpfnumber.length;i++)
+            {
+                STDTL_SEARCH_expensearrcpfnumber1+='<option value="'+STDTL_SEARCH_expensearr_cpfnumber[i]+'">'+STDTL_SEARCH_expensearr_cpfnumber[i]+'</option>';
+            }
+            $('#STDTL_SEARCH_lb_cpfnumber_listbox').html(STDTL_SEARCH_expensearrcpfnumber1).show();
+        }
+        if(STDTL_SEARCH_sucsval==2)
+        {
+            $(".preloader").hide();
 //MESSAGE BOX FOR DELETE SUCCESSFULLY
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[14],position:{top:150,left:500}}}); 
-}
-}
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[14],position:{top:150,left:500}}});
+        }
+    }
 //FUNCTION TO HIGHLIGHT SEARCH TEXT
-function STDTL_SEARCH_highlightSearchText() {
-$.ui.autocomplete.prototype._renderItem = function( ul, item) {
-var re = new RegExp(this.term, "i") ;
-var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
-return $( "<li></li>" )
-.data( "item.autocomplete", item )
-.append( "<a>" + t + "</a>" )
-.appendTo( ul );
-};
-}
+    function STDTL_SEARCH_highlightSearchText() {
+        $.ui.autocomplete.prototype._renderItem = function( ul, item) {
+            var re = new RegExp(this.term, "i") ;
+            var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
+            return $( "<li></li>" )
+                    .data( "item.autocomplete", item )
+                    .append( "<a>" + t + "</a>" )
+                    .appendTo( ul );
+        };
+    }
 //FUNCTION TO AUTOCOMPLETE SEARCH TEXT
-var STDTL_SEARCH_comments=[];
-function STDTL_SEARCH_comments_autocompleteresult(response)
-{
-$('#STDTL_SEARCH_div_headernodata').hide();
-STDTL_SEARCH_comments=response;
-$(".preloader").hide();
-}
-$("#STDTL_SEARCH_ta_comments").keypress(function(){
-STDTL_SEARCH_chkflag=0;
-STDTL_SEARCH_highlightSearchText();
-$( "#STDTL_SEARCH_ta_comments").autocomplete({
-source:STDTL_SEARCH_comments,
-select:STDTL_SEARCH_AutoCompleteSelectHandler
-});
-});
+    var STDTL_SEARCH_comments=[];
+    function STDTL_SEARCH_comments_autocompleteresult(response)
+    {
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        STDTL_SEARCH_comments=response;
+        $(".preloader").hide();
+    }
+    $("#STDTL_SEARCH_ta_comments").keypress(function(){
+        STDTL_SEARCH_chkflag=0;
+        STDTL_SEARCH_highlightSearchText();
+        $( "#STDTL_SEARCH_ta_comments").autocomplete({
+            source:STDTL_SEARCH_comments,
+            select:STDTL_SEARCH_AutoCompleteSelectHandler
+        });
+    });
 //CHANGE FUNCTION FOR COMMENTS
-var STDTL_SEARCH_chkflag;
-$(document).on('change','.commentsresultsvalidate',function(){
-$('#STDTL_SEARCH_div_headernodata').hide();
-var STDTL_SEARCH_staffcomments=$("#STDTL_SEARCH_btn_search_comments").val();
-var STDTL_SEARCH_staffcommentstxt=$('#STDTL_SEARCH_ta_comments').val();
-var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[2];
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_conformsg.replace('[COMMENTS]',STDTL_SEARCH_staffcommentstxt);
-if(STDTL_SEARCH_chkflag==1){
-$('#STDTL_SEARCH_div_headernodata').hide();
-}
-else
-{
-$('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$("#STDTL_SEARCH_btn_search_comments").attr("disabled","disabled");
-}
-if($('#STDTL_SEARCH_ta_comments').val()=="")
-{
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-}
-});
+    var STDTL_SEARCH_chkflag;
+    $(document).on('change','.commentsresultsvalidate',function(){
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        var STDTL_SEARCH_staffcomments=$("#STDTL_SEARCH_btn_search_comments").val();
+        var STDTL_SEARCH_staffcommentstxt=$('#STDTL_SEARCH_ta_comments').val();
+        var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[2];
+        var STDTL_SEARCH_errormsg=STDTL_SEARCH_conformsg.replace('[COMMENTS]',STDTL_SEARCH_staffcommentstxt);
+        if(STDTL_SEARCH_chkflag==1){
+            $('#STDTL_SEARCH_div_headernodata').hide();
+        }
+        else
+        {
+            $('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
+            $('#STDTL_SEARCH_tble_htmltable').hide();
+            $('#STDTL_SEARCH_div_header').hide();
+            $("#STDTL_SEARCH_btn_search_comments").attr("disabled","disabled");
+        }
+        if($('#STDTL_SEARCH_ta_comments').val()=="")
+        {
+            $('#STDTL_SEARCH_div_headernodata').hide();
+            $('#STDTL_SEARCH_div_header').hide();
+            $('#STDTL_SEARCH_tble_htmltable').hide();
+            $('#STDTL_SEARCH_div_update').hide();
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+        }
+    });
 //FUNCTION TO GET SELECTED VALUE
-function STDTL_SEARCH_AutoCompleteSelectHandler(event, ui) {
-STDTL_SEARCH_chkflag=1;
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_btn_search_comments').removeAttr("disabled");
-}
+    function STDTL_SEARCH_AutoCompleteSelectHandler(event, ui) {
+        STDTL_SEARCH_chkflag=1;
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_btn_search_comments').removeAttr("disabled");
+    }
 //JQUERY LIB VALIDATION START
-$(".autosize").doValidation({rule:'general',prop:{autosize:true}});
-$(".amountonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
-$(".alphanumeric").doValidation({rule:'alphanumeric'});
-$("#STDTL_SEARCH_tb_fromamt").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'STDTL_SEARCH_tb_toamt'}});
-$("#STDTL_SEARCH_tb_toamt").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'STDTL_SEARCH_tb_fromamt'}});
+    $(".autosize").doValidation({rule:'general',prop:{autosize:true}});
+    $(".amountonly").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2}});
+    $(".alphanumeric").doValidation({rule:'alphanumeric'});
+    $("#STDTL_SEARCH_tb_fromamt").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,smallerthan:'STDTL_SEARCH_tb_toamt'}});
+    $("#STDTL_SEARCH_tb_toamt").doValidation({rule:'numbersonly',prop:{realpart:5,imaginary:2,greaterthan:'STDTL_SEARCH_tb_fromamt'}});
 //JQUERY LIB VALIDATION END
 //CHANGE EVENT FUNCTION FOR SEARCH OPTION
-$('#STDTL_SEARCH_lb_searchoption').change(function(){
-STDTL_SEARCH_sucsval=0;
-var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
-$('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
-$('textarea').height(20);
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$('#STDTL_SEARCH_lbl_amounterrormsg').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_btn_amtsearch').attr("disabled","disabled");
-$('#STDTL_SEARCH_btn_search_comments').attr("disabled","disabled");
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
-var STDTL_SEARCH_search_option=$(this).val();
-if(STDTL_SEARCH_search_option=='SELECT')
-{
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_lbl_searchoptionheader').hide();
-$('#STDTL_SEARCH_lbl_amounterrormsg').hide();
-$('#STDTL_SEARCH_div_table').hide();
-}
-else
-{
-if(STDTL_SEARCH_search_option==90)//EMPLOYEE NAME
-{
-STDTL_SEARCH_sucsval=0;
-var  newPos= adjustPosition($(this).position(),100,280);
-resetPreloader(newPos);
-$(".preloader").show(); 
-google.script.run.withSuccessHandler(STDTL_SEARCH_empcpfresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
-$('#STDTL_SEARCH_lb_employeename_listbox').val('');
-$('#STDTL_SEARCH_div_searchbyemploy').show();
-$('#STDTL_SEARCH_tble_employee').show();
-var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
-$('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
-$('#STDTL_SEARCH_div_table').show();
-$('#STDTL_SEARCH_tble_cpfnumber').hide();
-$('#STDTL_SEARCH_tble_amt_option').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_tble_comments_option').hide();
-}
-else if(STDTL_SEARCH_search_option==93)//CPF NUMBER
-{
-STDTL_SEARCH_sucsval=0;
-var  newPos= adjustPosition($(this).position(),100,280);
-resetPreloader(newPos);
-$(".preloader").show(); 
-google.script.run.withSuccessHandler(STDTL_SEARCH_empcpfresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
-$('#STDTL_SEARCH_lb_cpfnumber_listbox').val('');
-$('#STDTL_SEARCH_tble_cpfnumber').show();
-var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
-$('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
-$('#STDTL_SEARCH_div_table').show();
-$('#STDTL_SEARCH_div_searchbyemploy').hide();
-$('#STDTL_SEARCH_tble_employee').hide();
-$('#STDTL_SEARCH_tble_amt_option').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_tble_comments_option').hide();
-}
-else if(STDTL_SEARCH_search_option==86)//CPF AMOUNT
-{
-$('#STDTL_SEARCH_tble_amt_option').show();
-$('#STDTL_SEARCH_div_table').show();
-var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
-$('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
-$('#STDTL_SEARCH_tble_cpfnumber').hide();
-$('#STDTL_SEARCH_div_searchbyemploy').hide();
-$('#STDTL_SEARCH_tble_employee').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_tble_comments_option').hide();
-$('#STDTL_SEARCH_tb_fromamt').val('');
-$('#STDTL_SEARCH_tb_toamt').val('');
-}
-else if(STDTL_SEARCH_search_option==87)//LEVY AMOUNT
-{
-$('#STDTL_SEARCH_tble_amt_option').show();
-$('#STDTL_SEARCH_div_table').show();
-var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
-$('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
-$('#STDTL_SEARCH_tble_cpfnumber').hide();
-$('#STDTL_SEARCH_div_searchbyemploy').hide();
-$('#STDTL_SEARCH_tble_employee').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_tble_comments_option').hide();
-$('#STDTL_SEARCH_tb_fromamt').val('');
-$('#STDTL_SEARCH_tb_toamt').val('');
-}
-else if(STDTL_SEARCH_search_option==88)//SALARY AMOUNT
-{
-$('#STDTL_SEARCH_tble_amt_option').show();
-$('#STDTL_SEARCH_div_table').show();
-var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
-$('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
-$('#STDTL_SEARCH_tble_cpfnumber').hide();
-$('#STDTL_SEARCH_div_searchbyemploy').hide();
-$('#STDTL_SEARCH_tble_employee').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_tble_comments_option').hide();
-$('#STDTL_SEARCH_tb_fromamt').val('');
-$('#STDTL_SEARCH_tb_toamt').val('');
-}
-else if(STDTL_SEARCH_search_option==79)//STAFF COMMENTS
-{
-$('#STDTL_SEARCH_tble_comments_option').show();
-$('#STDTL_SEARCH_div_table').show();
-var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
-$('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
-$('#STDTL_SEARCH_tble_amt_option').hide();
-$('#STDTL_SEARCH_tble_cpfnumber').hide();
-$('#STDTL_SEARCH_div_searchbyemploy').hide();
-$('#STDTL_SEARCH_tble_employee').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_ta_comments').val('');
-}
-}
-});
+    $('#STDTL_SEARCH_lb_searchoption').change(function(){
+        STDTL_SEARCH_sucsval=0;
+        var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
+        $('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
+        $('textarea').height(20);
+        $('#STDTL_SEARCH_tble_htmltable').hide();
+        $('#STDTL_SEARCH_lbl_validamount').hide();
+        $('#STDTL_SEARCH_lbl_validnumber').hide();
+        $('#STDTL_SEARCH_lbl_amounterrormsg').hide();
+        $('#STDTL_SEARCH_tble_srchupd').hide();
+        $('#STDTL_SEARCH_btn_amtsearch').attr("disabled","disabled");
+        $('#STDTL_SEARCH_btn_search_comments').attr("disabled","disabled");
+        $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
+        $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
+        var STDTL_SEARCH_search_option=$(this).val();
+        if(STDTL_SEARCH_search_option=='SELECT')
+        {
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+            $('#STDTL_SEARCH_div_update').hide();
+            $('#STDTL_SEARCH_lbl_searchoptionheader').hide();
+            $('#STDTL_SEARCH_lbl_amounterrormsg').hide();
+            $('#STDTL_SEARCH_div_table').hide();
+        }
+        else
+        {
+            if(STDTL_SEARCH_search_option==90)//EMPLOYEE NAME
+            {
+                STDTL_SEARCH_sucsval=0;
+                var  newPos= adjustPosition($(this).position(),100,280);
+                resetPreloader(newPos);
+                $(".preloader").show();
+                google.script.run.withSuccessHandler(STDTL_SEARCH_empcpfresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
+                $('#STDTL_SEARCH_lb_employeename_listbox').val('');
+                $('#STDTL_SEARCH_div_searchbyemploy').show();
+                $('#STDTL_SEARCH_tble_employee').show();
+                var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
+                $('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
+                $('#STDTL_SEARCH_div_table').show();
+                $('#STDTL_SEARCH_tble_cpfnumber').hide();
+                $('#STDTL_SEARCH_tble_amt_option').hide();
+                $('#STDTL_SEARCH_div_update').hide();
+                $('#STDTL_SEARCH_tble_srchupd').hide();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_div_headernodata').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+                $('#STDTL_SEARCH_tble_comments_option').hide();
+            }
+            else if(STDTL_SEARCH_search_option==93)//CPF NUMBER
+            {
+                STDTL_SEARCH_sucsval=0;
+                var  newPos= adjustPosition($(this).position(),100,280);
+                resetPreloader(newPos);
+                $(".preloader").show();
+                google.script.run.withSuccessHandler(STDTL_SEARCH_empcpfresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
+                $('#STDTL_SEARCH_lb_cpfnumber_listbox').val('');
+                $('#STDTL_SEARCH_tble_cpfnumber').show();
+                var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
+                $('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
+                $('#STDTL_SEARCH_div_table').show();
+                $('#STDTL_SEARCH_div_searchbyemploy').hide();
+                $('#STDTL_SEARCH_tble_employee').hide();
+                $('#STDTL_SEARCH_tble_amt_option').hide();
+                $('#STDTL_SEARCH_tble_srchupd').hide();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_div_headernodata').hide();
+                $('#STDTL_SEARCH_div_update').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+                $('#STDTL_SEARCH_tble_comments_option').hide();
+            }
+            else if(STDTL_SEARCH_search_option==86)//CPF AMOUNT
+            {
+                $('#STDTL_SEARCH_tble_amt_option').show();
+                $('#STDTL_SEARCH_div_table').show();
+                var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
+                $('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
+                $('#STDTL_SEARCH_tble_cpfnumber').hide();
+                $('#STDTL_SEARCH_div_searchbyemploy').hide();
+                $('#STDTL_SEARCH_tble_employee').hide();
+                $('#STDTL_SEARCH_tble_srchupd').hide();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_div_headernodata').hide();
+                $('#STDTL_SEARCH_div_update').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+                $('#STDTL_SEARCH_tble_comments_option').hide();
+                $('#STDTL_SEARCH_tb_fromamt').val('');
+                $('#STDTL_SEARCH_tb_toamt').val('');
+            }
+            else if(STDTL_SEARCH_search_option==87)//LEVY AMOUNT
+            {
+                $('#STDTL_SEARCH_tble_amt_option').show();
+                $('#STDTL_SEARCH_div_table').show();
+                var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
+                $('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
+                $('#STDTL_SEARCH_tble_cpfnumber').hide();
+                $('#STDTL_SEARCH_div_searchbyemploy').hide();
+                $('#STDTL_SEARCH_tble_employee').hide();
+                $('#STDTL_SEARCH_tble_srchupd').hide();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_div_headernodata').hide();
+                $('#STDTL_SEARCH_div_update').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+                $('#STDTL_SEARCH_tble_comments_option').hide();
+                $('#STDTL_SEARCH_tb_fromamt').val('');
+                $('#STDTL_SEARCH_tb_toamt').val('');
+            }
+            else if(STDTL_SEARCH_search_option==88)//SALARY AMOUNT
+            {
+                $('#STDTL_SEARCH_tble_amt_option').show();
+                $('#STDTL_SEARCH_div_table').show();
+                var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
+                $('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
+                $('#STDTL_SEARCH_tble_cpfnumber').hide();
+                $('#STDTL_SEARCH_div_searchbyemploy').hide();
+                $('#STDTL_SEARCH_tble_employee').hide();
+                $('#STDTL_SEARCH_tble_srchupd').hide();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_div_headernodata').hide();
+                $('#STDTL_SEARCH_div_update').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+                $('#STDTL_SEARCH_tble_comments_option').hide();
+                $('#STDTL_SEARCH_tb_fromamt').val('');
+                $('#STDTL_SEARCH_tb_toamt').val('');
+            }
+            else if(STDTL_SEARCH_search_option==79)//STAFF COMMENTS
+            {
+                $('#STDTL_SEARCH_tble_comments_option').show();
+                $('#STDTL_SEARCH_div_table').show();
+                var STDTL_SEARCH_searchheader=$('#STDTL_SEARCH_lb_searchoption').find('option:selected').text();
+                $('#STDTL_SEARCH_lbl_searchoptionheader').text(STDTL_SEARCH_searchheader).show();
+                $('#STDTL_SEARCH_tble_amt_option').hide();
+                $('#STDTL_SEARCH_tble_cpfnumber').hide();
+                $('#STDTL_SEARCH_div_searchbyemploy').hide();
+                $('#STDTL_SEARCH_tble_employee').hide();
+                $('#STDTL_SEARCH_tble_srchupd').hide();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_div_headernodata').hide();
+                $('#STDTL_SEARCH_div_update').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+                $('#STDTL_SEARCH_ta_comments').val('');
+            }
+        }
+    });
 //CHANGE EVENT FUNCTION FOR EMPLOYEE NAME
-$('#STDTL_SEARCH_lb_employeename_listbox').change(function(){
-STDTL_SEARCH_deleteflag=1;
-STDTL_SEARCH_sucsval=0;
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
-var  newPos= adjustPosition($(this).position(),100,270);
-resetPreloader(newPos);
-$(".preloader").show(); 
-var STDTL_SEARCH_employeename=$("#STDTL_SEARCH_lb_employeename_listbox").val();
-if(STDTL_SEARCH_employeename=='SELECT')
-{
-$(".preloader").hide(); 
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-}
-else
-{
-var STDTL_SEARCH_ename=$('#STDTL_SEARCH_lb_employeename_listbox').val();
-STDTL_SEARCH_ename=STDTL_SEARCH_ename.replace("_"," ")
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_errorMsg_array[5].replace('[FNAME+LNAME]',STDTL_SEARCH_ename);
-$('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_update').hide();
-google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
-}
-});
+    $('#STDTL_SEARCH_lb_employeename_listbox').change(function(){
+        STDTL_SEARCH_deleteflag=1;
+        STDTL_SEARCH_sucsval=0;
+        $('#STDTL_SEARCH_div_header').hide();
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_lbl_validamount').hide();
+        $('#STDTL_SEARCH_lbl_validnumber').hide();
+        $('#STDTL_SEARCH_tble_srchupd').hide();
+        $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
+        $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
+        var  newPos= adjustPosition($(this).position(),100,270);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        var STDTL_SEARCH_employeename=$("#STDTL_SEARCH_lb_employeename_listbox").val();
+        if(STDTL_SEARCH_employeename=='SELECT')
+        {
+            $(".preloader").hide();
+            $('#STDTL_SEARCH_div_header').hide();
+            $('#STDTL_SEARCH_div_headernodata').hide();
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+            $('#STDTL_SEARCH_div_update').hide();
+            $('#STDTL_SEARCH_tble_htmltable').hide();
+        }
+        else
+        {
+            var STDTL_SEARCH_ename=$('#STDTL_SEARCH_lb_employeename_listbox').val();
+            STDTL_SEARCH_ename=STDTL_SEARCH_ename.replace("_"," ")
+            var STDTL_SEARCH_errormsg=STDTL_SEARCH_errorMsg_array[5].replace('[FNAME+LNAME]',STDTL_SEARCH_ename);
+            $('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
+            $('#STDTL_SEARCH_div_header').hide();
+            $('#STDTL_SEARCH_div_headernodata').hide();
+            $('#STDTL_SEARCH_tble_htmltable').hide();
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+            $('#STDTL_SEARCH_div_update').hide();
+            google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
+        }
+    });
 //CHANGE EVENT FUNCTION FOR CPF NUMBER
-$('#STDTL_SEARCH_lb_cpfnumber_listbox').change(function(){
-STDTL_SEARCH_sucsval=0;
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
-var  newPos= adjustPosition($(this).position(),100,270);
-resetPreloader(newPos);
-$(".preloader").show(); 
-var STDTL_SEARCH_cpfnumber=$("#STDTL_SEARCH_lb_cpfnumber_listbox").val();
-if(STDTL_SEARCH_cpfnumber=='SELECT')
-{
-$(".preloader").hide(); 
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-}
-else
-{
-var STDTL_SEARCH_cpfno=$('#STDTL_SEARCH_lb_cpfnumber_listbox').val();
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_errorMsg_array[7].replace('[CPFNO]',STDTL_SEARCH_cpfno);
-$('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_update').hide();
-google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
-}
-});
+    $('#STDTL_SEARCH_lb_cpfnumber_listbox').change(function(){
+        STDTL_SEARCH_sucsval=0;
+        $('#STDTL_SEARCH_div_header').hide();
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_lbl_validamount').hide();
+        $('#STDTL_SEARCH_lbl_validnumber').hide();
+        $('#STDTL_SEARCH_tble_srchupd').hide();
+        $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
+        $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
+        var  newPos= adjustPosition($(this).position(),100,270);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        var STDTL_SEARCH_cpfnumber=$("#STDTL_SEARCH_lb_cpfnumber_listbox").val();
+        if(STDTL_SEARCH_cpfnumber=='SELECT')
+        {
+            $(".preloader").hide();
+            $('#STDTL_SEARCH_div_header').hide();
+            $('#STDTL_SEARCH_div_headernodata').hide();
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+            $('#STDTL_SEARCH_div_update').hide();
+            $('#STDTL_SEARCH_tble_htmltable').hide();
+        }
+        else
+        {
+            var STDTL_SEARCH_cpfno=$('#STDTL_SEARCH_lb_cpfnumber_listbox').val();
+            var STDTL_SEARCH_errormsg=STDTL_SEARCH_errorMsg_array[7].replace('[CPFNO]',STDTL_SEARCH_cpfno);
+            $('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
+            $('#STDTL_SEARCH_div_header').hide();
+            $('#STDTL_SEARCH_div_headernodata').hide();
+            $('#STDTL_SEARCH_tble_htmltable').hide();
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+            $('#STDTL_SEARCH_div_update').hide();
+            google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
+        }
+    });
 //CHANGE EVENT FUNCTION FOR CPF AMOUNT,LEVY AMOUNT,SALARY AMOUNT
-$('#STDTL_SEARCH_btn_amtsearch').click(function(){
-var  newPos= adjustPosition($(this).position(),100,270);
-resetPreloader(newPos);
-STDTL_SEARCH_sucsval=0;
-$(".preloader").show(); 
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
-var STDTL_SEARCH_search_option=$('#STDTL_SEARCH_lb_searchoption').val();
-var STDTL_SEARCH_fromamount=$('#STDTL_SEARCH_tb_fromamt').val();
-var STDTL_SEARCH_toamount=$('#STDTL_SEARCH_tb_toamt').val();
-if(STDTL_SEARCH_search_option==86)//CPF AMOUNT
-{
-google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
-var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[9];
-var STDTL_SEARCH_errormsgs=STDTL_SEARCH_conformsg.replace('[FAMT]',STDTL_SEARCH_fromamount);
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_errormsgs.replace('[TAMT]',STDTL_SEARCH_toamount);
-$('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
-}
-else if(STDTL_SEARCH_search_option==87)//LEVY AMOUNT
-{
-google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
-var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[8]
-var STDTL_SEARCH_errormsgs=STDTL_SEARCH_conformsg.replace('[FAMT]',STDTL_SEARCH_fromamount);
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_errormsgs.replace('[TAMT]',STDTL_SEARCH_toamount);
-$('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
-}
-else if(STDTL_SEARCH_search_option==88)//SALARY AMOUNT
-{
-google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
-var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[10]
-var STDTL_SEARCH_errormsgs=STDTL_SEARCH_conformsg.replace('[FAMT]',STDTL_SEARCH_fromamount);
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_errormsgs.replace('[TAMT]',STDTL_SEARCH_toamount);
-$('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
-}
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-});
+    $('#STDTL_SEARCH_btn_amtsearch').click(function(){
+        var  newPos= adjustPosition($(this).position(),100,270);
+        resetPreloader(newPos);
+        STDTL_SEARCH_sucsval=0;
+        $(".preloader").show();
+        $('#STDTL_SEARCH_div_header').hide();
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_lbl_validamount').hide();
+        $('#STDTL_SEARCH_lbl_validnumber').hide();
+        $('#STDTL_SEARCH_tble_srchupd').hide();
+        $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
+        $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
+        var STDTL_SEARCH_search_option=$('#STDTL_SEARCH_lb_searchoption').val();
+        var STDTL_SEARCH_fromamount=$('#STDTL_SEARCH_tb_fromamt').val();
+        var STDTL_SEARCH_toamount=$('#STDTL_SEARCH_tb_toamt').val();
+        if(STDTL_SEARCH_search_option==86)//CPF AMOUNT
+        {
+            google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
+            var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[9];
+            var STDTL_SEARCH_errormsgs=STDTL_SEARCH_conformsg.replace('[FAMT]',STDTL_SEARCH_fromamount);
+            var STDTL_SEARCH_errormsg=STDTL_SEARCH_errormsgs.replace('[TAMT]',STDTL_SEARCH_toamount);
+            $('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
+        }
+        else if(STDTL_SEARCH_search_option==87)//LEVY AMOUNT
+        {
+            google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
+            var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[8]
+            var STDTL_SEARCH_errormsgs=STDTL_SEARCH_conformsg.replace('[FAMT]',STDTL_SEARCH_fromamount);
+            var STDTL_SEARCH_errormsg=STDTL_SEARCH_errormsgs.replace('[TAMT]',STDTL_SEARCH_toamount);
+            $('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
+        }
+        else if(STDTL_SEARCH_search_option==88)//SALARY AMOUNT
+        {
+            google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
+            var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[10]
+            var STDTL_SEARCH_errormsgs=STDTL_SEARCH_conformsg.replace('[FAMT]',STDTL_SEARCH_fromamount);
+            var STDTL_SEARCH_errormsg=STDTL_SEARCH_errormsgs.replace('[TAMT]',STDTL_SEARCH_toamount);
+            $('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
+        }
+        $('#STDTL_SEARCH_div_header').hide();
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_div_update').hide();
+        $('#STDTL_SEARCH_tble_srchupd').hide();
+    });
 //CHANGE EVENT FUNCTION FOR STAFF COMMENTS
-$('#STDTL_SEARCH_btn_search_comments').click(function(){
-STDTL_SEARCH_sucsval=0;
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
-var STDTL_SEARCH_staffcommentstxt=$('#STDTL_SEARCH_ta_comments').val();
-var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[3];
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_conformsg.replace(' [COMMENTS]',STDTL_SEARCH_staffcommentstxt);
-$('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-if(STDTL_SEARCH_staffcommentstxt!="")
-{
-var  newPos= adjustPosition($(this).position(),100,270);
-resetPreloader(newPos);
-$(".preloader").show(); 
-google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
-}
-});
+    $('#STDTL_SEARCH_btn_search_comments').click(function(){
+        STDTL_SEARCH_sucsval=0;
+        $('#STDTL_SEARCH_div_header').hide();
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_lbl_validamount').hide();
+        $('#STDTL_SEARCH_lbl_validnumber').hide();
+        $('#STDTL_SEARCH_tble_srchupd').hide();
+        $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
+        $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
+        var STDTL_SEARCH_staffcommentstxt=$('#STDTL_SEARCH_ta_comments').val();
+        var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[3];
+        var STDTL_SEARCH_errormsg=STDTL_SEARCH_conformsg.replace(' [COMMENTS]',STDTL_SEARCH_staffcommentstxt);
+        $('#STDTL_SEARCH_div_header').text(STDTL_SEARCH_errormsg);
+        $('#STDTL_SEARCH_div_header').hide();
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_tble_srchupd').hide();
+        $('#STDTL_SEARCH_div_update').hide();
+        $('#STDTL_SEARCH_tble_htmltable').hide();
+        if(STDTL_SEARCH_staffcommentstxt!="")
+        {
+            var  newPos= adjustPosition($(this).position(),100,270);
+            resetPreloader(newPos);
+            $(".preloader").show();
+            google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
+        }
+    });
 //BLUR FUNCTION FOR AMOUNT VALIDATION
-$(".amtsubmitval").blur(function(){
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_btn_search').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_lbl_amounterrormsg').hide();
-var STDTL_SEARCH_search_option=$("#STDTL_SEARCH_lb_searchoption").val();
-if((STDTL_SEARCH_search_option==86) || (STDTL_SEARCH_search_option==87) || (STDTL_SEARCH_search_option==88 ))
-{
-if(($("#STDTL_SEARCH_tb_fromamt").val()!="")&&($("#STDTL_SEARCH_tb_toamt").val()!=""))
-{
-var STDTL_SEARCH_validtype=ErrorControl.AmountCompare;
-if(STDTL_SEARCH_validtype=='Valid')
-{
-$("#STDTL_SEARCH_btn_amtsearch").removeAttr("disabled");
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_lbl_amounterrormsg').hide();
-}
-else
-{
-$("#STDTL_SEARCH_btn_amtsearch").attr("disabled","disabled");
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_lbl_amounterrormsg').text(STDTL_SEARCH_errorMsg_array[0]).show();
-}
-}
-else
-{
-$("#STDTL_SEARCH_btn_amtsearch").attr("disabled","disabled");
-$('#STDTL_SEARCH_lbl_amounterrormsg').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-}
-}
-});
+    $(".amtsubmitval").blur(function(){
+        $('#STDTL_SEARCH_div_header').hide();
+        $('#STDTL_SEARCH_tble_htmltable').hide();
+        $('#STDTL_SEARCH_div_update').hide();
+        $('#STDTL_SEARCH_btn_search').hide();
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_lbl_amounterrormsg').hide();
+        var STDTL_SEARCH_search_option=$("#STDTL_SEARCH_lb_searchoption").val();
+        if((STDTL_SEARCH_search_option==86) || (STDTL_SEARCH_search_option==87) || (STDTL_SEARCH_search_option==88 ))
+        {
+            if(($("#STDTL_SEARCH_tb_fromamt").val()!="")&&($("#STDTL_SEARCH_tb_toamt").val()!=""))
+            {
+                var STDTL_SEARCH_validtype=ErrorControl.AmountCompare;
+                if(STDTL_SEARCH_validtype=='Valid')
+                {
+                    $("#STDTL_SEARCH_btn_amtsearch").removeAttr("disabled");
+                    $('#STDTL_SEARCH_div_headernodata').hide();
+                    $('#STDTL_SEARCH_lbl_amounterrormsg').hide();
+                }
+                else
+                {
+                    $("#STDTL_SEARCH_btn_amtsearch").attr("disabled","disabled");
+                    $('#STDTL_SEARCH_div_header').hide();
+                    $('#STDTL_SEARCH_lbl_amounterrormsg').text(STDTL_SEARCH_errorMsg_array[0]).show();
+                }
+            }
+            else
+            {
+                $("#STDTL_SEARCH_btn_amtsearch").attr("disabled","disabled");
+                $('#STDTL_SEARCH_lbl_amounterrormsg').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+                $('#STDTL_SEARCH_div_update').hide();
+                $('#STDTL_SEARCH_tble_srchupd').hide();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_div_headernodata').hide();
+            }
+        }
+    });
 //SUCCESS FUNCTION FOR SELECTING DATA
-function STDTL_SEARCH_srch_result(STDTL_SEARCH_response)
-{
-$(".preloader").hide(); 
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_ta_comments').val('');
-STDTL_SEARCH_result_array=STDTL_SEARCH_response
+    function STDTL_SEARCH_srch_result(STDTL_SEARCH_response)
+    {
+        $(".preloader").hide();
+        $('#STDTL_SEARCH_div_headernodata').hide();
+        $('#STDTL_SEARCH_ta_comments').val('');
+        STDTL_SEARCH_result_array=STDTL_SEARCH_response
 //ERROR MESSAGE FOR NO DATA
-var STDTL_SEARCH_search_option=$('#STDTL_SEARCH_lb_searchoption').val();
-$('#STDTL_SEARCH_btn_amtsearch').attr("disabled","disabled");
-$('#STDTL_SEARCH_btn_search_comments').attr("disabled","disabled");
-var STDTL_SEARCH_fromamount=$('#STDTL_SEARCH_tb_fromamt').val();
-var STDTL_SEARCH_toamount=$('#STDTL_SEARCH_tb_toamt').val();
-var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[1];
-var STDTL_SEARCH_errormsgs=STDTL_SEARCH_conformsg.replace('[FROM AMOUNT]',STDTL_SEARCH_fromamount);
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_errormsgs.replace('[TO AMOUNT]',STDTL_SEARCH_toamount);
-if((STDTL_SEARCH_response.length==0)&&(STDTL_SEARCH_deleteflag=='STDTL_SEARCH_delete'))
-{
-$(".preloader").show();
-google.script.run.withSuccessHandler(STDTL_SEARCH_empcpfresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-}
-else if(STDTL_SEARCH_sucsval==2)
-{
-$(".preloader").hide();
+        var STDTL_SEARCH_search_option=$('#STDTL_SEARCH_lb_searchoption').val();
+        $('#STDTL_SEARCH_btn_amtsearch').attr("disabled","disabled");
+        $('#STDTL_SEARCH_btn_search_comments').attr("disabled","disabled");
+        var STDTL_SEARCH_fromamount=$('#STDTL_SEARCH_tb_fromamt').val();
+        var STDTL_SEARCH_toamount=$('#STDTL_SEARCH_tb_toamt').val();
+        var STDTL_SEARCH_conformsg=STDTL_SEARCH_errorMsg_array[1];
+        var STDTL_SEARCH_errormsgs=STDTL_SEARCH_conformsg.replace('[FROM AMOUNT]',STDTL_SEARCH_fromamount);
+        var STDTL_SEARCH_errormsg=STDTL_SEARCH_errormsgs.replace('[TO AMOUNT]',STDTL_SEARCH_toamount);
+        if((STDTL_SEARCH_response.length==0)&&(STDTL_SEARCH_deleteflag=='STDTL_SEARCH_delete'))
+        {
+            $(".preloader").show();
+            google.script.run.withSuccessHandler(STDTL_SEARCH_empcpfresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
+            $('#STDTL_SEARCH_div_header').hide();
+            $('#STDTL_SEARCH_tble_htmltable').hide();
+        }
+        else if(STDTL_SEARCH_sucsval==2)
+        {
+            $(".preloader").hide();
 //MESSAGE BOX FOR DELETE SUCCESSFULLY
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[14],position:{top:150,left:500}}}); 
-}
-if(STDTL_SEARCH_sucsval==1)
-{
-$(".preloader").hide(); 
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[14],position:{top:150,left:500}}});
+        }
+        if(STDTL_SEARCH_sucsval==1)
+        {
+            $(".preloader").hide();
 //MESSAGE BOX FOR UPDATE SUCCESSFULLY
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[13],position:{top:150,left:500}}});
-}
-if((STDTL_SEARCH_response.length==0)&&(STDTL_SEARCH_deleteflag!='STDTL_SEARCH_delete'))
-{
-if(STDTL_SEARCH_search_option==90)//EMPLOYEE NAME
-{
-var STDTL_SEARCH_employeename=$('#STDTL_SEARCH_lb_employeename_listbox').val();
-STDTL_SEARCH_employeename=STDTL_SEARCH_employeename.replace("_"," ")
-var STDTL_SEARCH_errormsg=STDTL_SEARCH_errorMsg_array[6].replace('[FNAME+LNAME]',STDTL_SEARCH_employeename);
-$('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
-}
-else if(STDTL_SEARCH_search_option==86)//CPF AMOUNT
-{
-$('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-}
-else if(STDTL_SEARCH_search_option==87)//LEVY AMOUNT
-{
-$('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-}
-else if(STDTL_SEARCH_search_option==88)//SALARY AMOUNT
-{
-$('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-}
-else if(STDTL_SEARCH_search_option==79)//STAFF COMMENTS
-{
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-}
-}
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[13],position:{top:150,left:500}}});
+        }
+        if((STDTL_SEARCH_response.length==0)&&(STDTL_SEARCH_deleteflag!='STDTL_SEARCH_delete'))
+        {
+            if(STDTL_SEARCH_search_option==90)//EMPLOYEE NAME
+            {
+                var STDTL_SEARCH_employeename=$('#STDTL_SEARCH_lb_employeename_listbox').val();
+                STDTL_SEARCH_employeename=STDTL_SEARCH_employeename.replace("_"," ")
+                var STDTL_SEARCH_errormsg=STDTL_SEARCH_errorMsg_array[6].replace('[FNAME+LNAME]',STDTL_SEARCH_employeename);
+                $('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
+            }
+            else if(STDTL_SEARCH_search_option==86)//CPF AMOUNT
+            {
+                $('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+            }
+            else if(STDTL_SEARCH_search_option==87)//LEVY AMOUNT
+            {
+                $('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+            }
+            else if(STDTL_SEARCH_search_option==88)//SALARY AMOUNT
+            {
+                $('#STDTL_SEARCH_div_headernodata').text(STDTL_SEARCH_errormsg).show();
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+            }
+            else if(STDTL_SEARCH_search_option==79)//STAFF COMMENTS
+            {
+                $('#STDTL_SEARCH_div_header').hide();
+                $('#STDTL_SEARCH_tble_htmltable').hide();
+            }
+        }
 //ERROR MESSAGE FOR HAVING DATA
-if(STDTL_SEARCH_result_array!=0)
-{
-STDTL_SEARCH_deleteflag=1;
-if(STDTL_SEARCH_result_array.length > 10){ var px = '500px'}
-else
-{ 
-var x = STDTL_SEARCH_result_array.length*45+45;
-if(x <=100){var px = '100px'}
-else{
-var px = x+"px" }
-}
-$('#STDTL_SEARCH_div_flexdata_result').css('height',px)
-var STDTL_SEARCH_values=$("input[name=STDTL_SEARCH_radio_staffdetail]:checked").val();
-STDTL_SEARCH_result_array=STDTL_SEARCH_response
-var STDTL_SEARCH_value='';
-var STDTL_SEARCH_header='<tr><th></th><th>EMPLOYEE NAME</th><th style="width:20px">CPF NUMBER</th><th style="width:5px">CPF AMOUNT</th><th style="width:5px">LEVY AMOUNT</th><th style="width:5px">SALARY AMOUNT</th><th style="width:190px">COMMENTS</th><th>USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>'
-$('#STDTL_SEARCH_tble_htmltable').html(STDTL_SEARCH_header);
-for(var i=0;i<STDTL_SEARCH_result_array.length;i++)
-{
-var STDTL_SEARCH_values=STDTL_SEARCH_result_array[i]
-STDTL_SEARCH_value='<tr><td><input type="radio" class="STDTL_SEARCH_radio_staffdetail" name="STDTL_SEARCH_radio_staffdetail" id='+(i+1)+' value="'+STDTL_SEARCH_values.empno+'"></td><td>'+STDTL_SEARCH_values.employeename+'</td><td>'+STDTL_SEARCH_values.cpfnumber+'</td><td>'+STDTL_SEARCH_values.cpfamount+'</td><td>'+STDTL_SEARCH_values.levyamount+'</td><td>'+STDTL_SEARCH_values.salaryamount+'</td><td>'+STDTL_SEARCH_values.comments+'</td><td>'+STDTL_SEARCH_values.userstamp+'</td><td>'+STDTL_SEARCH_values.timestamp+'</td></tr>'
-$('#STDTL_SEARCH_tble_htmltable').append(STDTL_SEARCH_value);
-}
-$('#STDTL_SEARCH_tble_htmltable').show();
-$(".preloader").hide(); 
-$('#STDTL_SEARCH_div_header').show();
-$('#STDTL_SEARCH_div_headernodata').hide();
-$('#STDTL_SEARCH_btn_amtsearch').attr("disabled","disabled");
-$('#STDTL_SEARCH_btn_search_comments').attr("disabled","disabled");
-}
-}
+        if(STDTL_SEARCH_result_array!=0)
+        {
+            STDTL_SEARCH_deleteflag=1;
+            if(STDTL_SEARCH_result_array.length > 10){ var px = '500px'}
+            else
+            {
+                var x = STDTL_SEARCH_result_array.length*45+45;
+                if(x <=100){var px = '100px'}
+                else{
+                    var px = x+"px" }
+            }
+            $('#STDTL_SEARCH_div_flexdata_result').css('height',px)
+            var STDTL_SEARCH_values=$("input[name=STDTL_SEARCH_radio_staffdetail]:checked").val();
+            STDTL_SEARCH_result_array=STDTL_SEARCH_response
+            var STDTL_SEARCH_value='';
+            var STDTL_SEARCH_header='<tr><th></th><th>EMPLOYEE NAME</th><th style="width:20px">CPF NUMBER</th><th style="width:5px">CPF AMOUNT</th><th style="width:5px">LEVY AMOUNT</th><th style="width:5px">SALARY AMOUNT</th><th style="width:190px">COMMENTS</th><th>USERSTAMP</th><th style="width:130px">TIMESTAMP</th></tr>'
+            $('#STDTL_SEARCH_tble_htmltable').html(STDTL_SEARCH_header);
+            for(var i=0;i<STDTL_SEARCH_result_array.length;i++)
+            {
+                var STDTL_SEARCH_values=STDTL_SEARCH_result_array[i]
+                STDTL_SEARCH_value='<tr><td><input type="radio" class="STDTL_SEARCH_radio_staffdetail" name="STDTL_SEARCH_radio_staffdetail" id='+(i+1)+' value="'+STDTL_SEARCH_values.empno+'"></td><td>'+STDTL_SEARCH_values.employeename+'</td><td>'+STDTL_SEARCH_values.cpfnumber+'</td><td>'+STDTL_SEARCH_values.cpfamount+'</td><td>'+STDTL_SEARCH_values.levyamount+'</td><td>'+STDTL_SEARCH_values.salaryamount+'</td><td>'+STDTL_SEARCH_values.comments+'</td><td>'+STDTL_SEARCH_values.userstamp+'</td><td>'+STDTL_SEARCH_values.timestamp+'</td></tr>'
+                $('#STDTL_SEARCH_tble_htmltable').append(STDTL_SEARCH_value);
+            }
+            $('#STDTL_SEARCH_tble_htmltable').show();
+            $(".preloader").hide();
+            $('#STDTL_SEARCH_div_header').show();
+            $('#STDTL_SEARCH_div_headernodata').hide();
+            $('#STDTL_SEARCH_btn_amtsearch').attr("disabled","disabled");
+            $('#STDTL_SEARCH_btn_search_comments').attr("disabled","disabled");
+        }
+    }
 //CLICK FUNCTION FOR RADIO BUTTON
-$(document).on('click','.STDTL_SEARCH_radio_staffdetail',function()
-{
-$(".preloader").show();
-$('#STDTL_SEARCH_btn_search').show();
-var STDTL_SEARCH_staff_dataId=$("input[type='radio'][name='STDTL_SEARCH_radio_staffdetail']:checked").val();
-if((STDTL_SEARCH_staff_dataId=='')||(STDTL_SEARCH_staff_dataId==undefined))
-{
-$("#STDTL_SEARCH_btn_search").attr("disabled","disabled");
-$("#STDTL_SEARCH_btn_delete").attr("disabled","disabled");
-}
-else
-{
-google.script.run.withSuccessHandler(STDTL_SEARCH_success_radio_delete).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_radio_delete(STDTL_SEARCH_staff_dataId)
-$("#STDTL_SEARCH_btn_search").removeAttr("disabled");
-$("#STDTL_SEARCH_btn_delete").removeAttr("disabled");
-$('#STDTL_SEARCH_div_update').hide();
-}
-});
+    $(document).on('click','.STDTL_SEARCH_radio_staffdetail',function()
+    {
+        $(".preloader").show();
+        $('#STDTL_SEARCH_btn_search').show();
+        var STDTL_SEARCH_staff_dataId=$("input[type='radio'][name='STDTL_SEARCH_radio_staffdetail']:checked").val();
+        if((STDTL_SEARCH_staff_dataId=='')||(STDTL_SEARCH_staff_dataId==undefined))
+        {
+            $("#STDTL_SEARCH_btn_search").attr("disabled","disabled");
+            $("#STDTL_SEARCH_btn_delete").attr("disabled","disabled");
+        }
+        else
+        {
+            google.script.run.withSuccessHandler(STDTL_SEARCH_success_radio_delete).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_radio_delete(STDTL_SEARCH_staff_dataId)
+            $("#STDTL_SEARCH_btn_search").removeAttr("disabled");
+            $("#STDTL_SEARCH_btn_delete").removeAttr("disabled");
+            $('#STDTL_SEARCH_div_update').hide();
+        }
+    });
 //SUCCESS FUNCTION FOR RADIO BUTTON FOR DELETION
-function STDTL_SEARCH_success_radio_delete(STDTL_SEARCH_response_delete)
-{
-$(".preloader").hide();
-$('#STDTL_SEARCH_tble_srchupd').show();
-$('#STDTL_SEARCH_btn_search').removeAttr("disabled");
-$('#STDTL_SEARCH_btn_delete').removeAttr("disabled");
-if(STDTL_SEARCH_response_delete==1)
-{
-$('#STDTL_SEARCH_btn_delete').show();
-}
-else if(STDTL_SEARCH_response_delete==0)
-{
-$('#STDTL_SEARCH_btn_delete').hide();
-}
-}
+    function STDTL_SEARCH_success_radio_delete(STDTL_SEARCH_response_delete)
+    {
+        $(".preloader").hide();
+        $('#STDTL_SEARCH_tble_srchupd').show();
+        $('#STDTL_SEARCH_btn_search').removeAttr("disabled");
+        $('#STDTL_SEARCH_btn_delete').removeAttr("disabled");
+        if(STDTL_SEARCH_response_delete==1)
+        {
+            $('#STDTL_SEARCH_btn_delete').show();
+        }
+        else if(STDTL_SEARCH_response_delete==0)
+        {
+            $('#STDTL_SEARCH_btn_delete').hide();
+        }
+    }
 //CLICK EVENT FUCNTION FOR BUTTON SEARCH TO SHOW UPDATE FORM
-$('#STDTL_SEARCH_btn_search').click(function()
-{
-$(".preloader").show(); 
-$('textarea').height(20);
-STDTL_SEARCH_sucsval=0;
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
-$('#STDTL_SEARCH_div_update').show();
-var STDTL_SEARCH_idradiovalue=$('input:radio[name=STDTL_SEARCH_radio_staffdetail]:checked').attr('id');
-var STDTL_SEARCH_rowid=STDTL_SEARCH_idradiovalue;
-$('#STDTL_SEARCH_tble_htmltable tr:eq('+STDTL_SEARCH_rowid+')').each(function () 
-{
-var $tds=$(this).find('td'),
-id=$tds.eq(0).text(),
-STDTL_SEARCH_employeename=$tds.eq(1).text(),
-STDTL_SEARCH_cpfnumber=$tds.eq(2).text(),
-STDTL_SEARCH_cpfamount=$tds.eq(3).text(),
-STDTL_SEARCH_levyamount=$tds.eq(4).text(),
-STDTL_SEARCH_salaryamount=$tds.eq(5).text(),
-STDTL_SEARCH_comments=$tds.eq(6).text();
-STDTL_SEARCH_commnts=$tds.eq(6).text();
-$('#STDTL_SEARCH_lb_updemployeename').val(STDTL_SEARCH_employeename);
-var STDTL_SEARCH_employeenamelen=(STDTL_SEARCH_employeename).length+7;
-$('#STDTL_SEARCH_lb_updemployeename').attr("size",STDTL_SEARCH_employeenamelen);
-$('#STDTL_SEARCH_lb_updemployeename').val(STDTL_SEARCH_employeename);
-$('#STDTL_SEARCH_tb_updcpfnumber').val(STDTL_SEARCH_cpfnumber);
-$('#STDTL_SEARCH_tb_updcpfnumberduplicate').val(STDTL_SEARCH_cpfnumber);
-$('#STDTL_SEARCH_tb_updcpfamount').val(STDTL_SEARCH_cpfamount);
-$('#STDTL_SEARCH_tb_updlevyamount').val(STDTL_SEARCH_levyamount);
-$('#STDTL_SEARCH_tb_updsalaryamount').val(STDTL_SEARCH_salaryamount);
-$('#STDTL_SEARCH_ta_updcomments').val(STDTL_SEARCH_comments);
-if($("#STDTL_SEARCH_tb_updcpfnumber").val()!=='')
-{
-$('#STDTL_SEARCH_lbl_updcpfamount').show();
-$('#STDTL_SEARCH_tb_updcpfamount').show();
-}
-else
-{
-$('#STDTL_SEARCH_lbl_updcpfamount').hide();
-$('#STDTL_SEARCH_tb_updcpfamount').hide();
-}
-});
-$(".preloader").hide(); 
-});
+    $('#STDTL_SEARCH_btn_search').click(function()
+    {
+        $(".preloader").show();
+        $('textarea').height(20);
+        STDTL_SEARCH_sucsval=0;
+        $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+        $('#STDTL_SEARCH_lbl_validamount').hide();
+        $('#STDTL_SEARCH_lbl_validnumber').hide();
+        $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
+        $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
+        $('#STDTL_SEARCH_div_update').show();
+        var STDTL_SEARCH_idradiovalue=$('input:radio[name=STDTL_SEARCH_radio_staffdetail]:checked').attr('id');
+        var STDTL_SEARCH_rowid=STDTL_SEARCH_idradiovalue;
+        $('#STDTL_SEARCH_tble_htmltable tr:eq('+STDTL_SEARCH_rowid+')').each(function ()
+        {
+            var $tds=$(this).find('td'),
+                    id=$tds.eq(0).text(),
+                    STDTL_SEARCH_employeename=$tds.eq(1).text(),
+                    STDTL_SEARCH_cpfnumber=$tds.eq(2).text(),
+                    STDTL_SEARCH_cpfamount=$tds.eq(3).text(),
+                    STDTL_SEARCH_levyamount=$tds.eq(4).text(),
+                    STDTL_SEARCH_salaryamount=$tds.eq(5).text(),
+                    STDTL_SEARCH_comments=$tds.eq(6).text();
+            STDTL_SEARCH_commnts=$tds.eq(6).text();
+            $('#STDTL_SEARCH_lb_updemployeename').val(STDTL_SEARCH_employeename);
+            var STDTL_SEARCH_employeenamelen=(STDTL_SEARCH_employeename).length+7;
+            $('#STDTL_SEARCH_lb_updemployeename').attr("size",STDTL_SEARCH_employeenamelen);
+            $('#STDTL_SEARCH_lb_updemployeename').val(STDTL_SEARCH_employeename);
+            $('#STDTL_SEARCH_tb_updcpfnumber').val(STDTL_SEARCH_cpfnumber);
+            $('#STDTL_SEARCH_tb_updcpfnumberduplicate').val(STDTL_SEARCH_cpfnumber);
+            $('#STDTL_SEARCH_tb_updcpfamount').val(STDTL_SEARCH_cpfamount);
+            $('#STDTL_SEARCH_tb_updlevyamount').val(STDTL_SEARCH_levyamount);
+            $('#STDTL_SEARCH_tb_updsalaryamount').val(STDTL_SEARCH_salaryamount);
+            $('#STDTL_SEARCH_ta_updcomments').val(STDTL_SEARCH_comments);
+            if($("#STDTL_SEARCH_tb_updcpfnumber").val()!=='')
+            {
+                $('#STDTL_SEARCH_lbl_updcpfamount').show();
+                $('#STDTL_SEARCH_tb_updcpfamount').show();
+            }
+            else
+            {
+                $('#STDTL_SEARCH_lbl_updcpfamount').hide();
+                $('#STDTL_SEARCH_tb_updcpfamount').hide();
+            }
+        });
+        $(".preloader").hide();
+    });
 //CHANGE FUNCTION FOR CPF NUMBER
-$("#STDTL_SEARCH_tb_updcpfnumber").change(function(){
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-var STDTL_INPUT_cpfnumber=$(this).val();
-var STDTL_SEARCH_updcpfnumber=$("#STDTL_SEARCH_tb_updcpfnumber").val();
-if(STDTL_SEARCH_updcpfnumber=='')
-{
-$("#STDTL_SEARCH_lbl_updcpfamount").hide();
-$("#STDTL_SEARCH_tb_updcpfamount").val("").hide();
-}
-else
-{
-$("#STDTL_SEARCH_lbl_updcpfamount").show();
-$("#STDTL_SEARCH_tb_updcpfamount").show();
-}
-});
+    $("#STDTL_SEARCH_tb_updcpfnumber").change(function(){
+        $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+        var STDTL_INPUT_cpfnumber=$(this).val();
+        var STDTL_SEARCH_updcpfnumber=$("#STDTL_SEARCH_tb_updcpfnumber").val();
+        if(STDTL_SEARCH_updcpfnumber=='')
+        {
+            $("#STDTL_SEARCH_lbl_updcpfamount").hide();
+            $("#STDTL_SEARCH_tb_updcpfamount").val("").hide();
+        }
+        else
+        {
+            $("#STDTL_SEARCH_lbl_updcpfamount").show();
+            $("#STDTL_SEARCH_tb_updcpfamount").show();
+        }
+    });
 //STAFF DETAIL UPDATE BUTTON VALIDATION
-$("#STDTL_SEARCH_tb_updcpfnumber").blur(function(){
-var STDTL_SEARCH_Empname=$("#STDTL_SEARCH_lb_updemployeename").val();
-var STDTL_SEARCH_CpfNo=$("#STDTL_SEARCH_tb_updcpfnumber").val();
-var STDTL_SEARCH_Salamt=$("#STDTL_SEARCH_tb_updsalaryamount").val();
-var duplicatenumber=$("#STDTL_SEARCH_tb_updcpfnumberduplicate").val();
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-if(STDTL_SEARCH_CpfNo.length==9)
-{
-if(STDTL_SEARCH_CpfNo==duplicatenumber)
-{
-$("#STDTL_SEARCH_btn_update").removeAttr("disabled");
-$('#STDTL_SEARCH_lbl_validnumber').text(STDTL_SEARCH_errorMsg_array[8]).hide();
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid');
-return ;
-}
-else
-google.script.run.withSuccessHandler(STDTL_SEARCH_already_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_already(STDTL_SEARCH_Empname,STDTL_SEARCH_CpfNo);
-var  newPos= adjustPosition($(this).position(),100,270);
-resetPreloader(newPos);
-$(".preloader").show();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-}
-else 
-{
-if(STDTL_SEARCH_CpfNo.length>0)
-{
-$("#STDTL_SEARCH_lbl_updcpfamount").hide();
-$("#STDTL_SEARCH_tb_updcpfamount").hide();
-ErrorControl.cpferror='InValid';
-$('#STDTL_SEARCH_lbl_validnumber').text(STDTL_SEARCH_errorMsg_array[12]).show();
-$(this).addClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
-}
-else
-{
-ErrorControl.cpferror='Valid';
-if(STDTL_SEARCH_Empname!='' && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0))
-{
-$("#STDTL_SEARCH_btn_update").removeAttr("disabled");
-}else
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$(this).removeClass('invalid');
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').hide();
-}
-}
-});
+    $("#STDTL_SEARCH_tb_updcpfnumber").blur(function(){
+        var STDTL_SEARCH_Empname=$("#STDTL_SEARCH_lb_updemployeename").val();
+        var STDTL_SEARCH_CpfNo=$("#STDTL_SEARCH_tb_updcpfnumber").val();
+        var STDTL_SEARCH_Salamt=$("#STDTL_SEARCH_tb_updsalaryamount").val();
+        var duplicatenumber=$("#STDTL_SEARCH_tb_updcpfnumberduplicate").val();
+        $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+        if(STDTL_SEARCH_CpfNo.length==9)
+        {
+            if(STDTL_SEARCH_CpfNo==duplicatenumber)
+            {
+                $("#STDTL_SEARCH_btn_update").removeAttr("disabled");
+                $('#STDTL_SEARCH_lbl_validnumber').text(STDTL_SEARCH_errorMsg_array[8]).hide();
+                $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid');
+                return ;
+            }
+            else
+                google.script.run.withSuccessHandler(STDTL_SEARCH_already_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_already(STDTL_SEARCH_Empname,STDTL_SEARCH_CpfNo);
+            var  newPos= adjustPosition($(this).position(),100,270);
+            resetPreloader(newPos);
+            $(".preloader").show();
+            $('#STDTL_SEARCH_lbl_validnumber').hide();
+        }
+        else
+        {
+            if(STDTL_SEARCH_CpfNo.length>0)
+            {
+                $("#STDTL_SEARCH_lbl_updcpfamount").hide();
+                $("#STDTL_SEARCH_tb_updcpfamount").hide();
+                ErrorControl.cpferror='InValid';
+                $('#STDTL_SEARCH_lbl_validnumber').text(STDTL_SEARCH_errorMsg_array[12]).show();
+                $(this).addClass('invalid');
+                $('#STDTL_SEARCH_lbl_validamount').hide();
+                $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
+            }
+            else
+            {
+                ErrorControl.cpferror='Valid';
+                if(STDTL_SEARCH_Empname!='' && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0))
+                {
+                    $("#STDTL_SEARCH_btn_update").removeAttr("disabled");
+                }else
+                    $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+                $('#STDTL_SEARCH_lbl_validnumber').hide();
+                $(this).removeClass('invalid');
+                $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
+                $('#STDTL_SEARCH_lbl_validamount').hide();
+            }
+        }
+    });
 //SUCCESS FUNCTION FOR DUPLICATE CPF NUMBER
-function STDTL_SEARCH_already_result(STDTL_SEARCH_response)
-{
-$(".preloader").hide();
-var STDTL_SEARCH_Empname=$("#STDTL_SEARCH_lb_updemployeename").val();
-var STDTL_SEARCH_Salamt=$("#STDTL_SEARCH_tb_updsalaryamount").val();
-var STDTL_SEARCH_Cpfamt=$("#STDTL_SEARCH_tb_updcpfamount").val();
-var STDTL_SEARCH_CpfNo=$("#STDTL_SEARCH_tb_updcpfnumber").val();
-var duplicatenumber=$("#STDTL_SEARCH_tb_updcpfnumberduplicate").val();
-if(STDTL_SEARCH_response==0 || STDTL_SEARCH_CpfNo==duplicatenumber)
-{
-$("#STDTL_SEARCH_tb_updcpfamount").removeAttr("disabled");
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid');
-$("#STDTL_SEARCH_lbl_updcpfamount").show();
-$("#STDTL_SEARCH_tb_updcpfamount").show();
-$('#STDTL_SEARCH_lbl_validamount').text(STDTL_SEARCH_errorMsg_array[16]).show();
-if(STDTL_SEARCH_Cpfamt=='')
-{
-ErrorControl.cpferror='Valid';
-$("#STDTL_SEARCH_tb_updcpfamount").addClass('invalid');
-}
-else
-{
-if(STDTL_SEARCH_Empname!='' && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0))
-$("#STDTL_SEARCH_btn_update").removeAttr("disabled");
-ErrorControl.cpferror='Valid';
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-}
-}
-else if(STDTL_SEARCH_response!=0 || STDTL_SEARCH_CpfNo!=duplicatenumber)
-{
-ErrorControl.cpferror='InValid';
-$("#STDTL_SEARCH_tb_updcpfnumber").addClass('invalid');
-$('#STDTL_SEARCH_lbl_validnumber').text(STDTL_SEARCH_errorMsg_array[15]).show();
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-}
-}
+    function STDTL_SEARCH_already_result(STDTL_SEARCH_response)
+    {
+        $(".preloader").hide();
+        var STDTL_SEARCH_Empname=$("#STDTL_SEARCH_lb_updemployeename").val();
+        var STDTL_SEARCH_Salamt=$("#STDTL_SEARCH_tb_updsalaryamount").val();
+        var STDTL_SEARCH_Cpfamt=$("#STDTL_SEARCH_tb_updcpfamount").val();
+        var STDTL_SEARCH_CpfNo=$("#STDTL_SEARCH_tb_updcpfnumber").val();
+        var duplicatenumber=$("#STDTL_SEARCH_tb_updcpfnumberduplicate").val();
+        if(STDTL_SEARCH_response==0 || STDTL_SEARCH_CpfNo==duplicatenumber)
+        {
+            $("#STDTL_SEARCH_tb_updcpfamount").removeAttr("disabled");
+            $('#STDTL_SEARCH_lbl_validnumber').hide();
+            $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid');
+            $("#STDTL_SEARCH_lbl_updcpfamount").show();
+            $("#STDTL_SEARCH_tb_updcpfamount").show();
+            $('#STDTL_SEARCH_lbl_validamount').text(STDTL_SEARCH_errorMsg_array[16]).show();
+            if(STDTL_SEARCH_Cpfamt=='')
+            {
+                ErrorControl.cpferror='Valid';
+                $("#STDTL_SEARCH_tb_updcpfamount").addClass('invalid');
+            }
+            else
+            {
+                if(STDTL_SEARCH_Empname!='' && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0))
+                    $("#STDTL_SEARCH_btn_update").removeAttr("disabled");
+                ErrorControl.cpferror='Valid';
+                $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
+                $('#STDTL_SEARCH_lbl_validamount').hide();
+                $('#STDTL_SEARCH_lbl_validnumber').hide();
+            }
+        }
+        else if(STDTL_SEARCH_response!=0 || STDTL_SEARCH_CpfNo!=duplicatenumber)
+        {
+            ErrorControl.cpferror='InValid';
+            $("#STDTL_SEARCH_tb_updcpfnumber").addClass('invalid');
+            $('#STDTL_SEARCH_lbl_validnumber').text(STDTL_SEARCH_errorMsg_array[15]).show();
+            $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
+            $('#STDTL_SEARCH_lbl_validamount').hide();
+            $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+        }
+    }
 //UPDATE BUTTON VALIDATION
-$(document).on('change','#STDTL_SEARCH_div_update input:not(#STDTL_SEARCH_tb_updcpfnumber),#STDTL_SEARCH_lb_updemployeename,textarea', function() 
-{
-var STDTL_SEARCH_currentid=$(this).attr('id');
-var STDTL_SEARCH_Empname=$("#STDTL_SEARCH_lb_updemployeename").val();
-var STDTL_SEARCH_Salamt=$("#STDTL_SEARCH_tb_updsalaryamount").val();
-var STDTL_SEARCH_CpfNo=$("#STDTL_SEARCH_tb_updcpfnumber").val();
-var STDTL_SEARCH_Cpfamt=$("#STDTL_SEARCH_tb_updcpfamount").val();
-if((STDTL_SEARCH_Empname!=''&& STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0))&&(STDTL_SEARCH_CpfNo==''))
-{
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
-$("#STDTL_SEARCH_btn_update").removeAttr("disabled");
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-}
-else if((STDTL_SEARCH_Empname!='' && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0)) && (STDTL_SEARCH_CpfNo.length==9))
-{
-if(ErrorControl.cpferror=='Valid'&& STDTL_SEARCH_Cpfamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updcpfamount').val())!=0))
-{
-$("#STDTL_SEARCH_btn_update").removeAttr("disabled");
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').hide();
-}
-else
-{
-$("#STDTL_SEARCH_tb_updcpfamount").addClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').text(STDTL_SEARCH_errorMsg_array[16]).show();
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-}
-}
-else if((STDTL_SEARCH_Empname!='' && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0)) && (STDTL_SEARCH_CpfNo.length!=9) )
-{
-if(STDTL_SEARCH_CpfNo.length>0)
-{
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-}
-else if(STDTL_SEARCH_CpfNo.length==0)
-$("#STDTL_SEARCH_btn_update").removeAttr("disabled");
-}
-else
-{
-if(STDTL_SEARCH_Cpfamt=='')
-{
-$("#STDTL_SEARCH_tb_updcpfamount").addClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').text(STDTL_SEARCH_errorMsg_array[16]).show();
-}
-else
-{
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').hide();
-}
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-}
-if(STDTL_SEARCH_Cpfamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updcpfamount').val())!=0) && STDTL_SEARCH_CpfNo.length==9 && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0))
-{
-$("#STDTL_SEARCH_btn_update").removeAttr("disabled");
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
-$('#STDTL_SEARCH_lbl_validamount').hide();
-}
-});
+    $(document).on('change','#STDTL_SEARCH_div_update input:not(#STDTL_SEARCH_tb_updcpfnumber),#STDTL_SEARCH_lb_updemployeename,textarea', function()
+    {
+        var STDTL_SEARCH_currentid=$(this).attr('id');
+        var STDTL_SEARCH_Empname=$("#STDTL_SEARCH_lb_updemployeename").val();
+        var STDTL_SEARCH_Salamt=$("#STDTL_SEARCH_tb_updsalaryamount").val();
+        var STDTL_SEARCH_CpfNo=$("#STDTL_SEARCH_tb_updcpfnumber").val();
+        var STDTL_SEARCH_Cpfamt=$("#STDTL_SEARCH_tb_updcpfamount").val();
+        if((STDTL_SEARCH_Empname!=''&& STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0))&&(STDTL_SEARCH_CpfNo==''))
+        {
+            $('#STDTL_SEARCH_lbl_validamount').hide();
+            $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
+            $("#STDTL_SEARCH_btn_update").removeAttr("disabled");
+            $('#STDTL_SEARCH_lbl_validnumber').hide();
+        }
+        else if((STDTL_SEARCH_Empname!='' && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0)) && (STDTL_SEARCH_CpfNo.length==9))
+        {
+            if(ErrorControl.cpferror=='Valid'&& STDTL_SEARCH_Cpfamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updcpfamount').val())!=0))
+            {
+                $("#STDTL_SEARCH_btn_update").removeAttr("disabled");
+                $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
+                $('#STDTL_SEARCH_lbl_validamount').hide();
+            }
+            else
+            {
+                $("#STDTL_SEARCH_tb_updcpfamount").addClass('invalid');
+                $('#STDTL_SEARCH_lbl_validamount').text(STDTL_SEARCH_errorMsg_array[16]).show();
+                $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+            }
+        }
+        else if((STDTL_SEARCH_Empname!='' && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0)) && (STDTL_SEARCH_CpfNo.length!=9) )
+        {
+            if(STDTL_SEARCH_CpfNo.length>0)
+            {
+                $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+            }
+            else if(STDTL_SEARCH_CpfNo.length==0)
+                $("#STDTL_SEARCH_btn_update").removeAttr("disabled");
+        }
+        else
+        {
+            if(STDTL_SEARCH_Cpfamt=='')
+            {
+                $("#STDTL_SEARCH_tb_updcpfamount").addClass('invalid');
+                $('#STDTL_SEARCH_lbl_validamount').text(STDTL_SEARCH_errorMsg_array[16]).show();
+            }
+            else
+            {
+                $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
+                $('#STDTL_SEARCH_lbl_validamount').hide();
+            }
+            $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+        }
+        if(STDTL_SEARCH_Cpfamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updcpfamount').val())!=0) && STDTL_SEARCH_CpfNo.length==9 && STDTL_SEARCH_Salamt!='' && (parseFloat($('#STDTL_SEARCH_tb_updsalaryamount').val())!=0))
+        {
+            $("#STDTL_SEARCH_btn_update").removeAttr("disabled");
+            $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid');
+            $('#STDTL_SEARCH_lbl_validamount').hide();
+        }
+    });
 //CLICK EVENT FUCNTION FOR UPDATE
-$('#STDTL_SEARCH_btn_update').click(function()
-{
-var  newPos= adjustPosition($(this).position(),100,280);
-resetPreloader(newPos);
-$(".preloader").show();
-var STDTL_SEARCH_formname=$("#STDTL_SEARCH_form_employeelist").val();
-var STDTL_SEARCH_id=$('input:radio[name=STDTL_SEARCH_radio_staffdetail]:checked').val();
-var STDTL_SEARCH_value=STDTL_SEARCH_id.split('/')
-google.script.run.withSuccessHandler(STDTL_SEARCH_updateresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_update(document.getElementById('STDTL_SEARCH_form_employeelist'));
-});
+    $('#STDTL_SEARCH_btn_update').click(function()
+    {
+        var  newPos= adjustPosition($(this).position(),100,280);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        var STDTL_SEARCH_formname=$("#STDTL_SEARCH_form_employeelist").val();
+        var STDTL_SEARCH_id=$('input:radio[name=STDTL_SEARCH_radio_staffdetail]:checked').val();
+        var STDTL_SEARCH_value=STDTL_SEARCH_id.split('/')
+        google.script.run.withSuccessHandler(STDTL_SEARCH_updateresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_update(document.getElementById('STDTL_SEARCH_form_employeelist'));
+    });
 //CALL CONFIRM MESSAGE
-$(document).on('click','.messageconfirm',function(){
-var  newPos= adjustPosition($("#STDTL_SEARCH_btn_delete").position(),100,280);
-resetPreloader(newPos);
-$(".preloader").show(); 
-var STDTL_SEARCH_id=$('input:radio[name=STDTL_SEARCH_radio_staffdetail]:checked').val();
-var STDTL_SEARCH_value=STDTL_SEARCH_id.split('/');
-STDTL_SEARCH_deleteflag='STDTL_SEARCH_delete';
-google.script.run.withSuccessHandler(STDTL_SEARCH_deleteresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_delete(STDTL_SEARCH_value);
-});
+    $(document).on('click','.messageconfirm',function(){
+        var  newPos= adjustPosition($("#STDTL_SEARCH_btn_delete").position(),100,280);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        var STDTL_SEARCH_id=$('input:radio[name=STDTL_SEARCH_radio_staffdetail]:checked').val();
+        var STDTL_SEARCH_value=STDTL_SEARCH_id.split('/');
+        STDTL_SEARCH_deleteflag='STDTL_SEARCH_delete';
+        google.script.run.withSuccessHandler(STDTL_SEARCH_deleteresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_delete(STDTL_SEARCH_value);
+    });
 //CLICK EVENT FUCNTION FOR DELETE
-$('#STDTL_SEARCH_btn_delete').click(function()
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[17],confirmation:true,position:$(this).position()}});
-});
+    $('#STDTL_SEARCH_btn_delete').click(function()
+    {
+        $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[17],confirmation:true,position:$(this).position()}});
+    });
 //CLICK EVENT FUCNTION FOR RESET
-$('#STDTL_SEARCH_btn_reset').click(function()
-{
-$('#STDTL_SEARCH_tb_updcpfnumber').val('');
-$('#STDTL_SEARCH_tb_updcpfamount').val('');
-$('#STDTL_SEARCH_tb_updlevyamount').val('');
-$('#STDTL_SEARCH_tb_updsalaryamount').val('');
-$('#STDTL_SEARCH_ta_updcomments').val('');
-$('#STDTL_SEARCH_lbl_validamount').hide();
-$('#STDTL_SEARCH_lbl_validnumber').hide();
-$("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
-$("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
-$("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
-$("#STDTL_SEARCH_tb_updcpfamount").hide();
-$("textarea").height(20);
-$("#STDTL_SEARCH_lbl_updcpfamount").hide();
-});
+    $('#STDTL_SEARCH_btn_reset').click(function()
+    {
+        $('#STDTL_SEARCH_tb_updcpfnumber').val('');
+        $('#STDTL_SEARCH_tb_updcpfamount').val('');
+        $('#STDTL_SEARCH_tb_updlevyamount').val('');
+        $('#STDTL_SEARCH_tb_updsalaryamount').val('');
+        $('#STDTL_SEARCH_ta_updcomments').val('');
+        $('#STDTL_SEARCH_lbl_validamount').hide();
+        $('#STDTL_SEARCH_lbl_validnumber').hide();
+        $("#STDTL_SEARCH_tb_updcpfnumber").removeClass('invalid')
+        $("#STDTL_SEARCH_tb_updcpfamount").removeClass('invalid')
+        $("#STDTL_SEARCH_btn_update").attr("disabled","disabled");
+        $("#STDTL_SEARCH_tb_updcpfamount").hide();
+        $("textarea").height(20);
+        $("#STDTL_SEARCH_lbl_updcpfamount").hide();
+    });
 //SUCCESS FUNCTION FOR UPDATE
-function STDTL_SEARCH_updateresult(STDTL_SEARCH_response)
-{
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-var STDTL_SEARCH_CpfNo=$("#STDTL_SEARCH_tb_updcpfnumber").val();
-var duplicatenumber=$("#STDTL_SEARCH_tb_updcpfnumberduplicate").val();
-var STDTL_SEARCH_comments=$("#STDTL_SEARCH_ta_updcomments").val();
-if(STDTL_SEARCH_CpfNo==duplicatenumber && STDTL_SEARCH_comments==STDTL_SEARCH_commnts)
-{
-google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_htmltable').show();
-STDTL_SEARCH_sucsval=1;
-}
-else
-{
-$(".preloader").hide(); 
-STDTL_SEARCH_comments=STDTL_SEARCH_response;
-google.script.run.withSuccessHandler(STDTL_SEARCH_comments_autocompleteresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_comments_autocomplete();
-google.script.run.withSuccessHandler(STDTL_SEARCH_empcpfresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
-$('#STDTL_SEARCH_tble_htmltable').hide();
-$('#STDTL_SEARCH_lb_cpfnumber_listbox').val('SELECT');
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_header').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
+    function STDTL_SEARCH_updateresult(STDTL_SEARCH_response)
+    {
+        $('#STDTL_SEARCH_tble_htmltable').hide();
+        $('#STDTL_SEARCH_div_update').hide();
+        $('#STDTL_SEARCH_tble_srchupd').hide();
+        var STDTL_SEARCH_CpfNo=$("#STDTL_SEARCH_tb_updcpfnumber").val();
+        var duplicatenumber=$("#STDTL_SEARCH_tb_updcpfnumberduplicate").val();
+        var STDTL_SEARCH_comments=$("#STDTL_SEARCH_ta_updcomments").val();
+        if(STDTL_SEARCH_CpfNo==duplicatenumber && STDTL_SEARCH_comments==STDTL_SEARCH_commnts)
+        {
+            google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'));
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+            $('#STDTL_SEARCH_div_update').hide();
+            $('#STDTL_SEARCH_tble_htmltable').show();
+            STDTL_SEARCH_sucsval=1;
+        }
+        else
+        {
+            $(".preloader").hide();
+            STDTL_SEARCH_comments=STDTL_SEARCH_response;
+            google.script.run.withSuccessHandler(STDTL_SEARCH_comments_autocompleteresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_comments_autocomplete();
+            google.script.run.withSuccessHandler(STDTL_SEARCH_empcpfresult).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_searchoption();
+            $('#STDTL_SEARCH_tble_htmltable').hide();
+            $('#STDTL_SEARCH_lb_cpfnumber_listbox').val('SELECT');
+            $('#STDTL_SEARCH_div_update').hide();
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+            $('#STDTL_SEARCH_div_header').hide();
+            $('#STDTL_SEARCH_div_headernodata').hide();
 //MESSAGE BOX FOR UPDATE BUTTON
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[13],position:{top:150,left:500}}});
-}
-}
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[13],position:{top:150,left:500}}});
+        }
+    }
 //SUCCESS FUNCTION FOR DELETE
-function STDTL_SEARCH_deleteresult(STDTL_SEARCH_response)
-{
-STDTL_SEARCH_sucsval=2;
-if(STDTL_SEARCH_response==1)
-{
-google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'))
-$('#STDTL_SEARCH_div_update').hide();
-$('#STDTL_SEARCH_tble_srchupd').hide();
-$('#STDTL_SEARCH_div_headernodata').hide();
-}
-else
-{
-$(".preloader").hide(); 
+    function STDTL_SEARCH_deleteresult(STDTL_SEARCH_response)
+    {
+        STDTL_SEARCH_sucsval=2;
+        if(STDTL_SEARCH_response==1)
+        {
+            google.script.run.withSuccessHandler(STDTL_SEARCH_srch_result).withFailureHandler(STDTL_SEARCH_onFailure).STDTL_SEARCH_flextabel_getdatas(document.getElementById('STDTL_SEARCH_form_employeelist'))
+            $('#STDTL_SEARCH_div_update').hide();
+            $('#STDTL_SEARCH_tble_srchupd').hide();
+            $('#STDTL_SEARCH_div_headernodata').hide();
+        }
+        else
+        {
+            $(".preloader").hide();
 //MESSAGE BOX FOR DELETE NOT SUCCESSFULLY
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[11],position:{top:150,left:500}}}); 
-}
-}
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE",msgcontent:STDTL_SEARCH_errorMsg_array[11],position:{top:150,left:500}}});
+        }
+    }
 });
 //DOCUMENT READY FUNCTION END
 </script>
@@ -1000,118 +1000,118 @@ $(document).doValidation({rule:'messagebox',prop:{msgtitle:"STAFF EXPENSE DETAIL
 <!--BODY TAG START-->
 <body>
 <div>
-<div class="wrapper">
-<div class="preloader MaskPanel"><div class="preloader statusarea"><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
-<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE</h3><p></div></div>
-<form class="content" name="STDTL_SEARCH_form_employeelist" id="STDTL_SEARCH_form_employeelist" hidden>
-<table>
-<tr>
-<td><label name="STDTL_SEARCH_lbl_searchoption" id="STDTL_SEARCH_lbl_searchoption">SEARCH BY<em>*</em></label></td>
-<td><select name="STDTL_SEARCH_lb_searchoption" id="STDTL_SEARCH_lb_searchoption">
-<option>SELECT</option>
-</select></td>
-</tr>
-</table>
-<div id=STDTL_SEARCH_div_table name="STDTL_SEARCH_div_table" hidden>
-<div><tr><td><label id = "STDTL_SEARCH_lbl_searchoptionheader" name = "STDTL_SEARCH_lbl_searchoptionheader" class = "srctitle" hidden ></label></td></tr></div>
-<!----------CODING TO CREATE SEARCH FORM FOR EMPLOYEE NAME------------------------------------------------>
-<div>
-<table id = "STDTL_SEARCH_tble_employee" hidden>
-<tr>
-<td><label> EMPLOYEE NAME </label></td>
-<td><select id="STDTL_SEARCH_lb_employeename_listbox" name="STDTL_SEARCH_lb_employeename_listbox"> 
-<option>SELECT</option>
-</select></td></tr> 
-</table>
-</div>
-<!----------CODING TO CREATE SEARCH FORM FOR CPF NUMBER------------------------------------------------>
-<div>
-<table id = "STDTL_SEARCH_tble_cpfnumber" hidden>
-<tr>
-<td><label> CPF NUMBER </label></td>
-<td><select id="STDTL_SEARCH_lb_cpfnumber_listbox" name="STDTL_SEARCH_lb_cpfnumber_listbox"> 
-<option>SELECT</option>
-</select>
-</td></tr> 
-</table>
-</div>
-<!----------CODING TO CREATE SEARCH FORM FOR CPF AMOUNT,LEVY AMOUNT,SALARY AMOUNT-------------------->
-<div>
-<table id =  "STDTL_SEARCH_tble_amt_option" hidden>
-<tr>
-<td><label> FROM AMOUNT </label></td>
-<td><input type ="text" name = "STDTL_SEARCH_tb_fromamt" id ="STDTL_SEARCH_tb_fromamt" class = " amtsubmitval  amountonly" style="width:85px"></td>
-</tr>
-<tr>
-<td><label> TO AMOUNT </label></td>
-<td><input type ="text" name = "STDTL_SEARCH_tb_toamt" id ="STDTL_SEARCH_tb_toamt" class = " amtsubmitval  amountonly" style="width:85px"></td>
-<tr><td></td><td><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_amtsearch" class = 'btn' value="SEARCH" id="STDTL_SEARCH_btn_amtsearch" disabled /></td>
-<td><label class="errormsg" id='STDTL_SEARCH_lbl_amounterrormsg'  hidden></label></td>
-</tr>
-</table>
-</div>
-<!----------CODING TO CREATE SEARCH FORM FOR COMMENTS------------------------------------------------>
-<div>
-<table id =  "STDTL_SEARCH_tble_comments_option" hidden>
-<tr>
-<td>
-<label name="STDTL_INPUT_lbl_comments" id="STDTL_INPUT_lbl_comments">COMMENTS</label></td> 
-<td><textarea name="STDTL_SEARCH_ta_comments" id="STDTL_SEARCH_ta_comments" class="auto commentsresultsvalidate"></textarea></td>
-<tr><td></td><td><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_search_comments" class = 'btn' value="SEARCH" id="STDTL_SEARCH_btn_search_comments" disabled /></td>
-</tr>
-</table>
-</div>
-<div class="srctitle" name="STDTL_SEARCH_div_header" id="STDTL_SEARCH_div_header" hidden ></div>
-<div class="errormsg" name="STDTL_SEARCH_div_headernodata" id="STDTL_SEARCH_div_headernodata" hidden></div>
-<div id="STDTL_SEARCH_div_flexdata_result" style="height:1025px;width:1025px;overflow:auto;">
-<table id="STDTL_SEARCH_tble_htmltable" class="srcresult" style="width:1010px">  
-</table>
-</div>
-<table id="STDTL_SEARCH_tble_srchupd" name="STDTL_SEARCH_tble_srchupd" hidden>
-<tr>
-<td><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_search" id="STDTL_SEARCH_btn_search"  disabled="" value="SEARCH"></td>
-<td><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_delete" id="STDTL_SEARCH_btn_delete"  disabled="" value="DELETE"></td>
-</tr>
-</table>
-<div id="STDTL_SEARCH_div_update" name="STDTL_SEARCH_div_update" hidden>
-<table>
-<tr>
-<td><label>EMPLOYEE NAME</label></td>
-<td><input type="text" id="STDTL_SEARCH_lb_updemployeename" name="STDTL_SEARCH_lb_updemployeename"  class="rdonly" readonly></td> 
-</tr>
-<td><input type="text" name="STDTL_SEARCH_tb_employeeduplicate" id="STDTL_SEARCH_tb_employeeduplicate" hidden></td>
-<tr>
-<td><label name="STDTL_SEARCH_lbl_updcpfnumber" id="STDTL_SEARCH_lbl_updcpfnumber">CPF NUMBER</label></td> 
-<td><input type="text" name="STDTL_SEARCH_tb_updcpfnumber" id="STDTL_SEARCH_tb_updcpfnumber" maxlength=9 class="alphanumeric" style="width:115px"></td>
-<td><input type="text" name="STDTL_SEARCH_tb_updcpfnumberduplicate" id="STDTL_SEARCH_tb_updcpfnumberduplicate" maxlength="9" class="alphanumeric" style="width:110px" hidden ></td>
-<td><div><label id="STDTL_SEARCH_lbl_validnumber" name="STDTL_SEARCH_lbl_validnumber" class="errormsg"></label></div></td>
-</tr>
-<tr>
-<td><label name="STDTL_SEARCH_lbl_updcpfamount" id="STDTL_SEARCH_lbl_updcpfamount"hidden>CPF AMOUNT</label></td> 
-<td><input type="text" name="STDTL_SEARCH_tb_updcpfamount" id="STDTL_SEARCH_tb_updcpfamount" class="amountonly" style="width:60px" hidden></td>
-<td><div><label id="STDTL_SEARCH_lbl_validamount" name="STDTL_SEARCH_lbl_validamount" class="errormsg"></label></div></td>
-</tr>
-<tr>
-<td><label name="STDTL_SEARCH_lbl_updlevyamount" id="STDTL_SEARCH_lbl_updlevyamount">LEVY AMOUNT</label></td> 
-<td><input type="text" name="STDTL_SEARCH_tb_updlevyamount" id="STDTL_SEARCH_tb_updlevyamount" class="amountonly" style="width:60px"></td>
-</tr>
-<tr>
-<td><label name="STDTL_SEARCH_lbl_updsalaryamount" id="STDTL_SEARCH_lbl_updsalaryamount">SALARY AMOUNT<em>*</em></label></td> 
-<td><input type="text" name="STDTL_SEARCH_tb_updsalaryamount" id="STDTL_SEARCH_tb_updsalaryamount" class="amountonly" style="width:60px"></td>
-</tr>
-<tr>
-<td><label name="STDTL_SEARCH_lbl_updcomments" id="STDTL_SEARCH_lbl_updcomments">COMMENTS</label></td> 
-<td><textarea name="STDTL_SEARCH_ta_updcomments" id="STDTL_SEARCH_ta_updcomments" ></textarea></td>
-</tr>
-<tr>
-<td align="right"><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_update" id="STDTL_SEARCH_btn_update"  value="UPDATE" disabled></td>
-<td align="left"><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_reset" id="STDTL_SEARCH_btn_reset"  value="RESET"></td>
-</tr>
-</table>
-</div>
-</div>
-</form>
-</div>
+    <div class="wrapper">
+        <div class="preloader MaskPanel"><div class="preloader statusarea"><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+        <div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE</h3><p></div></div>
+        <form class="content" name="STDTL_SEARCH_form_employeelist" id="STDTL_SEARCH_form_employeelist" hidden>
+            <table>
+                <tr>
+                    <td><label name="STDTL_SEARCH_lbl_searchoption" id="STDTL_SEARCH_lbl_searchoption">SEARCH BY<em>*</em></label></td>
+                    <td><select name="STDTL_SEARCH_lb_searchoption" id="STDTL_SEARCH_lb_searchoption">
+                        <option>SELECT</option>
+                    </select></td>
+                </tr>
+            </table>
+            <div id=STDTL_SEARCH_div_table name="STDTL_SEARCH_div_table" hidden>
+                <div><tr><td><label id = "STDTL_SEARCH_lbl_searchoptionheader" name = "STDTL_SEARCH_lbl_searchoptionheader" class = "srctitle" hidden ></label></td></tr></div>
+                <!----------CODING TO CREATE SEARCH FORM FOR EMPLOYEE NAME------------------------------------------------>
+                <div>
+                    <table id = "STDTL_SEARCH_tble_employee" hidden>
+                        <tr>
+                            <td><label> EMPLOYEE NAME </label></td>
+                            <td><select id="STDTL_SEARCH_lb_employeename_listbox" name="STDTL_SEARCH_lb_employeename_listbox">
+                                <option>SELECT</option>
+                            </select></td></tr>
+                    </table>
+                </div>
+                <!----------CODING TO CREATE SEARCH FORM FOR CPF NUMBER------------------------------------------------>
+                <div>
+                    <table id = "STDTL_SEARCH_tble_cpfnumber" hidden>
+                        <tr>
+                            <td><label> CPF NUMBER </label></td>
+                            <td><select id="STDTL_SEARCH_lb_cpfnumber_listbox" name="STDTL_SEARCH_lb_cpfnumber_listbox">
+                                <option>SELECT</option>
+                            </select>
+                            </td></tr>
+                    </table>
+                </div>
+                <!----------CODING TO CREATE SEARCH FORM FOR CPF AMOUNT,LEVY AMOUNT,SALARY AMOUNT-------------------->
+                <div>
+                    <table id =  "STDTL_SEARCH_tble_amt_option" hidden>
+                        <tr>
+                            <td><label> FROM AMOUNT </label></td>
+                            <td><input type ="text" name = "STDTL_SEARCH_tb_fromamt" id ="STDTL_SEARCH_tb_fromamt" class = " amtsubmitval  amountonly" style="width:85px"></td>
+                        </tr>
+                        <tr>
+                            <td><label> TO AMOUNT </label></td>
+                            <td><input type ="text" name = "STDTL_SEARCH_tb_toamt" id ="STDTL_SEARCH_tb_toamt" class = " amtsubmitval  amountonly" style="width:85px"></td>
+                        <tr><td></td><td><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_amtsearch" class = 'btn' value="SEARCH" id="STDTL_SEARCH_btn_amtsearch" disabled /></td>
+                            <td><label class="errormsg" id='STDTL_SEARCH_lbl_amounterrormsg'  hidden></label></td>
+                        </tr>
+                    </table>
+                </div>
+                <!----------CODING TO CREATE SEARCH FORM FOR COMMENTS------------------------------------------------>
+                <div>
+                    <table id =  "STDTL_SEARCH_tble_comments_option" hidden>
+                        <tr>
+                            <td>
+                                <label name="STDTL_INPUT_lbl_comments" id="STDTL_INPUT_lbl_comments">COMMENTS</label></td>
+                            <td><textarea name="STDTL_SEARCH_ta_comments" id="STDTL_SEARCH_ta_comments" class="auto commentsresultsvalidate"></textarea></td>
+                        <tr><td></td><td><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_search_comments" class = 'btn' value="SEARCH" id="STDTL_SEARCH_btn_search_comments" disabled /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="srctitle" name="STDTL_SEARCH_div_header" id="STDTL_SEARCH_div_header" hidden ></div>
+                <div class="errormsg" name="STDTL_SEARCH_div_headernodata" id="STDTL_SEARCH_div_headernodata" hidden></div>
+                <div id="STDTL_SEARCH_div_flexdata_result" style="height:1025px;width:1025px;overflow:auto;">
+                    <table id="STDTL_SEARCH_tble_htmltable" class="srcresult" style="width:1010px">
+                    </table>
+                </div>
+                <table id="STDTL_SEARCH_tble_srchupd" name="STDTL_SEARCH_tble_srchupd" hidden>
+                    <tr>
+                        <td><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_search" id="STDTL_SEARCH_btn_search"  disabled="" value="SEARCH"></td>
+                        <td><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_delete" id="STDTL_SEARCH_btn_delete"  disabled="" value="DELETE"></td>
+                    </tr>
+                </table>
+                <div id="STDTL_SEARCH_div_update" name="STDTL_SEARCH_div_update" hidden>
+                    <table>
+                        <tr>
+                            <td><label>EMPLOYEE NAME</label></td>
+                            <td><input type="text" id="STDTL_SEARCH_lb_updemployeename" name="STDTL_SEARCH_lb_updemployeename"  class="rdonly" readonly></td>
+                        </tr>
+                        <td><input type="text" name="STDTL_SEARCH_tb_employeeduplicate" id="STDTL_SEARCH_tb_employeeduplicate" hidden></td>
+                        <tr>
+                            <td><label name="STDTL_SEARCH_lbl_updcpfnumber" id="STDTL_SEARCH_lbl_updcpfnumber">CPF NUMBER</label></td>
+                            <td><input type="text" name="STDTL_SEARCH_tb_updcpfnumber" id="STDTL_SEARCH_tb_updcpfnumber" maxlength=9 class="alphanumeric" style="width:115px"></td>
+                            <td><input type="text" name="STDTL_SEARCH_tb_updcpfnumberduplicate" id="STDTL_SEARCH_tb_updcpfnumberduplicate" maxlength="9" class="alphanumeric" style="width:110px" hidden ></td>
+                            <td><div><label id="STDTL_SEARCH_lbl_validnumber" name="STDTL_SEARCH_lbl_validnumber" class="errormsg"></label></div></td>
+                        </tr>
+                        <tr>
+                            <td><label name="STDTL_SEARCH_lbl_updcpfamount" id="STDTL_SEARCH_lbl_updcpfamount"hidden>CPF AMOUNT</label></td>
+                            <td><input type="text" name="STDTL_SEARCH_tb_updcpfamount" id="STDTL_SEARCH_tb_updcpfamount" class="amountonly" style="width:60px" hidden></td>
+                            <td><div><label id="STDTL_SEARCH_lbl_validamount" name="STDTL_SEARCH_lbl_validamount" class="errormsg"></label></div></td>
+                        </tr>
+                        <tr>
+                            <td><label name="STDTL_SEARCH_lbl_updlevyamount" id="STDTL_SEARCH_lbl_updlevyamount">LEVY AMOUNT</label></td>
+                            <td><input type="text" name="STDTL_SEARCH_tb_updlevyamount" id="STDTL_SEARCH_tb_updlevyamount" class="amountonly" style="width:60px"></td>
+                        </tr>
+                        <tr>
+                            <td><label name="STDTL_SEARCH_lbl_updsalaryamount" id="STDTL_SEARCH_lbl_updsalaryamount">SALARY AMOUNT<em>*</em></label></td>
+                            <td><input type="text" name="STDTL_SEARCH_tb_updsalaryamount" id="STDTL_SEARCH_tb_updsalaryamount" class="amountonly" style="width:60px"></td>
+                        </tr>
+                        <tr>
+                            <td><label name="STDTL_SEARCH_lbl_updcomments" id="STDTL_SEARCH_lbl_updcomments">COMMENTS</label></td>
+                            <td><textarea name="STDTL_SEARCH_ta_updcomments" id="STDTL_SEARCH_ta_updcomments" ></textarea></td>
+                        </tr>
+                        <tr>
+                            <td align="right"><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_update" id="STDTL_SEARCH_btn_update"  value="UPDATE" disabled></td>
+                            <td align="left"><input type="button" class="maxbtn" name="STDTL_SEARCH_btn_reset" id="STDTL_SEARCH_btn_reset"  value="RESET"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 <!--BODY TAG END-->

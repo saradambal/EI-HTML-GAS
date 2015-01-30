@@ -40,382 +40,382 @@
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
-$('textarea').autogrow({onInitialize: true});
-var CACS_REP_inventory_card_array=[];
-var CACS_REP_errorAarray=[];
-var CACS_REP_allcust_details=[];
-var CACS_REP_reason_array=[];
-var CACS_REP_cust_id;
-var CACS_REP_comment;
-$(".preloader").show();
-google.script.run.withFailureHandler(CACS_REP_error).withSuccessHandler(CACS_REP_load_initial_values).CACS_REP_get_initial_values()
+    $('textarea').autogrow({onInitialize: true});
+    var CACS_REP_inventory_card_array=[];
+    var CACS_REP_errorAarray=[];
+    var CACS_REP_allcust_details=[];
+    var CACS_REP_reason_array=[];
+    var CACS_REP_cust_id;
+    var CACS_REP_comment;
+    $(".preloader").show();
+    google.script.run.withFailureHandler(CACS_REP_error).withSuccessHandler(CACS_REP_load_initial_values).CACS_REP_get_initial_values()
 //**************GET CUSTOMER NAME FOR THE SELECTED UNIT
-$('#CACS_REP_lb_unitno').change(function(){
-var CACS_REP_unit = $(this).val();
-if(CACS_REP_unit=='SELECT'){
-$('#CACS_REP_lb_selectname').hide();
-$('#CACS_REP_lb_selectname').prop('selectedIndex',0);
-$('#CACS_REP_lbl_cname').hide();
-$('#CACS_REP_lbl_cust_cardno').hide();
-$('#CACS_REP_lb_select_cust_cardno').hide();
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide();
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide();
-$('#CACS_REP_tble_custid tr').remove();
-$('#CACS_REP_lbl_error').hide();
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
-$('#CACS_REP_lbl_error').hide()
-$('#CACS_REP_tble_button').hide();
-}
-else
-{
-var  newPos= adjustPosition($(this).position(),100,120);
-resetPreloader(newPos);
-$(".preloader").show();
-$('#CACS_REP_lb_selectname').hide();
-$('#CACS_REP_lb_selectname').prop('selectedIndex',0);
-$('#CACS_REP_lbl_cname').hide();
-$('#CACS_REP_lbl_cust_cardno').hide();
-$('#CACS_REP_lb_select_cust_cardno').hide();
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide();
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide();
-$('#CACS_REP_tble_custid tr').remove();
-$('#CACS_REP_lbl_error').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+    $('#CACS_REP_lb_unitno').change(function(){
+        var CACS_REP_unit = $(this).val();
+        if(CACS_REP_unit=='SELECT'){
+            $('#CACS_REP_lb_selectname').hide();
+            $('#CACS_REP_lb_selectname').prop('selectedIndex',0);
+            $('#CACS_REP_lbl_cname').hide();
+            $('#CACS_REP_lbl_cust_cardno').hide();
+            $('#CACS_REP_lb_select_cust_cardno').hide();
+            $('#CACS_REP_lbl_new_cardno').hide();
+            $('#CACS_REP_lb_select_new_cardno').hide();
+            $('#CACS_REP_lbl_reason').hide();
+            $('#CACS_REP_lb_select_reason').hide();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_ta_comments').hide();
+            $('#CACS_REP_tble_custid tr').remove();
+            $('#CACS_REP_lbl_error').hide();
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+            $('#CACS_REP_lbl_error').hide()
+            $('#CACS_REP_tble_button').hide();
+        }
+        else
+        {
+            var  newPos= adjustPosition($(this).position(),100,120);
+            resetPreloader(newPos);
+            $(".preloader").show();
+            $('#CACS_REP_lb_selectname').hide();
+            $('#CACS_REP_lb_selectname').prop('selectedIndex',0);
+            $('#CACS_REP_lbl_cname').hide();
+            $('#CACS_REP_lbl_cust_cardno').hide();
+            $('#CACS_REP_lb_select_cust_cardno').hide();
+            $('#CACS_REP_lbl_new_cardno').hide();
+            $('#CACS_REP_lb_select_new_cardno').hide();
+            $('#CACS_REP_lbl_reason').hide();
+            $('#CACS_REP_lb_select_reason').hide();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_ta_comments').hide();
+            $('#CACS_REP_tble_custid tr').remove();
+            $('#CACS_REP_lbl_error').hide();
+            $('#CACS_REP_tble_button').hide();
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
 /////////************HANDLER TO LOAD available card********************/////////////////////
-google.script.run.withFailureHandler(CACS_REP_error).withSuccessHandler(CACS_REP_avialablecard).CACS_REP_get_avialablecard(CACS_REP_unit)
-}
-});
+            google.script.run.withFailureHandler(CACS_REP_error).withSuccessHandler(CACS_REP_avialablecard).CACS_REP_get_avialablecard(CACS_REP_unit)
+        }
+    });
 //***************GET CARD NUMBER FOR SELECTED CUSTOMER NAME
-$('#CACS_REP_lb_selectname').change(function(){
-var CACS_REP_custname=$(this).val();
-$('textarea').height(20);
-var CACS_REP_unit = $('#CACS_REP_lb_unitno').val();
-if(CACS_REP_custname=='SELECT'){
-$('#CACS_REP_lbl_cust_cardno').hide();
-$('#CACS_REP_lb_select_cust_cardno').hide();
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide();
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide();
-$('#CACS_REP_tble_custid tr').remove();
-$('#CACS_REP_lbl_error').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
-}
-else{
-$(".preloader").show();
-$('#CACS_REP_lbl_cust_cardno').hide();
-$('#CACS_REP_lb_select_cust_cardno').hide();
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide();
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide();
-$('#CACS_REP_tble_custid tr').remove();
-$('#CACS_REP_lbl_error').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
-var CACS_REP_name_id_array=[];
-for(var k=0;k<CACS_REP_allcust_details.length;k++)
-{
-if((CACS_REP_allcust_details[k].name==CACS_REP_custname)&&(CACS_REP_allcust_details[k].unit==CACS_REP_unit))
-{
-CACS_REP_name_id_array.push(CACS_REP_allcust_details[k].customerid);
-}
-}
-CACS_REP_name_id_array=unique(CACS_REP_name_id_array);
-if(CACS_REP_name_id_array.length!=1){
-$(".preloader").hide();
-var CACS_REP_customername=$('#CACS_REP_lb_selectname').val();
-var CACS_REP_myarray=CACS_REP_customername.split('_');
-var CCARD_custname=CACS_REP_myarray[0]+' '+CACS_REP_myarray[1];
-var CACS_REP_radio_value='';
-for (var i = 0; i < CACS_REP_name_id_array.length; i++) {
-var final=CCARD_custname+' '+CACS_REP_name_id_array[i]
-CACS_REP_radio_value = '<tr id=123><td style="width:245px"><label></label></td><td><input type="radio" name="custid" id='+CACS_REP_name_id_array[i]+' value='+CACS_REP_name_id_array[i]+' class="CACS_REP_class_custid" /></td><td>' + final + '</td></tr>';
-$('#CACS_REP_tble_custid').append(CACS_REP_radio_value);
-}
-}
-else{
-CACS_REP_cust_id=CACS_REP_name_id_array[0]
-CACS_REP_loadcust_card(CACS_REP_name_id_array[0])
-$('#CACS_REP_tble_custid tr').remove();
-}
-}
-});
-function CACS_REP_loadcust_card(CACS_REP_name_id){
-var CACS_REP_custcard_array=[];
-for(var k=0;k<CACS_REP_allcust_details.length;k++)
-{
-if(CACS_REP_allcust_details[k].customerid==CACS_REP_name_id)
-{
-CACS_REP_custcard_array.push(CACS_REP_allcust_details[k].cardno);
-var CACS_REP_comments=CACS_REP_allcust_details[k].comments;
-}
-}
-CACS_REP_custcard_array=unique(CACS_REP_custcard_array);
-$('#CACS_REP_lbl_cust_cardno').show();
-$('#CACS_REP_lb_select_cust_cardno').show();
- CACS_REP_comment=CACS_REP_comments
-var CACS_REP_custcard_options ='<option>SELECT</option>'
-for (var i = 0; i < CACS_REP_custcard_array.length; i++) {
-CACS_REP_custcard_options += '<option value="' + CACS_REP_custcard_array[i] + '">' + CACS_REP_custcard_array[i] + '</option>';
-}
-$('#CACS_REP_lb_select_cust_cardno').html(CACS_REP_custcard_options)
-$(".preloader").hide();
-}
-$('#CACS_REP_lb_select_cust_cardno').change(function(){
-var CACS_REP_unit = $('#CACS_REP_lb_unitno').val();
-if($(this).val()=='SELECT'){
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide();
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
-}
-else{
-$(".preloader").show();
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide();
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
-CACS_REP_load_availablecard(CACS_REP_inventory_card_array);
-}
-});
-$('#CACS_REP_lb_select_new_cardno').change(function(){
-if($(this).val()=='SELECT'){
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
-}
-else{
-$('#CACS_REP_lbl_reason').show();
-$('#CACS_REP_lb_select_reason').show();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
-}
-});
+    $('#CACS_REP_lb_selectname').change(function(){
+        var CACS_REP_custname=$(this).val();
+        $('textarea').height(20);
+        var CACS_REP_unit = $('#CACS_REP_lb_unitno').val();
+        if(CACS_REP_custname=='SELECT'){
+            $('#CACS_REP_lbl_cust_cardno').hide();
+            $('#CACS_REP_lb_select_cust_cardno').hide();
+            $('#CACS_REP_lbl_new_cardno').hide();
+            $('#CACS_REP_lb_select_new_cardno').hide();
+            $('#CACS_REP_lbl_reason').hide();
+            $('#CACS_REP_lb_select_reason').hide();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_ta_comments').hide();
+            $('#CACS_REP_tble_custid tr').remove();
+            $('#CACS_REP_lbl_error').hide();
+            $('#CACS_REP_tble_button').hide();
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+        }
+        else{
+            $(".preloader").show();
+            $('#CACS_REP_lbl_cust_cardno').hide();
+            $('#CACS_REP_lb_select_cust_cardno').hide();
+            $('#CACS_REP_lbl_new_cardno').hide();
+            $('#CACS_REP_lb_select_new_cardno').hide();
+            $('#CACS_REP_lbl_reason').hide();
+            $('#CACS_REP_lb_select_reason').hide();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_ta_comments').hide();
+            $('#CACS_REP_tble_custid tr').remove();
+            $('#CACS_REP_lbl_error').hide();
+            $('#CACS_REP_tble_button').hide();
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+            var CACS_REP_name_id_array=[];
+            for(var k=0;k<CACS_REP_allcust_details.length;k++)
+            {
+                if((CACS_REP_allcust_details[k].name==CACS_REP_custname)&&(CACS_REP_allcust_details[k].unit==CACS_REP_unit))
+                {
+                    CACS_REP_name_id_array.push(CACS_REP_allcust_details[k].customerid);
+                }
+            }
+            CACS_REP_name_id_array=unique(CACS_REP_name_id_array);
+            if(CACS_REP_name_id_array.length!=1){
+                $(".preloader").hide();
+                var CACS_REP_customername=$('#CACS_REP_lb_selectname').val();
+                var CACS_REP_myarray=CACS_REP_customername.split('_');
+                var CCARD_custname=CACS_REP_myarray[0]+' '+CACS_REP_myarray[1];
+                var CACS_REP_radio_value='';
+                for (var i = 0; i < CACS_REP_name_id_array.length; i++) {
+                    var final=CCARD_custname+' '+CACS_REP_name_id_array[i]
+                    CACS_REP_radio_value = '<tr id=123><td style="width:245px"><label></label></td><td><input type="radio" name="custid" id='+CACS_REP_name_id_array[i]+' value='+CACS_REP_name_id_array[i]+' class="CACS_REP_class_custid" /></td><td>' + final + '</td></tr>';
+                    $('#CACS_REP_tble_custid').append(CACS_REP_radio_value);
+                }
+            }
+            else{
+                CACS_REP_cust_id=CACS_REP_name_id_array[0]
+                CACS_REP_loadcust_card(CACS_REP_name_id_array[0])
+                $('#CACS_REP_tble_custid tr').remove();
+            }
+        }
+    });
+    function CACS_REP_loadcust_card(CACS_REP_name_id){
+        var CACS_REP_custcard_array=[];
+        for(var k=0;k<CACS_REP_allcust_details.length;k++)
+        {
+            if(CACS_REP_allcust_details[k].customerid==CACS_REP_name_id)
+            {
+                CACS_REP_custcard_array.push(CACS_REP_allcust_details[k].cardno);
+                var CACS_REP_comments=CACS_REP_allcust_details[k].comments;
+            }
+        }
+        CACS_REP_custcard_array=unique(CACS_REP_custcard_array);
+        $('#CACS_REP_lbl_cust_cardno').show();
+        $('#CACS_REP_lb_select_cust_cardno').show();
+        CACS_REP_comment=CACS_REP_comments
+        var CACS_REP_custcard_options ='<option>SELECT</option>'
+        for (var i = 0; i < CACS_REP_custcard_array.length; i++) {
+            CACS_REP_custcard_options += '<option value="' + CACS_REP_custcard_array[i] + '">' + CACS_REP_custcard_array[i] + '</option>';
+        }
+        $('#CACS_REP_lb_select_cust_cardno').html(CACS_REP_custcard_options)
+        $(".preloader").hide();
+    }
+    $('#CACS_REP_lb_select_cust_cardno').change(function(){
+        var CACS_REP_unit = $('#CACS_REP_lb_unitno').val();
+        if($(this).val()=='SELECT'){
+            $('#CACS_REP_lbl_new_cardno').hide();
+            $('#CACS_REP_lb_select_new_cardno').hide();
+            $('#CACS_REP_lbl_reason').hide();
+            $('#CACS_REP_lb_select_reason').hide();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_ta_comments').hide();
+            $('#CACS_REP_tble_button').hide();
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+        }
+        else{
+            $(".preloader").show();
+            $('#CACS_REP_lbl_new_cardno').hide();
+            $('#CACS_REP_lb_select_new_cardno').hide();
+            $('#CACS_REP_lbl_reason').hide();
+            $('#CACS_REP_lb_select_reason').hide();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_ta_comments').hide();
+            $('#CACS_REP_tble_button').hide();
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+            CACS_REP_load_availablecard(CACS_REP_inventory_card_array);
+        }
+    });
+    $('#CACS_REP_lb_select_new_cardno').change(function(){
+        if($(this).val()=='SELECT'){
+            $('#CACS_REP_lbl_reason').hide();
+            $('#CACS_REP_lb_select_reason').hide();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_ta_comments').hide();
+            $('#CACS_REP_tble_button').hide();
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+        }
+        else{
+            $('#CACS_REP_lbl_reason').show();
+            $('#CACS_REP_lb_select_reason').show();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_ta_comments').hide();
+            $('#CACS_REP_tble_button').hide();
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+        }
+    });
 //****************FUNCTION TO LOAD INITIAL VALUES******************8//
-function CACS_REP_load_initial_values(initial_values){
-CACS_REP_errorAarray=initial_values[0].CACS_REP_error_msg;
-CACS_REP_allcust_details=initial_values[0].CACS_REP_customerdetails;
-CACS_REP_reason_array=initial_values[0].CACS_REP_reason;
-var CACS_REP_unit_array=[];
-if(CACS_REP_allcust_details.length!=0){
-var CACS_REP_unitno_options ='<option>SELECT</option>'
-for(var k=0;k<CACS_REP_allcust_details.length;k++)
-{
-CACS_REP_unit_array.push(CACS_REP_allcust_details[k].unit)
-}
-CACS_REP_unit_array=unique(CACS_REP_unit_array);
-for (var i = 0; i < CACS_REP_unit_array.length; i++) {
-CACS_REP_unitno_options += '<option value="' + CACS_REP_unit_array[i] + '">' + CACS_REP_unit_array[i] + '</option>';
-}
-$('#CACS_REP_lb_unitno').html(CACS_REP_unitno_options)
-$('#CACS_REP_tble_unitnotable').show();
-}
-else{
- $('#CACS_REP_form_replaceform').replaceWith('<p><label class="errormsg">'+ CACS_REP_errorAarray[2]+'</label></p>'); 
-}
-var CACS_REP_reason_options ='<option>SELECT</option>'
-for (var i = 0; i < CACS_REP_reason_array.length; i++) {
-CACS_REP_reason_options += '<option value="' + CACS_REP_reason_array[i] + '">' + CACS_REP_reason_array[i] + '</option>';
-}
-$('#CACS_REP_lb_select_reason').html(CACS_REP_reason_options)
+    function CACS_REP_load_initial_values(initial_values){
+        CACS_REP_errorAarray=initial_values[0].CACS_REP_error_msg;
+        CACS_REP_allcust_details=initial_values[0].CACS_REP_customerdetails;
+        CACS_REP_reason_array=initial_values[0].CACS_REP_reason;
+        var CACS_REP_unit_array=[];
+        if(CACS_REP_allcust_details.length!=0){
+            var CACS_REP_unitno_options ='<option>SELECT</option>'
+            for(var k=0;k<CACS_REP_allcust_details.length;k++)
+            {
+                CACS_REP_unit_array.push(CACS_REP_allcust_details[k].unit)
+            }
+            CACS_REP_unit_array=unique(CACS_REP_unit_array);
+            for (var i = 0; i < CACS_REP_unit_array.length; i++) {
+                CACS_REP_unitno_options += '<option value="' + CACS_REP_unit_array[i] + '">' + CACS_REP_unit_array[i] + '</option>';
+            }
+            $('#CACS_REP_lb_unitno').html(CACS_REP_unitno_options)
+            $('#CACS_REP_tble_unitnotable').show();
+        }
+        else{
+            $('#CACS_REP_form_replaceform').replaceWith('<p><label class="errormsg">'+ CACS_REP_errorAarray[2]+'</label></p>');
+        }
+        var CACS_REP_reason_options ='<option>SELECT</option>'
+        for (var i = 0; i < CACS_REP_reason_array.length; i++) {
+            CACS_REP_reason_options += '<option value="' + CACS_REP_reason_array[i] + '">' + CACS_REP_reason_array[i] + '</option>';
+        }
+        $('#CACS_REP_lb_select_reason').html(CACS_REP_reason_options)
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
-function unique(a) {
-var result = [];
-$.each(a, function(i, e) {
-if ($.inArray(e, result) == -1) result.push(e);
-});
-return result;
-}
+    }
+    function unique(a) {
+        var result = [];
+        $.each(a, function(i, e) {
+            if ($.inArray(e, result) == -1) result.push(e);
+        });
+        return result;
+    }
 //*******************FUNCTION TO LOAD CUSTOMER NAME*******************************//
-function CACS_REP_avialablecard(CACS_REP_availcard_result){
-$(".preloader").hide();
-var CACS_REP_unit = $('#CACS_REP_lb_unitno').val();
-CACS_REP_inventory_card_array=CACS_REP_availcard_result;
-if(CACS_REP_inventory_card_array.length!=0){
-var CACS_REP_namearray=[];
-for(var k=0;k<CACS_REP_allcust_details.length;k++)
-{
-if(CACS_REP_allcust_details[k].unit==CACS_REP_unit)
-{
-CACS_REP_namearray.push(CACS_REP_allcust_details[k].name);
-}
-}
-CACS_REP_namearray=unique(CACS_REP_namearray);
-var CACS_REP_custname_options ='<option>SELECT</option>'
-for (var i = 0; i < CACS_REP_namearray.length; i++) {
-var CACS_REP_myarray=CACS_REP_namearray[i].split('_');
-var CACS_REP_custname=CACS_REP_myarray[0]+' '+CACS_REP_myarray[1];
-CACS_REP_custname_options += '<option value="' + CACS_REP_namearray[i] + '">' + CACS_REP_custname + '</option>';
-}
-$('#CACS_REP_lb_selectname').html(CACS_REP_custname_options)
-$('#CACS_REP_lb_selectname').show();
-$('#CACS_REP_lbl_cname').show();
-$('#CACS_REP_lbl_error').hide()
-}
-else{
-var msg=(CACS_REP_errorAarray[0]).replace('[UNIT NO]',CACS_REP_unit)
-$('#CACS_REP_lbl_error').text(msg);
-$('#CACS_REP_lbl_error').show();
-$('#CACS_REP_lb_unitno').prop('selectedIndex',0);
-}
-}
-$(document).on("change",'.CACS_REP_class_custid', function ()
-{
-$(".preloader").show();
-var CACS_REP_customer_id=$("input[name=custid]:checked").val();
-CACS_REP_cust_id=CACS_REP_customer_id
-var CACS_REP_unit = $('#CACS_REP_lb_unitno').val();
-$('#CACS_REP_lbl_cust_cardno').hide();
-$('#CACS_REP_lb_select_cust_cardno').hide().prop('selectedIndex',0);
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide().prop('selectedIndex',0);
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide().prop('selectedIndex',0);
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide()
-$('#CACS_REP_btn_submitbutton').attr('disabled','disabled');
-$('#CACS_REP_tble_button').hide();
-CACS_REP_loadcust_card(CACS_REP_customer_id)
-});
+    function CACS_REP_avialablecard(CACS_REP_availcard_result){
+        $(".preloader").hide();
+        var CACS_REP_unit = $('#CACS_REP_lb_unitno').val();
+        CACS_REP_inventory_card_array=CACS_REP_availcard_result;
+        if(CACS_REP_inventory_card_array.length!=0){
+            var CACS_REP_namearray=[];
+            for(var k=0;k<CACS_REP_allcust_details.length;k++)
+            {
+                if(CACS_REP_allcust_details[k].unit==CACS_REP_unit)
+                {
+                    CACS_REP_namearray.push(CACS_REP_allcust_details[k].name);
+                }
+            }
+            CACS_REP_namearray=unique(CACS_REP_namearray);
+            var CACS_REP_custname_options ='<option>SELECT</option>'
+            for (var i = 0; i < CACS_REP_namearray.length; i++) {
+                var CACS_REP_myarray=CACS_REP_namearray[i].split('_');
+                var CACS_REP_custname=CACS_REP_myarray[0]+' '+CACS_REP_myarray[1];
+                CACS_REP_custname_options += '<option value="' + CACS_REP_namearray[i] + '">' + CACS_REP_custname + '</option>';
+            }
+            $('#CACS_REP_lb_selectname').html(CACS_REP_custname_options)
+            $('#CACS_REP_lb_selectname').show();
+            $('#CACS_REP_lbl_cname').show();
+            $('#CACS_REP_lbl_error').hide()
+        }
+        else{
+            var msg=(CACS_REP_errorAarray[0]).replace('[UNIT NO]',CACS_REP_unit)
+            $('#CACS_REP_lbl_error').text(msg);
+            $('#CACS_REP_lbl_error').show();
+            $('#CACS_REP_lb_unitno').prop('selectedIndex',0);
+        }
+    }
+    $(document).on("change",'.CACS_REP_class_custid', function ()
+    {
+        $(".preloader").show();
+        var CACS_REP_customer_id=$("input[name=custid]:checked").val();
+        CACS_REP_cust_id=CACS_REP_customer_id
+        var CACS_REP_unit = $('#CACS_REP_lb_unitno').val();
+        $('#CACS_REP_lbl_cust_cardno').hide();
+        $('#CACS_REP_lb_select_cust_cardno').hide().prop('selectedIndex',0);
+        $('#CACS_REP_lbl_new_cardno').hide();
+        $('#CACS_REP_lb_select_new_cardno').hide().prop('selectedIndex',0);
+        $('#CACS_REP_lbl_reason').hide();
+        $('#CACS_REP_lb_select_reason').hide().prop('selectedIndex',0);
+        $('#CACS_REP_lbl_comments').hide();
+        $('#CACS_REP_ta_comments').hide()
+        $('#CACS_REP_btn_submitbutton').attr('disabled','disabled');
+        $('#CACS_REP_tble_button').hide();
+        CACS_REP_loadcust_card(CACS_REP_customer_id)
+    });
 //FUNCTION TO LOAD AVAILABLE CARD'S
-function CACS_REP_load_availablecard(availablecards_result){
-$('#CACS_REP_lbl_new_cardno').show();
-$('#CACS_REP_lb_select_new_cardno').show();
-$(".preloader").hide();
-var CACS_REP_availablecard_array= [];
-CACS_REP_availablecard_array=CACS_REP_inventory_card_array
-var CACS_REP_availablecard_options ='<option>SELECT</option>'
-for (var i = 0; i < CACS_REP_availablecard_array.length; i++) {
-CACS_REP_availablecard_options += '<option value="' + CACS_REP_availablecard_array[i] + '">' + CACS_REP_availablecard_array[i] + '</option>';
-}
-$('#CACS_REP_lb_select_new_cardno').html(CACS_REP_availablecard_options);
-}
+    function CACS_REP_load_availablecard(availablecards_result){
+        $('#CACS_REP_lbl_new_cardno').show();
+        $('#CACS_REP_lb_select_new_cardno').show();
+        $(".preloader").hide();
+        var CACS_REP_availablecard_array= [];
+        CACS_REP_availablecard_array=CACS_REP_inventory_card_array
+        var CACS_REP_availablecard_options ='<option>SELECT</option>'
+        for (var i = 0; i < CACS_REP_availablecard_array.length; i++) {
+            CACS_REP_availablecard_options += '<option value="' + CACS_REP_availablecard_array[i] + '">' + CACS_REP_availablecard_array[i] + '</option>';
+        }
+        $('#CACS_REP_lb_select_new_cardno').html(CACS_REP_availablecard_options);
+    }
 ////FUNCTION TO LAOD ACCESS REASON
-$('#CACS_REP_lb_select_reason').change(function(){
-$('#CACS_REP_lbl_reason').show();
-$('#CACS_REP_lb_select_reason').show();
-$('#CACS_REP_lbl_comments').show();
-$('#CACS_REP_ta_comments').show();
-$('#CACS_REP_ta_comments').val(CACS_REP_comment)
-$('#CACS_REP_custid').val(CACS_REP_cust_id);
-$('#CACS_REP_tble_button').show();
-});
-function CACS_REP_error(error){
-$(".preloader").hide();
-if(error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#CACS_REP_form_replaceform').replaceWith('<center><label class="dberrormsg">'+error+'</label></center>');
-}
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPLACE OF ACCESS CARD",msgcontent:error,position:{top:150,left:500}}});
-}
-}
-$(document).on("change",'.CACS_REP_class_submitvalidate', function (){
-if(($('#CACS_REP_lb_selectname').val()=='SELECT')||($('#CACS_REP_lb_select_cust_cardno').val()=='SELECT')||($('#CACS_REP_lb_select_new_cardno')=='SELECT')||($('#CACS_REP_lb_select_reason').val()=='SELECT')||($('#CACS_REP_lb_unitno').val()=='SELECT'))
-{
-$('#CACS_REP_btn_submitbutton').attr('disabled','disabled');
-}
-else{
-$('#CACS_REP_btn_submitbutton').removeAttr('disabled','disabled');
-}
-});
-$('#CACS_REP_btn_submitbutton').click(function(){
-var  newPos= adjustPosition($(this).position(),100,280);
-resetPreloader(newPos);
-$(".preloader").show();
-google.script.run.withFailureHandler(CACS_REP_error).withSuccessHandler(CACS_REP_clear).CACS_REP_saveform(document.getElementById('CACS_REP_form_replaceform'))
-});
-function CACS_REP_clear(CACS_REP_final_result){
-$(".preloader").hide();
-var CACS_REP_SUCCESS_FLAG=CACS_REP_final_result[0];
-if(CACS_REP_SUCCESS_FLAG==1||CACS_REP_final_result=='clear')
-{
-$('#CACS_REP_lb_selectname').hide();
-$('#CACS_REP_lbl_cname').hide();
-$('#CACS_REP_lbl_cust_cardno').hide();
-$('#CACS_REP_lb_select_cust_cardno').hide();
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide();
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_ta_comments').hide().val("");
-$('#CACS_REP_btn_submitbutton').attr('disabled','disabled');
-$('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
-$('#CACS_REP_lb_unitno').prop('selectedIndex',0);
-$('#CACS_REP_tble_custid tr').remove();
-$('#CACS_REP_lbl_error').hide()
-if(CACS_REP_final_result!='clear'){
-CACS_REP_allcust_details=CACS_REP_final_result[1];
-}
-if(CACS_REP_SUCCESS_FLAG==1){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPLACE OF ACCESS CARD",msgcontent:CACS_REP_errorAarray[1],position:{top:150,left:500}}});
-}
-}
-else
-{
-if(CACS_REP_SUCCESS_FLAG==0){
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPLACE OF ACCESS CARD",msgcontent:CACS_REP_errorAarray[3],position:{top:150,left:500}}});
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPLACE OF ACCESS CARD",msgcontent:CACS_REP_SUCCESS_FLAG,position:{top:150,left:500}}});
-}
-}
-}
-$('#CACS_REP_btn_resetbutton').click(function(){
-CACS_REP_clear('clear');
-});
-$('#CACS_REP_lb_selectname').hide();
-$('#CACS_REP_lbl_cname').hide();
-$('#CACS_REP_lbl_cust_cardno').hide();
-$('#CACS_REP_lb_select_cust_cardno').hide();
-$('#CACS_REP_lbl_new_cardno').hide();
-$('#CACS_REP_lb_select_new_cardno').hide();
-$('#CACS_REP_lbl_reason').hide();
-$('#CACS_REP_tble_button').hide();
-$('#CACS_REP_lb_select_reason').hide();
-$('#CACS_REP_lbl_comments').hide();
-$('#CACS_REP_ta_comments').hide().val("");
+    $('#CACS_REP_lb_select_reason').change(function(){
+        $('#CACS_REP_lbl_reason').show();
+        $('#CACS_REP_lb_select_reason').show();
+        $('#CACS_REP_lbl_comments').show();
+        $('#CACS_REP_ta_comments').show();
+        $('#CACS_REP_ta_comments').val(CACS_REP_comment)
+        $('#CACS_REP_custid').val(CACS_REP_cust_id);
+        $('#CACS_REP_tble_button').show();
+    });
+    function CACS_REP_error(error){
+        $(".preloader").hide();
+        if(error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+        {
+            error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+            $('#CACS_REP_form_replaceform').replaceWith('<center><label class="dberrormsg">'+error+'</label></center>');
+        }
+        else{
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPLACE OF ACCESS CARD",msgcontent:error,position:{top:150,left:500}}});
+        }
+    }
+    $(document).on("change",'.CACS_REP_class_submitvalidate', function (){
+        if(($('#CACS_REP_lb_selectname').val()=='SELECT')||($('#CACS_REP_lb_select_cust_cardno').val()=='SELECT')||($('#CACS_REP_lb_select_new_cardno')=='SELECT')||($('#CACS_REP_lb_select_reason').val()=='SELECT')||($('#CACS_REP_lb_unitno').val()=='SELECT'))
+        {
+            $('#CACS_REP_btn_submitbutton').attr('disabled','disabled');
+        }
+        else{
+            $('#CACS_REP_btn_submitbutton').removeAttr('disabled','disabled');
+        }
+    });
+    $('#CACS_REP_btn_submitbutton').click(function(){
+        var  newPos= adjustPosition($(this).position(),100,280);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        google.script.run.withFailureHandler(CACS_REP_error).withSuccessHandler(CACS_REP_clear).CACS_REP_saveform(document.getElementById('CACS_REP_form_replaceform'))
+    });
+    function CACS_REP_clear(CACS_REP_final_result){
+        $(".preloader").hide();
+        var CACS_REP_SUCCESS_FLAG=CACS_REP_final_result[0];
+        if(CACS_REP_SUCCESS_FLAG==1||CACS_REP_final_result=='clear')
+        {
+            $('#CACS_REP_lb_selectname').hide();
+            $('#CACS_REP_lbl_cname').hide();
+            $('#CACS_REP_lbl_cust_cardno').hide();
+            $('#CACS_REP_lb_select_cust_cardno').hide();
+            $('#CACS_REP_lbl_new_cardno').hide();
+            $('#CACS_REP_lb_select_new_cardno').hide();
+            $('#CACS_REP_lbl_reason').hide();
+            $('#CACS_REP_lb_select_reason').hide();
+            $('#CACS_REP_lbl_comments').hide();
+            $('#CACS_REP_tble_button').hide();
+            $('#CACS_REP_ta_comments').hide().val("");
+            $('#CACS_REP_btn_submitbutton').attr('disabled','disabled');
+            $('#CACS_REP_lb_select_reason').prop('selectedIndex',0);
+            $('#CACS_REP_lb_unitno').prop('selectedIndex',0);
+            $('#CACS_REP_tble_custid tr').remove();
+            $('#CACS_REP_lbl_error').hide()
+            if(CACS_REP_final_result!='clear'){
+                CACS_REP_allcust_details=CACS_REP_final_result[1];
+            }
+            if(CACS_REP_SUCCESS_FLAG==1){
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPLACE OF ACCESS CARD",msgcontent:CACS_REP_errorAarray[1],position:{top:150,left:500}}});
+            }
+        }
+        else
+        {
+            if(CACS_REP_SUCCESS_FLAG==0){
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPLACE OF ACCESS CARD",msgcontent:CACS_REP_errorAarray[3],position:{top:150,left:500}}});
+            }
+            else
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"REPLACE OF ACCESS CARD",msgcontent:CACS_REP_SUCCESS_FLAG,position:{top:150,left:500}}});
+            }
+        }
+    }
+    $('#CACS_REP_btn_resetbutton').click(function(){
+        CACS_REP_clear('clear');
+    });
+    $('#CACS_REP_lb_selectname').hide();
+    $('#CACS_REP_lbl_cname').hide();
+    $('#CACS_REP_lbl_cust_cardno').hide();
+    $('#CACS_REP_lb_select_cust_cardno').hide();
+    $('#CACS_REP_lbl_new_cardno').hide();
+    $('#CACS_REP_lb_select_new_cardno').hide();
+    $('#CACS_REP_lbl_reason').hide();
+    $('#CACS_REP_tble_button').hide();
+    $('#CACS_REP_lb_select_reason').hide();
+    $('#CACS_REP_lbl_comments').hide();
+    $('#CACS_REP_ta_comments').hide().val("");
 });
 </script>
 <!--SCRIPT TAG START-->
@@ -424,52 +424,52 @@ $('#CACS_REP_ta_comments').hide().val("");
 <!--BODY TAG START-->
 <body>
 <div class="wrapper">
-<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
-<div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><b>REPLACE OF ACCESS CARD</b><p></div></div>
-<form action="" id="CACS_REP_form_replaceform" name="CACS_REP_replaceform" class ='content'>
-<table id="CACS_REP_tble_unitnotable" hidden>
-<tr>
-<td style="width:230px"><lable style="width:230px" id='CACS_REP_lbl_unitno'>UNIT NO<em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><select id='CACS_REP_lb_unitno' name="CACS_REP_unitno" class="CACS_REP_class_submitvalidate"  >
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td></tr>
-<tr><td style="width:230px"><lable  id='CACS_REP_lbl_cname'style="width:230px" >CUSTOMER NAME <em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><select id='CACS_REP_lb_selectname' name="CACS_REP_name" class="CACS_REP_class_submitvalidate"  >   
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td></tr>
-</table>
-<table id='CACS_REP_tble_custid' name='CACS_REP_custid'></table>
-<table id='CACS_REP_tble_cardtable'>
-<tr><td style="width:230px"><lable  id='CACS_REP_lbl_cust_cardno'style="width:230px" >CURRENT CARD <em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><select id='CACS_REP_lb_select_cust_cardno' name="CACS_REP_cust_cardno" class="CACS_REP_class_submitvalidate"  >   
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td><td><input type="text" name="CACS_REP_custid" id="CACS_REP_custid"   style="width:250px;visibility: hidden"  /></td>
-</tr>
-<tr><td style="width:230px"><lable  id='CACS_REP_lbl_new_cardno'style="width:230px" >NEW CARD <em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><select id='CACS_REP_lb_select_new_cardno' name="CACS_REP_new_cardno" class="CACS_REP_class_submitvalidate"  >   
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td>
-</tr>
-<tr><td style="width:230px"><lable  id='CACS_REP_lbl_reason'style="width:230px" >REASON<em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><select id='CACS_REP_lb_select_reason' name="CACS_REP_reason" class="CACS_REP_class_submitvalidate"  >   
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td>
-</tr>
-</table>
-<table><tr>
-<td style="width:230px"><lable  id='CACS_REP_lbl_comments'style="width:230px" >COMMENTS</lable></td><td></td><td></td><td></td><td></td>
-<td><textarea name="CACS_REP_comments" id="CACS_REP_ta_comments"    ></textarea></td></tr>
-</table>
-<div style="position:relative;left:130px;">
-<table id="CACS_REP_tble_button" hidden>
-<tr>
-<td ><input class="btn" type="button"  id="CACS_REP_btn_submitbutton" name="submit" value="REPLACE" disabled /></td>
-<td ><input class="btn" type="button"  id="CACS_REP_btn_resetbutton" name="reset" value="RESET"  /></td>
-</tr>
-</table>
-<lable id="CACS_REP_lbl_error" class="errormsg"/>
-</div>
-</form>
+    <div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+    <div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><b>REPLACE OF ACCESS CARD</b><p></div></div>
+    <form action="" id="CACS_REP_form_replaceform" name="CACS_REP_replaceform" class ='content'>
+        <table id="CACS_REP_tble_unitnotable" hidden>
+            <tr>
+                <td style="width:230px"><lable style="width:230px" id='CACS_REP_lbl_unitno'>UNIT NO<em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                <td><select id='CACS_REP_lb_unitno' name="CACS_REP_unitno" class="CACS_REP_class_submitvalidate"  >
+                    <option value='SELECT' selected="selected"> SELECT</option>
+                </select></td></tr>
+            <tr><td style="width:230px"><lable  id='CACS_REP_lbl_cname'style="width:230px" >CUSTOMER NAME <em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                <td><select id='CACS_REP_lb_selectname' name="CACS_REP_name" class="CACS_REP_class_submitvalidate"  >
+                    <option value='SELECT' selected="selected"> SELECT</option>
+                </select></td></tr>
+        </table>
+        <table id='CACS_REP_tble_custid' name='CACS_REP_custid'></table>
+        <table id='CACS_REP_tble_cardtable'>
+            <tr><td style="width:230px"><lable  id='CACS_REP_lbl_cust_cardno'style="width:230px" >CURRENT CARD <em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                <td><select id='CACS_REP_lb_select_cust_cardno' name="CACS_REP_cust_cardno" class="CACS_REP_class_submitvalidate"  >
+                    <option value='SELECT' selected="selected"> SELECT</option>
+                </select></td><td><input type="text" name="CACS_REP_custid" id="CACS_REP_custid"   style="width:250px;visibility: hidden"  /></td>
+            </tr>
+            <tr><td style="width:230px"><lable  id='CACS_REP_lbl_new_cardno'style="width:230px" >NEW CARD <em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                <td><select id='CACS_REP_lb_select_new_cardno' name="CACS_REP_new_cardno" class="CACS_REP_class_submitvalidate"  >
+                    <option value='SELECT' selected="selected"> SELECT</option>
+                </select></td>
+            </tr>
+            <tr><td style="width:230px"><lable  id='CACS_REP_lbl_reason'style="width:230px" >REASON<em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                <td><select id='CACS_REP_lb_select_reason' name="CACS_REP_reason" class="CACS_REP_class_submitvalidate"  >
+                    <option value='SELECT' selected="selected"> SELECT</option>
+                </select></td>
+            </tr>
+        </table>
+        <table><tr>
+            <td style="width:230px"><lable  id='CACS_REP_lbl_comments'style="width:230px" >COMMENTS</lable></td><td></td><td></td><td></td><td></td>
+            <td><textarea name="CACS_REP_comments" id="CACS_REP_ta_comments"    ></textarea></td></tr>
+        </table>
+        <div style="position:relative;left:130px;">
+            <table id="CACS_REP_tble_button" hidden>
+                <tr>
+                    <td ><input class="btn" type="button"  id="CACS_REP_btn_submitbutton" name="submit" value="REPLACE" disabled /></td>
+                    <td ><input class="btn" type="button"  id="CACS_REP_btn_resetbutton" name="reset" value="RESET"  /></td>
+                </tr>
+            </table>
+            <lable id="CACS_REP_lbl_error" class="errormsg"/>
+        </div>
+    </form>
 </div>
 </body>
 <!--BODY TAG END-->

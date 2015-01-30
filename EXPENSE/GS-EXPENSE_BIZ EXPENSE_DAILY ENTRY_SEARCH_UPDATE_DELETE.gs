@@ -317,10 +317,7 @@ try
   /*------------------------------------------TO DROP HOUSE KEEPING PAYMENT TEMP TABLE--------------------------------------------------------*/
   function BDLY_SRC_drophkpaymentsptemptable(conn,BDLY_SRC_drptmptbl_hkpsrch)
   {
-    var BDLY_SRC_temp_stmt= conn.createStatement();
-    var BDLY_SRC_HKunitnospquery="DROP TABLE IF EXISTS "+BDLY_SRC_drptmptbl_hkpsrch+"";
-    BDLY_SRC_temp_stmt.execute(BDLY_SRC_HKunitnospquery);
-    BDLY_SRC_temp_stmt.close();       
+    eilib.DropTempTable(conn,BDLY_SRC_drptmptbl_hkpsrch);       
   }
   /*------------------------------------------TO GET UNIT NO BASED THE DATE RANGE OR GET HOUSEKPEEING UNIT NO--------------------------------------------------------*/
   function BDLY_SRC_getUnitList(selectedexpense,selectedSearchopt,startdate,endate){
@@ -684,9 +681,7 @@ try
     }
     if((BDLY_SRC_lb_ExpenseList_val==1)||(SearchFormData.BDLY_SRC_lb_serachopt==142))
     {
-      var BDLY_SRC_temp_stmt= conn.createStatement();
-      BDLY_SRC_temp_stmt.execute("DROP TABLE "+BDLY_SRC_electemp_name+"");
-      BDLY_SRC_temp_stmt.close();
+     eilib.DropTempTable(conn,BDLY_SRC_electemp_name);    
     }
     var unit_start_end_date_query = creatStatement.executeQuery("SELECT U.UNIT_NO,UD.UD_START_DATE,UD.UD_END_DATE FROM UNIT_DETAILS UD JOIN UNIT U ON U.UNIT_ID=UD.UNIT_ID ORDER BY U.UNIT_NO ASC");
     var unit_start_end_date_obj={};

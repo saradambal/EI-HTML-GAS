@@ -74,7 +74,7 @@ try
       var temptablenameresult=FIN_OPL_activecuststmt.executeQuery("SELECT @TEMP_FINAL_NONPAIDCUSTOMER");
       while(temptablenameresult.next())
       {
-        var temptablename=temptablenameresult.getString(1);  
+      var temptablename=temptablenameresult.getString(1);  
       }
       temptablenameresult.close();
       FIN_OPL_activecuststmt.close();
@@ -125,9 +125,7 @@ try
       {
         returnmsg="EMPTYOPL";
       }
-      var OPLliststmt=FIN_OPL_conn.createStatement();
-      OPLliststmt.execute("DROP TABLE "+temptablename+"");
-      OPLliststmt.close();
+    eilib.DropTempTable(FIN_OPL_conn,temptablename);  
     }
     /***************************ACTIVE CUSTOMER LIST****************************************/
     if(opl.radio=='option2')
@@ -206,7 +204,7 @@ try
         FIN_ACT_folresult.close();
         FIN_ACT_folstmt.close();
         var FIN_ACT_newSheet = FIN_ACT_newspread.getActiveSheet().setName(FIN_ACT_shheetname);
-        FIN_ACT_newspread.setFrozenRows(1);
+         FIN_ACT_newspread.setFrozenRows(1);
         FIN_ACT_newspread.deleteColumns(11, 10);
         /****************NORMAL SHEET**************************/
         for(var i=0;i<FIN_ACT_customer_amount1.length;i++)
@@ -356,17 +354,15 @@ try
           sorcustomersheet.getRange(FIN_ACT_counter,11).setValue(FIN_ACT_value1[10]);
         } 
       }
-      var docowner=eilib.CUST_documentowner(FIN_OPL_conn);
-      eilib.CUST_moveFileToFolder(FIN_ACT_ssid,"",FIN_ACT_targetFolderId)
-      eilib.SetDocOwner(FIN_ACT_ssid,docowner,FIN_OPL_emailId);
+        var docowner=eilib.CUST_documentowner(FIN_OPL_conn);
+        eilib.CUST_moveFileToFolder(FIN_ACT_ssid,"",FIN_ACT_targetFolderId)
+        eilib.SetDocOwner(FIN_ACT_ssid,docowner,FIN_OPL_emailId);
       var displayname=eilib.Get_MailDisplayName('ACTIVE_CC_LIST');
       var body1 ="HELLO  "+FIN_OPL_username;
       var subject='ACTIVE CUST LIST-'+FIN_ACT_monthyear;
       MailApp.sendEmail(FIN_OPL_emailId, subject, body1, {name:displayname,htmlBody: body1+'<br><br>, PLEASE FIND ATTACHED THE CURRENT : '+FIN_ACT_url});
-      var activeliststmt=FIN_OPL_conn.createStatement();
-      activeliststmt.execute("DROP TABLE "+activelisttablename+"");
-      activeliststmt.execute("DROP TABLE "+sortactivelisttablename+"");
-      activeliststmt.close();
+      eilib.DropTempTable(FIN_OPL_conn,activelisttablename);    
+      eilib.DropTempTable(FIN_OPL_conn,sortactivelisttablename);    
       returnmsg="ACTIVECCLIST";
     }
     FIN_OPL_conn.close();

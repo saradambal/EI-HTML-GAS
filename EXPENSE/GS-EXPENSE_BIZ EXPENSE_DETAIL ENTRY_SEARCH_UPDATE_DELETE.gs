@@ -684,10 +684,10 @@ try{
       var BTDTL_SEARCH_invoiceto =BTDTL_SEARCH_form_bizdetail.BTDTL_SEARCH_upd_digital_invoiceto;
       var BTDTL_SEARCH_conn= eilib.db_GetConnection();
       BTDTL_SEARCH_conn.setAutoCommit(false);
-      var BTDTL_SEARCH_stmt= BTDTL_SEARCH_conn.createStatement();
+       var BTDTL_SEARCH_stmt= BTDTL_SEARCH_conn.createStatement();
       if(BTDTL_SEARCH_searchoption==100){//AIRCON SERVICED BY
         var BTDTL_SEARCH_insert="UPDATE EXPENSE_AIRCON_SERVICE_BY SET EASB_DATA='"+BTDTL_SEARCH_upd_ariconname+"',ULD_ID=(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"') WHERE EASB_ID="+BTDTL_SEARCH_upd_expense_aircon+"";
-        BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
+      BTDTL_SEARCH_stmt.execute(BTDTL_SEARCH_insert);
       }
       else{  
         if((BTDTL_SEARCH_starhub_appldate=="")||(BTDTL_SEARCH_starhub_appldate==undefined))

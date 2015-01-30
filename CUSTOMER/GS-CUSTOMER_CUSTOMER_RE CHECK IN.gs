@@ -1,6 +1,7 @@
 //******************************************CUSTOMER RECHECK IN*************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:PUNI
+//VER 2.2-SD:22/12/2014 ED:22/12/2014;TRACKER NO:833;added droptemp table function from eilib
 //VER 2.1-SD:08/10/2014 ED:08/10/2014,TRACKER NO:833-corrected preloader position
 //DONE BY:KUMAR
 //VER 2.00-SD:06/10/2014 ED:06/10/2014,TRACKER NO:833-updated proloader and message box position.
@@ -35,10 +36,10 @@ try
   var CR_CCRE_expconn;
   var CR_temptablename;
   var CR_calevent_array;
-  //  function doGet()
-  //  {
-  //    return HtmlService.createTemplateFromFile('HTML-CUSTOMER_CUSTOMER_RE_CHECK_IN').evaluate();
-  //  }
+//  function doGet()
+//  {
+//    return HtmlService.createTemplateFromFile('HTML-CUSTOMER_CUSTOMER_RE_CHECK_IN').evaluate();
+//  }
   /**********************************FUNCTION TO GET TERMINATED CUSTOMER FOR SELECTED UNIT*********************************************/
   function CRCHK_Customer(unit)
   {
@@ -391,9 +392,7 @@ function CRCHK_processFormSubmit(recheckin)
     }
     var CRCHK_unit_array=CRCHK_Customer('nounit');
     var recheckin_returnvalues=[returnflag,CRCHK_unit_array];
-    var rollbackstmt=CRCHK_conn.createStatement();
-    rollbackstmt.execute("DROP TABLE IF EXISTS "+temptablename+"");
-    rollbackstmt.close();
+    eilib.DropTempTable(CRCHK_conn,temptablename);   
     CRCHK_conn.commit();
     return recheckin_returnvalues;
     CRCHK_conn.close();
@@ -402,12 +401,10 @@ function CRCHK_processFormSubmit(recheckin)
   {
     Logger.log("SCRIPT EXCEPTION:"+err)
     CR_CCRE_expconn.rollback();
-    var rollbackstmt=CR_CCRE_expconn.createStatement();
-    rollbackstmt.execute("DROP TABLE IF EXISTS "+CR_temptablename+"");
-    rollbackstmt.close();
+    eilib.DropTempTable(CR_CCRE_expconn,CR_temptablename); 
     if(CR_checkstatusflag==1)
     {
-      eilib.CUST_CREATION_customercalenderdeletion(CR_customer_id,CR_calendarname,CR_calevent_array);
+     eilib.CUST_CREATION_customercalenderdeletion(CR_customer_id,CR_calendarname,CR_calevent_array);
     }   
     var invoice=eilib.invoiceid();
     var contract=eilib.contractid();

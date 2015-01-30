@@ -47,215 +47,215 @@
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 //FAILURE FUNCTION START
 function EP_ENTRY_onFailure(EP_ENTRY_error) {
-$(".preloader").hide();
-if(EP_ENTRY_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-EP_ENTRY_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#EP_ENTRY_form_emailprofile').replaceWith('<center><label class="dberrormsg">'+EP_ENTRY_error+'</label></center>');
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_error,position:{top:150,left:500}}});
-}
+    $(".preloader").hide();
+    if(EP_ENTRY_error=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+    {
+        EP_ENTRY_error="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+        $('#EP_ENTRY_form_emailprofile').replaceWith('<center><label class="dberrormsg">'+EP_ENTRY_error+'</label></center>');
+    }
+    else
+    {
+        $(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_error,position:{top:150,left:500}}});
+    }
 }
 //FAILURE FUNCTION END
 var ErrorControl={EmailId:'Invalid'}
 var EP_ENTRY_listboxname;
 //DOCUMENT READY FUNCTION START
 $(document).ready(function(){
-$(".preloader").show();
-google.script.run.withSuccessHandler(EP_ENTRY_getdomain_errresult).withFailureHandler(EP_ENTRY_onFailure).EP_ENTRY_getdomain_err();
-var EP_ENTRY_emailarr_profilename=[];
-var EP_ENTRY_errorMsg_array=[];
+    $(".preloader").show();
+    google.script.run.withSuccessHandler(EP_ENTRY_getdomain_errresult).withFailureHandler(EP_ENTRY_onFailure).EP_ENTRY_getdomain_err();
+    var EP_ENTRY_emailarr_profilename=[];
+    var EP_ENTRY_errorMsg_array=[];
 //SUCCESS FUNCTION FOR EMAIL PROFILE NAME,ERROR MESSAGE
-function EP_ENTRY_getdomain_errresult(EP_ENTRY_getdomain_errresult_response)
-{
-EP_ENTRY_emailarr_profilename=EP_ENTRY_getdomain_errresult_response.EP_ENTRY_profilenamedataid;
-EP_ENTRY_errorMsg_array=EP_ENTRY_getdomain_errresult_response.EP_ENTRY_errormsg;
-var EP_ENTRY_emailarray_profilename ='<option>SELECT</option>';
-for (var i = 0; i < EP_ENTRY_emailarr_profilename.length; i++) 
-{
-EP_ENTRY_emailarray_profilename += '<option value="' + EP_ENTRY_emailarr_profilename[i].EP_ENTRY_profile_names_id + '">' + EP_ENTRY_emailarr_profilename[i].EP_ENTRY_profile_names + '</option>';
-}
-$('#EP_ENTRY_form_emailprofile').show();
-$('#EP_ENTRY_lb_profilename').html(EP_ENTRY_emailarray_profilename).show();
+    function EP_ENTRY_getdomain_errresult(EP_ENTRY_getdomain_errresult_response)
+    {
+        EP_ENTRY_emailarr_profilename=EP_ENTRY_getdomain_errresult_response.EP_ENTRY_profilenamedataid;
+        EP_ENTRY_errorMsg_array=EP_ENTRY_getdomain_errresult_response.EP_ENTRY_errormsg;
+        var EP_ENTRY_emailarray_profilename ='<option>SELECT</option>';
+        for (var i = 0; i < EP_ENTRY_emailarr_profilename.length; i++)
+        {
+            EP_ENTRY_emailarray_profilename += '<option value="' + EP_ENTRY_emailarr_profilename[i].EP_ENTRY_profile_names_id + '">' + EP_ENTRY_emailarr_profilename[i].EP_ENTRY_profile_names + '</option>';
+        }
+        $('#EP_ENTRY_form_emailprofile').show();
+        $('#EP_ENTRY_lb_profilename').html(EP_ENTRY_emailarray_profilename).show();
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
+    }
 //JQUERY LIB VALIDATION START
-$('#EP_ENTRY_tb_emailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
+    $('#EP_ENTRY_tb_emailid').doValidation({rule:'email',prop:{uppercase:false,autosize:true}});
 //JQUERY LIB VALIDATION END
 //HIDE ALL VALUES EXCEPT PROFILE
-$('#EP_ENTRY_lbl_emailid').hide();
-$('#EP_ENTRY_tb_emailid').hide();
-$('#EP_ENTRY_btn_save').hide();
-$('#EP_ENTRY_btn_reset').hide();
-$('#EP_ENTRY_lbl_validid').hide();
+    $('#EP_ENTRY_lbl_emailid').hide();
+    $('#EP_ENTRY_tb_emailid').hide();
+    $('#EP_ENTRY_btn_save').hide();
+    $('#EP_ENTRY_btn_reset').hide();
+    $('#EP_ENTRY_lbl_validid').hide();
 //CHANGE EVENT FOR PROFILE
-$('#EP_ENTRY_lb_profilename').change(function(){
-var  newPos= adjustPosition($(this).position(),100,270);
-resetPreloader(newPos);
-$(".preloader").show();
-EP_ENTRY_listboxname=$('#EP_ENTRY_lb_profilename').find('option:selected').text();
-var EP_ENTRY_profilename=$(this).val();
-$('#EP_ENTRY_tb_emailid').prop("size","20");
-$("#EP_ENTRY_btn_save").attr("disabled","disabled");
-if(EP_ENTRY_profilename=='SELECT')
-{
-$(".preloader").hide();
-$('#EP_ENTRY_lbl_emailid').hide();
-$('#EP_ENTRY_tb_emailid').hide();
-$('#EP_ENTRY_btn_save').hide();
-$('#EP_ENTRY_btn_reset').hide();
-$('#EP_ENTRY_lbl_validid').hide();
-}
-else
-{
-$(".preloader").hide();
-$('#EP_ENTRY_tb_emailid').val('');
-$('#EP_ENTRY_lbl_emailid').show();
-$('#EP_ENTRY_tb_emailid').show();
-$('#EP_ENTRY_btn_save').show();
-$('#EP_ENTRY_btn_reset').show();
-$("#EP_ENTRY_tb_emailid").removeClass('invalid');
-$('#EP_ENTRY_lbl_validid').hide();
-var EP_ENTRY_id;
-for(var k=0;k<EP_ENTRY_emailarr_profilename.length;k++)
-{
-if(EP_ENTRY_emailarr_profilename[k].EP_ENTRY_profile_names==EP_ENTRY_listboxname)
-{
-EP_SRC_UPD_DEL_id=(EP_ENTRY_emailarr_profilename[k].EP_ENTRY_profile_names_id);
-}
-}
-}
-});
+    $('#EP_ENTRY_lb_profilename').change(function(){
+        var  newPos= adjustPosition($(this).position(),100,270);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        EP_ENTRY_listboxname=$('#EP_ENTRY_lb_profilename').find('option:selected').text();
+        var EP_ENTRY_profilename=$(this).val();
+        $('#EP_ENTRY_tb_emailid').prop("size","20");
+        $("#EP_ENTRY_btn_save").attr("disabled","disabled");
+        if(EP_ENTRY_profilename=='SELECT')
+        {
+            $(".preloader").hide();
+            $('#EP_ENTRY_lbl_emailid').hide();
+            $('#EP_ENTRY_tb_emailid').hide();
+            $('#EP_ENTRY_btn_save').hide();
+            $('#EP_ENTRY_btn_reset').hide();
+            $('#EP_ENTRY_lbl_validid').hide();
+        }
+        else
+        {
+            $(".preloader").hide();
+            $('#EP_ENTRY_tb_emailid').val('');
+            $('#EP_ENTRY_lbl_emailid').show();
+            $('#EP_ENTRY_tb_emailid').show();
+            $('#EP_ENTRY_btn_save').show();
+            $('#EP_ENTRY_btn_reset').show();
+            $("#EP_ENTRY_tb_emailid").removeClass('invalid');
+            $('#EP_ENTRY_lbl_validid').hide();
+            var EP_ENTRY_id;
+            for(var k=0;k<EP_ENTRY_emailarr_profilename.length;k++)
+            {
+                if(EP_ENTRY_emailarr_profilename[k].EP_ENTRY_profile_names==EP_ENTRY_listboxname)
+                {
+                    EP_SRC_UPD_DEL_id=(EP_ENTRY_emailarr_profilename[k].EP_ENTRY_profile_names_id);
+                }
+            }
+        }
+    });
 //EMAIL SUBMIT BUTTON VALIDATION
-function EP_ENTRY_checkmailid()
-{
-var EP_ENTRY_email=$("#EP_ENTRY_tb_emailid").val();
-if(EP_ENTRY_email.length==0 || EP_ENTRY_listboxname=='SELECT')
-{
-$("#EP_ENTRY_btn_save").attr("disabled","disabled");
-$('#EP_ENTRY_lbl_validid').hide();
-$("#EP_ENTRY_tb_emailid").removeClass('invalid');
-}
-else
-{
-var EP_ENTRY_validtype=ErrorControl.EmailId;
-if(EP_ENTRY_validtype=='Valid')
-{
-$('#EP_ENTRY_lbl_validid').hide();
-$("#EP_ENTRY_tb_emailid").removeClass('invalid');
-$('#EP_ENTRY_tb_emailid').val($('#EP_ENTRY_tb_emailid').val().toLowerCase())
-google.script.run.withSuccessHandler(EP_ENTRY_already_result).withFailureHandler(EP_ENTRY_onFailure).EP_ENTRY_already(EP_ENTRY_listboxname,EP_ENTRY_email);
+    function EP_ENTRY_checkmailid()
+    {
+        var EP_ENTRY_email=$("#EP_ENTRY_tb_emailid").val();
+        if(EP_ENTRY_email.length==0 || EP_ENTRY_listboxname=='SELECT')
+        {
+            $("#EP_ENTRY_btn_save").attr("disabled","disabled");
+            $('#EP_ENTRY_lbl_validid').hide();
+            $("#EP_ENTRY_tb_emailid").removeClass('invalid');
+        }
+        else
+        {
+            var EP_ENTRY_validtype=ErrorControl.EmailId;
+            if(EP_ENTRY_validtype=='Valid')
+            {
+                $('#EP_ENTRY_lbl_validid').hide();
+                $("#EP_ENTRY_tb_emailid").removeClass('invalid');
+                $('#EP_ENTRY_tb_emailid').val($('#EP_ENTRY_tb_emailid').val().toLowerCase())
+                google.script.run.withSuccessHandler(EP_ENTRY_already_result).withFailureHandler(EP_ENTRY_onFailure).EP_ENTRY_already(EP_ENTRY_listboxname,EP_ENTRY_email);
 //var  newPos= adjustPosition($(this).position(),100,270);
 //resetPreloader(newPos);
-$(".preloader").show(); 
-}
-else
-{
-$('#EP_ENTRY_lbl_validid').text(EP_ENTRY_errorMsg_array[0]).show();
-$("#EP_ENTRY_tb_emailid").addClass('invalid');
-$("#EP_ENTRY_btn_save").attr("disabled","disabled");
-}
-}
+                $(".preloader").show();
+            }
+            else
+            {
+                $('#EP_ENTRY_lbl_validid').text(EP_ENTRY_errorMsg_array[0]).show();
+                $("#EP_ENTRY_tb_emailid").addClass('invalid');
+                $("#EP_ENTRY_btn_save").attr("disabled","disabled");
+            }
+        }
 //SUCCESS FUNCTION FOR ALREADY EXIST FOR EMAIL ID
-function EP_ENTRY_already_result(EP_ENTRY_response)
-{
-$(".preloader").hide(); 
-var EP_ENTRY_profilenameid=$('#EP_ENTRY_lb_profilename').val();
-var EP_ENTRY_emailid=$('#EP_ENTRY_tb_emailid').val();
-if(EP_ENTRY_response==0)
-{
-if($("#EP_ENTRY_hidden_chkvalid").val()=="" && EP_ENTRY_emailid!='')
-{
-$("#EP_ENTRY_btn_save").removeAttr("disabled");
-}
-else
-{
+        function EP_ENTRY_already_result(EP_ENTRY_response)
+        {
+            $(".preloader").hide();
+            var EP_ENTRY_profilenameid=$('#EP_ENTRY_lb_profilename').val();
+            var EP_ENTRY_emailid=$('#EP_ENTRY_tb_emailid').val();
+            if(EP_ENTRY_response==0)
+            {
+                if($("#EP_ENTRY_hidden_chkvalid").val()=="" && EP_ENTRY_emailid!='')
+                {
+                    $("#EP_ENTRY_btn_save").removeAttr("disabled");
+                }
+                else
+                {
 //var  newPos= adjustPosition($(this).position(),100,270);
 //resetPreloader(newPos);
-$(".preloader").show(); 
-google.script.run.withSuccessHandler(EP_ENTRY_save_result).withFailureHandler(EP_ENTRY_onFailure).EP_ENTRY_save(EP_ENTRY_profilenameid,EP_ENTRY_emailid);
-}
-}
-else
-{
-$(".preloader").hide(); 
-var EP_ENTRY_email_errmsg=EP_ENTRY_errorMsg_array[2].replace('[PROFILE]',EP_ENTRY_listboxname);
-$('#EP_ENTRY_lbl_validid').show();
-$('#EP_ENTRY_lbl_validid').text(EP_ENTRY_email_errmsg);
-$("#EP_ENTRY_tb_emailid").addClass('invalid');
-$("#EP_ENTRY_btn_save").attr("disabled","disabled");
-}
-}
-}
+                    $(".preloader").show();
+                    google.script.run.withSuccessHandler(EP_ENTRY_save_result).withFailureHandler(EP_ENTRY_onFailure).EP_ENTRY_save(EP_ENTRY_profilenameid,EP_ENTRY_emailid);
+                }
+            }
+            else
+            {
+                $(".preloader").hide();
+                var EP_ENTRY_email_errmsg=EP_ENTRY_errorMsg_array[2].replace('[PROFILE]',EP_ENTRY_listboxname);
+                $('#EP_ENTRY_lbl_validid').show();
+                $('#EP_ENTRY_lbl_validid').text(EP_ENTRY_email_errmsg);
+                $("#EP_ENTRY_tb_emailid").addClass('invalid');
+                $("#EP_ENTRY_btn_save").attr("disabled","disabled");
+            }
+        }
+    }
 //BLUR FUNCTION FOR VALIDATION
-$("#EP_ENTRY_tb_emailid").blur(function(){
-$("#EP_ENTRY_hidden_chkvalid").val("")//SET VALIDATION FUNCTION VALUE
-EP_ENTRY_checkmailid()
-});
+    $("#EP_ENTRY_tb_emailid").blur(function(){
+        $("#EP_ENTRY_hidden_chkvalid").val("")//SET VALIDATION FUNCTION VALUE
+        EP_ENTRY_checkmailid()
+    });
 //CLICK FUNCTION FOR SAVE BUTTON
-$("#EP_ENTRY_btn_save").click(function(){
-var  newPos= adjustPosition($(this).position(),100,270);
-resetPreloader(newPos);
-$(".preloader").show(); 
-$("#EP_ENTRY_hidden_chkvalid").val("SAVE")//SET SAVE FUNCTION VALUE
-var EP_ENTRY_emailid=$('#EP_ENTRY_tb_emailid').val();
-if(EP_ENTRY_emailid!="")
-{
-EP_ENTRY_checkmailid()
-}
-});
+    $("#EP_ENTRY_btn_save").click(function(){
+        var  newPos= adjustPosition($(this).position(),100,270);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        $("#EP_ENTRY_hidden_chkvalid").val("SAVE")//SET SAVE FUNCTION VALUE
+        var EP_ENTRY_emailid=$('#EP_ENTRY_tb_emailid').val();
+        if(EP_ENTRY_emailid!="")
+        {
+            EP_ENTRY_checkmailid()
+        }
+    });
 //CLICK FUNCTION FOR RESET BUTTON
-$('#EP_ENTRY_btn_reset').click(function()
-{
-EP_ENTRY_email_profile_rset();
-});
+    $('#EP_ENTRY_btn_reset').click(function()
+    {
+        EP_ENTRY_email_profile_rset();
+    });
 //SUCCESS FUNCTION FOR SAVE
-function EP_ENTRY_save_result(EP_ENTRY_response)
-{
-$(".preloader").hide(); 
-if((EP_ENTRY_response!=false)&&(EP_ENTRY_response!=undefined))
-{
-$('#EP_ENTRY_lbl_emailid').hide();
-$('#EP_ENTRY_tb_emailid').hide();
-$('#EP_ENTRY_btn_save').attr("disabled","disabled").hide();
-$('#EP_ENTRY_btn_reset').hide();
-var EP_ENTRY_email_errmsg=EP_ENTRY_errorMsg_array[1].replace('[PROFILE]',EP_ENTRY_listboxname);
+    function EP_ENTRY_save_result(EP_ENTRY_response)
+    {
+        $(".preloader").hide();
+        if((EP_ENTRY_response!=false)&&(EP_ENTRY_response!=undefined))
+        {
+            $('#EP_ENTRY_lbl_emailid').hide();
+            $('#EP_ENTRY_tb_emailid').hide();
+            $('#EP_ENTRY_btn_save').attr("disabled","disabled").hide();
+            $('#EP_ENTRY_btn_reset').hide();
+            var EP_ENTRY_email_errmsg=EP_ENTRY_errorMsg_array[1].replace('[PROFILE]',EP_ENTRY_listboxname);
 //MESSAGE BOX FOR SAVED SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_email_errmsg,position:{top:150,left:500}}}); 
-$('#EP_ENTRY_lb_profilename').val('SELECT');
-$('#EP_ENTRY_tb_emailid').prop("size","20");
-$('#EP_ENTRY_lbl_validid').hide();
-}
-else
-{
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_email_errmsg,position:{top:150,left:500}}});
+            $('#EP_ENTRY_lb_profilename').val('SELECT');
+            $('#EP_ENTRY_tb_emailid').prop("size","20");
+            $('#EP_ENTRY_lbl_validid').hide();
+        }
+        else
+        {
 //MESSAGE BOX FOR NOT SAVED SUCCESS
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_errorMsg_array[3],position:{top:150,left:500}}}); 
-}
-}
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"EMAIL PROFILE ENTRY",msgcontent:EP_ENTRY_errorMsg_array[3],position:{top:150,left:500}}});
+        }
+    }
 //CLEAR ALL FIELDS
-function EP_ENTRY_email_profile_rset()
-{
-$("#EP_ENTRY_form_emailprofile")[0].reset();
-$('#EP_ENTRY_lbl_emailid').hide();
-$('#EP_ENTRY_tb_emailid').hide();
-$('#EP_ENTRY_btn_save').hide();
-$('#EP_ENTRY_btn_reset').hide();
-$('#EP_ENTRY_lbl_validid').hide();
-$("#EP_ENTRY_tb_emailid").removeClass('invalid');
-$("#EP_ENTRY_btn_save").attr("disabled","disabled");
-$('#EP_ENTRY_tb_emailid').prop("size","20");
-}
+    function EP_ENTRY_email_profile_rset()
+    {
+        $("#EP_ENTRY_form_emailprofile")[0].reset();
+        $('#EP_ENTRY_lbl_emailid').hide();
+        $('#EP_ENTRY_tb_emailid').hide();
+        $('#EP_ENTRY_btn_save').hide();
+        $('#EP_ENTRY_btn_reset').hide();
+        $('#EP_ENTRY_lbl_validid').hide();
+        $("#EP_ENTRY_tb_emailid").removeClass('invalid');
+        $("#EP_ENTRY_btn_save").attr("disabled","disabled");
+        $('#EP_ENTRY_tb_emailid').prop("size","20");
+    }
 });
 //DOCUMENT READY FUNCTION END
 </script>
@@ -265,24 +265,24 @@ $('#EP_ENTRY_tb_emailid').prop("size","20");
 <!--BODY TAG START-->
 <body>
 <div>
-<div class="wrapper">
-<div class="preloader MaskPanel"><div class="preloader statusarea"><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
-<div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>EMAIL PROFILE ENTRY</h3><p></div></div>
-<form class="content" name="EP_ENTRY_form_emailprofile" id="EP_ENTRY_form_emailprofile" hidden>
-<table>
-<tr><p><td>PROFILE NAME<em>*</em></td></p>
-<td><select name="EP_ENTRY_lb_profilename" id="EP_ENTRY_lb_profilename">
-<option>SELECT</option>
-</select></td></tr>
-<tr><td><label name="EP_ENTRY_lbl_emailid" id="EP_ENTRY_lbl_emailid" hidden>E-MAIL ID<em>*</em></label></td> 
-<td><input type="text" name="EP_ENTRY_tb_emailid" id="EP_ENTRY_tb_emailid" class="autosize" maxlength=50 hidden ></td>
-<td><div><label id="EP_ENTRY_lbl_validid" name="EP_ENTRY_lbl_validid" class="errormsg"></label></div></td></tr>
-<tr><td align="right"><input type="button" class="btn" name="EP_ENTRY_btn_save" id="EP_ENTRY_btn_save" disabled="" value="SAVE"></td>
-<td align="left"><input type="button" class="btn" name="EP_ENTRY_btn_reset" id="EP_ENTRY_btn_reset" value="RESET"></td></tr>
-</table>
-<input type=hidden id="EP_ENTRY_hidden_chkvalid">
-</form>
-</div>
+    <div class="wrapper">
+        <div class="preloader MaskPanel"><div class="preloader statusarea"><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"/></div></div></div>
+        <div class="title" id="fhead"><div style="padding-left:500px; text-align:left;"><p><h3>EMAIL PROFILE ENTRY</h3><p></div></div>
+        <form class="content" name="EP_ENTRY_form_emailprofile" id="EP_ENTRY_form_emailprofile" hidden>
+            <table>
+                <tr><p><td>PROFILE NAME<em>*</em></td></p>
+                    <td><select name="EP_ENTRY_lb_profilename" id="EP_ENTRY_lb_profilename">
+                        <option>SELECT</option>
+                    </select></td></tr>
+                <tr><td><label name="EP_ENTRY_lbl_emailid" id="EP_ENTRY_lbl_emailid" hidden>E-MAIL ID<em>*</em></label></td>
+                    <td><input type="text" name="EP_ENTRY_tb_emailid" id="EP_ENTRY_tb_emailid" class="autosize" maxlength=50 hidden ></td>
+                    <td><div><label id="EP_ENTRY_lbl_validid" name="EP_ENTRY_lbl_validid" class="errormsg"></label></div></td></tr>
+                <tr><td align="right"><input type="button" class="btn" name="EP_ENTRY_btn_save" id="EP_ENTRY_btn_save" disabled="" value="SAVE"></td>
+                    <td align="left"><input type="button" class="btn" name="EP_ENTRY_btn_reset" id="EP_ENTRY_btn_reset" value="RESET"></td></tr>
+            </table>
+            <input type=hidden id="EP_ENTRY_hidden_chkvalid">
+        </form>
+    </div>
 </div>
 </body>
 <!--BODY TAG END-->

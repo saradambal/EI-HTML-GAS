@@ -290,6 +290,7 @@ function MANUAL_CSVUPDATION()
       var csvrecordsupdatedarray=[];
       for(var b=0;b<csvData.length;b++)
       {
+        
         var CSV=csvData[b].toString();
         var array1=CSV.split(',');
         var clientrefe=array1[16];
@@ -298,7 +299,7 @@ function MANUAL_CSVUPDATION()
           clientrefe=1;
         }
         
-        var CSV_newRecord=(array1[11]+'_'+clientrefe+'_'+array1[17]+'_'+array1[18]).toString();
+        var CSV_newRecord=(array1[11]+'_'+clientrefe+'_'+array1[17]+'_'+array1[18]).toString(); 
         for(var a=0;a<csv_dbrecords.length;a++)
         {
           var csvdb_record=csv_dbrecords[a].split('!~');
@@ -312,7 +313,7 @@ function MANUAL_CSVUPDATION()
             var csvRecordsobj={id:reference_id,accno:array1[0],currency:array1[1],previous:array1[2],openbal:array1[3],closebal:array1[4],lastbal:array1[5],noofcr:array1[6],transdate:array1[7],noofdeb:array1[8],oldbal:array1[9],debamt:array1[10],postdate:array1[11],valuedate:array1[12],debitamount:array1[13],creditamount:array1[14],trxcode:array1[15],clientrefer:array1[16],transdesc:array1[17],bankref:array1[18],trxtype:array1[19]};
             selectedmonthexistingrecords.push(csvRecordsobj);
           }
-        }
+         }
       }
       var csvmatchingrecordcount=selectedmonthexistingrecords.length;
       if(dbrecordscount==csvmatchingrecordcount)
@@ -368,7 +369,6 @@ function MANUAL_CSVUPDATION()
       else
       {
         insertflag=0;
-        
         var exception_array=[];
         for(var e=0;e<csv_dbrecords.length;e++)
         {

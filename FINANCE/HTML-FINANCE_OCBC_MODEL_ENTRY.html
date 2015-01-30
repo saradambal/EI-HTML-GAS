@@ -18,124 +18,124 @@
 <html>
 <!--HEAD TAG START-->
 <head>
-<!----------------------------COMMON JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY FUNCTIONALITIES-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<!--TO SUPPORT OLD FUNCTIONALITIES-->
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!--TO SUPPORT DATE PICKER CSS-->
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
-<!----------------------------COMMON JQUERY LINKS END---------------------------->
-<!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
-<!--TO SUPPORT JQUERY LIB VALIDATION-->
-<script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
-<!--TO SUPPORT FORM CSS-->
-<link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
-<!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
+    <!----------------------------COMMON JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY FUNCTIONALITIES-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--TO SUPPORT JQUERY UI FUNCTIONALITIES-->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!--TO SUPPORT OLD FUNCTIONALITIES-->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!--TO SUPPORT DATE PICKER CSS-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+    <!----------------------------COMMON JQUERY LINKS END---------------------------->
+    <!----------------------------CUSTOMIZED JQUERY LINKS START---------------------------->
+    <!--TO SUPPORT JQUERY LIB VALIDATION-->
+    <script src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/JQuery.js"></script>
+    <!--TO SUPPORT FORM CSS-->
+    <link rel="stylesheet" href="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/StyleSheet.css">
+    <!----------------------------CUSTOMIZED JQUERY LINKS END---------------------------->
 </head>
 <!--HEAD TAG END-->
 <!--SCRIPT TAG START-->
 <script>
-//CHECK PRELOADER STATUS N HIDE START
-var SubPage=1;
-function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
-}
-//CHECK PRELOADER STATUS N HIDE END
-$(document).ready(function() {
-$(".preloader").show(); 
-var errormsg=[];
-$('#MODEL_ENTRY_errormsg').hide();
-$(".autosize").doValidation({rule:'general',prop:{whitespace:true,autosize:true}});
-$('#FIN_OCBC_MODEL_ENTRY_tb_modelname').blur(function(){
-$("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
-$('#MODEL_ENTRY_errormsg').hide();
-var modelname=$('#FIN_OCBC_MODEL_ENTRY_tb_modelname').val()
-if(modelname!="")
-{
-$(".preloader").show(); 
-var  newPos= adjustPosition($('#FIN_OCBC_MODEL_ENTRY_tb_modelname').position(),100,230);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(MODEL_ENTRY_error_message).withSuccessHandler(MODEL_ENTRY_getexistingmodel_result).MODEL_ENTRY_existingmodels(modelname);
-}
-});
-function MODEL_ENTRY_getexistingmodel_result(res)
-{
-var result=res.flag;
-errormsg=res.conform
-if(result==0)
-{
-$('#MODEL_ENTRY_errormsg').hide();
-$("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").removeAttr("disabled");
-}
-else
-{
-$('#MODEL_ENTRY_errormsg').show();
-$("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
-}
- $(".preloader").hide(); 
-}
-$('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').click(function(){
-$(".preloader").show();
-var  newPos= adjustPosition($('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position(),100,230);
-resetPreloader(newPos);
-google.script.run.withFailureHandler(MODEL_ENTRY_error_message).withSuccessHandler(FIN_OCBC_MODEL_ENTRY_Conformation).FIN_OCBC_MODEL_ENTRY_processFormSubmit(document.getElementById('FIN_OCBC_MODEL_ENTRY_form_mainform'))
-});
-function FIN_OCBC_MODEL_ENTRY_Conformation(response)
-{
-if(response=='true')
-{
-$('#FIN_OCBC_MODEL_ENTRY_form_mainform').find('input:text').prop("size","20");//set
-$('#FIN_OCBC_MODEL_ENTRY_form_mainform').find('input[type=text]').val('');
-$("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:errormsg,position:$('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position()}});
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:response,position:$('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position()}});
-}
-$(".preloader").hide(); 
-}
-function MODEL_ENTRY_error_message(MODEL_ENTRY_err)
-{
-if(MODEL_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-MODEL_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#FIN_OCBC_MODEL_ENTRY_form_mainform').replaceWith('<center><label class="dberrormsg">'+MODEL_ENTRY_err+'</label></center>');
-}
-else
-{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:MODEL_ENTRY_err,position:{top:150,left:500}}});
-}
-}
-$(".preloader").hide(); 
-});
+    //CHECK PRELOADER STATUS N HIDE START
+    var SubPage=1;
+    function CheckPageStatus(){
+        if(MenuPage!=1 && SubPage!=1)
+            $(".preloader").hide();
+    }
+    //CHECK PRELOADER STATUS N HIDE END
+    $(document).ready(function() {
+        $(".preloader").show();
+        var errormsg=[];
+        $('#MODEL_ENTRY_errormsg').hide();
+        $(".autosize").doValidation({rule:'general',prop:{whitespace:true,autosize:true}});
+        $('#FIN_OCBC_MODEL_ENTRY_tb_modelname').blur(function(){
+            $("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
+            $('#MODEL_ENTRY_errormsg').hide();
+            var modelname=$('#FIN_OCBC_MODEL_ENTRY_tb_modelname').val()
+            if(modelname!="")
+            {
+                $(".preloader").show();
+                var  newPos= adjustPosition($('#FIN_OCBC_MODEL_ENTRY_tb_modelname').position(),100,230);
+                resetPreloader(newPos);
+                google.script.run.withFailureHandler(MODEL_ENTRY_error_message).withSuccessHandler(MODEL_ENTRY_getexistingmodel_result).MODEL_ENTRY_existingmodels(modelname);
+            }
+        });
+        function MODEL_ENTRY_getexistingmodel_result(res)
+        {
+            var result=res.flag;
+            errormsg=res.conform
+            if(result==0)
+            {
+                $('#MODEL_ENTRY_errormsg').hide();
+                $("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").removeAttr("disabled");
+            }
+            else
+            {
+                $('#MODEL_ENTRY_errormsg').show();
+                $("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
+            }
+            $(".preloader").hide();
+        }
+        $('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').click(function(){
+            $(".preloader").show();
+            var  newPos= adjustPosition($('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position(),100,230);
+            resetPreloader(newPos);
+            google.script.run.withFailureHandler(MODEL_ENTRY_error_message).withSuccessHandler(FIN_OCBC_MODEL_ENTRY_Conformation).FIN_OCBC_MODEL_ENTRY_processFormSubmit(document.getElementById('FIN_OCBC_MODEL_ENTRY_form_mainform'))
+        });
+        function FIN_OCBC_MODEL_ENTRY_Conformation(response)
+        {
+            if(response=='true')
+            {
+                $('#FIN_OCBC_MODEL_ENTRY_form_mainform').find('input:text').prop("size","20");//set
+                $('#FIN_OCBC_MODEL_ENTRY_form_mainform').find('input[type=text]').val('');
+                $("#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave").attr("disabled", "disabled");
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:errormsg,position:$('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position()}});
+            }
+            else
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:response,position:$('#FIN_OCBC_MODEL_ENTRY_btn_modelnamesave').position()}});
+            }
+            $(".preloader").hide();
+        }
+        function MODEL_ENTRY_error_message(MODEL_ENTRY_err)
+        {
+            if(MODEL_ENTRY_err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+            {
+                MODEL_ENTRY_err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+                $('#FIN_OCBC_MODEL_ENTRY_form_mainform').replaceWith('<center><label class="dberrormsg">'+MODEL_ENTRY_err+'</label></center>');
+            }
+            else
+            {
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"MODEL ENTRY",msgcontent:MODEL_ENTRY_err,position:{top:150,left:500}}});
+            }
+        }
+        $(".preloader").hide();
+    });
 </script>
 <body bgcolor="#E6E6FA">
 <div class="wrapper">
-<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
-<div class="title" id="fhead">
-<div style="padding-left:500px; text-align:left;">
-<p>
-<h3>MODEL ENTRY
-</h3>
-<p>
-</div>
-</div>
-<form class="content" id="FIN_OCBC_MODEL_ENTRY_form_mainform">
-<table id="FIN_OCBC_MODEL_ENTRY_tble_maintable">
-<tr>
-<td><label>MODEL NAME<em>*</em></label></td>
-<td><input  type="text" name="FIN_OCBC_MODEL_ENTRY_tb_modelname" id="FIN_OCBC_MODEL_ENTRY_tb_modelname" maxlength="50" class="autosize"/></td><td><label id="MODEL_ENTRY_errormsg" class='errormsg'>MODEL NAME ALREADY EXIST</label></td>
-</tr>
-<tr>
-<td>
-<input type="button"  id="FIN_OCBC_MODEL_ENTRY_btn_modelnamesave" class="btn" value="CREATE" disabled /> 
-</td></tr>
-</table>
-</form>
+    <div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+    <div class="title" id="fhead">
+        <div style="padding-left:500px; text-align:left;">
+            <p>
+            <h3>MODEL ENTRY
+            </h3>
+            <p>
+        </div>
+    </div>
+    <form class="content" id="FIN_OCBC_MODEL_ENTRY_form_mainform">
+        <table id="FIN_OCBC_MODEL_ENTRY_tble_maintable">
+            <tr>
+                <td><label>MODEL NAME<em>*</em></label></td>
+                <td><input  type="text" name="FIN_OCBC_MODEL_ENTRY_tb_modelname" id="FIN_OCBC_MODEL_ENTRY_tb_modelname" maxlength="50" class="autosize"/></td><td><label id="MODEL_ENTRY_errormsg" class='errormsg'>MODEL NAME ALREADY EXIST</label></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="button"  id="FIN_OCBC_MODEL_ENTRY_btn_modelnamesave" class="btn" value="CREATE" disabled />
+                </td></tr>
+        </table>
+    </form>
 </body>
 </html>

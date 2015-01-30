@@ -26,18 +26,18 @@ try
     var CHEQUE_SRC_autocompl_array =[];
     if(CHEQUE_SRC_OPTION==4)
     {
-      var CHEQUE_SRC_autocompl_query = "SELECT DISTINCT CHEQUE_UNIT_NO FROM CHEQUE_ENTRY_DETAILS ORDER BY CHEQUE_UNIT_NO ASC"; 
+    var CHEQUE_SRC_autocompl_query = "SELECT DISTINCT CHEQUE_UNIT_NO FROM CHEQUE_ENTRY_DETAILS ORDER BY CHEQUE_UNIT_NO ASC"; 
     }
     if(CHEQUE_SRC_OPTION==2)
     {
-      CHEQUE_SRC_autocompl_query="SELECT DISTINCT CHEQUE_NO FROM CHEQUE_ENTRY_DETAILS ORDER BY CHEQUE_NO ASC"; 
+     CHEQUE_SRC_autocompl_query="SELECT DISTINCT CHEQUE_NO FROM CHEQUE_ENTRY_DETAILS ORDER BY CHEQUE_NO ASC"; 
     }
     var CHEQUE_SRC_autocompl_result = CHEQUE_SRC_stmt.executeQuery(CHEQUE_SRC_autocompl_query);
     while(CHEQUE_SRC_autocompl_result.next())
     {
       if((CHEQUE_SRC_autocompl_result.getString(1)!=null)&&CHEQUE_SRC_autocompl_result.getString(1)!="")
       {
-        CHEQUE_SRC_autocompl_array.push(CHEQUE_SRC_autocompl_result.getString(1));
+      CHEQUE_SRC_autocompl_array.push(CHEQUE_SRC_autocompl_result.getString(1));
       }
     }
     return CHEQUE_SRC_autocompl_array;
@@ -45,7 +45,7 @@ try
     CHEQUE_SRC_stmt.close();
     CHEQUE_SRC_conn.close();
   }
-  function CHEQUE_SRC_commonvalues()
+    function CHEQUE_SRC_commonvalues()
   {
     var CHEQUE_SRC_conn =eilib.db_GetConnection();
     //////////////SEARCH OPTION /////////////////////
@@ -61,7 +61,7 @@ try
     }
     CHEQUE_searchoptionresult.close();
     CHEQUE_searchoptionstmt.close();
-    ////////////STATUS TABLE/////////////
+      ////////////STATUS TABLE/////////////
     var CHEQUE_SRC_stmt = CHEQUE_SRC_conn.createStatement();
     var CHEQUE_SRC_status_array =[];
     var CHEQUE_SRC_status_query = "SELECT DISTINCT BCN_ID,BCN_DATA FROM BANKTT_CONFIGURATION WHERE CGN_ID=70 ORDER BY BCN_DATA ASC"; 
@@ -152,8 +152,8 @@ try
     { var CHEQUE_ENTRY_debited=null;}
     else
     {
-      CHEQUE_ENTRY_debited=eilib.SqlDateFormat(debited);
-      CHEQUE_ENTRY_debited="'"+CHEQUE_ENTRY_debited+"'"};
+     CHEQUE_ENTRY_debited=eilib.SqlDateFormat(debited);
+     CHEQUE_ENTRY_debited="'"+CHEQUE_ENTRY_debited+"'"};
     if(comments!="")
     {  comments=eilib.ConvertSpclCharString(comments) }
     var CHEQUE_SRC_updationstmt=CHEQUE_SRC_conn.createStatement();
@@ -172,3 +172,6 @@ try
 catch(err)
 {
 }
+
+
+

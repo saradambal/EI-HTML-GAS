@@ -1,6 +1,7 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************VIEW ALL CARD***************************************************//
 //DONE BY:PUNI
+//VER 1.4-SD:22/12/2014 ED:22/12/2014;TRACKER NO:780;added droptemp table function from eilib
 //VER 1.3-SD:14/11/2014 ED:14/11/2014;TRACKER NO:780:Corrected script to show err msg throwing from sp if any duplicard card issue occurs
 VER 1.2-SD:09/10/2014 ED:09/10/2014;TRACKER NO:780:1.added script to hide preloader after menu n form loads,2.Changed preloader n msgbox position
 //DONE BY:SARADAMBAL.M
@@ -43,522 +44,522 @@ VER 0.01 - INITIAL VERSION-SD:04/09/2013 ED:1/10/2013;TRACKER NO: 530
 //CHECK PRELOADER STATUS N HIDE START
 var SubPage=1;
 function CheckPageStatus(){
-if(MenuPage!=1 && SubPage!=1)
-$(".preloader").hide();
+    if(MenuPage!=1 && SubPage!=1)
+        $(".preloader").hide();
 }
 //CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
-var CACS_VIEW_errorAarray=[];
-var CACS_VIEW_cust_array=[]
-$('#CACS_VIEW_tble_unittable').hide();
-$('#CACS_VIEW_tble_cardtable').hide();
-$('#CACS_VIEW_tble_customertable').hide();
-$('#CACS_VIEW_lbl_searchoption').hide();
-$('#CACS_VIEW_lb_searchoption').hide();
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$(".preloader").show(); 
-google.script.run.withSuccessHandler(CACS_VIEW_customername_autocompleteresult).withFailureHandler(CACS_VIEW_error).CACS_VIEW_customername_autocomplete();
-google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_load_initial_values).CACS_VIEW_get_initial_values();
+    var CACS_VIEW_errorAarray=[];
+    var CACS_VIEW_cust_array=[]
+    $('#CACS_VIEW_tble_unittable').hide();
+    $('#CACS_VIEW_tble_cardtable').hide();
+    $('#CACS_VIEW_tble_customertable').hide();
+    $('#CACS_VIEW_lbl_searchoption').hide();
+    $('#CACS_VIEW_lb_searchoption').hide();
+    $('#CACS_VIEW_tble_htmltable').hide();
+    $('#CACS_VIEW_div_htmltable').hide();
+    $(".preloader").show();
+    google.script.run.withSuccessHandler(CACS_VIEW_customername_autocompleteresult).withFailureHandler(CACS_VIEW_error).CACS_VIEW_customername_autocomplete();
+    google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_load_initial_values).CACS_VIEW_get_initial_values();
 //****************FUNCTION TO LOAD INITIAL VALUES******************8//
-function CACS_VIEW_load_initial_values(initial_values){
-CACS_VIEW_errorAarray=initial_values[0].CACS_VIEW_error_msg;
-var CACS_VIEW_unitarray=initial_values[0].CACS_VIEW_unitno;
-var CACS_VIEW_cust_config=initial_values[0].CACS_VIEW_config;
-var CACS_VIEW_cardno_array=initial_values[0].CACS_VIEW_card;
-$('#CACS_VIEW_lbl_custautoerrmsg').text(CACS_VIEW_errorAarray[9]);
-var CACS_VIEW_search_options ='<option>SELECT</option>'
-for (var i = 0; i < CACS_VIEW_cust_config.length; i++) {
-var CACS_VIEW_configarray=CACS_VIEW_cust_config[i].split('_');
-var CACS_VIEW_config_id=CACS_VIEW_configarray[0]
-var CACS_VIEW_config_data=CACS_VIEW_configarray[1]
-CACS_VIEW_search_options += '<option value="' + CACS_VIEW_config_id + '">' + CACS_VIEW_config_data + '</option>';
-}
-$('#CACS_VIEW_lb_searchoption').html(CACS_VIEW_search_options)
-if(CACS_VIEW_unitarray.length!=0){
-var CACS_VIEW_unitno_options ='<option value="SELECT">SELECT</option>'
-for (var i = 0; i < CACS_VIEW_unitarray.length; i++) {
-CACS_VIEW_unitno_options += '<option value="' + CACS_VIEW_unitarray[i] + '">' + CACS_VIEW_unitarray[i] + '</option>';
-}
-$('#CACS_VIEW_lb_unitno').html(CACS_VIEW_unitno_options)
-$('#CACS_VIEW_lbl_searchoption').show();
-$('#CACS_VIEW_lb_searchoption').show();
-}
-else{
- $('#CACS_VIEW_form_viewcardform').replaceWith('<p><label class="errormsg">'+ CACS_VIEW_errorAarray[6]+'</label></p>'); 
- $(".preloader").hide();
-}
-var CACS_VIEW_cardno_options ='<option>SELECT</option>'
-for (var i = 0; i < CACS_VIEW_cardno_array.length; i++) {
-CACS_VIEW_cardno_options += '<option value="' + CACS_VIEW_cardno_array[i] + '">' + CACS_VIEW_cardno_array[i] + '</option>';
-}
-$('#CACS_VIEW_lb_cardno').html(CACS_VIEW_cardno_options)
-var CACS_VIEW_custname_options ='<option>SELECT</option>'
+    function CACS_VIEW_load_initial_values(initial_values){
+        CACS_VIEW_errorAarray=initial_values[0].CACS_VIEW_error_msg;
+        var CACS_VIEW_unitarray=initial_values[0].CACS_VIEW_unitno;
+        var CACS_VIEW_cust_config=initial_values[0].CACS_VIEW_config;
+        var CACS_VIEW_cardno_array=initial_values[0].CACS_VIEW_card;
+        $('#CACS_VIEW_lbl_custautoerrmsg').text(CACS_VIEW_errorAarray[9]);
+        var CACS_VIEW_search_options ='<option>SELECT</option>'
+        for (var i = 0; i < CACS_VIEW_cust_config.length; i++) {
+            var CACS_VIEW_configarray=CACS_VIEW_cust_config[i].split('_');
+            var CACS_VIEW_config_id=CACS_VIEW_configarray[0]
+            var CACS_VIEW_config_data=CACS_VIEW_configarray[1]
+            CACS_VIEW_search_options += '<option value="' + CACS_VIEW_config_id + '">' + CACS_VIEW_config_data + '</option>';
+        }
+        $('#CACS_VIEW_lb_searchoption').html(CACS_VIEW_search_options)
+        if(CACS_VIEW_unitarray.length!=0){
+            var CACS_VIEW_unitno_options ='<option value="SELECT">SELECT</option>'
+            for (var i = 0; i < CACS_VIEW_unitarray.length; i++) {
+                CACS_VIEW_unitno_options += '<option value="' + CACS_VIEW_unitarray[i] + '">' + CACS_VIEW_unitarray[i] + '</option>';
+            }
+            $('#CACS_VIEW_lb_unitno').html(CACS_VIEW_unitno_options)
+            $('#CACS_VIEW_lbl_searchoption').show();
+            $('#CACS_VIEW_lb_searchoption').show();
+        }
+        else{
+            $('#CACS_VIEW_form_viewcardform').replaceWith('<p><label class="errormsg">'+ CACS_VIEW_errorAarray[6]+'</label></p>');
+            $(".preloader").hide();
+        }
+        var CACS_VIEW_cardno_options ='<option>SELECT</option>'
+        for (var i = 0; i < CACS_VIEW_cardno_array.length; i++) {
+            CACS_VIEW_cardno_options += '<option value="' + CACS_VIEW_cardno_array[i] + '">' + CACS_VIEW_cardno_array[i] + '</option>';
+        }
+        $('#CACS_VIEW_lb_cardno').html(CACS_VIEW_cardno_options)
+        var CACS_VIEW_custname_options ='<option>SELECT</option>'
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
-$('#CACS_VIEW_lb_searchoption').change(function(){
-var  newPos= adjustPosition($(this).position(),100,80);
-resetPreloader(newPos);
-$(".preloader").show(); 
-if($(this).val()==31)
-{
-$(".preloader").hide();
-$('#CACS_VIEW_tble_unittable').show();
-$('#CACS_VIEW_tble_cardtable').hide();
-$('#CACS_VIEW_tble_customertable').hide();
-$('#CACS_VIEW_lb_cardno').prop('selectedIndex',0);
-$('#CACS_VIEW_tb_cname').val("");
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_lbl_custautoerrmsg').hide();
-$('#CACS_VIEW_btn_search').hide().attr("disabled","disabled");
-}
-else if($(this).val()==18)
-{
-$(".preloader").hide();
-$('#CACS_VIEW_tble_unittable').hide();
-$('#CACS_VIEW_tble_cardtable').show();
-$('#CACS_VIEW_tble_customertable').hide();
-$('#CACS_VIEW_lb_unitno').prop('selectedIndex',0);
-$('#CACS_VIEW_tb_cname').val("");
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_lbl_custautoerrmsg').hide();
-$('#CACS_VIEW_btn_search').hide().attr("disabled","disabled");
-}
-else if($(this).val()==21)
-{
-$(".preloader").hide();
-$('#CACS_VIEW_tble_unittable').hide();
-$('#CACS_VIEW_tble_cardtable').hide();
-if(CACS_VIEW_customername.length!=0){
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_tble_customertable').show();
-$('#CACS_VIEW_lbl_cname').show();
-$('#CACS_VIEW_tb_cname').show();
-$('#CACS_VIEW_btn_search').show()
-}
-else{
-var msg=CACS_VIEW_errorAarray[7]
-$('#CACS_VIEW_lbl_errmsg').show()
-$('#CACS_VIEW_lbl_errmsg').text(msg);
-$('#CACS_VIEW_tble_customertable').show();
-$('#CACS_VIEW_lbl_cname').hide();
-$('#CACS_VIEW_tb_cname').hide();
-$('#CACS_VIEW_btn_search').hide();
-}
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_lb_unitno').prop('selectedIndex',0);
-$('#CACS_VIEW_lb_cardno').prop('selectedIndex',0);
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_tble_id tr').remove();
-}
-else if($(this).val()==40){
-$(".preloader").show();
-$('#CACS_VIEW_tble_unittable').hide();
-$('#CACS_VIEW_tble_cardtable').hide();
-$('#CACS_VIEW_tble_customertable').hide();
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_lbl_custautoerrmsg').hide();
-$('#CACS_VIEW_lb_unitno').prop('selectedIndex',0);
-$('#CACS_VIEW_lb_cardno').prop('selectedIndex',0);
-$('#CACS_VIEW_tb_cname').val("")
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_tble_id tr').remove();
-google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_loadcardno_details).CACS_VIEW_get_cardno_details('','',$(this).val())
-}
-else if($(this).val()=='SELECT')
-{
-$(".preloader").hide();
-$('#CACS_VIEW_tble_unittable').hide();
-$('#CACS_VIEW_tble_cardtable').hide();
-$('#CACS_VIEW_tble_customertable').hide();
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_lb_unitno').prop('selectedIndex',0);
-$('#CACS_VIEW_lb_cardno').prop('selectedIndex',0);
-$('#CACS_VIEW_tb_cname').val("")
-$('#CACS_VIEW_btn_search').hide().attr("disabled","disabled");
-$('#CACS_VIEW_lbl_custautoerrmsg').hide();
-}
-});
-$('.CACS_VIEW_class_search').change(function(){
-var CACS_VIEW_cardno=$('#CACS_VIEW_lb_cardno').val();
-var CACS_VIEW_unitno=$('#CACS_VIEW_lb_unitno').val();
-var CACS_VIEW_searchoption=$('#CACS_VIEW_lb_searchoption').val();
-if($(this).val()=="SELECT" ){
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_lbl_errmsg').hide()
-}
-else{
-if(($('#CACS_VIEW_lb_searchoption').val()==31)||($('#CACS_VIEW_lb_searchoption').val()==18))
-{
-$(".preloader").show();
-google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_loadcardno_details).CACS_VIEW_get_cardno_details(CACS_VIEW_unitno,CACS_VIEW_cardno,CACS_VIEW_searchoption)
-}
-}
-});
+    }
+    $('#CACS_VIEW_lb_searchoption').change(function(){
+        var  newPos= adjustPosition($(this).position(),100,80);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        if($(this).val()==31)
+        {
+            $(".preloader").hide();
+            $('#CACS_VIEW_tble_unittable').show();
+            $('#CACS_VIEW_tble_cardtable').hide();
+            $('#CACS_VIEW_tble_customertable').hide();
+            $('#CACS_VIEW_lb_cardno').prop('selectedIndex',0);
+            $('#CACS_VIEW_tb_cname').val("");
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_lbl_errmsg').hide();
+            $('#CACS_VIEW_lbl_custautoerrmsg').hide();
+            $('#CACS_VIEW_btn_search').hide().attr("disabled","disabled");
+        }
+        else if($(this).val()==18)
+        {
+            $(".preloader").hide();
+            $('#CACS_VIEW_tble_unittable').hide();
+            $('#CACS_VIEW_tble_cardtable').show();
+            $('#CACS_VIEW_tble_customertable').hide();
+            $('#CACS_VIEW_lb_unitno').prop('selectedIndex',0);
+            $('#CACS_VIEW_tb_cname').val("");
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_lbl_errmsg').hide();
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_lbl_custautoerrmsg').hide();
+            $('#CACS_VIEW_btn_search').hide().attr("disabled","disabled");
+        }
+        else if($(this).val()==21)
+        {
+            $(".preloader").hide();
+            $('#CACS_VIEW_tble_unittable').hide();
+            $('#CACS_VIEW_tble_cardtable').hide();
+            if(CACS_VIEW_customername.length!=0){
+                $('#CACS_VIEW_lbl_errmsg').hide();
+                $('#CACS_VIEW_tble_customertable').show();
+                $('#CACS_VIEW_lbl_cname').show();
+                $('#CACS_VIEW_tb_cname').show();
+                $('#CACS_VIEW_btn_search').show()
+            }
+            else{
+                var msg=CACS_VIEW_errorAarray[7]
+                $('#CACS_VIEW_lbl_errmsg').show()
+                $('#CACS_VIEW_lbl_errmsg').text(msg);
+                $('#CACS_VIEW_tble_customertable').show();
+                $('#CACS_VIEW_lbl_cname').hide();
+                $('#CACS_VIEW_tb_cname').hide();
+                $('#CACS_VIEW_btn_search').hide();
+            }
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_lb_unitno').prop('selectedIndex',0);
+            $('#CACS_VIEW_lb_cardno').prop('selectedIndex',0);
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_headermsg1').hide();
+            $('#CACS_VIEW_tble_id tr').remove();
+        }
+        else if($(this).val()==40){
+            $(".preloader").show();
+            $('#CACS_VIEW_tble_unittable').hide();
+            $('#CACS_VIEW_tble_cardtable').hide();
+            $('#CACS_VIEW_tble_customertable').hide();
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_lbl_custautoerrmsg').hide();
+            $('#CACS_VIEW_lb_unitno').prop('selectedIndex',0);
+            $('#CACS_VIEW_lb_cardno').prop('selectedIndex',0);
+            $('#CACS_VIEW_tb_cname').val("")
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_lbl_errmsg').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+            $('#CACS_VIEW_tble_id tr').remove();
+            google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_loadcardno_details).CACS_VIEW_get_cardno_details('','',$(this).val())
+        }
+        else if($(this).val()=='SELECT')
+        {
+            $(".preloader").hide();
+            $('#CACS_VIEW_tble_unittable').hide();
+            $('#CACS_VIEW_tble_cardtable').hide();
+            $('#CACS_VIEW_tble_customertable').hide();
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_lbl_errmsg').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_lb_unitno').prop('selectedIndex',0);
+            $('#CACS_VIEW_lb_cardno').prop('selectedIndex',0);
+            $('#CACS_VIEW_tb_cname').val("")
+            $('#CACS_VIEW_btn_search').hide().attr("disabled","disabled");
+            $('#CACS_VIEW_lbl_custautoerrmsg').hide();
+        }
+    });
+    $('.CACS_VIEW_class_search').change(function(){
+        var CACS_VIEW_cardno=$('#CACS_VIEW_lb_cardno').val();
+        var CACS_VIEW_unitno=$('#CACS_VIEW_lb_unitno').val();
+        var CACS_VIEW_searchoption=$('#CACS_VIEW_lb_searchoption').val();
+        if($(this).val()=="SELECT" ){
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+            $('#CACS_VIEW_lbl_errmsg').hide()
+        }
+        else{
+            if(($('#CACS_VIEW_lb_searchoption').val()==31)||($('#CACS_VIEW_lb_searchoption').val()==18))
+            {
+                $(".preloader").show();
+                google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_loadcardno_details).CACS_VIEW_get_cardno_details(CACS_VIEW_unitno,CACS_VIEW_cardno,CACS_VIEW_searchoption)
+            }
+        }
+    });
 //function TH_AutoCompleteSelectHandler(event, ui)
-$('#CACS_VIEW_btn_search').click(function()
-{
-var CACS_VIEW_name =$('#CACS_VIEW_tb_cname').val();
-if(CACS_VIEW_name!=""){ 
-var  newPos= adjustPosition($("#CACS_VIEW_tb_cname").position(),100,100);
-resetPreloader(newPos);
-$(".preloader").show();
-google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_CustId).CACS_VIEW_CustomerId(CACS_VIEW_name);
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_headermsg1').hide();
-}
-});
+    $('#CACS_VIEW_btn_search').click(function()
+    {
+        var CACS_VIEW_name =$('#CACS_VIEW_tb_cname').val();
+        if(CACS_VIEW_name!=""){
+            var  newPos= adjustPosition($("#CACS_VIEW_tb_cname").position(),100,100);
+            resetPreloader(newPos);
+            $(".preloader").show();
+            google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_CustId).CACS_VIEW_CustomerId(CACS_VIEW_name);
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_lbl_errmsg').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+        }
+    });
 //FUNCTION TO LOAD HTML TABLE
-function CACS_VIEW_loadcardno_details(card_details)
-{
-$(".preloader").hide();
-if($('#CACS_VIEW_lb_searchoption').val()==40 ||$('#CACS_VIEW_lb_searchoption').val()==31||$('#CACS_VIEW_lb_searchoption').val()==18){
-var CACS_VIEW_result_array=card_details[0];
-var CACS_VIEW_checkfalg=card_details[1];
-}
-else{
-var CACS_VIEW_result_array=card_details;
-}
-var CACS_VIEW_cardno=$('#CACS_VIEW_lb_cardno').val();
-var CACS_VIEW_unitno=$('#CACS_VIEW_lb_unitno').val();
-var CACS_VIEW_table_value='';
- if(CACS_VIEW_result_array.length > 10){ var px = '1500px'}
-     else
-     { 
-     var x = CACS_VIEW_result_array.length*5;
-     if(x <=100){var px = '500px'}
-     else{
-     var px = x+"px" }
-     }
-     if(CACS_VIEW_result_array.length == 1) {var px ="300px"}
-     $('#CACS_VIEW_div_htmltable').css('height',px)
-if($('#CACS_VIEW_lb_searchoption').val()==18)
-{
-if(CACS_VIEW_cardno!="SELECT")
-{
-if(CACS_VIEW_result_array.length!=0){
-var CACS_VIEW_active=CACS_VIEW_result_array[0].active;
-var CACS_VIEW_lost=CACS_VIEW_result_array[0].lost;
-var CACS_VIEW_inventory=CACS_VIEW_result_array[0].inventory;
-var CACS_VIEW_table_header='<tr><th style="width:150px">UNIT NO</th><th style="width:150px">ACTIVE CARDS</th><th style="width:150px">NON ACTIVE CARDS</th><th style="width:150px">OLD CARDS</th><th style="width:150px">ACCESS REASON</th><th style="width:300px">COMMENTS</th></tr>'
-$('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
-CACS_VIEW_table_value='<tbody><tr ><td>'+CACS_VIEW_result_array[0].unitno+'<td>'+CACS_VIEW_active+'</td><td>'+CACS_VIEW_inventory+'</td><td>'+CACS_VIEW_lost+'</td><td>'+CACS_VIEW_result_array[0].reason+'</td><td>'+CACS_VIEW_result_array[0].comments+'</td></tr>'
-$('#CACS_VIEW_tble_htmltable').append(CACS_VIEW_table_value);
-$('#CACS_VIEW_tble_htmltable').show();
-$('#CACS_VIEW_div_htmltable').show();
-var msg=(CACS_VIEW_errorAarray[2]).replace('[CARD NO]',CACS_VIEW_cardno)
-$('#CACS_VIEW_headermsg1').text(msg).show();
-$('#CACS_VIEW_lbl_errmsg').hide();
-}
-else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1){
-$('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
-$('#CACS_VIEW_headermsg1').text(msg).hide()
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-}
-else{
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-var msg=(CACS_VIEW_errorAarray[5]).replace('[CARD NO]',CACS_VIEW_cardno)
-$('#CACS_VIEW_lbl_errmsg').text(msg).show();
-}
-}
-else{
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-}
-}
-else if($('#CACS_VIEW_lb_searchoption').val()==31)
-{
-if(CACS_VIEW_unitno!="SELECT"){
-if(CACS_VIEW_result_array.length!=0){
+    function CACS_VIEW_loadcardno_details(card_details)
+    {
+        $(".preloader").hide();
+        if($('#CACS_VIEW_lb_searchoption').val()==40 ||$('#CACS_VIEW_lb_searchoption').val()==31||$('#CACS_VIEW_lb_searchoption').val()==18){
+            var CACS_VIEW_result_array=card_details[0];
+            var CACS_VIEW_checkfalg=card_details[1];
+        }
+        else{
+            var CACS_VIEW_result_array=card_details;
+        }
+        var CACS_VIEW_cardno=$('#CACS_VIEW_lb_cardno').val();
+        var CACS_VIEW_unitno=$('#CACS_VIEW_lb_unitno').val();
+        var CACS_VIEW_table_value='';
+        if(CACS_VIEW_result_array.length > 10){ var px = '1500px'}
+        else
+        {
+            var x = CACS_VIEW_result_array.length*5;
+            if(x <=100){var px = '500px'}
+            else{
+                var px = x+"px" }
+        }
+        if(CACS_VIEW_result_array.length == 1) {var px ="300px"}
+        $('#CACS_VIEW_div_htmltable').css('height',px)
+        if($('#CACS_VIEW_lb_searchoption').val()==18)
+        {
+            if(CACS_VIEW_cardno!="SELECT")
+            {
+                if(CACS_VIEW_result_array.length!=0){
+                    var CACS_VIEW_active=CACS_VIEW_result_array[0].active;
+                    var CACS_VIEW_lost=CACS_VIEW_result_array[0].lost;
+                    var CACS_VIEW_inventory=CACS_VIEW_result_array[0].inventory;
+                    var CACS_VIEW_table_header='<tr><th style="width:150px">UNIT NO</th><th style="width:150px">ACTIVE CARDS</th><th style="width:150px">NON ACTIVE CARDS</th><th style="width:150px">OLD CARDS</th><th style="width:150px">ACCESS REASON</th><th style="width:300px">COMMENTS</th></tr>'
+                    $('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
+                    CACS_VIEW_table_value='<tbody><tr ><td>'+CACS_VIEW_result_array[0].unitno+'<td>'+CACS_VIEW_active+'</td><td>'+CACS_VIEW_inventory+'</td><td>'+CACS_VIEW_lost+'</td><td>'+CACS_VIEW_result_array[0].reason+'</td><td>'+CACS_VIEW_result_array[0].comments+'</td></tr>'
+                    $('#CACS_VIEW_tble_htmltable').append(CACS_VIEW_table_value);
+                    $('#CACS_VIEW_tble_htmltable').show();
+                    $('#CACS_VIEW_div_htmltable').show();
+                    var msg=(CACS_VIEW_errorAarray[2]).replace('[CARD NO]',CACS_VIEW_cardno)
+                    $('#CACS_VIEW_headermsg1').text(msg).show();
+                    $('#CACS_VIEW_lbl_errmsg').hide();
+                }
+                else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1){
+                    $('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
+                    $('#CACS_VIEW_headermsg1').text(msg).hide()
+                    $('#CACS_VIEW_tble_htmltable').hide();
+                    $('#CACS_VIEW_div_htmltable').hide();
+                }
+                else{
+                    $('#CACS_VIEW_tble_htmltable').hide();
+                    $('#CACS_VIEW_div_htmltable').hide();
+                    $('#CACS_VIEW_headermsg1').hide();
+                    var msg=(CACS_VIEW_errorAarray[5]).replace('[CARD NO]',CACS_VIEW_cardno)
+                    $('#CACS_VIEW_lbl_errmsg').text(msg).show();
+                }
+            }
+            else{
+                $('#CACS_VIEW_tble_htmltable').hide();
+                $('#CACS_VIEW_div_htmltable').hide();
+                $('#CACS_VIEW_headermsg1').hide();
+            }
+        }
+        else if($('#CACS_VIEW_lb_searchoption').val()==31)
+        {
+            if(CACS_VIEW_unitno!="SELECT"){
+                if(CACS_VIEW_result_array.length!=0){
 //if(CACS_VIEW_checkfalg==1){
-var CACS_VIEW_table_header='<tr><th>ACTIVE CARDS</th><th>NON ACTIVE CARDS</th><th>OLD CARDS</th><th>ACCESS REASON</th></tr>'
-$('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
-var CACS_VIEW_active=[]
-var CACS_VIEW_inventory=[]
-var CACS_VIEW_lost=[]
-var CACS_VIEW_reason=[]
- CACS_VIEW_active=CACS_VIEW_result_array[0];
- CACS_VIEW_inventory=CACS_VIEW_result_array[1];
- CACS_VIEW_lost=CACS_VIEW_result_array[2];
- CACS_VIEW_reason=CACS_VIEW_result_array[3];
-var CACS_VIEW_active_len=CACS_VIEW_active.length
-var CACS_VIEW_inventory_len=CACS_VIEW_inventory.length
-var CACS_VIEW_lost_len=CACS_VIEW_lost.length
-var len=Math.max(CACS_VIEW_active_len,CACS_VIEW_inventory_len,CACS_VIEW_lost_len)
-for(var i=0;i<len;i++){
-var active_card=CACS_VIEW_active[i]
-var inventory_card=CACS_VIEW_inventory[i]
-var lost_card=CACS_VIEW_lost[i]
-var reason=CACS_VIEW_reason[i]
-if(active_card==undefined){active_card=''}
-if(inventory_card==undefined){inventory_card=''}
-if(lost_card==undefined){lost_card=''}
-if(reason==undefined){reason=''}
-CACS_VIEW_table_value='<tbody><tr ><td>'+active_card+'</td><td>'+inventory_card+'</td><td>'+lost_card+'</td><td>'+reason+'</td></tr>'
-$('#CACS_VIEW_tble_htmltable').append(CACS_VIEW_table_value);
-}
-var msg=(CACS_VIEW_errorAarray[0]).replace('[UNIT NO]',CACS_VIEW_unitno)
-$('#CACS_VIEW_headermsg1').text(msg).show()
-$('#CACS_VIEW_tble_htmltable').show();
-$('#CACS_VIEW_div_htmltable').show();
-$('#CACS_VIEW_lbl_errmsg').hide();
-}
-else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1){
-$('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
-$('#CACS_VIEW_headermsg1').text(msg).hide()
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-}
-else{
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-var msg=(CACS_VIEW_errorAarray[3]).replace('[UNO]',CACS_VIEW_unitno)
-$('#CACS_VIEW_lbl_errmsg').text(msg).show()
-}
-}
-else{
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_lbl_errmsg').hide()
-}
-}
-else if($('#CACS_VIEW_lb_searchoption').val()==40){
-if(CACS_VIEW_result_array.length!=0){
-var CACS_VIEW_table_header='<tr><th>UNIT NO</th><th>ACTIVE CARDS</th><th>NON ACTIVE CARDS</th><th>CUSTOMER LOST CARDS</th><th>LOST CARDS</th><th>ACCESS REASON</th></tr>'
-$('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
-for(var i=0;i<CACS_VIEW_result_array.length;i++)
-{
-var CACS_VIEW_values=CACS_VIEW_result_array[i]
-var CACS_VIEW_active=CACS_VIEW_values.active;
-var CACS_VIEW_customer_lost=CACS_VIEW_values.customer_lost;
-var CACS_VIEW_employee_lost=CACS_VIEW_values.employee_lost;
-var CACS_VIEW_inventory=CACS_VIEW_values.inventory;
-CACS_VIEW_table_value='<tbody><tr ><td>'+CACS_VIEW_values.unitno+'</td><td>'+CACS_VIEW_active+'</td><td>'+CACS_VIEW_inventory+'</td><td>'+CACS_VIEW_customer_lost+'</td><td>'+CACS_VIEW_employee_lost+'</td><td>'+CACS_VIEW_values.reason+'</td></tr>'
-$('#CACS_VIEW_tble_htmltable').append(CACS_VIEW_table_value);
-}
-var msg=CACS_VIEW_errorAarray[8]
-$('#CACS_VIEW_headermsg1').text(msg).show()
-$('#CACS_VIEW_tble_htmltable').show();
-$('#CACS_VIEW_div_htmltable').show();
-}
-else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1)
-{
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
-}
-else{
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-var msg=(CACS_VIEW_errorAarray[3]).replace('[UNO]',$('#CACS_VIEW_lb_searchoption').find('option:selected').text())
-$('#CACS_VIEW_lbl_errmsg').text(msg).show()
-}
-}
-}
+                    var CACS_VIEW_table_header='<tr><th>ACTIVE CARDS</th><th>NON ACTIVE CARDS</th><th>OLD CARDS</th><th>ACCESS REASON</th></tr>'
+                    $('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
+                    var CACS_VIEW_active=[]
+                    var CACS_VIEW_inventory=[]
+                    var CACS_VIEW_lost=[]
+                    var CACS_VIEW_reason=[]
+                    CACS_VIEW_active=CACS_VIEW_result_array[0];
+                    CACS_VIEW_inventory=CACS_VIEW_result_array[1];
+                    CACS_VIEW_lost=CACS_VIEW_result_array[2];
+                    CACS_VIEW_reason=CACS_VIEW_result_array[3];
+                    var CACS_VIEW_active_len=CACS_VIEW_active.length
+                    var CACS_VIEW_inventory_len=CACS_VIEW_inventory.length
+                    var CACS_VIEW_lost_len=CACS_VIEW_lost.length
+                    var len=Math.max(CACS_VIEW_active_len,CACS_VIEW_inventory_len,CACS_VIEW_lost_len)
+                    for(var i=0;i<len;i++){
+                        var active_card=CACS_VIEW_active[i]
+                        var inventory_card=CACS_VIEW_inventory[i]
+                        var lost_card=CACS_VIEW_lost[i]
+                        var reason=CACS_VIEW_reason[i]
+                        if(active_card==undefined){active_card=''}
+                        if(inventory_card==undefined){inventory_card=''}
+                        if(lost_card==undefined){lost_card=''}
+                        if(reason==undefined){reason=''}
+                        CACS_VIEW_table_value='<tbody><tr ><td>'+active_card+'</td><td>'+inventory_card+'</td><td>'+lost_card+'</td><td>'+reason+'</td></tr>'
+                        $('#CACS_VIEW_tble_htmltable').append(CACS_VIEW_table_value);
+                    }
+                    var msg=(CACS_VIEW_errorAarray[0]).replace('[UNIT NO]',CACS_VIEW_unitno)
+                    $('#CACS_VIEW_headermsg1').text(msg).show()
+                    $('#CACS_VIEW_tble_htmltable').show();
+                    $('#CACS_VIEW_div_htmltable').show();
+                    $('#CACS_VIEW_lbl_errmsg').hide();
+                }
+                else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1){
+                    $('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
+                    $('#CACS_VIEW_headermsg1').text(msg).hide()
+                    $('#CACS_VIEW_tble_htmltable').hide();
+                    $('#CACS_VIEW_div_htmltable').hide();
+                }
+                else{
+                    $('#CACS_VIEW_tble_htmltable').hide();
+                    $('#CACS_VIEW_div_htmltable').hide();
+                    $('#CACS_VIEW_headermsg1').hide();
+                    var msg=(CACS_VIEW_errorAarray[3]).replace('[UNO]',CACS_VIEW_unitno)
+                    $('#CACS_VIEW_lbl_errmsg').text(msg).show()
+                }
+            }
+            else{
+                $('#CACS_VIEW_tble_htmltable').hide();
+                $('#CACS_VIEW_div_htmltable').hide();
+                $('#CACS_VIEW_headermsg1').hide();
+                $('#CACS_VIEW_lbl_errmsg').hide()
+            }
+        }
+        else if($('#CACS_VIEW_lb_searchoption').val()==40){
+            if(CACS_VIEW_result_array.length!=0){
+                var CACS_VIEW_table_header='<tr><th>UNIT NO</th><th>ACTIVE CARDS</th><th>NON ACTIVE CARDS</th><th>CUSTOMER LOST CARDS</th><th>LOST CARDS</th><th>ACCESS REASON</th></tr>'
+                $('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
+                for(var i=0;i<CACS_VIEW_result_array.length;i++)
+                {
+                    var CACS_VIEW_values=CACS_VIEW_result_array[i]
+                    var CACS_VIEW_active=CACS_VIEW_values.active;
+                    var CACS_VIEW_customer_lost=CACS_VIEW_values.customer_lost;
+                    var CACS_VIEW_employee_lost=CACS_VIEW_values.employee_lost;
+                    var CACS_VIEW_inventory=CACS_VIEW_values.inventory;
+                    CACS_VIEW_table_value='<tbody><tr ><td>'+CACS_VIEW_values.unitno+'</td><td>'+CACS_VIEW_active+'</td><td>'+CACS_VIEW_inventory+'</td><td>'+CACS_VIEW_customer_lost+'</td><td>'+CACS_VIEW_employee_lost+'</td><td>'+CACS_VIEW_values.reason+'</td></tr>'
+                    $('#CACS_VIEW_tble_htmltable').append(CACS_VIEW_table_value);
+                }
+                var msg=CACS_VIEW_errorAarray[8]
+                $('#CACS_VIEW_headermsg1').text(msg).show()
+                $('#CACS_VIEW_tble_htmltable').show();
+                $('#CACS_VIEW_div_htmltable').show();
+            }
+            else if(CACS_VIEW_checkfalg!=0&&CACS_VIEW_checkfalg!=1)
+            {
+                $('#CACS_VIEW_tble_htmltable').hide();
+                $('#CACS_VIEW_div_htmltable').hide();
+                $('#CACS_VIEW_headermsg1').hide();
+                $('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkfalg).show()
+            }
+            else{
+                $('#CACS_VIEW_tble_htmltable').hide();
+                $('#CACS_VIEW_div_htmltable').hide();
+                $('#CACS_VIEW_headermsg1').hide();
+                var msg=(CACS_VIEW_errorAarray[3]).replace('[UNO]',$('#CACS_VIEW_lb_searchoption').find('option:selected').text())
+                $('#CACS_VIEW_lbl_errmsg').text(msg).show()
+            }
+        }
+    }
 //FUNCTION TO SHOW CUSTOMER NAME WITH RADIO BUTTON
-function CACS_VIEW_CustId(custid_result)
-{
-var CACS_VIEW_custarray=[];
-CACS_VIEW_custarray=custid_result;
-if(CACS_VIEW_custarray.length!=1)
-{
-$(".preloader").hide();
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_headermsg1').hide();
-var CACS_VIEW_custname=$('#CACS_VIEW_tb_cname').val();
-var CACS_VIEW_custid_radio='';
-for (var i = 0; i < CACS_VIEW_custarray.length; i++) {
-var final=CACS_VIEW_custname+' '+CACS_VIEW_custarray[i]
-CACS_VIEW_custid_radio = '<tr id=123><td style="width:245px"><label></label></td><td><input type="radio" name="custid" id='+CACS_VIEW_custarray[i]+' value='+CACS_VIEW_custarray[i]+' class="CACS_VIEW_class_custid" /></td><td>' + final + '</td></tr>';
-$('#CACS_VIEW_tble_id').append(CACS_VIEW_custid_radio);
-}
-}
-else{
-                         //HANDLER TO GET CUSTOMER DETAIL'S
-google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_load_customerdetails).CACS_VIEW_get_customervalues(CACS_VIEW_custarray[0])
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_headermsg1').hide();
-}
-}
+    function CACS_VIEW_CustId(custid_result)
+    {
+        var CACS_VIEW_custarray=[];
+        CACS_VIEW_custarray=custid_result;
+        if(CACS_VIEW_custarray.length!=1)
+        {
+            $(".preloader").hide();
+            $('#CACS_VIEW_lbl_errmsg').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+            var CACS_VIEW_custname=$('#CACS_VIEW_tb_cname').val();
+            var CACS_VIEW_custid_radio='';
+            for (var i = 0; i < CACS_VIEW_custarray.length; i++) {
+                var final=CACS_VIEW_custname+' '+CACS_VIEW_custarray[i]
+                CACS_VIEW_custid_radio = '<tr id=123><td style="width:245px"><label></label></td><td><input type="radio" name="custid" id='+CACS_VIEW_custarray[i]+' value='+CACS_VIEW_custarray[i]+' class="CACS_VIEW_class_custid" /></td><td>' + final + '</td></tr>';
+                $('#CACS_VIEW_tble_id').append(CACS_VIEW_custid_radio);
+            }
+        }
+        else{
+            //HANDLER TO GET CUSTOMER DETAIL'S
+            google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_load_customerdetails).CACS_VIEW_get_customervalues(CACS_VIEW_custarray[0])
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_lbl_errmsg').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+        }
+    }
 //FUNCTION TO CALL RADIO BUTTON CLICK
-$(document).on("change",'.CACS_VIEW_class_custid', function ()
-{
-var  newPos= adjustPosition($(this).position(),100,80);
-resetPreloader(newPos);
-$(".preloader").show();
-var CACS_VIEW_customer_id=$("input[name=custid]:checked").val();
-$('input:radio[name=CACS_VIEW_selectcard]').attr('checked',false);
-$('#CACS_VIEW_lbl_errmsg').hide();
-$('#CACS_VIEW_headermsg1').hide();
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-                         //HANDLER TO GET CUSTOMER DETAIL'S
-google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_load_customerdetails).CACS_VIEW_get_customervalues(CACS_VIEW_customer_id)
-});
+    $(document).on("change",'.CACS_VIEW_class_custid', function ()
+    {
+        var  newPos= adjustPosition($(this).position(),100,80);
+        resetPreloader(newPos);
+        $(".preloader").show();
+        var CACS_VIEW_customer_id=$("input[name=custid]:checked").val();
+        $('input:radio[name=CACS_VIEW_selectcard]').attr('checked',false);
+        $('#CACS_VIEW_lbl_errmsg').hide();
+        $('#CACS_VIEW_headermsg1').hide();
+        $('#CACS_VIEW_tble_htmltable').hide();
+        $('#CACS_VIEW_div_htmltable').hide();
+        //HANDLER TO GET CUSTOMER DETAIL'S
+        google.script.run.withFailureHandler(CACS_VIEW_error).withSuccessHandler(CACS_VIEW_load_customerdetails).CACS_VIEW_get_customervalues(CACS_VIEW_customer_id)
+    });
 //*********FUNCTION TO SHOW CUSTOMER CARD DETAILS***************************//
-function CACS_VIEW_load_customerdetails(custdetails_result)
-{
-$(".preloader").hide();
-$("#CACS_VIEW_btn_search").attr("disabled", "disabled");
-var CACS_VIEW_custcard_array=custdetails_result[0];
-var CACS_VIEW_checkflag=custdetails_result[1];
-var CACS_VIEW_name =$('#CACS_VIEW_tb_cname').val();
-CACS_VIEW_name=CACS_VIEW_name.replace("_"," ")
+    function CACS_VIEW_load_customerdetails(custdetails_result)
+    {
+        $(".preloader").hide();
+        $("#CACS_VIEW_btn_search").attr("disabled", "disabled");
+        var CACS_VIEW_custcard_array=custdetails_result[0];
+        var CACS_VIEW_checkflag=custdetails_result[1];
+        var CACS_VIEW_name =$('#CACS_VIEW_tb_cname').val();
+        CACS_VIEW_name=CACS_VIEW_name.replace("_"," ")
 //if(CACS_VIEW_checkflag==''){
-if(CACS_VIEW_custcard_array.length > 10){ var px = '600px'}
-     else
-     { 
-     var x = CACS_VIEW_custcard_array.length*150;
-     if(x <=100){var px = '500px'}
-     else{
-     var px = x+"px" }
-     }
-     if(CACS_VIEW_custcard_array.length == 1) {var px ="300px"}
-     $('#CACS_VIEW_div_htmltable').css('height',px)
-if(CACS_VIEW_custcard_array.length!=0)
-{
-var CACS_VIEW_table_header='<tr><th>UNIT NO</th><th>ACTIVE CARDS</th><th>OLD CARDS</th><th>ACCESS REASON</th><th>ACCESS COMMENTS</th></tr>'
-$('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
-for(var i=0;i<CACS_VIEW_custcard_array.length;i++){
-var CACS_VIEW_values=CACS_VIEW_custcard_array[i]
-var CACS_VIEW_active=CACS_VIEW_values.active;
-var CACS_VIEW_lost=CACS_VIEW_values.lost;
-var CACS_VIEW_table_value='';
-CACS_VIEW_table_value='<tbody><tr ><td>'+CACS_VIEW_values.unitno+'</td><td>'+CACS_VIEW_active+'</td><td>'+CACS_VIEW_lost+'</td><td>'+CACS_VIEW_values.reason+'</td><td>'+CACS_VIEW_values.comments+'</td></tr>'
-$('#CACS_VIEW_tble_htmltable').append(CACS_VIEW_table_value);
-}
-$('#CACS_VIEW_tble_htmltable').show();
-$('#CACS_VIEW_div_htmltable').show();
-var msg=(CACS_VIEW_errorAarray[1]).replace('[FIRST NAME + LAST NAME]',CACS_VIEW_name)
-$('#CACS_VIEW_headermsg1').text(msg).show();
-}
-else if(CACS_VIEW_checkflag!=0&&CACS_VIEW_checkflag!=1){
-$('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkflag).show();
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-}
-else{
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-var msg=(CACS_VIEW_errorAarray[4]).replace('[CNAME]',CACS_VIEW_name)
-$('#CACS_VIEW_lbl_errmsg').text(msg).show();
-}
+        if(CACS_VIEW_custcard_array.length > 10){ var px = '600px'}
+        else
+        {
+            var x = CACS_VIEW_custcard_array.length*150;
+            if(x <=100){var px = '500px'}
+            else{
+                var px = x+"px" }
+        }
+        if(CACS_VIEW_custcard_array.length == 1) {var px ="300px"}
+        $('#CACS_VIEW_div_htmltable').css('height',px)
+        if(CACS_VIEW_custcard_array.length!=0)
+        {
+            var CACS_VIEW_table_header='<tr><th>UNIT NO</th><th>ACTIVE CARDS</th><th>OLD CARDS</th><th>ACCESS REASON</th><th>ACCESS COMMENTS</th></tr>'
+            $('#CACS_VIEW_tble_htmltable').html(CACS_VIEW_table_header);
+            for(var i=0;i<CACS_VIEW_custcard_array.length;i++){
+                var CACS_VIEW_values=CACS_VIEW_custcard_array[i]
+                var CACS_VIEW_active=CACS_VIEW_values.active;
+                var CACS_VIEW_lost=CACS_VIEW_values.lost;
+                var CACS_VIEW_table_value='';
+                CACS_VIEW_table_value='<tbody><tr ><td>'+CACS_VIEW_values.unitno+'</td><td>'+CACS_VIEW_active+'</td><td>'+CACS_VIEW_lost+'</td><td>'+CACS_VIEW_values.reason+'</td><td>'+CACS_VIEW_values.comments+'</td></tr>'
+                $('#CACS_VIEW_tble_htmltable').append(CACS_VIEW_table_value);
+            }
+            $('#CACS_VIEW_tble_htmltable').show();
+            $('#CACS_VIEW_div_htmltable').show();
+            var msg=(CACS_VIEW_errorAarray[1]).replace('[FIRST NAME + LAST NAME]',CACS_VIEW_name)
+            $('#CACS_VIEW_headermsg1').text(msg).show();
+        }
+        else if(CACS_VIEW_checkflag!=0&&CACS_VIEW_checkflag!=1){
+            $('#CACS_VIEW_lbl_errmsg').text(CACS_VIEW_checkflag).show();
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+        }
+        else{
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            var msg=(CACS_VIEW_errorAarray[4]).replace('[CNAME]',CACS_VIEW_name)
+            $('#CACS_VIEW_lbl_errmsg').text(msg).show();
+        }
 //}
-}
-function CACS_VIEW_error(err){
-$(".preloader").hide();
-if(err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
-{
-err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
-$('#CACS_VIEW_form_viewcardform').replaceWith('<center><label class="dberrormsg">'+err+'</label></center>');
-}
-else{
-$(document).doValidation({rule:'messagebox',prop:{msgtitle:"VIEW ALL CARD",msgcontent:err,position:{top:150,left:500}}});
-}
-}
+    }
+    function CACS_VIEW_error(err){
+        $(".preloader").hide();
+        if(err=="ScriptError: Failed to establish a database connection. Check connection string, username and password.")
+        {
+            err="DB USERNAME/PWD WRONG, PLZ CHK UR CONFIG FILE FOR THE CREDENTIALS."
+            $('#CACS_VIEW_form_viewcardform').replaceWith('<center><label class="dberrormsg">'+err+'</label></center>');
+        }
+        else{
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"VIEW ALL CARD",msgcontent:err,position:{top:150,left:500}}});
+        }
+    }
 //FUNCTION TO HIGHLIGHT SEARCH TEXT
-function CACS_VIEW_highlightSearchText() {
-$.ui.autocomplete.prototype._renderItem = function( ul, item) {
-var re = new RegExp(this.term, "i") ;
-var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
-return $( "<li></li>" )
-.data( "item.autocomplete", item )
-.append( "<a>" + t + "</a>" )
-.appendTo( ul );
-};
-}
+    function CACS_VIEW_highlightSearchText() {
+        $.ui.autocomplete.prototype._renderItem = function( ul, item) {
+            var re = new RegExp(this.term, "i") ;
+            var t = item.label.replace(re,"<span class=autotxt>" + this.term + "</span>");//higlight color,class shld be same as here
+            return $( "<li></li>" )
+                    .data( "item.autocomplete", item )
+                    .append( "<a>" + t + "</a>" )
+                    .appendTo( ul );
+        };
+    }
 //FUNCTION TO AUTOCOMPLETE SEARCH TEXT
-var CACS_VIEW_customername=[];
-var CACS_VIEW_customerflag;
-function CACS_VIEW_customername_autocompleteresult(response)
-{
-CACS_VIEW_customername=response;
-$("#CACS_VIEW_tb_cname").val("");
+    var CACS_VIEW_customername=[];
+    var CACS_VIEW_customerflag;
+    function CACS_VIEW_customername_autocompleteresult(response)
+    {
+        CACS_VIEW_customername=response;
+        $("#CACS_VIEW_tb_cname").val("");
 //TO HIDE PRELOADER START
-SubPage=0;
-CheckPageStatus();
+        SubPage=0;
+        CheckPageStatus();
 //TO HIDE PRELOADER END
-}
-$("#CACS_VIEW_tb_cname").keypress(function(e){
+    }
+    $("#CACS_VIEW_tb_cname").keypress(function(e){
 
-CACS_VIEW_customerflag=0;
-CACS_VIEW_highlightSearchText();
-$("#CACS_VIEW_tb_cname").autocomplete({
-source: CACS_VIEW_customername,
-select:CACS_VIEW_AutoCompleteSelectHandler
-});
-});
+        CACS_VIEW_customerflag=0;
+        CACS_VIEW_highlightSearchText();
+        $("#CACS_VIEW_tb_cname").autocomplete({
+            source: CACS_VIEW_customername,
+            select:CACS_VIEW_AutoCompleteSelectHandler
+        });
+    });
 //FUNCTION TO GET SELECTED VALUE
-function CACS_VIEW_AutoCompleteSelectHandler(event, ui) {
-CACS_VIEW_customerflag=1;
-$('#CACS_VIEW_lbl_custautoerrmsg').hide();
-}
-$(document).on('blur change','.CACS_VIEW_customerautovalidate',function(){
-if(CACS_VIEW_customerflag==1){
-$('#CACS_VIEW_lbl_custautoerrmsg').hide();
-$('#CACS_VIEW_tble_id tr').remove();
-$('#CACS_VIEW_btn_search').removeAttr("disabled");
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide();
-}
-else
-{
-$('#CACS_VIEW_lbl_custautoerrmsg').show();
-$("#CACS_VIEW_btn_search").attr("disabled", "disabled");
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide()
-$('#CACS_VIEW_lbl_errmsg').hide()
-$('#CACS_VIEW_tble_id tr').remove();
-}
-if($('#CACS_VIEW_tb_cname').val()=="")
-{
-$('#CACS_VIEW_lbl_custautoerrmsg').hide();
-$("#CACS_VIEW_btn_search").attr("disabled", "disabled");
-$('#CACS_VIEW_tble_htmltable').hide();
-$('#CACS_VIEW_div_htmltable').hide();
-$('#CACS_VIEW_headermsg1').hide()
-$('#CACS_VIEW_lbl_errmsg').hide()
-$('#CACS_VIEW_tble_id tr').remove();
-}
-});
+    function CACS_VIEW_AutoCompleteSelectHandler(event, ui) {
+        CACS_VIEW_customerflag=1;
+        $('#CACS_VIEW_lbl_custautoerrmsg').hide();
+    }
+    $(document).on('blur change','.CACS_VIEW_customerautovalidate',function(){
+        if(CACS_VIEW_customerflag==1){
+            $('#CACS_VIEW_lbl_custautoerrmsg').hide();
+            $('#CACS_VIEW_tble_id tr').remove();
+            $('#CACS_VIEW_btn_search').removeAttr("disabled");
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_headermsg1').hide();
+        }
+        else
+        {
+            $('#CACS_VIEW_lbl_custautoerrmsg').show();
+            $("#CACS_VIEW_btn_search").attr("disabled", "disabled");
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_headermsg1').hide()
+            $('#CACS_VIEW_lbl_errmsg').hide()
+            $('#CACS_VIEW_tble_id tr').remove();
+        }
+        if($('#CACS_VIEW_tb_cname').val()=="")
+        {
+            $('#CACS_VIEW_lbl_custautoerrmsg').hide();
+            $("#CACS_VIEW_btn_search").attr("disabled", "disabled");
+            $('#CACS_VIEW_tble_htmltable').hide();
+            $('#CACS_VIEW_div_htmltable').hide();
+            $('#CACS_VIEW_headermsg1').hide()
+            $('#CACS_VIEW_lbl_errmsg').hide()
+            $('#CACS_VIEW_tble_id tr').remove();
+        }
+    });
 });
 </script>
 <!--SCRIPT TAG END-->
@@ -567,52 +568,52 @@ $('#CACS_VIEW_tble_id tr').remove();
 <!--BODY TAG START-->
 <body>
 <div class="wrapper">
-<div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
-<div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>VIEW ALL CARD</h3><p></div></div>
-<form action="" id="CACS_VIEW_form_viewcardform" name="CACS_VIEW_viewcardform" class ='content'>
-<table>
-<table id='CACS_VIEW_tble_optionable'>
-<tr>
-<td style="width:230px">&nbsp;<lable style="width:230px" id="CACS_VIEW_lbl_searchoption">SEARCH BY <em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><select id='CACS_VIEW_lb_searchoption' name="CACS_VIEW_serachoption">
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td></tr><br>
-</table>
-<table id="CACS_VIEW_tble_unittable">
-<tr>
-<td style="width:230px">&nbsp;<lable style="width:230px" id='CACS_VIEW_lbl_unitno'>UNIT NO<em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><select id='CACS_VIEW_lb_unitno' name="CACS_VIEW_unitno" class='CACS_VIEW_class_search'>
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td></tr><br>
-</table>
-<table id="CACS_VIEW_tble_cardtable">
-<tr>
-<td style="width:230px"><lable style="width:230px" id='CACS_VIEW_lbl_cardno'>CARD NO<em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><select id='CACS_VIEW_lb_cardno' name="CACS_VIEW_cardno" class='CACS_VIEW_class_search' >
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td></tr>
-<tr>
-</tr>
-</table>
-<table id="CACS_VIEW_tble_customertable">
-<tr>
-<td style="width:230px"><lable style="width:230px" id='CACS_VIEW_lbl_cname'>CUSTOMER NAME<em>*</em></lable></td><td></td><td></td><td></td><td></td>
-<td><input type="text" id='CACS_VIEW_tb_cname'name="CACS_VIEW_cname" class="auto CACS_VIEW_customerautovalidate" ></td><td><input type='button' id='CACS_VIEW_btn_search' value="SEARCH" class="btn" disabled></td>
-<td><lable id="CACS_VIEW_lbl_custautoerrmsg" class="errormsg" hidden></lable></td>
-<!--<td><select id='CACS_VIEW_lb_cname' name="CACS_VIEW_cname"   >
-<option value='SELECT' selected="selected"> SELECT</option>
-</select></td>-->
-</tr>
-</table>
-<table id='CACS_VIEW_tble_id' name='CACS_VIEW_tble_id'></table>
-<lable id="CACS_VIEW_headermsg1" class="srctitle" hidden></lable>
-<div  id ="CACS_VIEW_div_htmltable" style="width:920px; height: 600px; overflow:auto;">
-<table id="CACS_VIEW_tble_htmltable"  border="1"  cellspacing="0" class="srcresult" style="width:900px" >  
-</table> 
-</div>
-<lable id="CACS_VIEW_lbl_errmsg" class="errormsg" hidden></lable>
-</table>
-</form>
+    <div  class="preloader MaskPanel"><div class="preloader statusarea" ><div style="padding-top:90px; text-align:center"><img src="https://googledrive.com/host/0B5pkfK_IBDxjU1FrR3hVTXB4a28/Loading.gif"  /></div></div></div>
+    <div class="title" id="fhead" ><div style="padding-left:500px; text-align:left;"><p><h3>VIEW ALL CARD</h3><p></div></div>
+    <form action="" id="CACS_VIEW_form_viewcardform" name="CACS_VIEW_viewcardform" class ='content'>
+        <table>
+            <table id='CACS_VIEW_tble_optionable'>
+                <tr>
+                    <td style="width:230px">&nbsp;<lable style="width:230px" id="CACS_VIEW_lbl_searchoption">SEARCH BY <em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                    <td><select id='CACS_VIEW_lb_searchoption' name="CACS_VIEW_serachoption">
+                        <option value='SELECT' selected="selected"> SELECT</option>
+                    </select></td></tr><br>
+            </table>
+            <table id="CACS_VIEW_tble_unittable">
+                <tr>
+                    <td style="width:230px">&nbsp;<lable style="width:230px" id='CACS_VIEW_lbl_unitno'>UNIT NO<em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                    <td><select id='CACS_VIEW_lb_unitno' name="CACS_VIEW_unitno" class='CACS_VIEW_class_search'>
+                        <option value='SELECT' selected="selected"> SELECT</option>
+                    </select></td></tr><br>
+            </table>
+            <table id="CACS_VIEW_tble_cardtable">
+                <tr>
+                    <td style="width:230px"><lable style="width:230px" id='CACS_VIEW_lbl_cardno'>CARD NO<em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                    <td><select id='CACS_VIEW_lb_cardno' name="CACS_VIEW_cardno" class='CACS_VIEW_class_search' >
+                        <option value='SELECT' selected="selected"> SELECT</option>
+                    </select></td></tr>
+                <tr>
+                </tr>
+            </table>
+            <table id="CACS_VIEW_tble_customertable">
+                <tr>
+                    <td style="width:230px"><lable style="width:230px" id='CACS_VIEW_lbl_cname'>CUSTOMER NAME<em>*</em></lable></td><td></td><td></td><td></td><td></td>
+                    <td><input type="text" id='CACS_VIEW_tb_cname'name="CACS_VIEW_cname" class="auto CACS_VIEW_customerautovalidate" ></td><td><input type='button' id='CACS_VIEW_btn_search' value="SEARCH" class="btn" disabled></td>
+                    <td><lable id="CACS_VIEW_lbl_custautoerrmsg" class="errormsg" hidden></lable></td>
+                    <!--<td><select id='CACS_VIEW_lb_cname' name="CACS_VIEW_cname"   >
+                    <option value='SELECT' selected="selected"> SELECT</option>
+                    </select></td>-->
+                </tr>
+            </table>
+            <table id='CACS_VIEW_tble_id' name='CACS_VIEW_tble_id'></table>
+            <lable id="CACS_VIEW_headermsg1" class="srctitle" hidden></lable>
+            <div  id ="CACS_VIEW_div_htmltable" style="width:920px; height: 600px; overflow:auto;">
+                <table id="CACS_VIEW_tble_htmltable"  border="1"  cellspacing="0" class="srcresult" style="width:900px" >
+                </table>
+            </div>
+            <lable id="CACS_VIEW_lbl_errmsg" class="errormsg" hidden></lable>
+        </table>
+    </form>
 </div>
 </body>
 <!--BODY TAG END-->

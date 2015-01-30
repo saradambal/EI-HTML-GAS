@@ -6,54 +6,54 @@
 //used common function for both manual and auto trigger.
 function ALL_Automatic_TrigerCreation()
 {
-//  /*****PURGE DOCUMENT TRIGGER*********/
+  /*****PURGE DOCUMENT TRIGGER*********/
 //  ScriptApp.newTrigger("AUTO_PURGEDOCUMENT")
 //  .timeBased()
 //  .atHour(1)
 //  .nearMinute(5).everyDays(1)
 //  .create();
   /*****CUSTOMER TERMINATION TRIGGER*********/
-//  ScriptApp.newTrigger("AUTO_CUSTOMERTERMINATION")
-//  .timeBased()
-//  .atHour(1)
-//  .nearMinute(5).everyDays(1)
-//  .create();
-//  /*****CUSTOMER EXPIRY WEEK TRIGGER*********/
+  ScriptApp.newTrigger("AUTO_CUSTOMERTERMINATION")
+  .timeBased()
+  .atHour(1)
+  .nearMinute(5).everyDays(1)
+  .create();
+  /*****CUSTOMER EXPIRY WEEK TRIGGER*********/
 //  ScriptApp.newTrigger("AUTO_CUSTOMEREXPIRYXWEEK")
 //  .timeBased()
 //  .atHour(5)
 //  .nearMinute(55).everyDays(1)
 //  .create();
-//  /**********ACTIVE CUSTOMER LIST*************/
-//  ScriptApp.newTrigger("AUTO_ACTIVECUSTOMERLIST")
-//  .timeBased()
-//  .atHour(7)
-//  .nearMinute(55).everyDays(1)
-//  .create();
-//  /**********NON PAYMENT REMINDER*************/
+  /**********ACTIVE CUSTOMER LIST*************/
+  ScriptApp.newTrigger("AUTO_ACTIVECUSTOMERLIST")
+  .timeBased()
+  .atHour(7)
+  .nearMinute(55).everyDays(1)
+  .create();
+  /**********NON PAYMENT REMINDER*************/
 //  ScriptApp.newTrigger("AUTO_NONPAYMENTREMINDER")
 //  .timeBased()
 //  .atHour(6)
 //  .nearMinute(55).everyDays(1)
 //  .create();
-//  /**********MONTHLY PAYMENT REMINDER*************/
+  /**********MONTHLY PAYMENT REMINDER*************/
 //  ScriptApp.newTrigger("AUTO_MONTHLYPAYMENTREMINDER")
 //  .timeBased()
 //  .atHour(1)
 //  .nearMinute(5).everyDays(1)
 //  .create();
-//   /********** SITE ACCESS *************/
+   /********** SITE ACCESS *************/
 //  ScriptApp.newTrigger("AUTO_SITEACCESS")
 //  .timeBased()
 //  .everyMinutes(5)
 //  .create();
-//  /**********ERM LEEDS*************/
+  /**********ERM LEEDS*************/
 //  ScriptApp.newTrigger("AUTO_ERMLEEDS")
 //  .timeBased()
 //  .atHour(1)
 //  .nearMinute(5).everyDays(1)
 //  .create();
-//  /***********TEMP TABLE TRIGGER***********/
+  /***********TEMP TABLE TRIGGER***********/
    ScriptApp.newTrigger("AUTO_TEMP_TABLE_TRIGGER")
   .timeBased()
   .atHour(2)

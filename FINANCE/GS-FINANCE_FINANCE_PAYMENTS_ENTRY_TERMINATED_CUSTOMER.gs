@@ -22,7 +22,7 @@ try
   /**************************INITIAL TABLE LOAD FUNCTION************************************/
   function FIN_TERM_ENTRY_payment_commonvalues()
   {
-    var FIN_TERM_ENTRY_conn=eilib.db_GetConnection();
+     var FIN_TERM_ENTRY_conn=eilib.db_GetConnection();
     var FIN_TERM_ENTRY_unit_array =FIN_payment_Customer('nounit');
     /************************PAYMENT************************/
     var FIN_TERM_ENTRY_payment_array=eilib.getPaymentProfile(FIN_TERM_ENTRY_conn);
@@ -44,7 +44,7 @@ try
     var temptableresult=temptabletermcuststmt.executeQuery("SELECT @PAYMENT_ENTRY_TERMINATED_CUSTOMER");
     if(temptableresult.next())
     {
-      var temptablename=temptableresult.getString(1);
+    var temptablename=temptableresult.getString(1);
     }
     temptableresult.close();
     temptabletermcuststmt.close();
@@ -65,9 +65,7 @@ try
     }
     FIN_TERM_ENTRY_customerresult.close();
     FIN_TERM_ENTRY_customerstmt.close();
-    var temptabledropstmt=FIN_TERM_ENTRY_conn.createStatement();
-    temptabledropstmt.execute("DROP TABLE IF EXISTS "+temptablename+"");
-    temptabledropstmt.close();
+    eilib.DropTempTable(FIN_TERM_ENTRY_conn,temptablename);
     FIN_TERM_ENTRY_conn.close();
     return FIN_TERM_ENTRY_customer_array;
   }

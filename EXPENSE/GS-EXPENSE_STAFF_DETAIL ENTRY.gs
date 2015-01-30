@@ -28,12 +28,12 @@ try
     var STDTL_INPUT_employee_rs=STDTL_INPUT_employee_stmt.executeQuery( STDTL_INPUT_select_employee);
     while(STDTL_INPUT_employee_rs.next())
     {
-      var STDTL_INPUT_name_id=STDTL_INPUT_employee_rs.getString(1);
-      var STDTL_INPUT_name_first=STDTL_INPUT_employee_rs.getString(2);
-      var STDTL_INPUT_name_last=STDTL_INPUT_employee_rs.getString(3);
-      var STDTL_INPUT_employeename_concat=(STDTL_INPUT_name_first+'_'+STDTL_INPUT_name_last);
-      var STDTL_INPUT_name_object={"STDTL_INPUT_names_id":STDTL_INPUT_name_id,"STDTL_INPUT_names_concat":STDTL_INPUT_employeename_concat};
-      STDTL_INPUT_employee_array.push(STDTL_INPUT_name_object);     
+    var STDTL_INPUT_name_id=STDTL_INPUT_employee_rs.getString(1);
+    var STDTL_INPUT_name_first=STDTL_INPUT_employee_rs.getString(2);
+    var STDTL_INPUT_name_last=STDTL_INPUT_employee_rs.getString(3);
+    var STDTL_INPUT_employeename_concat=(STDTL_INPUT_name_first+'_'+STDTL_INPUT_name_last);
+    var STDTL_INPUT_name_object={"STDTL_INPUT_names_id":STDTL_INPUT_name_id,"STDTL_INPUT_names_concat":STDTL_INPUT_employeename_concat};
+    STDTL_INPUT_employee_array.push(STDTL_INPUT_name_object);     
     }
     STDTL_INPUT_employee_rs.close();
     STDTL_INPUT_employee_stmt.close();
@@ -46,14 +46,14 @@ try
     return STDTL_INPUT_result;
   }
   //FUNCTION TO CHECK WHETHER THE DATA INSERTED OR NOT
-  function STDTL_INPUT_getmaxprimaryid()
+   function STDTL_INPUT_getmaxprimaryid()
   {
     var STDTL_INPUT_conn=eilib.db_GetConnection();
     var STDTL_INPUT_stmt_primaryid=STDTL_INPUT_conn.createStatement();
     var STDTL_INPUT_select="SELECT MAX(EDSS_ID) AS PRIMARY_ID FROM EXPENSE_DETAIL_STAFF_SALARY";
     var STDTL_INPUT_rs_primaryid=STDTL_INPUT_stmt_primaryid.executeQuery(STDTL_INPUT_select);
     while(STDTL_INPUT_rs_primaryid.next())
-      var STDTL_INPUT_primaryid=STDTL_INPUT_rs_primaryid.getString("PRIMARY_ID");
+    var STDTL_INPUT_primaryid=STDTL_INPUT_rs_primaryid.getString("PRIMARY_ID");
     STDTL_INPUT_rs_primaryid.close();
     STDTL_INPUT_stmt_primaryid.close();
     STDTL_INPUT_conn.close();
@@ -112,7 +112,7 @@ try
     if(parseInt(STDTL_INPUT_primaryid_before)<parseInt(STDTL_INPUT_primaryid_after))
     return true;
     else
-      return false;
+    return false;
   }
   //FUNCTION FOR ALREADY EXIST FOR CPF NUMBER
   function STDTL_INPUT_already(STDTL_INPUT_employeename,STDTL_INPUT_tb_cpfnumber)

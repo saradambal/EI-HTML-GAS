@@ -103,26 +103,26 @@ try
     var REP_stmt=REP_conn.createStatement();
     if(REP_id==32)//ERM LEEDS
     {
-      if(REP_dtepickmonth!=null)
+    if(REP_dtepickmonth!=null)
+    {
+      var REP_dtepickmonth=REP_dtepickmonth.split('-');
+      var monthArr=['January','February','March','April','May','June','July','August','September','October','November','December'];
+      var fromMonth=REP_dtepickmonth[0];
+      var toMonth=REP_dtepickmonth[1];
+      for(var i=0;i<=monthArr.length;i++)
       {
-        var REP_dtepickmonth=REP_dtepickmonth.split('-');
-        var monthArr=['January','February','March','April','May','June','July','August','September','October','November','December'];
-        var fromMonth=REP_dtepickmonth[0];
-        var toMonth=REP_dtepickmonth[1];
-        for(var i=0;i<=monthArr.length;i++)
+        if(monthArr[i]==fromMonth)
         {
-          if(monthArr[i]==fromMonth)
-          {
-            var getfromMonth=i;
-          }
+          var getfromMonth=i;
         }
-        var newdate=new Date(toMonth,getfromMonth)
-        var getdate=newdate.getDate();
-        var endnewdate=new Date(toMonth,getfromMonth,getdate-1);
-        var startdate=new Date(toMonth,getfromMonth-1);
-        var REP_utstrdte=Utilities.formatDate(new Date(startdate), TimeZone,'yyyy-MM-dd');
-        var REP_utenddte=Utilities.formatDate(new Date(endnewdate),TimeZone, 'yyyy-MM-dd');
       }
+      var newdate=new Date(toMonth,getfromMonth)
+      var getdate=newdate.getDate();
+      var endnewdate=new Date(toMonth,getfromMonth,getdate-1);
+      var startdate=new Date(toMonth,getfromMonth-1);
+      var REP_utstrdte=Utilities.formatDate(new Date(startdate), TimeZone,'yyyy-MM-dd');
+      var REP_utenddte=Utilities.formatDate(new Date(endnewdate),TimeZone, 'yyyy-MM-dd');
+    }
     }
     var REP_namemail=REP_emailid.toString();
     var REP_index=REP_namemail.indexOf("@");
@@ -413,9 +413,9 @@ try
       var REP_ssids=REP_newspread.getId();
       REP_Sheet.setFrozenRows(1);
       if(REP_id==28)//ACTIVE UNIT EXPENSE
-      {
-        REP_expense(REP_id,REP_name,REP_emailid,REP_Sheet,REP_newspread,REP_dtepickmonth);
-      }
+       {
+         REP_expense(REP_id,REP_name,REP_emailid,REP_Sheet,REP_newspread,REP_dtepickmonth);
+       }
     }
     if(REP_count!=0)
     {
@@ -705,9 +705,7 @@ try
     }
     REP_flex_rs.close();
     REP_stmt.close();
-    var REP_temp_stmt= REP_conn.createStatement();
-    REP_temp_stmt.execute("DROP TABLE "+REP_temptblename+"");
-    REP_temp_stmt.close();
+    eilib.DropTempTable(REP_conn,REP_temptblename);  
     REP_conn.close();
   }
   //FUNCTION FOR LOGIN AND STARHUB DETAILS REPORT
@@ -1068,9 +1066,7 @@ try
     }
     REP_flex_rs.close();
     REP_stmt.close();
-    var REP_temp_stmt= REP_conn.createStatement();
-    REP_temp_stmt.execute("DROP TABLE "+REP_temptblename+"");
-    REP_temp_stmt.close();
+    eilib.DropTempTable(REP_conn,REP_temptblename);    
     REP_conn.close();
   }
   //FUNCTION FOR NON ACTIVE UNIT REPORT
@@ -1800,9 +1796,7 @@ try
     }
     REP_flex_rs.close();
     REP_stmt.close();
-    var REP_temp_stmt= REP_conn.createStatement();
-    REP_temp_stmt.execute("DROP TABLE "+REP_temptblename+"");
-    REP_temp_stmt.close();
+    eilib.DropTempTable(REP_conn,REP_temptblename);  
     REP_conn.close();
   }
   //FUNCTION FOR ERM LEEDS REPORT
