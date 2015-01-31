@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 /*********************************BIZ EXPENSE DAILY:SEARCH/UPDATE/DELETE*******************************/
 //DONE BY:PUNI
+//VER 2.0 -SD:22/12/2014,ED:22/12/2014,TRACKER NO:840,added drop table function from eilib to avoid temp table drop issue for pf
 //VER 1.9-SD:09/10/2014 ED:09/10/2014,TRACKER NO:511,corrected script for preloader,msgbox position
 //DONE BY:SARADAMBAL M
 //VER 1.8-SD:15/09/2014 ED:15/09/2014,TRACKER NO:511,implemented script for preloader,msgbox

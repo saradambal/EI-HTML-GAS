@@ -1,7 +1,6 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************CUSTOMER EXPIRY LIST***********************************************//
 //DONE BY:PUNI
-//VER 1.6-SD:22/12/2014 ED:22/12/2014;TRACKER NO:690;added droptemp table function from eilib
 //VER 1.5-SD:22/12/2014 ED:22/12/2014;TRACKER NO:690;added droptemp table function from eilib
 //VER 1.4-SD:09/10/2014 ED:09/10/2014,TRACKER NO:690;changed preloader n msgbox position
 //VER 1.3-SD:26/08/2014 ED:26/08/2014,TRACKER NO:690;updated new links BY PUNI.

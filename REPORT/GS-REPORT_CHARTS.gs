@@ -2,6 +2,7 @@
 //<!--//*******************************************FILE DESCRIPTION*********************************************//
 //<!--***********************************************CHARTS***********************************************//-->
 //<!--DONE BY:PUNI
+//VER 1.2 -SD:22/12/2014,ED:22/12/2014,TRACKER NO:840,added drop table function from eilib to avoid temp table drop issue for pf
 //VER 1.1- TRACKER NO:585,SD:06/10/2014,ED:06/10/2014,corrected some preloader n msgbox position
 //<!--DONE BY:SARADAMBAL
 //VER 1.0- TRACKER NO:585,SD:20/09/2014 ED:20/09/2014,implemented script for preloader,msgbox 

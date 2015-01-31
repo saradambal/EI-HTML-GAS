@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //*******************************************REPORT*******************************************************//
 //DONE BY:PUNI
+//VER 2.2 -SD:22/12/2014,ED:22/12/2014,TRACKER NO:840,added drop table function from eilib to avoid temp table drop issue for pf
 //VER 2.1-SD:06/10/2014,ED:06/10/2014,TRACKER NO:655,1.Changed script for preloader,msgbox position,2.corrected sort by for report name n report category
 //DONE BY:SARADAMBAL
 //VER 2.0-SD:22/08/2014 ED:22/08/2014,TRACKER NO:655,updated new links

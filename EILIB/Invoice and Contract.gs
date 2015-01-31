@@ -1,3 +1,4 @@
+//ADDED SP TO DROP TEMP TABLE TO IMPLEMENT PF ON 18/12/2014 BY PUNI,COMMENTED DOCLIST CLASS TO GET EDITORS,UNCOMMENTED DRIVEAPP CLASS
 //updated contract script to remove last line if no ep n pass port no,updated notice period part to place text instead of no n replace null if no notice period n reused function to remove editors n set owner all invoice n contract function,
 //FUNCTION TO SET OWNER FOR A DOC
 var invoiceflag;

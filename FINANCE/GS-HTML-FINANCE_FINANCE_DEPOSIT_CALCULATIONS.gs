@@ -1,6 +1,7 @@
 //<!--//*******************************************FILE DESCRIPTION*********************************************
 //*******************************************DEPOSIT DEDUCTION CALCULATIONS*********************************************
 //DONE BY PUNI
+//VER 1.9  -SD:22/12/2014 ED:22/12/2014;TRACKER NO: 840//added droptemp table function from eilib for pf temp table issue
 //VER 1.8  -SD:07/10/2014 ED:07/10/2014;TRACKER NO: 517//Corrected script for some preloader pos n updated prod lib links
 //DONE BY SARADAMBAL M
 //VER 1.7  -SD:18/09/2014 ED:18/09/2014;TRACKER NO: 517//implemented script for preloader,msgbox,implemented script for style to submit button instead of div -style

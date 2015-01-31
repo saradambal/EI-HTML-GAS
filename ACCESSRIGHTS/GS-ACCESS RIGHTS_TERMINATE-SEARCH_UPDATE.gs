@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //************************************ACCESS RIGHTS_TERMINATE-SEARCH/UPDATE***********************************************//
 //DONE BY PUNI
+//VER 1.1 -SD:22/12/2014,ED:22/12/2014,TRACKER NO:840,added drop table function from eilib to avoid temp table drop issue for pf
 //VER 1.0-SD:24/09/2014 ED:26/09/2014;TRACKER NO 465;1.trimmed script fr the repeatd functions,2.corrected validation in search /update option,3.corrected search update query,4.implemented rollback n commit,5.changed driveapp to docslist to remove editors,6.changed preloader n msgbox position,7.changed new lib links,8.added AG fr textarea
 //DONE BY SAFI,SARADA
 //VER 0.09-SD:21/07/2014 ED:21/07/2014;TRACKER NO 465;UPDATED DRIVEAPP AS DOCSLIST FOR SHARING/UNSHARING DOCS

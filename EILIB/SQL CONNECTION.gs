@@ -1,3 +1,4 @@
+//CHANGED CONNECTION STRING TO IMPLEMENT PF ON 18/12/2014 BY PUNI
 var TimeZone=Session.getScriptTimeZone();
 var UserStamp=Session.getActiveUser().getEmail();
 var DB_INSTANCE="instance",
