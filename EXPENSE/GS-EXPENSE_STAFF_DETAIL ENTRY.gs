@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //****************************************STAFF EXPENSE DETAIL ENTRY**************************************//
 //DONE BY:PUNI
+//VER 1.3-SD:9/03/2015 ED:09/03/2015-updated autocommit false for new connection string,removed alert after selecting empname listbox
 //VER 1.2-SD:09/10/2014 ED:09/10/2014,TRACKER NO:488:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //DONE BY:SARADAMBAL
 //VER 1.1-SD:21/08/2014 ED:21/08/2014,TRACKER NO:488,updated new links,autogrow

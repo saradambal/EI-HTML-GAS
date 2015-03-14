@@ -1,6 +1,7 @@
 //******************************************CUSTOMER RECHECK IN*************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:PUNI
+//VER 2.3-SD:7/03/2015 ED:07/03/2015-updated autocommit false for new connection string
 //VER 2.2-SD:22/12/2014 ED:22/12/2014;TRACKER NO:833;added droptemp table function from eilib
 //VER 2.1-SD:08/10/2014 ED:08/10/2014,TRACKER NO:833-corrected preloader position
 //DONE BY:KUMAR
@@ -36,10 +37,6 @@ try
   var CR_CCRE_expconn;
   var CR_temptablename;
   var CR_calevent_array;
-//  function doGet()
-//  {
-//    return HtmlService.createTemplateFromFile('HTML-CUSTOMER_CUSTOMER_RE_CHECK_IN').evaluate();
-//  }
   /**********************************FUNCTION TO GET TERMINATED CUSTOMER FOR SELECTED UNIT*********************************************/
   function CRCHK_Customer(unit)
   {
@@ -182,6 +179,7 @@ function CRCHK_processFormSubmit(recheckin)
   try
   {
     var CRCHK_conn = eilib.db_GetConnection();
+    CRCHK_conn.setAutoCommit(false);
     var CRCHK_name1=recheckin.CRCHK_tb_firstname;
     var CRCHK_name2=recheckin.CRCHK_tb_lastname;
     var CRCHK_custname=CRCHK_name1+' '+CRCHK_name2;

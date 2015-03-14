@@ -1,6 +1,7 @@
 //*****************************************************BANK TT ENTRY*********************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:PUNI
+//VER 1.07- SD:10/03/2015 ED:10/03/2015,updated autocommit false for new connection string
 //VER 1.06- SD:07/10/2014 ED:07/10/2014,TRACKER NO:674,Corrected some preloader n msgbox position
 //DONE BY:KUMAR
 //VER 1.05- SD:19/09/2014 ED:19/09/2014,TRACKER NO:674,Implemented preloader and msgbox position script
@@ -92,6 +93,7 @@ catch(err)
     {
     var BANKTT_ENTRY_conn =eilib.db_GetConnection();
     BANKTT_ENTRYconn=BANKTT_ENTRY_conn;
+    BANKTT_ENTRY_conn.setAutoCommit(false);
     var tttype=BANKTT_ENTRY_DETAILS.BANKTT_ENTRY_lb_tttype;
     var modelname=BANKTT_ENTRY_DETAILS.BANKTT_ENTRY_lb_modelname;
     if(modelname=="SELECT")    { var mailmodelname='';   modelname=null;  }
@@ -150,6 +152,7 @@ catch(err)
     var bankttstatus="ENTERED";
     var configdatas=tttype+','+bankttstatus+','+chargesto;
     var BANKTT_ENTRY_conn =eilib.db_GetConnection();
+    BANKTT_ENTRY_conn.setAutoCommit(false);
     var BANKTT_ENTRY_insertstmt=BANKTT_ENTRY_conn.createStatement();
     var BANKTT_ENTRY_insertquery="CALL SP_BANK_TT_INSERT('"+configdatas+"',"+modelname+","+unit+","+customerid+",'"+date+"',"+amount+","+accountname+","+accountno+","+bankcode+","+branchcode+",'"+bankaddress+"',"+swiftcode+",'"+custref+"','"+invdetails+"','"+comments+"','"+UserStamp+"',@BANK_SUCCESSFLAG)";
     BANKTT_ENTRY_insertstmt.execute(BANKTT_ENTRY_insertquery);

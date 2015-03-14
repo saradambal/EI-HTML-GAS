@@ -2,6 +2,7 @@
 //***********OPL AND ACTIVE CUSTOMER LIST**********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY PUNI
+//VER 1.05  -SD:22/12/2014 ED:22/12/2014;TRACKER NO: 840//added droptemp table function from eilib for pf temp table issue
 //VER 1.04  -SD:22/12/2014 ED:22/12/2014;TRACKER NO: 840//added droptemp table function from eilib for pf temp table issue
 //DONE BY:KUMAR
 //VER 1.03:SD:19/09/2014 ED:19/09/2014,TRACKER NO:748,Implemented preloader and msgbox position script and  changed conformation message
@@ -22,20 +23,21 @@
 //VER 0.01-INITIAL VERSION, SD:12/02/2014 ED:12/02/2014,TRACKER NO:171
 
 //*********************************************************************************************************//
-try
+
+/////////////OUTSTANDING PAYEES LIST AND ACTIVE CC LIST FUNCTION/////////////////
+function FIN_OPL_commonvalues()
 {
-  /////////////OUTSTANDING PAYEES LIST AND ACTIVE CC LIST FUNCTION/////////////////
-  function FIN_OPL_commonvalues()
-  {
-    var FIN_OPL_conn=eilib.db_GetConnection();
-    var FIN_OPL_mailarray=eilib.getProfileEmailId(FIN_OPL_conn,"OPL&ACTIVE CC");
-    /**********************************ERROR MESSAGE*********************************************/
-    var FIN_OPL_errormsg_code = "6"; 
-    var FIN_OPL_error_array=eilib.GetErrorMessageList(FIN_OPL_conn, FIN_OPL_errormsg_code);
-    var returnoplintial=[FIN_OPL_mailarray,FIN_OPL_error_array.errormsg];
-    return returnoplintial;
-  }
-  function FIN_OPL_opllist(opl)
+  var FIN_OPL_conn=eilib.db_GetConnection();
+  var FIN_OPL_mailarray=eilib.getProfileEmailId(FIN_OPL_conn,"OPL&ACTIVE CC");
+  /**********************************ERROR MESSAGE*********************************************/
+  var FIN_OPL_errormsg_code = "6"; 
+  var FIN_OPL_error_array=eilib.GetErrorMessageList(FIN_OPL_conn, FIN_OPL_errormsg_code);
+  var returnoplintial=[FIN_OPL_mailarray,FIN_OPL_error_array.errormsg];
+  return returnoplintial;
+}
+function FIN_OPL_opllist(opl)
+{
+  try
   {
     var FIN_OPL_conn =eilib.db_GetConnection();
     var FIN_OPL_emailId =opl.FIN_OPL_lb_mailid;
@@ -44,6 +46,7 @@ try
     var FIN_OPL_username=FIN_OPL_name.substring(0,FIN_OPL_index).toUpperCase();
     var FIN_OPL_currmon_date=opl.FIN_OPL_db_period;
     var maildate=FIN_OPL_currmon_date.toUpperCase();
+    
     /******************************OUSTANDING PAYEES LIST**************************************/
     if(opl.radio=='option1')
     {
@@ -76,7 +79,7 @@ try
       var temptablenameresult=FIN_OPL_activecuststmt.executeQuery("SELECT @TEMP_FINAL_NONPAIDCUSTOMER");
       while(temptablenameresult.next())
       {
-      var temptablename=temptablenameresult.getString(1);  
+        var temptablename=temptablenameresult.getString(1);  
       }
       temptablenameresult.close();
       FIN_OPL_activecuststmt.close();
@@ -127,7 +130,7 @@ try
       {
         returnmsg="EMPTYOPL";
       }
-    eilib.DropTempTable(FIN_OPL_conn,temptablename);  
+      eilib.DropTempTable(FIN_OPL_conn,temptablename);  
     }
     /***************************ACTIVE CUSTOMER LIST****************************************/
     if(opl.radio=='option2')
@@ -206,7 +209,7 @@ try
         FIN_ACT_folresult.close();
         FIN_ACT_folstmt.close();
         var FIN_ACT_newSheet = FIN_ACT_newspread.getActiveSheet().setName(FIN_ACT_shheetname);
-         FIN_ACT_newspread.setFrozenRows(1);
+        FIN_ACT_newspread.setFrozenRows(1);
         FIN_ACT_newspread.deleteColumns(11, 10);
         /****************NORMAL SHEET**************************/
         for(var i=0;i<FIN_ACT_customer_amount1.length;i++)
@@ -356,21 +359,35 @@ try
           sorcustomersheet.getRange(FIN_ACT_counter,11).setValue(FIN_ACT_value1[10]);
         } 
       }
-        var docowner=eilib.CUST_documentowner(FIN_OPL_conn);
-        eilib.CUST_moveFileToFolder(FIN_ACT_ssid,"",FIN_ACT_targetFolderId)
-        eilib.SetDocOwner(FIN_ACT_ssid,docowner,FIN_OPL_emailId);
+      var docowner=eilib.CUST_documentowner(FIN_OPL_conn);
+      eilib.CUST_moveFileToFolder(FIN_ACT_ssid,"",FIN_ACT_targetFolderId)
+      eilib.SetDocOwner(FIN_ACT_ssid,docowner,FIN_OPL_emailId);
       var displayname=eilib.Get_MailDisplayName('ACTIVE_CC_LIST');
       var body1 ="HELLO  "+FIN_OPL_username;
       var subject='ACTIVE CUST LIST-'+FIN_ACT_monthyear;
-      MailApp.sendEmail(FIN_OPL_emailId, subject, body1, {name:displayname,htmlBody: body1+'<br><br>, PLEASE FIND ATTACHED THE CURRENT : '+FIN_ACT_url});
+      MailApp.sendEmaila(FIN_OPL_emailId, subject, body1, {name:displayname,htmlBody: body1+'<br><br>, PLEASE FIND ATTACHED THE CURRENT : '+FIN_ACT_url});
       eilib.DropTempTable(FIN_OPL_conn,activelisttablename);    
       eilib.DropTempTable(FIN_OPL_conn,sortactivelisttablename);    
       returnmsg="ACTIVECCLIST";
     }
-    FIN_OPL_conn.close();
-    return returnmsg;
   }
-}
-catch(err)
-{
+  catch(err)
+  {
+    Logger.log("SCRIPT EXCEPTION:"+err)
+    if(temptablename!=null&&temptablename!=undefined)
+    {
+      eilib.DropTempTable(FIN_OPL_conn,temptablename); 
+    }
+    if(activelisttablename!=null&&activelisttablename!=undefined)
+    {
+      eilib.DropTempTable(FIN_OPL_conn,activelisttablename);    
+    }
+    if(sortactivelisttablename!=null&&sortactivelisttablename!=undefined)
+    {
+      eilib.DropTempTable(FIN_OPL_conn,sortactivelisttablename);
+    }
+    return (Logger.getLog()); 
+  }
+  FIN_OPL_conn.close();
+  return returnmsg;
 }

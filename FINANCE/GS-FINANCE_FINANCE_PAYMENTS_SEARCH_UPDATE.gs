@@ -1,6 +1,7 @@
 //********************************************PAYMENT SEARCH/UPDATE*********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:PUNI
+//VER 2.4  -SD:10/03/2015 ED:10/03/2015;updated autocommit false for new connection string
 //VER 2.03  -SD:22/12/2014 ED:22/12/2014;TRACKER NO: 840//added droptemp table function from eilib for pf temp table issue
 //VER 2.02- SD:07/10/2014 ED:07/10/2014,TRACKER NO:786,Corrected preloader and msgbox position
 //DONE BY:KUMAR
@@ -282,6 +283,7 @@ try
   function FIN_SRC_CustomerPaymentDetails(customerdetails)
   {
     var FIN_SRC_conn=eilib.db_GetConnection();
+    FIN_SRC_conn.setAutoCommit(false);
     /*****************************GETTING FOLDER ID FROM DEPOSIT DEDUCTION CONFIGURATION TABLE*********************/
     var FIN_SRC_DDsheetstmt=FIN_SRC_conn.createStatement();
     var FIN_SRC_DDsheetquery="SELECT DDC_DATA FROM DEPOSIT_DEDUCTION_CONFIGURATION WHERE CGN_ID=30";

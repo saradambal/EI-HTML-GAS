@@ -1,6 +1,7 @@
 //*****************************************************BANK TT SEARCH/UPDATE*********************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:PUNI
+//VER 2.0  -SD:10/03/2015 ED:10/03/2015;added autocommit false for new connection string
 //VER 1.09  -SD:22/12/2014 ED:22/12/2014;TRACKER NO: 840//added droptemp table function from eilib for pf temp table issue
 //VER 1.08- SD:07/10/2014 ED:07/10/2014,TRACKER NO:675,Corrected preloader n msgbox position
 //DONE BY:KUMAR
@@ -347,6 +348,7 @@ catch(err)
     else{configdatas=status}
     var BANKTT_SRC_conn =eilib.db_GetConnection();
     BANKTT_SRCconn=BANKTT_SRC_conn;
+    BANKTT_SRC_conn.setAutoCommit(false);
     var BANKTT_SRC_updatestmt=BANKTT_SRC_conn.createStatement();
     var BANKTT_SRC_updatequery="CALL SP_BANK_TT_UPDATE("+id+",'"+configdatas+"',"+modelname+",'"+date+"',"+amount+","+accountname+","+accountno+","+bankcode+","+branchcode+",'"+bankaddress+"',"+swiftcode+",'"+custref+"','"+invdetails+"',"+debiteddate+",'"+comments+"','"+UserStamp+"',@BANK_SUCCESSFLAG)";
     BANKTT_SRC_updatestmt.execute(BANKTT_SRC_updatequery);

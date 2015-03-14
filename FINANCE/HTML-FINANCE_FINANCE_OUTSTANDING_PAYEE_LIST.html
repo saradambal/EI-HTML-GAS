@@ -1,6 +1,7 @@
 <!--***********************************OPL AND ACTIVE CUSTOMER LIST**********************************************************************//-->
 <!--//*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY PUNI
+//VER 1.05  -SD:14/03/2015 ED:14/03/2015;added droptemp table function inside try catch,changed script to show exception message
 //VER 1.04  -SD:22/12/2014 ED:22/12/2014;TRACKER NO: 840//added droptemp table function from eilib for pf temp table issue
 //DONE BY:KUMAR
 //VER 1.03:SD:19/09/2014 ED:19/09/2014,TRACKER NO:748,Implemented preloader and msgbox position script and  changed conformation message
@@ -82,7 +83,7 @@
                 $('#FIN_OPL_outstanding_form').show();
                 $('#FIN_OPL_errormessageform').hide();
             }
-            //TO HIDE PRELOADER START
+//TO HIDE PRELOADER START
             SubPage=0;
             CheckPageStatus();
         }
@@ -137,22 +138,30 @@
         function FIN_OPL_oplresponse(response)
         {
             $(".preloader").hide();
-            var selectedmonth=$("#FIN_OPL_db_period").val();
-            oplreset();
-            if(response=='OPL')
+            if(response.match("SCRIPT EXCEPTION:"))
             {
-                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:"EMAIL SENT WITH THE CURRENT OUTSTANDING PAYEES LIST",position:$('#FIN_OPL_btn_save').position()}});
+                $(".preloader").hide();
+                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:response,position:{top:150,left:500}}});
             }
-            if(response=="ACTIVECCLIST")
+            else
             {
-                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACTIVE CUSTOMER LIST",msgcontent:"EMAIL SENT WITH THE CURRENT ACTIVE CUSTOMER LIST",position:$('#FIN_OPL_btn_save').position()}});
-            }
-            if(response=="EMPTYOPL")
-            {
-                var emptyerrormessage="THERE IS NO OUTSTANDING PAYEES FOR <MONTH-YEAR>"
-                emptyerrormessage=emptyerrormessage.replace('<MONTH-YEAR>',selectedmonth);
-                emptyerrormessage=emptyerrormessage.toUpperCase();
-                $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:emptyerrormessage,position:$('#FIN_OPL_btn_save').position()}});
+                var selectedmonth=$("#FIN_OPL_db_period").val();
+                oplreset();
+                if(response=='OPL')
+                {
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:"EMAIL SENT WITH THE CURRENT OUTSTANDING PAYEES LIST",position:$('#FIN_OPL_btn_save').position()}});
+                }
+                if(response=="ACTIVECCLIST")
+                {
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACTIVE CUSTOMER LIST",msgcontent:"EMAIL SENT WITH THE CURRENT ACTIVE CUSTOMER LIST",position:$('#FIN_OPL_btn_save').position()}});
+                }
+                if(response=="EMPTYOPL")
+                {
+                    var emptyerrormessage="THERE IS NO OUTSTANDING PAYEES FOR <MONTH-YEAR>"
+                    emptyerrormessage=emptyerrormessage.replace('<MONTH-YEAR>',selectedmonth);
+                    emptyerrormessage=emptyerrormessage.toUpperCase();
+                    $(document).doValidation({rule:'messagebox',prop:{msgtitle:"OUTSTANDING PAYEE LIST",msgcontent:emptyerrormessage,position:$('#FIN_OPL_btn_save').position()}});
+                }
             }
         }
         function FIN_OPL_error_message(FIN_OPL_err)
@@ -215,4 +224,3 @@
     </form>
 </body>
 </html>
-	 

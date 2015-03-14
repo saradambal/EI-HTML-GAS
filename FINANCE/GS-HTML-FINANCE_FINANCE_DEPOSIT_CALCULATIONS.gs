@@ -1,6 +1,7 @@
 //<!--//*******************************************FILE DESCRIPTION*********************************************
 //*******************************************DEPOSIT DEDUCTION CALCULATIONS*********************************************
 //DONE BY PUNI
+//VER 2.0  -SD:10/03/2015 ED:10/03/2015;CORRECTED SCRIPT TO CREATE NEW SS N INSERT CUR MONTH SHEET.
 //VER 1.9  -SD:22/12/2014 ED:22/12/2014;TRACKER NO: 840//added droptemp table function from eilib for pf temp table issue
 //VER 1.8  -SD:07/10/2014 ED:07/10/2014;TRACKER NO: 517//Corrected script for some preloader pos n updated prod lib links
 //DONE BY SARADAMBAL M
@@ -287,11 +288,13 @@ try
       var DDC_destination = SpreadsheetApp.openById(DDC_newspread_ssid);
       var DDC_newspread_delete=DDC_destination.getSheetByName('Sheet1');
       DDC_newspread.deleteSheet(DDC_newspread_delete);    
-      var output_sheet = DDC_destination.getSheetByName(DDC_currentmonth);
-      if(output_sheet == null)
-      {
-        var output_sheet = DDC_destination.insertSheet(DDC_currentmonth);
-      }  
+      var DDC_rename=SpreadsheetApp.openById(DDC_newspread_ssid).getSheets();
+      for(var k=0;k<DDC_rename.length;k++){
+       if(DDC_rename[k].getSheetName()!=DDC_currentmonth){
+         SpreadsheetApp.openById(DDC_newspread_ssid).insertSheet(DDC_currentmonth);
+         break;
+        }
+        }
       DDC_currentfile_id=DDC_newspread_ssid;
     } 
     //IF CURRENT SS NOT HAVING TEMPLATE SHEET IT LL CREATE THEM TEMPLATE AND SENDING EMAIL

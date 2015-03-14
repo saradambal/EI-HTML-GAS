@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************//
 //***********************************************STAFF EXPENSE DETAIL:SEARCH/UPDATE/DELETE**********//
 //DONE BY:PUNI
+//VER 1.7-SD:9/03/2015 ED:09/03/2015-updated autocommit false for new connection string,corrected sorting for empname listbox
 //VER 1.6-SD:09/10/2014 ED:09/10/2014,TRACKER NO:706:1.added script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //DONE BY:SARADAMBAL
 //VER 1.5-SD:21/08/2014 ED:21/08/2014,TRACKER NO:706,updated new links,autogrow
@@ -28,7 +29,7 @@ try
     var STDTL_SEARCH_connection=eilib.db_GetConnection();
     var STDTL_SEARCH_employee_name_stmt=STDTL_SEARCH_connection.createStatement();
     var STDTL_SEARCH_employeename_array=[];
-    var STDTL_SEARCH_select_employee_name="SELECT DISTINCT ED.EMP_FIRST_NAME,ED.EMP_LAST_NAME FROM EXPENSE_DETAIL_STAFF_SALARY EDSS,EMPLOYEE_DETAILS ED WHERE EDSS.EMP_ID=ED.EMP_ID";
+    var STDTL_SEARCH_select_employee_name="SELECT DISTINCT ED.EMP_FIRST_NAME,ED.EMP_LAST_NAME FROM EXPENSE_DETAIL_STAFF_SALARY EDSS,EMPLOYEE_DETAILS ED WHERE EDSS.EMP_ID=ED.EMP_ID ORDER BY ED.EMP_FIRST_NAME ASC";
     var STDTL_SEARCH_employee_name_rs=STDTL_SEARCH_employee_name_stmt.executeQuery(STDTL_SEARCH_select_employee_name);
     while(STDTL_SEARCH_employee_name_rs.next())
     {

@@ -1,6 +1,7 @@
 //*****************************************MODEL SEARCH/UPDATE******************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:PUNI
+//VER 1.05- SD:11/03/2015 ED:11/03/2015,updated autocommit false for new connection string
 //VER 1.04- SD:07/10/2014 ED:07/10/2014,TRACKER NO:678,changed preloader pos when clicking srch btn
 //DONE BY:KUMAR
 //VER 1.03- SD:19/09/2014 ED:19/09/2014,TRACKER NO:678,Implemented preloader and msgbox position script
@@ -69,6 +70,7 @@ try
  function MODEL_SRC_modelupdation(modelname,modelid,obsolute)
   {
     var MODEL_SRC_conn =eilib.db_GetConnection();
+    MODEL_SRC_conn.setAutoCommit(false);
     var flag='X'
     if(obsolute==false || obsolute==undefined){obsolute=null}else{obsolute="'"+flag+"'"}
     var MODEL_SRC_updatestmt=MODEL_SRC_conn.createStatement();

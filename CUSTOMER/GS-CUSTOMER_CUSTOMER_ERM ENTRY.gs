@@ -1,6 +1,7 @@
 //*******************************************ERM ENTRY*********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:PUNI
+//VER 1.09-SD:7/03/2015 ED:07/03/2015-updated autocommit false for new connection string
 //VER 1.08- SD:24/10/2014 ED:24/10/2014,TRACKER NO:709,cleared reset button issue.-removed unwanted onclick reset function
 //DONE BY:KUMAR
 //VER 1.07- SD:20/10/2014 ED:20/10/2014,TRACKER NO:709,fixed no of guests saving issue
@@ -61,7 +62,8 @@ function CERM_ENTRY_processFormSubmit(ERM_ENTRY_details)
   try
   {
     var CERM_ENTRY_conn =eilib.db_GetConnection();
-    CERM_ENTRYconn=CERM_ENTRY_conn
+    CERM_ENTRYconn=CERM_ENTRY_conn;
+    CERM_ENTRY_conn.setAutoCommit(false);
     var ERM_ENTRY_userstamp=Session.getActiveUser().getEmail();
     var ERM_ENTRY_customername=ERM_ENTRY_details.CERM_ENTRY_tb_customername;
     var ERM_ENTRY_rent=ERM_ENTRY_details.CERM_ENTRY_tb_rent;

@@ -1,6 +1,7 @@
 // ***************************************MODEL ENTRY*************************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:KUMAR
+//VER 1.02- SD:10/03/2015 ED:10/03/2015,updated autocommitfalse for new connection string
 //VER 1.01- SD:19/09/2014 ED:19/09/2014,TRACKER NO:678,Implemented preloader and msgbox position script
 //ver 1.00- SD:22/08/2014 ED:22/08/2014,TRACKER NO:678:Updated jquery and css links 
 //VER 0.09- SD:19/06/2014 ED:19/06/2014,TRACKER NO:678 Added conn failure message.
@@ -37,6 +38,7 @@ try
   {
     var modelname=MODEL_ENTRY_details.FIN_OCBC_MODEL_ENTRY_tb_modelname;
     var MODEL_ENTRY_conn =eilib.db_GetConnection(); 
+    MODEL_ENTRY_conn.setAutoCommit(false);
     var MODEL_ENTRY_insertstmt=MODEL_ENTRY_conn.createStatement();
     var modelinsertquery="INSERT INTO BANK_TRANSFER_MODELS(BTM_DATA,ULD_ID) VALUES('"+modelname+"',(SELECT ULD_ID FROM USER_LOGIN_DETAILS WHERE ULD_LOGINID='"+UserStamp+"'))"
     MODEL_ENTRY_insertstmt.execute(modelinsertquery);
