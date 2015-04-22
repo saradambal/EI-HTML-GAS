@@ -1,6 +1,7 @@
 //*******************************************TRIGGER*********************************************//
 //*******************************************FILE DESCRIPTION*********************************************//
 //DONE BY:PUNI
+//VER 2.08-//SD:22/04/2015 ED:22/04/2015-changed docslist class to drive app class since docslist deprecated
 //VER 2.07-SD:28/10/2014,ED:28/10/2014 TRACKER NO:771,Added Drop temp table function from eilib n added drop table in try catch also for ACTIVE CC LIST,EXPIRY 1 WEEK,TEMP TABLE TRIGGER
 //VER 2.06-SD:09/10/2014,ED:09/10/2014 TRACKER NO:771,Added script to hide preloader after menu n form loads,changed drive app to docslist for remove editor
 //DONE BY:KUMAR
@@ -290,7 +291,6 @@ function MANUAL_CSVUPDATION()
       var csvrecordsupdatedarray=[];
       for(var b=0;b<csvData.length;b++)
       {
-        
         var CSV=csvData[b].toString();
         var array1=CSV.split(',');
         var clientrefe=array1[16];
@@ -299,7 +299,7 @@ function MANUAL_CSVUPDATION()
           clientrefe=1;
         }
         
-        var CSV_newRecord=(array1[11]+'_'+clientrefe+'_'+array1[17]+'_'+array1[18]).toString(); 
+        var CSV_newRecord=(array1[11]+'_'+clientrefe+'_'+array1[17]+'_'+array1[18]).toString();
         for(var a=0;a<csv_dbrecords.length;a++)
         {
           var csvdb_record=csv_dbrecords[a].split('!~');
@@ -313,7 +313,7 @@ function MANUAL_CSVUPDATION()
             var csvRecordsobj={id:reference_id,accno:array1[0],currency:array1[1],previous:array1[2],openbal:array1[3],closebal:array1[4],lastbal:array1[5],noofcr:array1[6],transdate:array1[7],noofdeb:array1[8],oldbal:array1[9],debamt:array1[10],postdate:array1[11],valuedate:array1[12],debitamount:array1[13],creditamount:array1[14],trxcode:array1[15],clientrefer:array1[16],transdesc:array1[17],bankref:array1[18],trxtype:array1[19]};
             selectedmonthexistingrecords.push(csvRecordsobj);
           }
-         }
+        }
       }
       var csvmatchingrecordcount=selectedmonthexistingrecords.length;
       if(dbrecordscount==csvmatchingrecordcount)
@@ -369,6 +369,7 @@ function MANUAL_CSVUPDATION()
       else
       {
         insertflag=0;
+        
         var exception_array=[];
         for(var e=0;e<csv_dbrecords.length;e++)
         {
@@ -1202,9 +1203,7 @@ function ACTIVECUSTOMERLIST()
     eilib.DropTempTable(FIN_OPL_conn, sortactivelisttablename);
     if((emaillistarray[0]!=trg_UserStamp)&&(docowner!=trg_UserStamp)&&(FIN_OPL_acticecc_cclist!=trg_UserStamp))
     {
-      //      DriveApp.getFileById(FIN_ACT_ssid).removeEditor(trg_UserStamp);
-      DocsList.getFileById(FIN_ACT_ssid).removeEditor(trg_UserStamp);
-      
+      DriveApp.getFileById(FIN_ACT_ssid).removeEditor(trg_UserStamp);
     }
     FIN_OPL_conn.close();
   }
@@ -1667,9 +1666,7 @@ function ERMLEEDS()
       MailApp.sendEmail(REP_mailid, REP_subject, REP_message, {CC:REP_ccmailid,name:REP_subject,htmlBody: REP_message+': '+REP_spreadsheet_url});
       if((REP_mailid!=trg_UserStamp)&&(docowner!=trg_UserStamp)&&(REP_ccmailid!=trg_UserStamp))
       {
-        //        DriveApp.getFileById(REP_ssids).removeEditor(trg_UserStamp);
-        DocsList.getFileById(REP_ssids).removeEditor(trg_UserStamp);
-        
+        DriveApp.getFileById(REP_ssids).removeEditor(trg_UserStamp);
       }
     }
     REP_conn.close();

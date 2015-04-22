@@ -1,6 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************
 //*******************************************DEPOSIT DEDUCTION EXTRACTS********************************************
 //DONE BY PUNI
+//VER 1.9  -SD:22/04/2015 ED:22/04/2015;changed DocsList class to DriveApp class since docslist deprecated
 //VER 1.8  -SD:07/10/2014 ED:07/10/2014;TRACKER NO: 517//Corrected script for preloader,msgbox position
 //DONE BY SARADAMBAL M
 //VER 1.7  -SD:18/09/2014 ED:18/09/2014;TRACKER NO: 517//implemented script for preloader,msgbox,implemented script for style to submit button instead of div -style
@@ -542,8 +543,7 @@ try
       newSpreadsheet.getSheetByName('sheet1').activate();
       var DDC_newspread_ssid=newSpreadsheet.getId();
       newSpreadsheet.deleteActiveSheet();
-//      var contents = DriveApp.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
-      var contents = DocsList.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
+      var contents = DriveApp.getFileById(newSpreadsheet.getId()).getAs('application/pdf').getBytes();
       var getattachfile={fileName:selectedunit+'-'+customername+".pdf", content:contents, mimeType:"application//pdf"};
       advancedArgs.push(getattachfile);
     }
@@ -575,4 +575,3 @@ try
 }
 catch(error){
 }
-

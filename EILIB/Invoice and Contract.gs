@@ -1,10 +1,9 @@
-//ADDED SP TO DROP TEMP TABLE TO IMPLEMENT PF ON 18/12/2014 BY PUNI,COMMENTED DOCLIST CLASS TO GET EDITORS,UNCOMMENTED DRIVEAPP CLASS
+//SD:22/04/2015 ED:22/04/2015-changed docslist class to drive app class since docslist deprecated by PUNI
 //updated contract script to remove last line if no ep n pass port no,updated notice period part to place text instead of no n replace null if no notice period n reused function to remove editors n set owner all invoice n contract function,
 //FUNCTION TO SET OWNER FOR A DOC
 var invoiceflag;
 function SetDocOwner(docid,docowner,semailid)
 {
-//  var editorfile= DocsList.getFileById(docid).getEditors();
   var editorfile= DriveApp.getFileById(docid).getEditors();
   for(var j=0;j<editorfile.length;j++)
   {
@@ -25,7 +24,6 @@ function SetDocOwner(docid,docowner,semailid)
 //********************CUSTOMER DOMAIN DOC OWNER**********************/
 function CUST_SetDocOwner(docid,docowner,semailid)
 {
-//  var editorfile= DocsList.getFileById(docid).getEditors();
   var editorfile= DriveApp.getFileById(docid).getEditors();
   for(var j=0;j<editorfile.length;j++)
   {
@@ -48,15 +46,13 @@ function RemoveEditors(docid,email_fetch,docowner)
   DriveApp.getFileById(docid).setOwner(docowner);
   if((email_fetch!=UserStamp)&&(docowner!=UserStamp))
   {
-    //    DriveApp.getFileById(docid).removeEditor(UserStamp);
-    DocsList.getFileById(docid).removeEditor(UserStamp);
+    DriveApp.getFileById(docid).removeEditor(UserStamp);
   }
 }
 //***********UNSHARE FILE**********************/
 function CUST_UNSHARE_FILE(fileid)
 {
-//  var editorfile= DocsList.getFileById(fileid).getEditors();
-    var editorfile= DriveApp.getFileById(fileid).getEditors();
+  var editorfile= DriveApp.getFileById(fileid).getEditors();
   for(var j=0;j<editorfile.length;j++)
   {
     if(editorfile[j].getEmail()=="")continue;
@@ -818,7 +814,7 @@ function CUST_invoicemail(conn,unit,customername,companyname,invoiceid,invoicesn
   var subject1 =emailsub.replace('[UNIT NO- CUSTOMER_NAME - INVOICE_NO]',subcontent1);
   var body1 =emailmessage.replace('[UNIT NO - CUSTOMER_NAME]',bodycontent1); 
   body1=body1.replace('[MAILID_USERNAME]',mail_username[0].toUpperCase());
-  RemoveEditors(invoiceidcopy,email_fetch,docowner);
+  RemoveSEditors(invoiceidcopy,email_fetch,docowner);
   MailApp.sendEmail(email_fetch, subject1, body1, {name:Get_MailDisplayName("INVOICE"),htmlBody: body1+'<br><br>INVOICE : '+url});  
 }
 //FUNCTION TO RETURN GENERATED INVOICE ID
@@ -956,9 +952,7 @@ function InvAndConRemoveEditors(invdocid,contdocid,email_fetch,docowner)
   DriveApp.getFileById(contdocid).setOwner(docowner);
   if((email_fetch!=UserStamp)&&(docowner!=UserStamp))
   {
-    //    DriveApp.getFileById(invdocid).removeEditor(UserStamp);
-    //    DriveApp.getFileById(contdocid).removeEditor(UserStamp);
-    DocsList.getFileById(invdocid).removeEditor(UserStamp);
-    DocsList.getFileById(contdocid).removeEditor(UserStamp);
+    DriveApp.getFileById(invdocid).removeEditor(UserStamp);
+    DriveApp.getFileById(contdocid).removeEditor(UserStamp);
   }
 }

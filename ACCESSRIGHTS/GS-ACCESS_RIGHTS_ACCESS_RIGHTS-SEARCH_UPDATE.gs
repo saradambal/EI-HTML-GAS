@@ -1,7 +1,7 @@
 //*******************************************FILE DESCRIPTION*********************************************
 //************************************ACCESS_RIGHTS_ACCESS_RIGHTS-SEARCH/UPDATE***********************************************//
 //DONE BY:PUNI
-//VER 1.7-SD:27/11/2014 ED:30/01/2015;TRACKER NO :840;COMMENT 51,implemented script for platform management
+//VER 1.7-//SD:22/04/2015 ED:22/04/2015-changed docslist class to drive app class since docslist deprecated
 //VER 1.6-SD:25/10/2014 ED:25/10/2014;TRACKER NO :465;COMMENT 51,1.corrected sharing n unshare doc query with max rv by matching login id
 //VER 1.5-SD:20/10/2014 ED:20/10/2014;TRACKER NO :465;COMMENT 47,1.CORRECTED WRONG FUNCTION NAME UR_GETSITE REUSED FOR AR SEARCH/UPDATE N AR TERMINATE SRCH/UPDATE
 //VER 1.4-SD:28/08/2014 ED:01/10/2014;TRACKER NO :651;COMMENT 57,1.trimmed repeated functions n script,2.added new lib links,3.changed preloader n msgbox position,4.corrected btn validation,5.changed driveapp to docslist for remove editors
@@ -283,7 +283,7 @@ try{
       var URSRC_fp_id_rs=URSRC_fp_id_stmt.executeQuery(URSRC_select_fpid)
       if(URSRC_fp_id_rs.next()){
         var fp_id=URSRC_fp_id_rs.getString("FP_ID");       
-        var URSRC_folder_name=DocsList.getFolderById(URSRC_folder_id_array[j]).getName()
+        var URSRC_folder_name=DriveApp.getFolderById(URSRC_folder_id_array[j]).getName()
         URSRC_mainfolder.push(URSRC_folder_name+"_"+fp_id)
       }
       URSRC_fp_id_rs.close()
@@ -298,7 +298,7 @@ try{
       {     
         var URSRC_file_id=URSRC_file_rs.getString("FP_FILE_ID");      
         if(URSRC_file_id!=""){       
-          var URSRC_file_name=DocsList.getFileById(URSRC_file_id).getName()
+          var URSRC_file_name=DriveApp.getFileById(URSRC_file_id).getName()
           }     
         var URSRC_fp_id_stmt = URSRC_conn.createStatement();
         if(URSRC_file_id!=""){
@@ -477,11 +477,6 @@ try{
     URSRC_conn.close();
     return URSRC_loginid_details_array
   }
-  function OpenConnection(conn)
-  {
-    conn = eilib.db_GetConnection();
-    conn.setAutoCommit(false);
-  }
   //Role creation save and update & Basic role menu creation save and update 
   function URSRC_role_creation_save(user_rigths_form){
     URSRC_sharedocflag=0;
@@ -608,78 +603,69 @@ try{
           return URSRC_flag_bscprfsveinsert;
         }      
         else if(URSRC_mainradiobutton=="BASIC ROLE MENU SEARCH UPDATE"){
-          URSRC_basicrole_menu_creation_stmt.execute("CALL SP_USER_RIGHTS_BASIC_PROFILE_UPDATE ('"+UserStamp+"','"+URSRC_radio_basicrole+"','"+URSRC_checkbox_basicrole_array+"', '"+URSRC_menuid+"',@BASIC_PRFUPDATE,@BASICROLE_TEMPTABLEDROP)");
+          URSRC_basicrole_menu_creation_stmt.execute("CALL SP_USER_RIGHTS_BASIC_PROFILE_UPDATE ('"+UserStamp+"','"+URSRC_radio_basicrole+"','"+URSRC_checkbox_basicrole_array+"', '"+URSRC_menuid+"',@BASIC_PRFUPDATE)");
           URSRC_basicrole_menu_creation_stmt.close();
           var URSRC_stmt_bscprfupdflag=URSRC_conn.createStatement();
-          var URSRC_flag_bscprfupdselect="SELECT @BASIC_PRFUPDATE,@BASICROLE_TEMPTABLEDROP";
+          var URSRC_flag_bscprfupdselect="SELECT @BASIC_PRFUPDATE";
           var URSRC_flag_bscprfupdrs=URSRC_stmt_bscprfupdflag.executeQuery(URSRC_flag_bscprfupdselect);
-          while(URSRC_flag_bscprfupdrs.next()){
+          while(URSRC_flag_bscprfupdrs.next())
             var URSRC_flag_bscprfupdinsert=URSRC_flag_bscprfupdrs.getString("@BASIC_PRFUPDATE");
-            var URSRC_temptble_bscprfupdinsert=URSRC_flag_bscprfupdrs.getString("@BASICROLE_TEMPTABLEDROP");
-          }
           URSRC_flag_bscprfupdrs.close();
           URSRC_stmt_bscprfupdflag.close();
-          if(URSRC_flag_bscprfupdinsert==1){ URSRC_sharedocflag=URSRC_updateSharedDocuments(URSRC_conn,"",'',URSRC_radio_basicrole);}
-          URSRC_conn.commit(); 
-          URSRC_RoleupdateDroptemptable(URSRC_conn,URSRC_temptble_bscprfupdinsert);
           return URSRC_flag_bscprfupdinsert;
         }
       }    
       else{
         var URSRC_customrolename=user_rigths_form.URSRC_lb_rolename;
         var URSRC_basicrole=user_rigths_form.basicroles;
-        URSRC_basicrole=URSRC_basicrole.replace("_"," ");
-        URSRC_rolecreation_stmt.execute("CALL SP_ROLE_CREATION_UPDATE('"+URSRC_customrolename+"','"+URSRC_basicrole+"','"+URSRC_menuid+"',"+fileid+",'"+UserStamp+"','"+schema_name+"',@ROLE_CREATIONUPDATE,@ROLE_TEMPTABLEDROP)");//,@TEMP_OUT_REMOVE_MENU,@TEMP_OUT_INSERT_FILE,@TEMP_OUT_REMOVE_FILE,@REVOKE_TEMP_PM_TABLE,@REVOKE_TEMP_PM_UNIQUE_TABLE,@REVOKE_TEMP_PM_SP_TABLE,@GRANT_TEMP_PM_TABLE,@GRANT_TEMP_PM_UNIQUE_TABLE,@GRANT_TEMP_PM_SP_TABLE)");
-        URSRC_rolecreation_stmt.close(); 
+        URSRC_basicrole=URSRC_basicrole.replace("_"," ") 
+        URSRC_rolecreation_stmt.execute("CALL SP_ROLE_CREATION_UPDATE('"+URSRC_customrolename+"','"+URSRC_basicrole+"','"+URSRC_menuid+"',"+fileid+",'"+UserStamp+"','"+schema_name+"',@ROLE_CREATIONUPDATE,@TEMP_OUT_INSERT_MENU,@TEMP_OUT_REMOVE_MENU,@TEMP_OUT_INSERT_FILE,@TEMP_OUT_REMOVE_FILE)");
+        URSRC_rolecreation_stmt.close();  
         var URSRC_stmt_rolecreflag=URSRC_conn.createStatement();
-        var URSRC_flag_rolecreselect="SELECT @ROLE_CREATIONUPDATE,@ROLE_TEMPTABLEDROP";//,@TEMP_OUT_REMOVE_MENU,@TEMP_OUT_INSERT_FILE,@TEMP_OUT_REMOVE_FILE,@REVOKE_TEMP_PM_TABLE,@REVOKE_TEMP_PM_UNIQUE_TABLE,@REVOKE_TEMP_PM_SP_TABLE,@GRANT_TEMP_PM_TABLE,@GRANT_TEMP_PM_UNIQUE_TABLE,@GRANT_TEMP_PM_SP_TABLE";
+        var URSRC_flag_rolecreselect="SELECT @ROLE_CREATIONUPDATE,@TEMP_OUT_INSERT_MENU,@TEMP_OUT_REMOVE_MENU,@TEMP_OUT_INSERT_FILE,@TEMP_OUT_REMOVE_FILE";
         var URSRC_flag_rolecrers=URSRC_stmt_rolecreflag.executeQuery(URSRC_flag_rolecreselect);
         if(URSRC_flag_rolecrers.next())
         {
           var URSRC_flag_rolecreinsert=URSRC_flag_rolecrers.getString("@ROLE_CREATIONUPDATE");
-          var URSRC_temptble_bscprfupdinsert=URSRC_flag_rolecrers.getString("@ROLE_TEMPTABLEDROP");
+          var URSRC_roleupd_insertmenutemptable=URSRC_flag_rolecrers.getString("@TEMP_OUT_INSERT_MENU");
+          var URSRC_roleupd_removemenutemptable=URSRC_flag_rolecrers.getString("@TEMP_OUT_REMOVE_MENU");
+          var URSRC_roleupd_insertfiletemptable=URSRC_flag_rolecrers.getString("@TEMP_OUT_INSERT_FILE");
+          var URSRC_roleupd_removefiletemptable=URSRC_flag_rolecrers.getString("@TEMP_OUT_REMOVE_FILE");
         }
         URSRC_flag_rolecrers.close();
         URSRC_stmt_rolecreflag.close();
-        if(URSRC_flag_rolecreinsert==1){ URSRC_sharedocflag=URSRC_updateSharedDocuments(URSRC_conn,URSRC_customrolename,'','');}
+        if(URSRC_flag_rolecreinsert==1){ URSRC_sharedocflag=URSRC_updateSharedDocuments(URSRC_conn,URSRC_customrolename,'');}
         URSRC_conn.commit();
-        URSRC_RoleupdateDroptemptable(URSRC_conn,URSRC_temptble_bscprfupdinsert);
+        if(URSRC_roleupd_insertmenutemptable!=null&&URSRC_roleupd_insertmenutemptable!=undefined)
+          eilib.DropTempTable(URSRC_conn,URSRC_roleupd_insertmenutemptable);
+        if(URSRC_roleupd_removemenutemptable!=null&&URSRC_roleupd_removemenutemptable!=undefined)
+          eilib.DropTempTable(URSRC_conn,URSRC_roleupd_removemenutemptable);
+        if(URSRC_roleupd_insertfiletemptable!=null&&URSRC_roleupd_insertfiletemptable!=undefined)
+          eilib.DropTempTable(URSRC_conn,URSRC_roleupd_insertfiletemptable);
+        if(URSRC_roleupd_removefiletemptable!=null&&URSRC_roleupd_removefiletemptable!=undefined)
+          eilib.DropTempTable(URSRC_conn,URSRC_roleupd_removefiletemptable);
         URSRC_conn.close();
         return URSRC_flag_rolecreinsert;
       }
     }catch(err)
     {
       Logger.log("SCRIPT EXCEPTION:"+err)
-      //      if(URSRC_conn.isClosed()){OpenConnection(URSRC_conn);}
-      //      if(err=='This Connection is closed')
-      //      {OpenConnection(URSRC_conn);}
       URSRC_conn.rollback();
-      URSRC_RoleupdateDroptemptable(URSRC_conn,URSRC_temptble_bscprfupdinsert);
+      if(URSRC_roleupd_insertmenutemptable!=null&&URSRC_roleupd_insertmenutemptable!=undefined)
+        eilib.DropTempTable(URSRC_conn,URSRC_roleupd_insertmenutemptable);
+      if(URSRC_roleupd_removemenutemptable!=null&&URSRC_roleupd_removemenutemptable!=undefined)
+        eilib.DropTempTable(URSRC_conn,URSRC_roleupd_removemenutemptable);
+      if(URSRC_roleupd_insertfiletemptable!=null&&URSRC_roleupd_insertfiletemptable!=undefined)
+        eilib.DropTempTable(URSRC_conn,URSRC_roleupd_insertfiletemptable);
+      if(URSRC_roleupd_removefiletemptable!=null&&URSRC_roleupd_removefiletemptable!=undefined)
+        eilib.DropTempTable(URSRC_conn,URSRC_roleupd_removefiletemptable);
       if(URSRC_sharedocflag==1)
       {
-        if(URSRC_radio_basicrole!=""&&URSRC_radio_basicrole!=undefined)
-          URSRC_updateSharedDocuments(URSRC_conn,URSRC_customrolename,'',URSRC_radio_basicrole);
-        else
-          URSRC_updateSharedDocuments(URSRC_conn,URSRC_customrolename,'','');
+        URSRC_updateSharedDocuments(URSRC_conn,URSRC_customrolename,'');
       }
       URSRC_conn.commit();
       URSRC_conn.close();
       return (Logger.getLog())
-    }
-  }
-  function URSRC_RoleupdateDroptemptable(URSRC_conn,URSRC_temptble_bscprfupdinsert)
-  {
-    if(URSRC_temptble_bscprfupdinsert!=null&&URSRC_temptble_bscprfupdinsert!=undefined)
-    {
-      var URSRC_stmt_bscprfupdflag=URSRC_conn.createStatement();
-      var URSRC_flag_bscprfupdselect="SELECT TABLENAME FROM "+URSRC_temptble_bscprfupdinsert+"";
-      var URSRC_flag_bscprfupdrs=URSRC_stmt_bscprfupdflag.executeQuery(URSRC_flag_bscprfupdselect);
-      while(URSRC_flag_bscprfupdrs.next()){
-        var URSRC_flag_bscprfupdrstble=URSRC_flag_bscprfupdrs.getString("TABLENAME");
-        if(URSRC_flag_bscprfupdrstble!=null&&URSRC_flag_bscprfupdrstble!=undefined)
-          eilib.DropTempTable(URSRC_conn,URSRC_flag_bscprfupdrstble);
-      }
-      eilib.DropTempTable(URSRC_conn,URSRC_temptble_bscprfupdinsert);
     }
   }
   var sitelink
@@ -746,15 +732,14 @@ try{
         }
         if(URSRC_flag_lgnupdinsert==1){
           if(URSRC_role_name!==URSRC_custom_role){
-            URSRC_updateSharedDocuments(URSRC_conn,URSRC_custom_role,URSRC_loginid,'') 
+            URSRC_updateSharedDocuments(URSRC_conn,URSRC_custom_role,URSRC_loginid) 
           }
         }
         URSRC_flag_lgnupdrs.close();
         URSRC_stmt_lgnupdflag.close();
         URSRC_logincreation_stmt.close()
         if(URSRC_temptable1!=null&&URSRC_temptable1!=undefined){
-          eilib.DropTempTable(URSRC_conn,URSRC_temptable1);
-        }
+          eilib.DropTempTable(URSRC_conn,URSRC_temptable1);}
         if(URSRC_temptable2!=null&&URSRC_temptable2!=undefined){
           eilib.DropTempTable(URSRC_conn,URSRC_temptable2) ;}
         URSRC_conn.commit();
@@ -789,7 +774,7 @@ try{
           eilib.DropTempTable(URSRC_conn,URSRC_temptable2) ;}
         if(URSRC_sharedocflag==1)
         {
-          URSRC_updateSharedDocuments(URSRC_conn,URSRC_custom_role,URSRC_loginid,'') 
+          URSRC_updateSharedDocuments(URSRC_conn,URSRC_custom_role,URSRC_loginid) 
         }       
       }
       return (Logger.getLog());    
@@ -982,26 +967,24 @@ try{
         }        
       }   
       if(mimetype.match('folder')){
-        var viewers=DocsList.getFolderById(URSRC_fileid_array[i]).getViewers();
+        var viewers=DriveApp.getFolderById(URSRC_fileid_array[i]).getViewers();
       }
       else
       {
-        var viewers=DocsList.getFileById(URSRC_fileid_array[i]).getViewers();
+        var viewers=DriveApp.getFileById(URSRC_fileid_array[i]).getViewers();
       }
-      //    var viewers=DriveApp.getFileById(URT_SRC_arr_file[k]).getViewers();
       for(var k=0;k<viewers.length;k++)
       {
         if(viewers[k].getEmail().toLowerCase()==URSRC_loginid){
           if(mimetype.match('folder')){
-            DocsList.getFolderById(viewers[k]).removeViewer(URSRC_loginid);
+            DriveApp.getFolderById(viewers[k]).removeViewer(URSRC_loginid);
             URSRC_sharedocflag=1;
           }
           else
           {
-            DocsList.getFileById(viewers[k]).removeViewer(URSRC_loginid);
+            DriveApp.getFileById(viewers[k]).removeViewer(URSRC_loginid);
             URSRC_sharedocflag=1;
           }
-          //          DriveApp.getFileById(viewers[k]).removeViewer(URSRC_loginid);
         }
       }
     }  
@@ -1010,24 +993,23 @@ try{
   //FUNCTION TO GET FILE/FOLDER EDITORS
   function URSRC_GetAllEditors(file_type,filefoldid)
   {
-    //  if(file_type.match('folder')){
-    //    var filefoldeditors=DocsList.getFolderById(filefoldid).getEditors() 
-    //    }
-    //  else{
-    //    var filefoldeditors=DocsList.getFileById(filefoldid).getEditors()   
-    //    }
-    var filefoldeditors=DriveApp.getFileById(filefoldid).getEditors()   
+    if(file_type.match('folder')){
+      var filefoldeditors=DriveApp.getFolderById(filefoldid).getEditors() 
+      }
+    else{
+      var filefoldeditors=DriveApp.getFileById(filefoldid).getEditors()   
+      }
     return filefoldeditors;
   }
   //FUNCTION TO REMOVE FILE/FOLDER EDITOR
   function URSRC_RemoveEditor(file_type,filefoldid,URSRC_loginid)
   {
     if(file_type.match('folder')){
-      var remov_Folder=DocsList.getFolderById(filefoldid).removeEditor(URSRC_loginid);
+      var remov_Folder=DriveApp.getFolderById(filefoldid).removeEditor(URSRC_loginid);
     }
     else
     {
-      var remov_Folder=DocsList.getFileById(filefoldid).removeEditor(URSRC_loginid);
+      var remov_Folder=DriveApp.getFileById(filefoldid).removeEditor(URSRC_loginid);
     }
     //        DriveApp.getFileById(filefoldid).removeEditor(URSRC_loginid);
   }
@@ -1061,24 +1043,18 @@ try{
     return URSRC_new_diff_array;
   }
   //----------------------------------------------------------------------------------
-  //FUNCTION TO SHARE DOCUMENTS WHEN ROLE UPDATED IN LOGIN ID UPDATION N ROLE UPDATION
-  function URSRC_updateSharedDocuments(URSRC_conn,URSRC_customrolename,LOGINID,basicrole){
+  
+  //FUNCTION TO SHARE DOCUMENTS WHEN ROLE UPDATED IN LOGIN ID UPDATION
+  function URSRC_updateSharedDocuments(URSRC_conn,URSRC_customrolename,LOGINID){
     var URSRC_select_fileid_stmt=URSRC_conn.createStatement();
     var URSRC_fileid_array=[]
     var URSRC_loginid_array=[]
     var URSRC_folderid_array=[];
     var URSRC_fileid=[];
     var URSRC_loginid_array1=[]
-    if (basicrole!="")
-    {
-      var URSRC_select_fileid="select * from ROLE_CREATION RC,USER_FILE_DETAILS UFD,FILE_PROFILE FP,USER_RIGHTS_CONFIGURATION  URC  where  RC.URC_ID=URC.URC_ID AND FP.FP_ID=UFD.FP_ID and URC.URC_DATA='"+basicrole+"' and UFD.RC_ID=RC.RC_ID";
-    }
-    else
-    {
-      var URSRC_select_fileid="select * from ROLE_CREATION RC,USER_FILE_DETAILS UFD,FILE_PROFILE FP where  FP.FP_ID=UFD.FP_ID and RC_NAME='"+URSRC_customrolename+"' and UFD.RC_ID=RC.RC_ID";
-    }
+    var URSRC_select_fileid="select * from ROLE_CREATION RC,USER_FILE_DETAILS UFD,FILE_PROFILE FP where  FP.FP_ID=UFD.FP_ID and RC_NAME='"+URSRC_customrolename+"' and UFD.RC_ID=RC.RC_ID";
     var URSRC_select_fileid_rs=URSRC_select_fileid_stmt.executeQuery(URSRC_select_fileid)
-    while(URSRC_select_fileid_rs.next()){
+    while(URSRC_select_fileid_rs.next()){      
       var fileid=URSRC_select_fileid_rs.getString("FP_FILE_ID")
       var folderid=URSRC_select_fileid_rs.getString("FP_FOLDER_ID");
       if(fileid!=null){
@@ -1093,16 +1069,9 @@ try{
     URSRC_fileid_array=eilib.unique(URSRC_fileid_array)
     URSRC_folderid_array=eilib.unique(URSRC_folderid_array)
     var URSRC_selected_loginid_stmt=URSRC_conn.createStatement();
-    if (basicrole!="")
-    {
-      var URSRC_selected_loginid="select * from USER_LOGIN_DETAILS ULD,ROLE_CREATION RC,USER_ACCESS UA,USER_RIGHTS_CONFIGURATION  URC  where  RC.URC_ID=URC.URC_ID AND UA.RC_ID=RC.RC_ID  and ULD.ULD_ID=UA.ULD_ID AND URC.URC_DATA='"+basicrole+"' AND ULD.ULD_LOGINID NOT IN (SELECT ULD_LOGINID FROM VW_ACCESS_RIGHTS_REJOIN_LOGINID)";
-    }
-    else
-    {
-      var URSRC_selected_loginid="select * from USER_LOGIN_DETAILS ULD,ROLE_CREATION RC,USER_ACCESS UA WHERE UA.RC_ID=RC.RC_ID  and ULD.ULD_ID=UA.ULD_ID AND RC_NAME='"+URSRC_customrolename+"' AND ULD.ULD_LOGINID NOT IN (SELECT ULD_LOGINID FROM VW_ACCESS_RIGHTS_REJOIN_LOGINID)";
-    }
+    var URSRC_selected_loginid="select * from USER_LOGIN_DETAILS ULD,ROLE_CREATION RC,USER_ACCESS UA WHERE UA.RC_ID=RC.RC_ID  and ULD.ULD_ID=UA.ULD_ID AND RC_NAME='"+URSRC_customrolename+"' AND ULD.ULD_LOGINID NOT IN (SELECT ULD_LOGINID FROM VW_ACCESS_RIGHTS_REJOIN_LOGINID)";
     var URSRC_selected_loginid_rs=URSRC_selected_loginid_stmt.executeQuery(URSRC_selected_loginid)
-    while(URSRC_selected_loginid_rs.next()){    
+    while(URSRC_selected_loginid_rs.next()){      
       URSRC_loginid_array.push(URSRC_selected_loginid_rs.getString("ULD_LOGINID"))      
     }
     URSRC_loginid_array=eilib.unique(URSRC_loginid_array)
@@ -1121,7 +1090,7 @@ try{
     } 
     URSRC_all_fileid_array=eilib.unique(URSRC_all_fileid_array)
     var URSRC_diff_array= [];
-    URSRC_diff_array=getDifferenceArray(URSRC_fileid_array,URSRC_all_fileid_array); 
+    URSRC_diff_array=getDifferenceArray(URSRC_fileid_array,URSRC_all_fileid_array);    
     var URSRC_new_fileid_array=[];
     //OLD FOLDER /FILE LL BE REMOVED FROM ALL THE FOLDERS/FILES
     if(LOGINID==''){

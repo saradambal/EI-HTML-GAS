@@ -1,6 +1,7 @@
 <!--//*******************************************FILE DESCRIPTION*********************************************
 //*******************************************DEPOSIT DEDUCTION EXTRACTS********************************************
 DONE BY PUNI
+VER 1.9  -SD:22/04/2015 ED:22/04/2015;changed DocsList class to DriveApp class since docslist deprecated
 VER 1.8  -SD:07/10/2014 ED:07/10/2014;TRACKER NO: 517//Corrected script for preloader,msgbox position
 DONE BY SARADAMBAL M
 VER 1.7  -SD:18/09/2014 ED:18/09/2014;TRACKER NO: 517//implemented script for preloader,msgbox,implemented script for style to submit button instead of div -style
@@ -641,7 +642,7 @@ $(document).ready(function() {
         else{
             if(DDE_err=='ScriptError: No item with the given ID could be found, or you do not have permission to access it.')
             {
-                DDE_err=DDE_errorAarray[13];
+//DDE_err=DDE_errorAarray[13];
                 $(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_err,position:{top:150,left:500}}});
             }
             else {
@@ -653,7 +654,9 @@ $(document).ready(function() {
                     var DDE_postion=$("#DDE_btn_sbutton").position();}
                 var DDE_postion={top:150,left:500};
                 $(document).doValidation({rule:'messagebox',prop:{msgtitle:"DEPOSIT DEDUCTION EXTRACTS",msgcontent:DDE_err,position:{top:150,left:500}}});
-            }}}
+            }
+        }
+    }
 });
 </script>
 </head>

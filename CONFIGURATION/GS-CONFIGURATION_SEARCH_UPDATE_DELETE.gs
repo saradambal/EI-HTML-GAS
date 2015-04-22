@@ -1,5 +1,6 @@
 //*******************************************CONFIGURATION SEARCH/UPDATE/DELETE*********************************************//
 //DONE BY:PUNI
+//VER 2.0-//SD:22/04/2015 ED:22/04/2015-changed docslist class to drive app class since docslist deprecated
 //VER 1.9-SD:03/10/2014 ED:03/10/2014 TRACKER NO;689:1.updated html script to hide preloader after menu n form loads,2.changed preloader n msgbox position
 //DONE BY:SARADAMBAL,SAFI,PUNI
 //VER 1.8-SD:13/08/2014 ED:13/08/2014 TRACKER NO;689 ; Implemented rollback script,logger script to show err in msg box,new jquery,css links- SARADAMBAL
@@ -410,10 +411,10 @@ try
           var new_file_editors=[];
           var file_type=DriveApp.getFileById(CONFSCR_UPD_DEL_data).getMimeType();
           if(file_type.match('folder')){
-            var old_Folder_editor=DocsList.getFolderById(CONFSCR_UPD_DEL_data).getEditors();
+            var old_Folder_editor=DriveApp.getFolderById(CONFSCR_UPD_DEL_data).getEditors();
           }
           else{            
-            var old_Folder_editor=DocsList.getFileById(CONFSCR_UPD_DEL_data).getEditors(); 
+            var old_Folder_editor=DriveApp.getFileById(CONFSCR_UPD_DEL_data).getEditors();
           }
           //        var old_Folder_editor=DriveApp.getFileById(CONFSCR_UPD_DEL_data).getEditors();
           for(var l=0;l<old_Folder_editor.length;l++){

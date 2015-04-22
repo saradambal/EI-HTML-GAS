@@ -2,7 +2,7 @@
 //*******************************************FILE DESCRIPTION*********************************************
 //************************************ACCESS_RIGHTS_ACCESS_RIGHTS-SEARCH/UPDATE***********************************************//
  DONE BY:PUNI
- //VER 1.7-SD:27/11/2014 ED:30/01/2015;TRACKER NO :840;COMMENT 51,implemented script for platform management
+ //VER 1.7-//SD:22/04/2015 ED:22/04/2015-changed docslist class to drive app class since docslist deprecated
  //VER 1.6-SD:25/10/2014 ED:25/10/2014;TRACKER NO :465;COMMENT 51,1.corrected sharing n unshare doc query with max rv by matching login id
  //VER 1.5-SD:20/10/2014 ED:20/10/2014;TRACKER NO :465;COMMENT 47,1.CORRECTED WRONG FUNCTION NAME UR_GETSITE REUSED FOR AR SEARCH/UPDATE N AR TERMINATE SRCH/UPDATE
  //VER 1.4-SD:28/08/2014 ED:01/10/2014;TRACKER NO :651;COMMENT 57,1.trimmed repeated functions n script,2.added new lib links,3.changed preloader n msgbox position,4.corrected btn validation,5.changed driveapp to docslist for remove editors
@@ -53,7 +53,6 @@ function CheckPageStatus(){
 //CHECK PRELOADER STATUS N HIDE END
 $(document).ready(function(){
     $('.autosize').doValidation({rule:'general',prop:{autosize:true}});
-    $('#URSRC_tb_customrole').doValidation({rule:'alphanumeric',prop:{autosize:true,whitespace:true}});
     $('#URSRC_tb_loginid').doValidation({rule:'general',prop:{uppercase:false,autosize:true}});
     $(".preloader").show();
     var URSRC_multi_array=[];
@@ -702,15 +701,6 @@ $(document).ready(function(){
         var basicrole_profile_checked=$("input[name=URSRC_cb_basicroles1]").is(":checked")
         var URSRC_radio_button_select_value=$("input[name=URSRC_mainradiobutton]:checked").val();
         if((URSRC_radio_button_select_value=="ROLE CREATION")||(URSRC_radio_button_select_value=="ROLE SEARCH UPDATE")){
-            var Submenu1_checked=$("input[name=Sub_menu1]").is(":checked");
-            var Submenu_checked=$("input[name=Sub_menu]").is(":checked");
-            if(Submenu1_checked==true||Submenu_checked==true){
-                $('#URSRC_btn_submitbutton').removeAttr('disabled')
-            }
-            else
-            {
-                $('#URSRC_btn_submitbutton').attr("disabled","disabled");
-            }
             for(var a=0;a<menu_values.length;a++){
                 for(var i=0;i<submenu_values.length;i++){
                     if(menu_values[a]=="REPORT"|| URSRC_mainmenu_value=="REPORT"||URSRC_mainmenu_value==3){
@@ -943,11 +933,11 @@ $(document).ready(function(){
         if(URSRC_chkflag.match("SCRIPT EXCEPTION:"))
         {
             $(".preloader").hide();
-            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_chkflag,position:{top:150,left:500}}});
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_chkflag,position:$('#URSRC_btn_login_submitbutton').position()}});
         }
         else if(URSRC_chkflag==0){
             $(".preloader").hide();
-            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16],position:{top:150,left:500}}})
+            $(document).doValidation({rule:'messagebox',prop:{msgtitle:"ACCESS RIGHTS-SEARCH/UPDATE",msgcontent:URSRC_errorAarray[16],position:$('#URSRC_btn_login_submitbutton').position()}})
         }
         else
         {
@@ -1349,7 +1339,7 @@ $(document).ready(function(){
                 <td ><label>ROLE<em>*</em></label></td>
             </tr>
             <tr>
-                <td> <input type="text" name="URSRC_tb_customrole" id="URSRC_tb_customrole" maxlength="15" /></td><td><label id="URSRC_lbl_role_err" class="errormsg"></label></td>
+                <td> <input type="text" name="URSRC_tb_customrole" id="URSRC_tb_customrole" maxlength="15" class="autosize" /></td><td><label id="URSRC_lbl_role_err" class="errormsg"></label></td>
             </tr>
             <tr>
                 <td><table id="URSRC_tble_roles" hidden ></table>
