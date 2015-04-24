@@ -814,7 +814,7 @@ function CUST_invoicemail(conn,unit,customername,companyname,invoiceid,invoicesn
   var subject1 =emailsub.replace('[UNIT NO- CUSTOMER_NAME - INVOICE_NO]',subcontent1);
   var body1 =emailmessage.replace('[UNIT NO - CUSTOMER_NAME]',bodycontent1); 
   body1=body1.replace('[MAILID_USERNAME]',mail_username[0].toUpperCase());
-  RemoveSEditors(invoiceidcopy,email_fetch,docowner);
+  RemoveEditors(invoiceidcopy,email_fetch,docowner);
   MailApp.sendEmail(email_fetch, subject1, body1, {name:Get_MailDisplayName("INVOICE"),htmlBody: body1+'<br><br>INVOICE : '+url});  
 }
 //FUNCTION TO RETURN GENERATED INVOICE ID
